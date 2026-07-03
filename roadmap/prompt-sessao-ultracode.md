@@ -15,7 +15,9 @@ Você está no repositório do Programa Ana & CRM do Hospital São Matheus (Bang
 3. `ana/prompt/Ana_System_Prompt.md` (prompt em produção, idêntico ao nó do n8n)
 4. `docs/00-visao-geral.md` até `docs/05-guia-implementacao-n8n.md` (a integração de agendamento já projetada)
 5. `ana/api-mv/doc_whatsapp_agendamento_1.10.pdf` (API Global Health/MV, v1.10)
-6. `ana/workflows/Ana.json` (export fiel do workflow em produção: 68 nós, gpt-5.2, memória Postgres janela 15, buffer/debounce 8s + lock, RAG via Google Sheets)
+6. `ana/api-mv/dicionario-tabelas-mv.md` (dicionário de tabelas do banco Oracle do MV, destilado da planilha do TI do hospital; as 8 tabelas de agendamento que o hospital já movimenta via banco estão destacadas)
+7. `ana/workflows/Ana.json` (export fiel do workflow em produção: 68 nós, gpt-5.2, memória Postgres janela 15, buffer/debounce 8s + lock, RAG via Google Sheets)
+8. `roadmap/TODO.md` (trilhas de trabalho; a Trilha 1 é a exploração do banco MV, que NÃO é tarefa desta sessão)
 
 O MCP do n8n está disponível somente para leitura e execução (`search_workflows`, `get_workflow_details`, `execute_workflow`). Não há como editar workflows por ele. Não altere nada em produção.
 
@@ -44,7 +46,7 @@ O MCP do n8n está disponível somente para leitura e execução (`search_workfl
 4. **Classificador de urgência dedicado.** Arquitetura no n8n (nó antes do agente), escolha de modelo (pequeno e rápido vs regras híbridas), latência e custo por mensagem, dataset de sinais em pt-BR (incluindo gírias e erros de digitação), como medir e monitorar falso-negativo em produção.
 5. **Base de conhecimento: Google Sheets vs Supabase vs Postgres existente.** O requisito do cliente: alguém do hospital edita valores/diferenciais como se fosse planilha. Avaliar nós n8n disponíveis, latência do RAG atual (Sheets a cada chamada), cache, e a hipótese de a Central de Comando (frente Lucas/Rib) virar a UI de edição. Entregar recomendação com trade-offs.
 6. **Pós-atendimento: arquitetura da camada analítica.** Banco para respostas classificadas, classificação por IA com auditoria amostral (atenção redobrada em atribuição nominal a profissionais), agregação e relatórios evolutivos por setor/profissional/período, fechamento de loop com quem criticou, opt-out, conformidade com política do Google (sem review gating) e LGPD (base legal do contato proativo).
-7. **API Global Health/MV e dados.** Validar o desenho das 7 tools (docs/02) contra a doc v1.10; listar o que a doc NÃO responde (rate limit, concorrência, comportamento de erro) para perguntar à Global Health; preparar perguntas objetivas sobre os esquemas MVBIKE e MVINTEGRA (fonte de dados do pós-atendimento, incluindo desfecho).
+7. **API Global Health/MV e dados.** Validar o desenho das 7 tools (docs/02) contra a doc v1.10; listar o que a doc NÃO responde (rate limit, concorrência, comportamento de erro) para perguntar à Global Health; preparar perguntas objetivas sobre os esquemas MVBIKE e MVINTEGRA (fonte de dados do pós-atendimento, incluindo desfecho). Usar `ana/api-mv/dicionario-tabelas-mv.md` como referência do modelo de dados: as 8 tabelas de agendamento (`AGENDA_CENTRAL`, `IT_AGENDA_CENTRAL`, `ITEM_AGENDAMENTO`, `ESCALA_CENTRAL`, `ESCALA_CENTRAL_ITEM_AGENDA`, `GERACAO_AGENDA`, `PACIENTE`, `EXA_RX`) e a ponte `ATENDIME_GLOBAL_HEALTH` merecem atenção especial. Pesquisar também o modelo de dados público do MV (Soul MV / Oracle) para enriquecer as hipóteses. IMPORTANTE: não tentar conexão com o banco; a exploração SQL ao vivo acontece em outra sessão, com VPN (Trilha 1 do TODO.md).
 8. **Compliance Meta 2026 para agentes de IA no WhatsApp.** Confirmar que a Ana (propósito específico: saúde/atendimento) está conforme os termos vigentes; requisitos de identificação de IA; implicações da Regra 6 reescrita.
 
 ## Artefatos a entregar (gravar no repo e commitar)
