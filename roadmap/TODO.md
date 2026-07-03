@@ -1,108 +1,147 @@
-# TODO — Programa Ana
+# TODO — Programa Ana: guia de execução até o final
 
-> Hub de pendências acionáveis, em três trilhas. O roadmap visual (`index.html`) conta a história; este arquivo é a lista de trabalho. Marcar com `[x]` ao concluir e commitar.
+> Fonte de verdade operacional do projeto. O `roadmap/index.html` conta a história para gestão; este arquivo guia o trabalho. Cada tarefa tem ID estável, dono e dependências. A seção "Fronteira de agora" diz o que está desbloqueado neste momento; ela é reescrita a cada avanço.
 
-## Trilha 1 — Curva de aprendizado: banco MV (Oracle)
+**Status:** `[ ]` a fazer · `[~]` em curso · `[x]` feito · `[!]` bloqueada
+**Donos:** **(P)** Pedro · **(C)** Claude (sessões) · **(E)** Externo (hospital, Global Health, jurídico)
 
-Objetivo: dominar o modelo de dados que sustenta agendamento (Fase 1) e desfecho de atendimento (Fase 3), começando pelas 8 tabelas que o hospital já movimenta via banco (ver `ana/api-mv/dicionario-tabelas-mv.md`).
+---
 
-- [ ] Conseguir credencial Oracle SOMENTE LEITURA com o TI (usuário, host, porta, service name) e confirmar em quais schemas as tabelas vivem (MVBIKE? MVINTEGRA?)
-- [ ] Decidir o modo de execução (recomendação: conexão direta desta sessão via VPN + python-oracledb; fallback: Pedro executa o pacote de queries abaixo e cola os resultados)
-- [ ] Rodar o Pacote 1 (estrutura) e gerar `ana/api-mv/dicionario-colunas.md`
-- [ ] Rodar o Pacote 2 (relações e volumes) e desenhar o diagrama do fluxo de agendamento no banco
-- [ ] Mapear onde vive o DESFECHO do atendimento (`ATENDIME` + motivo de alta/óbito) para o filtro do pós-atendimento
-- [ ] Investigar `ATENDIME_GLOBAL_HEALTH` (a ponte MV ↔ Global Health): o que a integração grava lá?
-- [ ] Cruzar o aprendizado com o Power BI (módulo SCMA, filtro de esquema MVBIKE/MVINTEGRA) para ver quais KPIs o hospital já acompanha
-- [ ] Validar com o analista a leitura do encadeamento agenda → horário → paciente
+## Fronteira de agora (03/jul/2026 · tudo abaixo pode andar em paralelo)
 
-### Pacote 1 — Estrutura (read-only, colar resultado de volta)
+| # | Tarefa | Dono | Por que agora |
+|---|---|---|---|
+| A1 | Redigir o hotfix do prompt | C | Única tarefa técnica 100% desbloqueada; risco vivo em produção |
+| C1 | Pedir credencial Oracle read-only ao analista | P | Destrava toda a Trilha C; mensagem pronta no chat da sessão |
+| D1 | Pedir token GH (homolog + prod) + rate limit | P→E | CAMINHO CRÍTICO: lead time externo domina a Fase 1 |
+| E2 | Abrir a pergunta LGPD com o jurídico do hospital | P→E | Lead time externo; trava o POC do pós-atendimento |
+| B1 | Sessão ultracode rodando | E | Só aguardar e revisar quando terminar |
+| C5 | (Opcional) Varredura do Power BI/SCMA via Chrome | C+P | A qualquer momento, com o navegador aberto |
 
-```sql
--- 1.1 Em qual schema vivem as tabelas-chave (e volume estimado pelas estatísticas)
-SELECT owner, table_name, num_rows, last_analyzed
-FROM   all_tables
-WHERE  table_name IN ('AGENDA_CENTRAL','IT_AGENDA_CENTRAL','ITEM_AGENDAMENTO',
-                      'ESCALA_CENTRAL','ESCALA_CENTRAL_ITEM_AGENDA','GERACAO_AGENDA',
-                      'PACIENTE','EXA_RX','ATENDIME','ATENDIME_GLOBAL_HEALTH','MOTIVO_ALTA')
-ORDER  BY table_name;
+---
 
--- 1.2 Colunas + comentários das 8 tabelas de agendamento
-SELECT c.table_name, c.column_id, c.column_name, c.data_type, c.nullable, cc.comments
-FROM   all_tab_columns c
-LEFT   JOIN all_col_comments cc
-       ON cc.owner = c.owner AND cc.table_name = c.table_name AND cc.column_name = c.column_name
-WHERE  c.table_name IN ('AGENDA_CENTRAL','IT_AGENDA_CENTRAL','ITEM_AGENDAMENTO',
-                        'ESCALA_CENTRAL','ESCALA_CENTRAL_ITEM_AGENDA','GERACAO_AGENDA',
-                        'PACIENTE','EXA_RX')
-ORDER  BY c.table_name, c.column_id;
+## Árvore de dependências
 
--- 1.3 Colunas do núcleo de atendimento/desfecho (pós-atendimento)
-SELECT c.table_name, c.column_id, c.column_name, c.data_type, cc.comments
-FROM   all_tab_columns c
-LEFT   JOIN all_col_comments cc
-       ON cc.owner = c.owner AND cc.table_name = c.table_name AND cc.column_name = c.column_name
-WHERE  c.table_name IN ('ATENDIME','ATENDIME_GLOBAL_HEALTH','MOTIVO_ALTA')
-ORDER  BY c.table_name, c.column_id;
+```mermaid
+flowchart TD
+    subgraph TA["Trilha A · Hotfix (agora)"]
+        A1["A1 (C) Redigir hotfix"] --> A2["A2 (P) Aplicar no n8n"]
+        A2 --> A3["A3 (P+C) Validação em sombra"]
+        A5["A5 (P) Token Chatwoot vira Credential + rotação"] --> A4["A4 (C) Re-export + commit"]
+        A3 --> A4
+    end
+
+    subgraph TB["Trilha B · Ultracode (rodando)"]
+        B1["B1 (E) Sessão em execução"] --> B2["B2 (P+C) Revisar 8 artefatos"]
+        B2 --> B3["B3 (C) SOP v2 absorve hotfix"]
+    end
+    A1 --> B3
+
+    subgraph TC["Trilha C · Banco MV (curva de aprendizado)"]
+        C1["C1 (E) Credencial read-only + conexão"] --> C2["C2 (C) Explorar: VPN direta ou pacotes de query"]
+        C2 --> C3["C3 (C) Dicionário de colunas + diagrama do fluxo"]
+        C3 --> C4["C4 (C) Mapear DESFECHO (ATENDIME/MOTIVO_ALTA)"]
+        C5["C5 (C+P) Power BI SCMA (opcional)"]
+    end
+
+    subgraph TD1["Trilha D · Fase 1: integração MV"]
+        D1["D1 (E) Token GH + rate limit · CRÍTICO"] --> D2["D2 (C) Construir subfluxos MVP"]
+        B2 --> D2
+        B2 --> D3["D3 (C) Classificador de urgência"]
+        D4["D4 (P) Etapa + tags novas no Kanban"] --> D5
+        D2 --> D5["D5 (P+C) Homologação com checklist"]
+        D3 --> D5
+        D5 --> D6["D6 (P+C) Canário por inbox"] --> D7["D7 (P) Produção"] --> D8["D8 (P) Termo de Entregável +R$ 2k"]
+    end
+    C3 -.valida desenho.-> D2
+
+    subgraph TE["Trilha E · Fase 3: pós-atendimento"]
+        C4 --> E1["E1 (E) Fonte MV com desfecho"]
+        E2["E2 (E) Base legal LGPD"] --> E4
+        B2 --> E3["E3 (C+P) Template utility + teste de classificação"]
+        E1 --> E4["E4 (P+C) POC eletivo 250 a 1000/dia"]
+        E3 --> E4
+        E4 --> E5["E5 (C) Camada analítica"] --> E6["E6 (P+E) Relatórios, dono e ritual semanal"]
+    end
+    D7 -.mesmo número WhatsApp: rodar após estabilizar.-> E4
 ```
 
-### Pacote 2 — Relações e amostras (rodar depois do Pacote 1)
+Leituras da árvore:
+- **Caminho crítico até a receita (+R$ 2k):** D1 → D2 → D5 → D6 → D7 → D8. Tudo começa no token GH; por isso D1 se pede HOJE, mesmo com a construção ainda longe.
+- **Trilhas A, B e C são independentes entre si**: hotfix, pesquisa e banco andam em paralelo total.
+- **C alimenta E**: sem mapear o desfecho no banco (C4), a Fase 3 não tem filtro seguro (E1).
+- **B2 é o pivô**: a revisão dos artefatos do ultracode destrava a construção (D2, D3) e o template (E3).
 
-```sql
--- 2.1 Chaves estrangeiras entre as tabelas-chave (quem aponta para quem)
-SELECT a.table_name  AS filha,
-       a.constraint_name,
-       b.table_name  AS pai,
-       acc.column_name AS coluna_filha
-FROM   all_constraints a
-JOIN   all_constraints b ON b.constraint_name = a.r_constraint_name AND b.owner = a.r_owner
-JOIN   all_cons_columns acc ON acc.constraint_name = a.constraint_name AND acc.owner = a.owner
-WHERE  a.constraint_type = 'R'
-AND   (a.table_name IN ('AGENDA_CENTRAL','IT_AGENDA_CENTRAL','ITEM_AGENDAMENTO',
-                        'ESCALA_CENTRAL','ESCALA_CENTRAL_ITEM_AGENDA','GERACAO_AGENDA','EXA_RX')
-   OR  b.table_name IN ('AGENDA_CENTRAL','ITEM_AGENDAMENTO','PACIENTE','ATENDIME'))
-ORDER  BY a.table_name;
+---
 
--- 2.2 Amostra de horários da Central de Marcações (ajustar owner conforme 1.1)
-SELECT *
-FROM   IT_AGENDA_CENTRAL
-WHERE  ROWNUM <= 5;
+## Trilha A — Hotfix do prompt (agora)
 
--- 2.3 Distribuição de motivos de alta (o candidato a filtro de desfecho)
-SELECT ma.*
-FROM   MOTIVO_ALTA ma
-WHERE  ROWNUM <= 50;
-```
+| ID | St | Tarefa | Dono | Depende de |
+|---|---|---|---|---|
+| A1 | `[ ]` | Redigir `Ana_System_Prompt.md` v1.1: urgência como Regra Global 1, Regra 6 (assistente virtual), exclusão ouvidoria↔comercial, guardrails jurídicos, acentuação, tag `fora-horario`, etapa órfã, Seção 8.4 | C | nada |
+| A2 | `[ ]` | Aplicar no nó `Agente IA Hospital` (colar manualmente ou via API key do n8n) | P | A1 |
+| A3 | `[ ]` | Validação em sombra por período curto (tom da urgência e do comercial) | P+C | A2 |
+| A4 | `[ ]` | Re-exportar workflows para `ana/workflows/` e commitar | C | A3, A5 |
+| A5 | `[ ]` | Migrar token Chatwoot para Credential do n8n + rotacionar | P | nada |
 
-## Trilha 2 — Execução do programa (espelho acionável do roadmap)
+## Trilha B — Pesquisa ultracode
 
-### Fase 0 — Hotfix (agora)
-- [ ] Redigir `Ana_System_Prompt.md` corrigido (urgência Regra 1, Regra 6, exclusão ouvidoria↔comercial, guardrails jurídicos, acentuação, tag `fora-horario`, etapa órfã, Seção 8.4)
-- [ ] Colar no nó `Agente IA Hospital` do n8n (ou aplicar via API key do n8n)
-- [ ] Migrar token Chatwoot para Credential do n8n + rotacionar o token
-- [ ] Re-exportar os workflows para `ana/workflows/` e commitar
-- [ ] Rodar validação em sombra por período curto
+| ID | St | Tarefa | Dono | Depende de |
+|---|---|---|---|---|
+| B1 | `[~]` | Sessão ultracode em execução (disparada em 03/jul) | E | nada |
+| B2 | `[ ]` | Revisar os 8 artefatos, decidir o que entra, commitar | P+C | B1 |
+| B3 | `[ ]` | Consolidar SOP v2 (hotfix + agendamento + achados da pesquisa) | C | A1, B2 |
 
-### Trilha paralela — Pesquisa ultracode
-- [ ] Disparar a sessão com `roadmap/prompt-sessao-ultracode.md` (Pedro)
-- [ ] Revisar os 8 artefatos entregues e commitar decisões
+## Trilha C — Banco MV (curva de aprendizado)
 
-### Fase 1 — Integração MV
-- [ ] Token Global Health homolog + prod e limites de chamadas (EXTERNO)
-- [ ] Construir subfluxos MVP na ordem T6 → T1 → T2 → T5 → T7
-- [ ] Estado em `custom_attributes` + limpeza no `/reset`
-- [ ] Classificador de urgência antes do agente
-- [ ] SOP v2 no agente + etapa `FALHA AGENDAMENTO — FILA` + tags novas no Kanban
-- [ ] Checklist de homologação → canário → produção
-- [ ] Termo de Entregável da Ana (+R$ 2.000/mês)
+| ID | St | Tarefa | Dono | Depende de |
+|---|---|---|---|---|
+| C1 | `[ ]` | Credencial Oracle read-only + host/porta/service name + schema (MVBIKE? MVINTEGRA?) | P→E | nada |
+| C2 | `[ ]` | Explorar estrutura: conexão direta (VPN + python-oracledb) ou Pacotes 1 e 2 de `ana/api-mv/queries-exploracao.md` | C | C1 |
+| C3 | `[ ]` | Gerar `ana/api-mv/dicionario-colunas.md` + diagrama do fluxo de agendamento no banco | C | C2 |
+| C4 | `[ ]` | Mapear onde vive o desfecho (`ATENDIME`, `MOTIVO_ALTA`, óbito) e como filtrar | C | C3 |
+| C5 | `[ ]` | (Opcional) Varredura do Power BI módulo SCMA via Chrome: KPIs que a gestão já vê | C+P | navegador aberto |
+| C6 | `[ ]` | Validar leitura do encadeamento com o analista de TI | P | C3 |
 
-### Fase 3 — Pós-atendimento (pré-condições)
-- [ ] Fonte MV com serviço, data, setor/profissional e DESFECHO (depende da Trilha 1)
-- [ ] Base legal LGPD do contato proativo (jurídico do hospital)
-- [ ] Template utility de abertura + teste de classificação com amostra
+## Trilha D — Fase 1: integração MV
 
-## Trilha 3 — Insumos a coletar (fora do repo)
+| ID | St | Tarefa | Dono | Depende de |
+|---|---|---|---|---|
+| D1 | `[ ]` | Token GH homolog + prod e limites de chamadas (pedir HOJE; caminho crítico) | P→E | nada |
+| D2 | `[ ]` | Construir subfluxos MVP na ordem T6 → T1 → T2 → T5 → T7 (+ estado em `custom_attributes` + `/reset`) | C | D1, B2 |
+| D3 | `[ ]` | Classificador de urgência antes do agente (spec vem do ultracode) | C | B2 |
+| D4 | `[ ]` | Criar etapa `FALHA AGENDAMENTO — FILA` + tags `agendado-bot`, `remarcacao`, `cancelamento` no Kanban | P | nada |
+| D5 | `[ ]` | Homologação: caso feliz, 7 fallbacks, guardrails de escrita (checklist do docs/05) | P+C | D2, D3, D4 |
+| D6 | `[ ]` | Canário por inbox, acompanhando `agendado-bot` vs `FALHA AGENDAMENTO — FILA` | P+C | D5 |
+| D7 | `[ ]` | Produção (portal e filas seguem como fallback) | P | D6 |
+| D8 | `[ ]` | Termo de Entregável da Ana (+R$ 2.000/mês) | P | D7 |
 
-- [ ] Materiais adicionais que o Felipe disse que vai mandar (deixar em `ana/briefings/`)
-- [ ] Esquemas MVBIKE e MVINTEGRA: confirmação de qual é o schema canônico de leitura
-- [ ] Acesso/prints do Power BI (módulo SCMA) ou varredura via Chrome nesta sessão
-- [ ] Decisão do Felipe: postura do convite ao Google (amplo vs contextual)
+## Trilha E — Fase 3: pós-atendimento
+
+| ID | St | Tarefa | Dono | Depende de |
+|---|---|---|---|---|
+| E1 | `[ ]` | Fonte MV: atendidos com serviço, data, setor/profissional e DESFECHO | E | C4 |
+| E2 | `[ ]` | Base legal LGPD do contato proativo (termo de atendimento) | P→E | nada |
+| E3 | `[ ]` | Template utility de abertura + teste de classificação com amostra pequena | C+P | B2 |
+| E4 | `[ ]` | POC só eletivo, 250 a 1.000/dia, opt-out, medindo resposta/custo/NPS | P+C | E1, E2, E3 (recomendado: após D7) |
+| E5 | `[ ]` | Camada analítica: banco, classificação com auditoria amostral, agregação | C | E4 |
+| E6 | `[ ]` | Categorias co-desenhadas com coordenadores + dono + ritual semanal | P+E | E5 |
+
+## Trilha F — Contínuo
+
+| ID | St | Tarefa | Dono | Quando |
+|---|---|---|---|---|
+| F1 | `[ ]` | Comunicar ao Felipe: Regra 6 implementada como recomendação + resposta sobre a ideia do web-chat (pós-pesquisa) | P | após A2 e B2 |
+| F2 | `[~]` | Manter exports, TODO, roadmap e memória sincronizados a cada avanço | C | sempre |
+| F3 | `[ ]` | Dimensionar manutenção recorrente no contrato (questão III.2.8 do briefing) | P | antes de D8 |
+
+---
+
+## Concluído (log)
+
+- `[x]` 03/jul: Repo git + reorganização por domínio + README (Fase 0)
+- `[x]` 03/jul: Glossário do domínio no CONTEXT.md
+- `[x]` 03/jul: Meta-prompt do ultracode (`roadmap/prompt-sessao-ultracode.md`) + disparo da sessão
+- `[x]` 03/jul: Roadmap visual (`roadmap/index.html`)
+- `[x]` 03/jul: Dicionário de tabelas MV destilado da planilha do TI (`ana/api-mv/dicionario-tabelas-mv.md`)
+- `[x]` 03/jul: Decisões do grilling registradas (hotfix primeiro, urgência 2 camadas, Regra 6, ultracode = pesquisa+SOP+specs)

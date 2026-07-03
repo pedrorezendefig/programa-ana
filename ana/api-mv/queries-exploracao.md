@@ -1,0 +1,57 @@
+# Pacotes de queries: exploração do banco MV (Oracle)
+
+> Todas somente leitura. Executar com usuário read-only, de preferência via conexão direta na sessão Claude (VPN + python-oracledb). Fallback: rodar no SQL Developer/DBeaver e colar os resultados na sessão. Referenciado pela tarefa C2 do `roadmap/TODO.md`.
+
+## Pacote 1: estrutura
+
+```sql
+-- 1.1 Em qual schema vivem as tabelas-chave (e volume estimado pelas estatísticas)
+SELECT owner, table_name, num_rows, last_analyzed
+FROM   all_tables
+WHERE  table_name IN ('AGENDA_CENTRAL','IT_AGENDA_CENTRAL','ITEM_AGENDAMENTO',
+                      'ESCALA_CENTRAL','ESCALA_CENTRAL_ITEM_AGENDA','GERACAO_AGENDA',
+                      'PACIENTE','EXA_RX','ATENDIME','ATENDIME_GLOBAL_HEALTH','MOTIVO_ALTA')
+ORDER  BY table_name;
+
+-- 1.2 Colunas + comentários das 8 tabelas de agendamento
+SELECT c.table_name, c.column_id, c.column_name, c.data_type, c.nullable, cc.comments
+FROM   all_tab_columns c
+LEFT   JOIN all_col_comments cc
+       ON cc.owner = c.owner AND cc.table_name = c.table_name AND cc.column_name = c.column_name
+WHERE  c.table_name IN ('AGENDA_CENTRAL','IT_AGENDA_CENTRAL','ITEM_AGENDAMENTO',
+                        'ESCALA_CENTRAL','ESCALA_CENTRAL_ITEM_AGENDA','GERACAO_AGENDA',
+                        'PACIENTE','EXA_RX')
+ORDER  BY c.table_name, c.column_id;
+
+-- 1.3 Colunas do núcleo de atendimento/desfecho (pós-atendimento)
+SELECT c.table_name, c.column_id, c.column_name, c.data_type, cc.comments
+FROM   all_tab_columns c
+LEFT   JOIN all_col_comments cc
+       ON cc.owner = c.owner AND cc.table_name = c.table_name AND cc.column_name = c.column_name
+WHERE  c.table_name IN ('ATENDIME','ATENDIME_GLOBAL_HEALTH','MOTIVO_ALTA')
+ORDER  BY c.table_name, c.column_id;
+```
+
+## Pacote 2: relações e amostras (rodar depois do Pacote 1)
+
+```sql
+-- 2.1 Chaves estrangeiras entre as tabelas-chave (quem aponta para quem)
+SELECT a.table_name  AS filha,
+       a.constraint_name,
+       b.table_name  AS pai,
+       acc.column_name AS coluna_filha
+FROM   all_constraints a
+JOIN   all_constraints b ON b.constraint_name = a.r_constraint_name AND b.owner = a.r_owner
+JOIN   all_cons_columns acc ON acc.constraint_name = a.constraint_name AND acc.owner = a.owner
+WHERE  a.constraint_type = 'R'
+AND   (a.table_name IN ('AGENDA_CENTRAL','IT_AGENDA_CENTRAL','ITEM_AGENDAMENTO',
+                        'ESCALA_CENTRAL','ESCALA_CENTRAL_ITEM_AGENDA','GERACAO_AGENDA','EXA_RX')
+   OR  b.table_name IN ('AGENDA_CENTRAL','ITEM_AGENDAMENTO','PACIENTE','ATENDIME'))
+ORDER  BY a.table_name;
+
+-- 2.2 Amostra de horários da Central de Marcações (prefixar owner conforme 1.1)
+SELECT * FROM IT_AGENDA_CENTRAL WHERE ROWNUM <= 5;
+
+-- 2.3 Motivos de alta (candidato a filtro de desfecho do pós-atendimento)
+SELECT * FROM MOTIVO_ALTA WHERE ROWNUM <= 50;
+```
