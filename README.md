@@ -26,3 +26,4 @@ Repositório de trabalho da VITTA TECH para os agentes de IA do Hospital São Ma
 
 - O prompt da Ana é editado em `ana/prompt/Ana_System_Prompt.md` e colado no nó `Agente IA Hospital`; os dois devem permanecer idênticos.
 - Decisões de arquitetura viram ADR em `docs/adr/`. Termos do domínio vivem no `CONTEXT.md`.
+- O guia de execução com árvore de dependências é `roadmap/TODO.md`. Para atualizar a fronteira e receber orientação de próximos passos, digite `/check` numa sessão Claude Code aberta neste diretório.
