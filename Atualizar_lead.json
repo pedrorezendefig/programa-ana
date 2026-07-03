@@ -1,0 +1,114 @@
+{
+  "name": "Atualizar_lead",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://chatwoot.mala-ia.cloud/api/v1/accounts/{{ $json.id_conta }}/kanban/tasks/{{ $json.id_task }}/move",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "TOKEN-CHATWOOT-REMOVIDO-ROTACIONAR"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "board_step_id",
+              "value": "={{ $json.id_step }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        304,
+        352
+      ],
+      "id": "3438d854-83a2-4bdc-8234-070bdb1dd2dd",
+      "name": "Mover Task"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "id_conta"
+            },
+            {
+              "name": "id_task"
+            },
+            {
+              "name": "id_conversa"
+            },
+            {
+              "name": "id_step"
+            },
+            {
+              "name": "step"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "Gatilho",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        64,
+        352
+      ]
+    }
+  ],
+  "pinData": {
+    "Gatilho": [
+      {
+        "json": {
+          "id_conta": null,
+          "id_task": null,
+          "id_conversa": null,
+          "id_step": null
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gatilho": {
+      "main": [
+        [
+          {
+            "node": "Mover Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mover Task": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "4578552e-8ed7-4eb1-b4af-609dce92464d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "87480eb81c11f148c57e9064a75af712e2dcbc33686f209b21605feb364c4779"
+  },
+  "id": "Tx0I6ANQq7DdD6DY",
+  "tags": []
+}

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana · Mapa de Fluxos do SOP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..500&family=Hanken+Grotesk:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3f0e8;
+    --paper-2:#ede9df;
+    --card:#fffdf8;
+    --ink:#1c2522;
+    --ink-2:#3c4a44;
+    --muted:#7c8a83;
+    --line:#e4ddcf;
+    --teal:#0f7d61;
+    --teal-soft:#e7f2ec;
+    --amber:#b1700a;
+    --amber-soft:#f8efdc;
+    --blue:#2f6f9f;
+    --rose:#b23b3b;
+    --shadow:0 1px 2px rgba(28,37,34,.05),0 18px 40px -22px rgba(28,37,34,.28);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:130px}
+  body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--teal);color:#fff}
+
+  /* atmosphere: subtle paper texture */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.6;
+    background:radial-gradient(70% 50% at 85% -5%,rgba(15,125,97,.06),transparent 60%),radial-gradient(60% 40% at 0% 0%,rgba(47,111,159,.05),transparent 55%)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 26px;position:relative;z-index:1}
+
+  /* top */
+  .top{position:sticky;top:0;z-index:50;background:rgba(243,240,232,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .top-in{max-width:1120px;margin:0 auto;padding:13px 26px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .logo{font-family:"Fraunces";font-weight:600;font-size:18px;display:flex;align-items:center;gap:10px}
+  .logo .dot{width:10px;height:10px;border-radius:50%;background:var(--teal)}
+  .logo small{font-family:"Hanken Grotesk";font-weight:400;color:var(--muted);font-size:13px}
+  .top .links{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .top .links a{font-size:12.5px;color:var(--ink-2);border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:8px;transition:.2s var(--ease)}
+  .top .links a:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-soft)}
+
+  /* hero */
+  .hero{padding:62px 0 30px}
+  .hero .eyebrow{font-family:"IBM Plex Mono";font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--teal);margin-bottom:18px}
+  .hero h1{font-family:"Fraunces";font-weight:340;font-size:clamp(34px,6vw,62px);line-height:1.02;letter-spacing:-.02em;margin-bottom:16px}
+  .hero h1 em{font-style:italic;color:var(--teal)}
+  .hero p{font-size:17px;color:var(--ink-2);max-width:600px;font-weight:330}
+
+  /* índice de cenários */
+  .index{position:sticky;top:57px;z-index:40;background:rgba(243,240,232,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:11px 0}
+  .index .wrap{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .index .lbl{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+  .index a{font-size:12px;color:var(--ink-2);padding:5px 10px;border-radius:7px;background:var(--card);border:1px solid var(--line);transition:.18s var(--ease);white-space:nowrap}
+  .index a:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-soft)}
+
+  /* legenda */
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:26px 0 6px;padding:14px 18px;background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow)}
+  .legend span{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+  .legend i{width:24px;height:14px;border-radius:4px;border:1.5px solid;display:inline-block}
+  .lg-tool{background:var(--teal-soft);border-color:var(--teal)}
+  .lg-ok{background:#e2f3e8;border-color:#15803d}
+  .lg-fb{background:var(--amber-soft);border-color:var(--amber)}
+  .lg-dec{background:#fff;border-color:var(--blue)}
+  .lg-danger{background:#f8e3e3;border-color:var(--rose)}
+
+  /* group header */
+  .group{margin:64px 0 8px}
+  .group .gtag{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal)}
+  .group h2{font-family:"Fraunces";font-weight:380;font-size:clamp(26px,3.6vw,40px);letter-spacing:-.015em;margin-top:8px}
+  .group .rule{height:2px;background:linear-gradient(90deg,var(--teal),transparent);margin-top:14px;border-radius:2px}
+
+  /* scenario card */
+  .scn{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:30px 30px 16px;margin:30px 0 0}
+  .scn .head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .scn .sop{font-family:"IBM Plex Mono";font-size:11px;color:#fff;background:var(--teal);padding:3px 9px;border-radius:6px;letter-spacing:.04em}
+  .scn h3{font-family:"Fraunces";font-weight:500;font-size:24px;letter-spacing:-.01em}
+  .scn .note{color:var(--ink-2);font-size:14.5px;margin:6px 0 18px;max-width:760px}
+  .scn .note b{color:var(--ink)}
+  .diagram{display:flex;justify-content:center;padding:18px 6px 26px;overflow-x:auto}
+  .mermaid{min-width:min(100%,520px)}
+  .mermaid:not([data-processed])::before{content:"desenhando…";color:var(--muted);font-family:"IBM Plex Mono";font-size:12px}
+
+  footer{margin-top:80px;border-top:1px solid var(--line);padding:34px 0 70px;color:var(--muted);font-family:"IBM Plex Mono";font-size:12.5px}
+  footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  footer a{color:var(--teal)}
+
+  .backtop{position:fixed;right:22px;bottom:22px;z-index:60;background:var(--teal);color:#fff;border:none;width:46px;height:46px;border-radius:50%;cursor:pointer;font-size:18px;box-shadow:var(--shadow);opacity:0;transform:translateY(12px);transition:.3s var(--ease)}
+  .backtop.show{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="top-in">
+    <div class="logo"><span class="dot"></span> Mapa de Fluxos <small>· SOP da Ana</small></div>
+    <div class="links">
+      <a href="prompt.html">prompt navegável</a>
+      <a href="index.html">painel de funções</a>
+      <a href="../03-fluxos-conversacionais.md">.md</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Cada caminho que a Ana percorre</div>
+    <h1>Todos os <em>cenários</em> do atendimento, desenhados.</h1>
+    <p>Um mapa visual de ponta a ponta do SOP — da primeira mensagem ao protocolo, com cada bifurcação e cada queda para o atendimento humano.</p>
+  </section>
+</div>
+
+<div class="index">
+  <div class="wrap" id="idx"><span class="lbl">Ir para:</span></div>
+</div>
+
+<div class="wrap">
+  <div class="legend">
+    <span><i class="lg-dec"></i> decisão</span>
+    <span><i class="lg-tool"></i> ferramenta da Ana</span>
+    <span><i class="lg-ok"></i> sucesso / agendado</span>
+    <span><i class="lg-fb"></i> fallback humano</span>
+    <span><i class="lg-danger"></i> ação destrutiva</span>
+  </div>
+
+  <!-- ============ A. ENTRADA & TRIAGEM ============ -->
+  <div class="group" id="g-entrada"><div class="gtag">A · Entrada e triagem</div><h2>Como a conversa começa</h2><div class="rule"></div></div>
+
+  <div class="scn" id="s-pipeline">
+    <div class="head"><span class="sop">infra</span><h3>Pipeline da mensagem</h3></div>
+    <p class="note">Antes de a Ana raciocinar: a mensagem é normalizada (áudio vira texto, imagem é sinalizada), enfileirada e travada por conversa para evitar respostas duplicadas. O controle <b>liga/desliga</b> respeita quando um humano assume.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart LR
+  M["Mensagem<br/>WhatsApp / IG / FB"] --> CW["Chatwoot<br/>webhook"]
+  CW --> INFO["Nó Info<br/>extrai contexto"]
+  INFO --> T{"Tipo?"}
+  T -->|"áudio"| AU["Transcreve<br/>OpenAI"]
+  T -->|"imagem"| IM["Sinaliza imagem"]
+  T -->|"texto"| TX["Segue"]
+  AU --> Q["Fila + Lock<br/>Postgres"]
+  IM --> Q
+  TX --> Q
+  Q --> OFF{"Ana ligada?"}
+  OFF -->|"tag agente-off"| STOP["Não responde<br/>humano no comando"]
+  OFF -->|"sim"| AG["Agente IA Hospital"]
+  AG --> R["Resposta ao paciente"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class AU,IM,Q,AG tool; class T,OFF dec; class STOP fb;
+    </pre></div>
+  </div>
+
+  <div class="scn" id="s-triagem">
+    <div class="head"><span class="sop">SOP 1</span><h3>Triagem inicial</h3></div>
+    <p class="note">A Ana identifica o motivo, infere consulta × exame, descobre convênio × particular com a <b>pergunta acolhedora</b> e valida o escopo. Saudação genérica não aciona nenhuma ferramenta.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  S["Primeira mensagem"] --> G{"Motivo claro?"}
+  G -->|"só saudação"| SAU["Responde e aguarda<br/>sem ferramenta"]
+  G -->|"sim"| ESC{"Dentro do escopo?"}
+  ESC -->|"não · fora de escopo"| FB["FILA ATENDIMENTO<br/>+ Escalar_humano"]
+  ESC -->|"DOR / sintoma"| URG["Não orienta nada clínico<br/>acolhe e direciona"]
+  ESC -->|"sim"| TIPO{"Consulta ou exame?"}
+  TIPO -->|"especialidade"| C["Trilha consulta"]
+  TIPO -->|"procedimento"| E["Trilha exame"]
+  C --> VIA{"Convênio ou particular?<br/>pergunta acolhedora"}
+  E --> VIA
+  VIA -->|"particular"| P["SOP 2 / 5.B"]
+  VIA -->|"convênio"| CV["SOP 3 / 5.A"]
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  classDef ok fill:#e2f3e8,stroke:#15803d,color:#0a4020;
+  class G,ESC,TIPO,VIA dec; class FB,URG fb; class P,CV ok;
+    </pre></div>
+  </div>
+
+  <!-- ============ B. AGENDAMENTO ============ -->
+  <div class="group" id="g-agendar"><div class="gtag">B · Agendamento</div><h2>Marcar de verdade</h2><div class="rule"></div></div>
+
+  <div class="scn" id="s-particular">
+    <div class="head"><span class="sop">SOP 2</span><h3>Consulta particular</h3></div>
+    <p class="note">As <b>Sheets</b> dão o valor e os diferenciais; a <b>API</b> dá o horário real e executa. Coleta de nome+CPF antes de efetivar; confirmação antes de gravar.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Especialidade definida"] --> GC["Get_Consultas<br/>valor + diferenciais"]
+  GC --> TAG["Aplicar_tag<br/>particular-aquecido"]
+  TAG --> AC{"Paciente topa<br/>verificar horários?"}
+  AC -->|"rejeita"| DES["ENCERRADO —<br/>DESISTÊNCIA"]
+  AC -->|"hesita"| REF["Reforça diferencial<br/>uma vez"]
+  REF --> AC
+  AC -->|"sim"| BD["Buscar_disponibilidade<br/>lista numerada"]
+  BD --> NUM["Paciente escolhe nº"]
+  NUM --> CPF["Coleta + valida<br/>nome e CPF"]
+  CPF --> ID["Identificar_paciente<br/>cadastra se preciso"]
+  ID --> TP["Pre_requisitos<br/>tipo de consulta"]
+  TP --> CONF{"Confirma data,<br/>hora, médico, valor?"}
+  CONF -->|"não"| BD
+  CONF -->|"sim"| EF["Efetivar_agendamento"]
+  EF --> RES{"sucesso?"}
+  RES -->|"sim"| OK["Protocolo + instruções<br/>AGENDADO · tag agendado-bot"]
+  RES -->|"falha"| FBC["FILA COMERCIAL<br/>+ Escalar_humano"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef ok fill:#e2f3e8,stroke:#15803d,color:#0a4020;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class GC,TAG,BD,ID,TP,EF tool; class AC,CONF,RES dec; class OK ok; class DES,FBC,REF fb;
+    </pre></div>
+  </div>
+
+  <div class="scn" id="s-convenio">
+    <div class="head"><span class="sop">SOP 3</span><h3>Consulta por convênio</h3></div>
+    <p class="note">A Ana agenda pelo convênio dentro do WhatsApp. O <b>portal</b> deixa de ser o caminho principal e vira o ramo de contingência.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Convênio + especialidade"] --> CPF["Coleta nome + CPF"]
+  CPF --> ID["Identificar_paciente"]
+  ID --> CART["Pede carteirinha"]
+  CART --> BD["Buscar_disponibilidade<br/>resolve convênio e plano"]
+  BD --> COB{"Cobre e tem horário?"}
+  COB -->|"não cobre"| OFP{"Aceita particular?"}
+  OFP -->|"sim"| SOP2["Vai para SOP 2"]
+  OFP -->|"não"| DES["ENCERRADO —<br/>DESISTÊNCIA"]
+  COB -->|"sim"| NUM["Escolhe nº + Pre_requisitos"]
+  NUM --> CONF{"Confirma?"}
+  CONF -->|"sim"| EF["Efetivar_agendamento"]
+  EF --> RES{"sucesso?"}
+  RES -->|"sim"| OK["Protocolo · AGENDADO<br/>tag agendado-bot"]
+  RES -->|"falha / bloqueio"| PORT["tag agendamento-convenio<br/>AGUARDANDO CONFIRMAÇÃO<br/>Agendamento_convenio + link portal"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef ok fill:#e2f3e8,stroke:#15803d,color:#0a4020;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class ID,BD,EF,NUM tool; class COB,OFP,CONF,RES dec; class OK ok; class PORT,DES,SOP2 fb;
+    </pre></div>
+  </div>
+
+  <div class="scn" id="s-exame">
+    <div class="head"><span class="sop">SOP 5.A · 5.B</span><h3>Agendamento de exame</h3></div>
+    <p class="note">Igual à consulta, mas com <b>triagem obrigatória</b> (gravidez, marca-passo…) e, quando exigido, <b>anexos</b> (pedido médico, carteirinha). Impedimento clínico bloqueia o agendamento.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Exame definido<br/>convênio ou particular"] --> BD["Buscar_disponibilidade<br/>tipo = exame"]
+  BD --> NUM["Escolhe nº"]
+  NUM --> PR["Pre_requisitos<br/>perguntas de triagem"]
+  PR --> IMP{"Resposta com<br/>impedimento?"}
+  IMP -->|"sim · impedeRealizacao"| BLOQ["Informa o motivo<br/>não agenda · escala"]
+  IMP -->|"não"| ANX{"Exige anexo?"}
+  ANX -->|"sim"| GA["Gerenciar_anexos<br/>pede e sobe arquivo"]
+  ANX -->|"não"| CONF
+  GA --> AOK{"Anexo recebido?"}
+  AOK -->|"não"| ERRA["SETOR RESPONSÁVEL<br/>+ Escalar_humano"]
+  AOK -->|"sim"| CONF{"Confirma?"}
+  CONF -->|"sim"| EF["Efetivar_agendamento"]
+  EF --> RES{"sucesso?"}
+  RES -->|"sim"| OK["Protocolo + preparo<br/>AGENDADO · agendado-bot"]
+  RES -->|"falha"| FB["Fila + Escalar_humano"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef ok fill:#e2f3e8,stroke:#15803d,color:#0a4020;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class BD,PR,GA,EF tool; class IMP,ANX,AOK,CONF,RES dec; class OK ok; class BLOQ,ERRA,FB fb;
+    </pre></div>
+  </div>
+
+  <!-- ============ C. GESTÃO DE AGENDAMENTOS ============ -->
+  <div class="group" id="g-gestao"><div class="gtag">C · Gestão de agendamentos</div><h2>Consultar, remarcar, cancelar</h2><div class="rule"></div></div>
+
+  <div class="scn" id="s-consultar">
+    <div class="head"><span class="sop">SOP 4.1</span><h3>Consultar agendamentos</h3></div>
+    <p class="note">Substitui o antigo "acesse o portal". A Ana lê os agendamentos ativos em voz alta e oferece a próxima ação.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart LR
+  A["Quais meus<br/>agendamentos?"] --> CPF["Valida CPF"]
+  CPF --> L["Listar_agendamentos"]
+  L --> H{"Tem agendamentos?"}
+  H -->|"não"| N["Não localizei.<br/>Quer agendar agora?"]
+  H -->|"sim"| SH["Lê lista numerada<br/>data · unidade · protocolo"]
+  SH --> NX["Oferece confirmar /<br/>remarcar / cancelar"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  class L tool; class H dec;
+    </pre></div>
+  </div>
+
+  <div class="scn" id="s-remarcar">
+    <div class="head"><span class="sop">SOP 4.2</span><h3>Remarcar</h3></div>
+    <p class="note">Confirmação do <b>"de / para"</b> antes de trocar o horário.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Quero remarcar"] --> L["Listar_agendamentos"]
+  L --> PICK["Escolhe qual"]
+  PICK --> BD["Buscar_disponibilidade<br/>mesmo item"]
+  BD --> NEW["Escolhe novo horário"]
+  NEW --> CONF{"Confirma de 03/06 11h<br/>para 06/06 15h40?"}
+  CONF -->|"não"| BD
+  CONF -->|"sim"| RE["Remarcar_ou_cancelar<br/>acao = reagendar"]
+  RE --> RES{"sucesso?"}
+  RES -->|"sim"| OK["Novo protocolo<br/>tag remarcacao · AGENDADO"]
+  RES -->|"falha"| FB["Fila + Escalar_humano"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef ok fill:#e2f3e8,stroke:#15803d,color:#0a4020;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class L,BD,RE tool; class CONF,RES dec; class OK ok; class FB fb;
+    </pre></div>
+  </div>
+
+  <div class="scn" id="s-cancelar">
+    <div class="head"><span class="sop">SOP 4.3</span><h3>Cancelar</h3></div>
+    <p class="note">Ação destrutiva: exige <b>"sim" inequívoco</b> e confirmação reforçada de que não pode ser desfeita.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Quero cancelar"] --> L["Listar_agendamentos"]
+  L --> PICK["Escolhe qual"]
+  PICK --> CONF{"Quer MESMO cancelar?<br/>Não pode ser desfeito."}
+  CONF -->|"não / hesita"| HOLD["Mantém o agendamento"]
+  CONF -->|"sim inequívoco"| CAN["Remarcar_ou_cancelar<br/>acao = cancelar"]
+  CAN --> RES{"status 200?"}
+  RES -->|"sim"| OK["Cancelado · tag cancelamento<br/>oferece reagendar"]
+  RES -->|"falha"| FB["Fila + Escalar_humano"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef ok fill:#e2f3e8,stroke:#15803d,color:#0a4020;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  classDef danger fill:#f8e3e3,stroke:#b23b3b,color:#7a1f1f;
+  class L tool; class CONF,RES dec; class CAN danger; class OK ok; class FB,HOLD fb;
+    </pre></div>
+  </div>
+
+  <!-- ============ D. EXAMES & RESULTADOS ============ -->
+  <div class="group" id="g-exames"><div class="gtag">D · Exames e resultados</div><h2>Preparo e resultado</h2><div class="rule"></div></div>
+
+  <div class="scn" id="s-resultado">
+    <div class="head"><span class="sop">SOP 5.C · 5.D</span><h3>Resultado e preparo de exame</h3></div>
+    <p class="note"><b>LGPD inegociável:</b> resultado nunca é enviado por chat — só orientação de acesso. Preparo genérico vem das Sheets; o preparo do exame agendado já volta no protocolo.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Pedido sobre exame"] --> Q{"Resultado ou preparo?"}
+  Q -->|"resultado"| TAG["Aplicar_tag<br/>exame-resultado"]
+  TAG --> ORI["Orienta acesso<br/>RIOLABOR / plataforma"]
+  ORI --> DIF{"Teve dificuldade?"}
+  DIF -->|"sim"| FB["SETOR RESPONSÁVEL<br/>+ Escalar_humano"]
+  DIF -->|"não"| FIM["Encerra com cuidado"]
+  Q -->|"preparo"| GE["Get_Exames<br/>instruções de preparo"]
+  GE --> RESP["Responde no chat"]
+  NV["NUNCA enviar<br/>resultado por chat"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  classDef danger fill:#f8e3e3,stroke:#b23b3b,color:#7a1f1f;
+  class TAG,GE tool; class Q,DIF dec; class FB fb; class NV danger;
+    </pre></div>
+  </div>
+
+  <!-- ============ E. COMERCIAL & DÚVIDAS ============ -->
+  <div class="group" id="g-comercial"><div class="gtag">E · Comercial e dúvidas</div><h2>Valores, cirurgia e perguntas</h2><div class="rule"></div></div>
+
+  <div class="scn" id="s-valores">
+    <div class="head"><span class="sop">SOP 6</span><h3>Valores e orçamento de cirurgia</h3></div>
+    <p class="note">A <b>API não cobre cirurgia</b> — a estimativa vem da Sheet, sempre com o caveat de avaliação médica.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Pergunta de valor"] --> Q{"O quê?"}
+  Q -->|"consulta"| GC["Get_Consultas"] --> S2["Segue SOP 2"]
+  Q -->|"exame"| GE["Get_Exames"]
+  Q -->|"cirurgia"| GX["Get_Cirurgias"]
+  GX --> CAV["Estimativa + caveat<br/>de avaliação médica"]
+  CAV --> AC{"Quer orçamento<br/>personalizado?"}
+  AC -->|"sim"| FB["FILA COMERCIAL<br/>+ Escalar_humano"]
+  AC -->|"não"| FIM["Encerra"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  classDef ok fill:#e2f3e8,stroke:#15803d,color:#0a4020;
+  class GC,GE,GX tool; class Q,AC dec; class FB fb; class S2 ok;
+    </pre></div>
+  </div>
+
+  <div class="scn" id="s-duvidas">
+    <div class="head"><span class="sop">SOP 9 · 10</span><h3>Dúvidas gerais e fora de horário</h3></div>
+    <p class="note">A Ana responde direto o que sabe. O agendamento funciona 24/7; só a <b>escalada humana</b> respeita o expediente (PERÍODO_FDS).</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Dúvida geral"] --> Q{"Ana pode responder?"}
+  Q -->|"horários, local,<br/>convênios, pagamento"| RESP["Responde só o perguntado"]
+  Q -->|"precisa de humano"| HOR{"Dentro do horário?"}
+  HOR -->|"sim"| FB["FILA ATENDIMENTO<br/>+ Escalar_humano"]
+  HOR -->|"não / PERÍODO_FDS"| REG["Registra e acolhe<br/>informa retorno · sem escalar"]
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class Q,HOR dec; class FB,REG fb;
+    </pre></div>
+  </div>
+
+  <!-- ============ F. OPERACIONAL ============ -->
+  <div class="group" id="g-operacional"><div class="gtag">F · Operacional</div><h2>Ouvidoria e prontuário</h2><div class="rule"></div></div>
+
+  <div class="scn" id="s-ouvidoria">
+    <div class="head"><span class="sop">SOP 7</span><h3>Ouvidoria</h3></div>
+    <p class="note">Acolhe primeiro; coleta estruturada (alguns campos inferidos do relato, nunca perguntados); confirma o resumo antes de registrar o protocolo.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Sinal de reclamação"] --> TAG["Aplicar_tag · ouvidoria"]
+  TAG --> ACO["Acolhe e ouve o relato"]
+  ACO --> COL["Coleta: solicitante, CPF,<br/>paciente, data, setor"]
+  COL --> INF["Infere descrição<br/>e categoria do relato"]
+  INF --> CONF{"Confirma o resumo?"}
+  CONF -->|"acrescenta algo"| COL
+  CONF -->|"confirma"| REG["Registrar_reclamacao<br/>protocolo HSM"]
+  REG --> FILA["FILA OUVIDORIA<br/>+ Escalar_humano"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class TAG,REG tool; class CONF dec; class FILA fb;
+    </pre></div>
+  </div>
+
+  <div class="scn" id="s-prontuario">
+    <div class="head"><span class="sop">SOP 8</span><h3>Prontuário</h3></div>
+    <p class="note">O encaminhamento varia pela finalidade. Status de pedido aberto é orientado por e-mail — sem escalar.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["Pedido de prontuário"] --> TAG["Aplicar_tag · prontuario"]
+  TAG --> FIN{"Finalidade?"}
+  FIN -->|"uso pessoal /<br/>tratamento"| DOC["Orienta documentos<br/>e e-mail"]
+  FIN -->|"judicial / óbito /<br/>menor / seguro"| ESP["Orientação específica<br/>documentação extra"]
+  DOC --> ESC["SETOR RESPONSÁVEL<br/>+ Escalar_humano"]
+  ESP --> ESC
+  ST["Status de pedido?<br/>orienta e-mail · não escala"]
+  classDef tool fill:#e7f2ec,stroke:#0f7d61,color:#0a5946;
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class TAG tool; class FIN dec; class ESC fb;
+    </pre></div>
+  </div>
+
+  <!-- ============ G. TRANSVERSAIS ============ -->
+  <div class="group" id="g-transversal"><div class="gtag">G · Regras transversais</div><h2>Fallback e funil</h2><div class="rule"></div></div>
+
+  <div class="scn" id="s-hibrido">
+    <div class="head"><span class="sop">Regra Híbrida</span><h3>Quando a Ana cai no humano</h3></div>
+    <p class="note">Cada subfluxo devolve um <b>prefixo-sinal</b>. A Ana traduz para acolhimento (sem jargão) e direciona para a fila certa — reusando 100% da escalada que já existe.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart LR
+  subgraph SINAIS["Sinais da ferramenta"]
+    B1["BLOQUEADO"]
+    B2["BLOQUEIO_EXAME"]
+    B3["SEM_HORARIOS"]
+    B4["NAO_AGENDADO"]
+    B5["ERRO_ANEXO"]
+    B6["ERRO_API"]
+  end
+  SINAIS --> ACO["Acolhe sem jargão<br/>coleta nome + CPF"]
+  ACO --> HOR{"PERÍODO_FDS?"}
+  HOR -->|"ativo"| MSG["Mensagem de retorno<br/>na segunda / próximo expediente"]
+  HOR -->|"normal"| Q{"Qual fila?"}
+  MSG --> Q
+  Q -->|"convênio"| F1["AGUARDANDO CONFIRMAÇÃO<br/>+ link portal"]
+  Q -->|"consulta particular"| F2["FILA COMERCIAL"]
+  Q -->|"exame particular"| F3["SETOR RESPONSÁVEL"]
+  Q -->|"erro técnico"| F4["FALHA AGENDAMENTO — FILA"]
+  F1 --> ESC["Escalar_humano"]
+  F2 --> ESC
+  F3 --> ESC
+  F4 --> ESC
+  classDef dec fill:#ffffff,stroke:#2f6f9f,color:#1c2522;
+  classDef fb fill:#f8efdc,stroke:#b1700a,color:#5e3c06;
+  class HOR,Q dec; class F1,F2,F3,F4,ESC,ACO,MSG fb;
+    </pre></div>
+  </div>
+
+  <div class="scn" id="s-kanban">
+    <div class="head"><span class="sop">CRM</span><h3>Máquina de estados do funil</h3></div>
+    <p class="note"><b>AGENDADO</b> agora é alcançado automaticamente pela Ana; <b>FALHA AGENDAMENTO — FILA</b> é a nova rede de segurança técnica.</p>
+    <div class="diagram"><pre class="mermaid">
+stateDiagram-v2
+  [*] --> NOVO_CONTATO
+  NOVO_CONTATO --> EM_ATENDIMENTO_ANA: motivo identificado
+  EM_ATENDIMENTO_ANA --> AGENDADO: Efetivar sucesso (auto)
+  EM_ATENDIMENTO_ANA --> FILA_COMERCIAL: particular sem API
+  EM_ATENDIMENTO_ANA --> AGUARDANDO_CONFIRMACAO: convênio no portal
+  EM_ATENDIMENTO_ANA --> FALHA_AGENDAMENTO: erro técnico
+  EM_ATENDIMENTO_ANA --> FILA_OUVIDORIA: reclamação
+  EM_ATENDIMENTO_ANA --> SETOR_RESPONSAVEL: prontuário / exame
+  AGUARDANDO_CONFIRMACAO --> AGENDADO: confirmou no portal
+  FALHA_AGENDAMENTO --> AGENDADO: humano resolveu
+  AGENDADO --> ENCERRADO_RESOLVIDO
+  EM_ATENDIMENTO_ANA --> ENCERRADO_DESISTENCIA: desistiu
+  ENCERRADO_RESOLVIDO --> [*]
+  ENCERRADO_DESISTENCIA --> [*]
+    </pre></div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Ana · Hospital São Matheus — mapa de fluxos do SOP</span>
+    <a href="prompt.html">prompt navegável</a>
+    <a href="index.html">painel de funções</a>
+  </div>
+</footer>
+
+<button class="backtop" id="backtop" title="voltar ao topo">↑</button>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  // índice de cenários a partir dos cards
+  const idx = document.getElementById('idx');
+  document.querySelectorAll('.scn').forEach(s=>{
+    const a=document.createElement('a');
+    a.href='#'+s.id;
+    a.textContent=s.querySelector('h3').textContent;
+    idx.appendChild(a);
+  });
+
+  // mermaid em tema claro, bem espaçado
+  let mok=true;
+  try{
+    mermaid.initialize({
+      startOnLoad:true,
+      theme:'base',
+      themeVariables:{
+        fontFamily:'Hanken Grotesk, system-ui, sans-serif',
+        fontSize:'14px',
+        primaryColor:'#eef3f1',
+        primaryBorderColor:'#9aa8a2',
+        primaryTextColor:'#1c2522',
+        lineColor:'#9aa8a2',
+        secondaryColor:'#f8efdc',
+        tertiaryColor:'#ffffff'
+      },
+      flowchart:{ nodeSpacing:56, rankSpacing:64, htmlLabels:true, curve:'basis', padding:16, useMaxWidth:true },
+      state:{ useMaxWidth:true }
+    });
+  }catch(e){ mok=false; }
+  // fallback: se mermaid não carregar (offline), mostra o código
+  window.addEventListener('load',()=>{
+    setTimeout(()=>{
+      if(typeof mermaid==='undefined'){
+        document.querySelectorAll('.mermaid').forEach(p=>{
+          const code=p.textContent;
+          p.innerHTML='<pre style="background:#19211e;color:#e7efe9;padding:14px;border-radius:10px;overflow:auto;font-size:12px;text-align:left">'+code.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</pre>';
+        });
+      }
+    },1200);
+  });
+
+  // back to top
+  const bt=document.getElementById('backtop');
+  bt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  addEventListener('scroll',()=>bt.classList.toggle('show',scrollY>600));
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+{
+  "name": "Escalar_humano",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "accountId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - pedrocloserj@gmail.com",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/dashboard"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "=1",
+          "mode": "id"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Gatilho').item.json.id_conversa }}",
+          "mode": "id"
+        },
+        "content": "=Assistente desabilitado para o usuário {{ $('Gatilho').item.json.nome || '(usuário não cadastrado)' }}\n*Última mensagem*:\n\n\"{{ $('Gatilho').item.json.ultima_mensagem }}\"\n\n*Resumo da conversa*:\n\n\"{{ $('Gatilho').item.json.resumo_conversa }}\"",
+        "replyToMessageId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "additionalFields": {
+          "private": true
+        }
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        480
+      ],
+      "id": "7a10361d-da69-4cba-b3ca-355e96a9159a",
+      "name": "Enviar mensagem de alerta",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "telefone"
+            },
+            {
+              "name": "nome"
+            },
+            {
+              "name": "ultima_mensagem"
+            },
+            {
+              "name": "resumo_conversa"
+            },
+            {
+              "name": "id_conta"
+            },
+            {
+              "name": "id_conversa"
+            },
+            {
+              "name": "id_inbox"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        480
+      ],
+      "id": "172ccf6e-5593-4163-a5fd-69339ac14e35",
+      "name": "Gatilho"
+    }
+  ],
+  "pinData": {
+    "Gatilho": [
+      {
+        "json": {
+          "nome": "Pedro Figueiredo",
+          "ultima_mensagem": "<mensagem-de-audio>E quanto custa um ecocardiograma?</mensagem-de-audio>",
+          "resumo_conversa": "Paciente perguntou: 'E quanto custa um ecocardiograma?' (valor de exame particular). Precisa consultar tabela de Exames e informar valor; para isso, é necessário confirmar nome completo e CPF antes de buscar no sistema, conforme SOP.",
+          "id_conta": "1",
+          "id_conversa": "3",
+          "id_inbox": "1"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gatilho": {
+      "main": [
+        [
+          {
+            "node": "Enviar mensagem de alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "f06f444d-e8ed-4813-a587-9f946e987ace",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "87480eb81c11f148c57e9064a75af712e2dcbc33686f209b21605feb364c4779"
+  },
+  "id": "xlh6tg1yW6s3XUDN",
+  "tags": []
+}

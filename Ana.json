@@ -1,0 +1,3965 @@
+{
+  "name": "Ana",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8fd010d-6096-4a50-b3e2-e9fe26661840",
+              "name": "id_mensagem",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "9697ff13-894d-4926-a6fc-d1899c6e001e",
+              "name": "id_mensagem_referenciada",
+              "value": "={{ $json.content_attributes.in_reply_to }}",
+              "type": "string"
+            },
+            {
+              "id": "1b513343-9b6a-4f6e-a012-ed819bf34a31",
+              "name": "id_conta",
+              "value": "={{ $json.account.id }}",
+              "type": "string"
+            },
+            {
+              "id": "05c14b9a-5f27-465a-a047-71553826bd7a",
+              "name": "id_conversa",
+              "value": "={{ $json.conversation.id }}",
+              "type": "string"
+            },
+            {
+              "id": "7ca2f49a-8aad-47db-877f-6b8ddc6c6830",
+              "name": "id_contato",
+              "value": "={{ $json.conversation.contact_inbox.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "76042ef6-4eee-4d20-a265-cd39b2864e84",
+              "name": "id_inbox",
+              "value": "={{ $json.inbox.id }}",
+              "type": "string"
+            },
+            {
+              "id": "8bf522a6-75fb-434a-854c-b736539309e1",
+              "name": "telefone",
+              "value": "={{ $json.sender.phone_number || $json.sender.additional_attributes.social_profiles.instagram }}",
+              "type": "string"
+            },
+            {
+              "id": "188fafa0-910a-456b-91d0-9c9188d66535",
+              "name": "nome",
+              "value": "={{ $json.sender.name }}",
+              "type": "string"
+            },
+            {
+              "id": "0d622a33-f313-4758-a764-fa6cbf2b0587",
+              "name": "mensagem",
+              "value": "={{ $json.content || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "8f4b9d84-56e0-4f45-9f17-68c53f365f43",
+              "name": "mensagem_de_audio",
+              "value": "={{ $json.attachments?.[0]?.file_type === 'audio' || false }}",
+              "type": "boolean"
+            },
+            {
+              "id": "2b679a3f-788f-4cd2-88d5-4f03af68f224",
+              "name": "timestamp",
+              "value": "={{ $json.created_at }}",
+              "type": "string"
+            },
+            {
+              "id": "8ba2d299-7cad-4ed8-92d7-c33999bbe984",
+              "name": "tipo_arquivo",
+              "value": "={{ $json.attachments?.[0]?.file_type || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "d8a3ee6e-78d7-4647-85c2-9ca465f8cc43",
+              "name": "id_anexo",
+              "value": "={{ $json.attachments[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "e9bcf442-a584-4a44-b2e0-d5e99ec2a732",
+              "name": "url_arquivo",
+              "value": "={{ $json.attachments[0].data_url }}",
+              "type": "string"
+            },
+            {
+              "id": "60688563-c69a-4c34-952d-60fe3178fbd1",
+              "name": "etiquetas",
+              "value": "={{ $json.conversation.labels }}",
+              "type": "array"
+            },
+            {
+              "id": "1c87fde9-8bf0-4f9e-a703-97565a67949f",
+              "name": "atributos_contato",
+              "value": "={{ $json.sender.custom_attributes }}",
+              "type": "object"
+            },
+            {
+              "id": "dd51ec37-bc64-4ee8-9e03-83f255485e7a",
+              "name": "atributos_conversa",
+              "value": "={{ $json.conversation.custom_attributes }}",
+              "type": "string"
+            },
+            {
+              "id": "98e0ad4a-5005-4c21-9b8b-898adbd3ca8e",
+              "name": "tarefa",
+              "value": "={{ $json.conversation.kanban_task }}",
+              "type": "object"
+            },
+            {
+              "id": "bcb0c50c-db31-4801-877d-aa8ebf088d77",
+              "name": "funil",
+              "value": "={{ $json.conversation.kanban_task.board }}",
+              "type": "object"
+            },
+            {
+              "id": "d6e267cd-085e-4dca-a492-1430cd7baae2",
+              "name": "event",
+              "value": "={{ $json.event }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3104,
+        672
+      ],
+      "id": "c6b705b5-abc4-47bb-90b4-598364cb9c9b",
+      "name": "Info"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.mensagem.toLowerCase().trim() === '/reset' }}",
+                    "rightValue": "/reset",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "a29a880e-fb21-43fa-9a4a-092128ddfe2e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reset"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Mensagem normal"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        3424,
+        672
+      ],
+      "id": "1c9e4eeb-89b5-4135-aeb8-f4888a43c544",
+      "name": "Reset ou teste"
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_historico_mensagens",
+          "mode": "list"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Info').item.json.id_conversa }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3568,
+        32
+      ],
+      "id": "51b1822c-7a30-4aa7-93cd-b91340159610",
+      "name": "Limpar memória",
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_status_atendimento",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Info').item.json.id_inbox }}_{{ $('Info').item.json.id_conversa }}",
+            "lock_conversa": false
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lock_conversa",
+              "displayName": "lock_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4368,
+        32
+      ],
+      "id": "e30516f8-9043-4046-86e6-4470aa5e15b8",
+      "name": "Resetar status atendimento",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Resetar conversa\n",
+        "height": 304,
+        "width": 1424,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3488,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "6523a714-4bda-4fcb-8e7e-9ab617a4e21b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "destroyCustomAttributes",
+        "accountId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conta }}",
+          "mode": "id"
+        },
+        "contactId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_contato }}",
+          "mode": "id"
+        },
+        "customAttributesToDestroy": "={{ [\"procedimento_interesse\",\"preferencia_horario\",\"data_ultima_consulta\",\"profissional_preferido\"] }}"
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        3776,
+        32
+      ],
+      "id": "ca89de98-7af3-4fef-9f5a-37d77761b609",
+      "name": "Resetar atributos contato",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeCustomAttributes",
+        "accountId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conta }}",
+          "mode": "id"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_inbox }}",
+          "mode": "id"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conversa }}",
+          "mode": "id"
+        },
+        "customAttributeKeysToRemove": "={{ [\"motivo_cancelamento\"] }}"
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        3968,
+        32
+      ],
+      "id": "d0104eb4-fec3-4c90-aa51-77b09763b7a3",
+      "name": "Resetar atributos conversa",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "accountId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conta }}",
+          "mode": "id"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_inbox }}",
+          "mode": "id"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conversa }}",
+          "mode": "id"
+        },
+        "labels": "={{ [\"retorno\",\"agente-off\"] }}"
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        4160,
+        32
+      ],
+      "id": "a97ef020-5b9a-4425-a087-740d6dcb9414",
+      "name": "Resetar etiquetas",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_fila_mensagens",
+          "mode": "list"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "telefone",
+              "value": "={{ $('Info').item.json.id_conversa }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4560,
+        32
+      ],
+      "id": "f50ffd33-96a6-4f9b-97c8-3a0e39497623",
+      "name": "Limpar fila de mensagens",
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "accountId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conta }}",
+          "mode": "id"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_inbox }}",
+          "mode": "id"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conversa }}",
+          "mode": "id"
+        },
+        "content": "Memória resetada.",
+        "replyToMessageId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_mensagem }}",
+          "mode": "id"
+        },
+        "additionalFields": {}
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        4752,
+        32
+      ],
+      "id": "4a8f8c46-a678-4fb2-becb-9274b7460c23",
+      "name": "Enviar memória resetada",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "82912d66-ee4b-439c-9d55-96090bc6ba62",
+              "leftValue": "={{ $json.etiquetas }}",
+              "rightValue": "agente-off",
+              "operator": {
+                "type": "array",
+                "operation": "notContains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        3680,
+        704
+      ],
+      "id": "8e540972-2366-4de2-b36f-b7e9978fef09",
+      "name": "Agente ativado?"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b9a7e16f-b6e4-45d7-846d-92dcb3117593",
+                    "leftValue": "={{ $('Info').item.json.mensagem_de_audio }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Áudio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0fba5273-1b08-492b-8600-bd7b9088495c",
+                    "leftValue": "={{ $('Info').item.json.tipo_arquivo }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Imagem"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7a82552b-a481-433c-bdac-6f45a8967375",
+                    "leftValue": "={{ $('Info').item.json.tipo_arquivo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Arquivo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Info').item.json.mensagem }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    },
+                    "id": "1382cd26-d96e-4c55-99dd-2ca305ffe82e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Mensagem não suportada"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        4256,
+        656
+      ],
+      "id": "78bc50d3-4639-4006-9c9d-34c31f0e41bf",
+      "name": "Tipo de mensagem"
+    },
+    {
+      "parameters": {
+        "content": "# Processando áudio",
+        "height": 276,
+        "width": 824,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4384,
+        416
+      ],
+      "id": "390e2f7d-3a8a-45ee-8eec-7ea63aeec302",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        4656,
+        496
+      ],
+      "id": "73448243-ec68-4b87-a3ea-5d5b2070089c",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {
+          "mimeType": "audio/mpeg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4832,
+        496
+      ],
+      "id": "7648e8c7-c4dc-4f9a-8dde-3b0411275174",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "pt"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        4992,
+        496
+      ],
+      "id": "8b2ce5aa-fa62-46d8-83a5-ebaa584c572f",
+      "name": "Transcrever audio",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "B6zt6p8OxhzTYLpC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "downloadAttachment",
+        "downloadMode": "byUrl",
+        "attachmentUrl": "={{ $('Info').item.json.url_arquivo }}",
+        "allowExternalUrls": true
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        4496,
+        496
+      ],
+      "id": "f70024e0-d997-41b6-888d-1d6e9b2f8beb",
+      "name": "Download áudio",
+      "retryOnFail": true,
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const info = $('Info').first().json;\n\n// Mensagem principal de texto ou transcrição\nlet mensagem = info.mensagem || $input.first().json.text || '';\n\nif (mensagem.includes('Amara.org')) {\n  // Remover transcrição bugada para áudios com silêncio.\n  mensagem = '';\n}\n\nif (info.mensagem_de_audio) {\n  const transcricao = mensagem;\n  if (!mensagem) {\n    mensagem = '<mensagem de áudio não audível>';\n  } else {\n    mensagem = `<mensagem-de-audio>${mensagem}</mensagem-de-audio>`\n  }\n  return { mensagem, transcricao };\n}\n\nif (!info.tipo_arquivo) {\n  mensagem ||= '<mensagem não suportada. solicitar que usuário envie informação por texto>'\n  return { mensagem };\n}\n\nif (info.tipo_arquivo === 'image') {\n  // Caso adicione análise de imagens, extraia a descrição da imagem e insira aqui.\n  let descricaoImagem = '';\n  return { mensagem: `${mensagem}\n<usuário enviou uma imagem. peça que envie a informação por áudio ou texto>`.trim(), descricaoImagem };\n}\n\nif (info.tipo_arquivo) {\n  return { mensagem: `${mensagem}\n<usuário enviou um arquivo do tipo '${info.tipo_arquivo}'>`.trim() };\n}\n\nmensagem ||= '<mensagem não suportada. solicitar que usuário envie informação por áudio ou texto>';\nreturn { mensagem: mensagem.trim() };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5296,
+        704
+      ],
+      "id": "ca1c93eb-c6a7-4010-9484-2cf2d5e7becc",
+      "name": "Extrair mensagem"
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "id_conversa",
+              "value": "={{ $('Info').item.json.id_conversa }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1.1,
+      "position": [
+        4096,
+        704
+      ],
+      "id": "2efcd264-a92c-476a-89a6-c0ab76226def",
+      "name": "Salvar id_conversa"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2adc8ba5-e60b-45ef-8de5-495124dcc08d",
+              "leftValue": "={{ $('Info').item.json.mensagem_de_audio || $('Info').item.json.tipo_arquivo === 'image' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5504,
+        704
+      ],
+      "id": "57549f34-226b-48b0-87c2-5d394ef4404c",
+      "name": "Áudio ou imagem?"
+    },
+    {
+      "parameters": {
+        "operation": "updateAttachmentMeta",
+        "accountId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conta }}",
+          "mode": "id"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_inbox }}",
+          "mode": "id"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conversa }}",
+          "mode": "id"
+        },
+        "messageId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_mensagem }}",
+          "mode": "id"
+        },
+        "attachmentId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_anexo }}",
+          "mode": "id"
+        },
+        "attachmentMeta": "={{\n  ($('Info').item.json.mensagem_de_audio ?\n    { \"transcribed_text\": $('Extrair mensagem').item.json.transcricao } :\n    { \"image_description\": $('Extrair mensagem').item.json.descricao_imagem }).toJsonString()\n}}"
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        5792,
+        480
+      ],
+      "id": "619e52cf-2505-49d9-bd8b-ad6227398a91",
+      "name": "Salvar transcrição/descrição",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const ultima_mensagem_da_fila = $input.last();\nconst mensagem_do_workflow = $('Info').first();\n\nif (ultima_mensagem_da_fila.json.id_mensagem !== mensagem_do_workflow.json.id_mensagem) {\n  return [];\n}\n\nconst vistas = [];\nreturn $input.all().filter(item => {\n  if (vistas.includes(item.json.mensagem)) return false;\n  vistas.push(item.json.mensagem);\n  return true;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6656,
+        544
+      ],
+      "id": "e8bdaeb1-77ba-49af-b085-cdccfb7da60e",
+      "name": "Mensagem encavalada?"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_fila_mensagens",
+          "mode": "list"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "telefone",
+              "value": "={{ $('Info').item.json.id_conversa }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "timestamp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        6464,
+        544
+      ],
+      "id": "645a8bb7-1514-4c5f-a46b-67082652ef62",
+      "name": "Buscar mensagens",
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 8
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        6288,
+        544
+      ],
+      "id": "c808cc7d-ca85-43b2-9de1-8fddb03e0287",
+      "name": "Esperar",
+      "webhookId": "e02200c6-2656-4be1-ad30-c1347157ebfe"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_fila_mensagens",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefone": "={{ $('Info').item.json.id_conversa }}",
+            "mensagem": "={{ $('Extrair mensagem').item.json.mensagem }}",
+            "timestamp": "={{ $('Info').item.json.timestamp.toDateTime() }}",
+            "id_mensagem": "={{ $('Info').item.json.id_mensagem }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id_mensagem",
+              "displayName": "id_mensagem",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensagem",
+              "displayName": "mensagem",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        6112,
+        544
+      ],
+      "id": "a9527188-5e01-4ca2-8fdf-9753410d0566",
+      "name": "Enfileirar mensagem.",
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "84e8cae9-28e3-4abd-869c-612fcff95948",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "ee8306ee-1d14-4732-9865-a21f52da6a2e",
+              "leftValue": "={{ $json.lock_conversa }}",
+              "rightValue": "pending",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "bf08f3f7-aff7-47be-8f89-2d0e3ee19049",
+              "leftValue": "={{ $runIndex }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6496,
+        752
+      ],
+      "id": "b4875ea4-d7cb-4676-a874-62f3c0f400b3",
+      "name": "Agente já terminou de responder?"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_status_atendimento",
+          "mode": "list"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Info').item.json.id_conversa }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        6320,
+        752
+      ],
+      "id": "7d7a5557-d6d6-4f47-b53f-ddda08cb7bbf",
+      "name": "Verificar status atendimento",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_status_atendimento",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Info').item.json.id_conversa }}",
+            "lock_conversa": true,
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lock_conversa",
+              "displayName": "lock_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        6720,
+        768
+      ],
+      "id": "2d6c2a91-040a-4c69-bf97-d3b7852a0a47",
+      "name": "Bloquear status atendimento",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_fila_mensagens",
+          "mode": "list"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "telefone",
+              "value": "={{ $('Info').item.json.id_conversa }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        6880,
+        768
+      ],
+      "id": "bab87ff8-34bf-466f-9c45-d228397a4f53",
+      "name": "Limpar fila de mensagens1",
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "updateLastSeen",
+        "accountId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conta }}",
+          "mode": "id"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_inbox }}",
+          "mode": "id"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conversa }}",
+          "mode": "id"
+        }
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        7104,
+        528
+      ],
+      "id": "d3a2050b-3383-48e3-b7b3-80f212b4570b",
+      "name": "Marcar como lida",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7eab8669-6929-4dc6-b3e2-943065bc306c",
+              "name": "mensagem",
+              "value": "={{ $('Mensagem encavalada?').all().map(info => info.json.mensagem).join('\\n') }}",
+              "type": "string"
+            },
+            {
+              "id": "2be41cf8-6160-4fc9-805e-4a85c68844bc",
+              "name": "mensagem_referenciada",
+              "value": "={{ $('Buscar mensagem referenciada').isExecuted ? $('Buscar mensagem referenciada').item.json.payload.find(m => m.id == $('Info').item.json.id_mensagem_referenciada)?.content ?? '' : '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7968,
+        512
+      ],
+      "id": "e1941fdf-1c27-4f52-9873-c89ca531e954",
+      "name": "Coletar mensagens",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "description": "Use essa ferramenta para refletir sobre algo. Ela não obterá novas informações nem alterará o banco de dados, apenas adicionará o pensamento ao registro. Use-a quando for necessário um raciocínio complexo ou alguma memória em cache."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        7728,
+        880
+      ],
+      "id": "ec853c31-1100-4dee-9857-508e4d94fd24",
+      "name": "Refletir"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        7728,
+        752
+      ],
+      "id": "aad71179-9d5d-4306-ba8c-206c5e548208",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "B6zt6p8OxhzTYLpC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Info').item.json.id_conversa }}",
+        "tableName": "n8n_historico_mensagens",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        7872,
+        752
+      ],
+      "id": "c35a1c79-80b7-45c2-ade4-9575bf7483f3",
+      "name": "Memória",
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "853c68fb-c9c6-4c09-8715-f8cf41edb77e",
+              "leftValue": "={{ $('Info').item.json.id_mensagem_referenciada }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        7296,
+        528
+      ],
+      "id": "c659fff8-ac98-4f9b-a5f0-2c335038ed44",
+      "name": "Resposta a outra mensagem?"
+    },
+    {
+      "parameters": {
+        "operation": "listMessages",
+        "accountId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conta }}",
+          "mode": "id"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_inbox }}",
+          "mode": "id"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conversa }}",
+          "mode": "id"
+        },
+        "fetchAtLeast": 50,
+        "listMessagesOptions": {}
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        7520,
+        416
+      ],
+      "id": "d2ba3bf3-50e6-43dc-9e50-3af04e3386e5",
+      "name": "Buscar mensagem referenciada",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_historico_mensagens",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Info').item.json.id_conversa }}",
+            "message": "={{\n  {\n    type: 'ai',\n    content: '<tool-calls>'\n      + $('Output válido?').item.json.intermediateSteps\n          .map(s => `<tool-call><action>${s.action.log}</action><result>${s.observation}</result></tool-call>`)\n          .join('')\n          .replaceAll('\"', \"'\")\n      + '</tool-calls>',\n    tool_calls: [],\n    additional_kwargs: {},\n    response_metadata: {},\n    invalid_tool_calls: []\n  }.toJsonString()\n}}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        9248,
+        480
+      ],
+      "id": "2261b30d-ce96-4aa8-8ca8-6f6d64c49601",
+      "name": "Salvar tool calls",
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "063ab981-e52e-4779-9c1a-8d6dfa384643",
+              "leftValue": "={{ $('Output válido?').item.json.intermediateSteps }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        9008,
+        576
+      ],
+      "id": "0005d4a4-e8db-44eb-9fe5-f992bc7ad2f2",
+      "name": "Usou tools?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "93a1e408-265a-438d-b860-1ea7f6a79f93",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "e5ed93cc-0025-4858-a0e5-b621594b01de",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Agent stopped due to max iterations.",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        8448,
+        512
+      ],
+      "id": "76b9179a-644e-46e8-9a02-8efb85a28da7",
+      "name": "Output válido?"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_status_atendimento",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Info').item.json.id_conversa }}",
+            "lock_conversa": false
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lock_conversa",
+              "displayName": "lock_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        8672,
+        528
+      ],
+      "id": "c4b7499e-6ebe-49be-9d05-97f91f0559e4",
+      "name": "Limpar status atendimento",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "90e45739-ca71-412c-83e5-789796d3de20",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        8784,
+        192
+      ],
+      "id": "9da6d5a0-dd6f-4fd9-924f-0333e5158b3c",
+      "name": "Recebeu mensagem enquanto respondia?",
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_fila_mensagens",
+          "mode": "list"
+        },
+        "limit": 1,
+        "where": {
+          "values": [
+            {
+              "column": "telefone",
+              "value": "={{ $('Info').item.json.telefone }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        8608,
+        192
+      ],
+      "id": "c91dfd9d-1dbb-4562-bf91-82505933d08c",
+      "name": "Buscar novas entradas na fila",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "063ab981-e52e-4779-9c1a-8d6dfa384643",
+              "leftValue": "={{ $('Output válido?').item.json.intermediateSteps }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        9344,
+        80
+      ],
+      "id": "88fd078b-87ac-4f61-b80b-a849f0a6726a",
+      "name": "Usou tools?1"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_historico_mensagens",
+          "mode": "list"
+        },
+        "limit": 1,
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Info').item.json.id_conversa }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        9008,
+        80
+      ],
+      "id": "de035803-9299-40c9-8279-2c5b198d5a12",
+      "name": "Buscar mensagens na memória",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_historico_mensagens",
+          "mode": "list"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $('Buscar mensagens na memória').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        9184,
+        80
+      ],
+      "id": "61dc431f-fa0a-4ac4-8d71-2ca112287de5",
+      "name": "Deletar última mensagem da memória",
+      "executeOnce": false,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_historico_mensagens",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Info').item.json.id_conversa }}",
+            "message": "={{\n  {\n    type: 'ai',\n    content: '<tool-calls>'\n      + $('Output válido?').item.json.intermediateSteps\n          .map(s => `<tool-call><action>${s.action.log}</action><result>${s.observation}</result></tool-call>`)\n          .join('')\n          .replaceAll('\"', \"'\")\n      + '</tool-calls>',\n    tool_calls: [],\n    additional_kwargs: {},\n    response_metadata: {},\n    invalid_tool_calls: []\n  }.toJsonString()\n}}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        9568,
+        0
+      ],
+      "id": "2da327fa-0682-48ce-ace1-54ccd88e540a",
+      "name": "Salvar tool calls3",
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_status_atendimento",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Info').item.json.id_conversa }}",
+            "lock_conversa": false
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lock_conversa",
+              "displayName": "lock_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        9808,
+        96
+      ],
+      "id": "51132be9-e955-4c25-acf2-ee9476796a3f",
+      "name": "Limpar status atendimento3",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Problema no output do agente: {{ $('Output válido?').item.json.output }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        8816,
+        528
+      ],
+      "id": "3b6ad51e-8a51-4496-a37a-ecebe7c465c8",
+      "name": "Output inválido"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_status_atendimento",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Info').item.json.id_conversa }}",
+            "lock_conversa": false
+          },
+          "matchingColumns": [
+            "session_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lock_conversa",
+              "displayName": "lock_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        9760,
+        512
+      ],
+      "id": "fd1cce06-0ed1-4db9-b24d-081c288b0460",
+      "name": "Limpar status atendimento1",
+      "alwaysOutputData": false,
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "dSyJF7XXRrMUbEmM",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "accountId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conta }}",
+          "mode": "id"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_inbox }}",
+          "mode": "id"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Info').item.json.id_conversa }}",
+          "mode": "id"
+        },
+        "content": "={{ $('Output válido?').item.json.output }}",
+        "replyToMessageId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "additionalFields": {
+          "split_message": true,
+          "wait_before_sending": "dynamic"
+        }
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        9552,
+        512
+      ],
+      "id": "b78297ee-46f6-4c90-a13e-05dd38e064b2",
+      "name": "Enviar texto",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "<SELECIONE SUA CONTA>"
+        },
+        "events": [
+          "message_incoming"
+        ],
+        "inboxId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "<SELECIONE SUA INBOX>"
+        }
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwootTrigger",
+      "typeVersion": 1,
+      "position": [
+        2672,
+        832
+      ],
+      "id": "3327e681-de1c-47aa-84f5-d09255e061c6",
+      "name": "Gatilho Instagram",
+      "webhookId": "19059c26-c71a-493b-afb7-7ba43394b2d1",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - pedrocloserj@gmail.com",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/dashboard"
+        },
+        "events": [
+          "message_incoming"
+        ],
+        "inboxId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - SaoMatheusBot",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/settings/inboxes/1"
+        }
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwootTrigger",
+      "typeVersion": 1,
+      "position": [
+        2688,
+        480
+      ],
+      "id": "9bbfa001-93a1-4841-94c2-fc82626717ec",
+      "name": "Gatilho WhatsApp",
+      "webhookId": "47a7bf44-b097-4958-a63a-3344246efa9a",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Fila de mensagens - Usuário",
+        "height": 672,
+        "width": 976,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        6064,
+        384
+      ],
+      "id": "30c906dc-2834-4c11-baad-8c48bde6e5a2",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## Descartar mensagem do agente\n\nSe o usuário enviar uma mensagem enquanto o agente estava processando a mensagem anterior, o workflow irá descartar a mensagem do agente.\n\nIsso melhora situações em que o usuário mandou uma nova mensagem, mas o agente ainda tenta responder a mensagem anterior do usuário, sem o contexto da nova mensagem.\n",
+        "height": 512,
+        "width": 1440,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        8528,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "6008bac4-6c57-40fe-ae7d-3d053c98b663",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Salvar chamadas de ferramenta",
+        "height": 384,
+        "width": 416,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        8960,
+        384
+      ],
+      "typeVersion": 1,
+      "id": "acc3cbb8-baf9-44b2-8e24-b19f4331e968",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Pré-processamento de mensagens",
+        "height": 672,
+        "width": 3316,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2592,
+        304
+      ],
+      "typeVersion": 1,
+      "id": "2fe3512c-9c37-45c9-a5a5-150a44cb0e9b",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "### Marcar como lida e Reply do WhatsApp",
+        "height": 352,
+        "width": 624,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        7056,
+        384
+      ],
+      "typeVersion": 1,
+      "id": "26760d0b-c4c9-44e0-8ab6-b4bc04a2f3bd",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw",
+          "mode": "list",
+          "cachedResultName": "Base_Ana_HospitalSaoMatheus_CONSOLIDADA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1369034892,
+          "mode": "list",
+          "cachedResultName": "2_Exames",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit#gid=1369034892"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Ativo",
+              "lookupValue": "S"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        8016,
+        976
+      ],
+      "id": "b61d7af9-a6ed-403a-91c3-ff6bed2207e8",
+      "name": "Get_Exames",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IknPG2W05hh7ssDX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw",
+          "mode": "list",
+          "cachedResultName": "Base_Ana_HospitalSaoMatheus_CONSOLIDADA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 184522086,
+          "mode": "list",
+          "cachedResultName": "1_Consultas_Particulares",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit#gid=184522086"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Ativo",
+              "lookupValue": "S"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        7888,
+        928
+      ],
+      "id": "5ee5c945-64e3-4a7e-b243-f606d58e1d57",
+      "name": "Get_Consultas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IknPG2W05hh7ssDX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw",
+          "mode": "list",
+          "cachedResultName": "Base_Ana_HospitalSaoMatheus_CONSOLIDADA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 230311273,
+          "mode": "list",
+          "cachedResultName": "4_Convenios_Especialidade",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit#gid=230311273"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        8160,
+        992
+      ],
+      "id": "da83c7ba-0efc-4af2-b79f-5e1bfcfe9ab8",
+      "name": "Get_Convenios",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IknPG2W05hh7ssDX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw",
+          "mode": "list",
+          "cachedResultName": "Base_Ana_HospitalSaoMatheus_CONSOLIDADA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 903454236,
+          "mode": "list",
+          "cachedResultName": "3_Cirurgias_Estimativas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit#gid=903454236"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        8304,
+        1008
+      ],
+      "id": "e8fbbcf2-9fba-4707-be92-eeb5f8985a63",
+      "name": "Get_Cirurgias",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IknPG2W05hh7ssDX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.mensagem_referenciada ? `<mensagem-referenciada>\n${$json.mensagem_referenciada}\n</mensagem-referenciada>\n\n` : '' }}{{ $json.mensagem }}",
+        "options": {
+          "systemMessage": "=# Prompt — Ana | Hospital São Matheus\n\n## Informações do Sistema\n\n> Estas informações são injetadas automaticamente pelo n8n a cada conversa. Use-as como referência absoluta de data, hora e período para todas as decisões de fluxo.\n\n- **Data e hora atual (America/Sao_Paulo):** `{{ $now.setZone('America/Sao_Paulo').toFormat(\"yyyy, MM, dd, cccc, HH:mm\") }}`\n- **Horário comercial:** segunda a sexta, 07h às 18h\n- **PERÍODO_FDS (sexta ≥ 18h até segunda < 4h):** `{{ (() => { const n = $now.setZone('America/Sao_Paulo'); const wd = n.weekday; const h = n.hour; return ((wd === 5 && h >= 18) || wd === 6 || wd === 7 || (wd === 1 && h < 4)) ? 'ATIVO' : 'INATIVO'; })() }}`\n\n> Em todo ponto do fluxo onde ocorre escalada para humano, verificar PERÍODO_FDS antes de enviar a mensagem ao paciente. Se ATIVO, substituir ou complementar a mensagem padrão pela MENSAGEM_FDS de cada seção.\n\n---\n\n## Identidade e Persona\n\nVocê é a **Ana**, assistente virtual do Hospital São Matheus, em Bangu, Rio de Janeiro. Seu papel é atender pacientes e potenciais pacientes pelo WhatsApp, Instagram e Facebook, com foco em agendamento de consultas e exames, informações sobre serviços, suporte operacional, ouvidoria e triagem de urgências.\n\nVocê funciona **24 horas por dia, 7 dias por semana**. A equipe humana atende de segunda a sexta, das 7h às 18h.\n\nQuando não souber algo ou precisar de ação humana, você registra, acolhe e direciona.\n\n---\n\n## Personalidade e Tom de Voz\n\n- **Clara e objetiva** — Frases curtas. Blocos de no máximo 320 caracteres.\n- **Cordial e humana** — Linguagem acessível, sem gírias e sem termos técnicos sem explicação.\n- **Trate sempre por \"você\"**\n- **Acolhedora** — Especialmente em situações de reclamação, urgência ou dificuldade do paciente.\n- **Concisa e progressiva** — Responda APENAS o que foi perguntado. Conduza a conversa passo a passo.\n- **Sem formatação** — Nunca use negrito, itálico, markdown ou qualquer tipo de marcação de texto. Escreva em texto simples, como numa conversa de WhatsApp.\n- **Multilíngue** — Se o paciente escrever em inglês ou espanhol, responda integralmente no mesmo idioma, mantendo todas as regras de conduta.\n\n---\n\n## Contexto da Instituição\n\n### Horário de Funcionamento\n\n- Ambulatório: Segunda a sexta, 07h às 18h. Sábados, 07h às 12h.\n- Pronto-Socorro Adulto, Pediátrico e Ortopédico: 24 horas, 7 dias por semana.\n- Equipe humana de atendimento: Segunda a sexta, 07h às 18h.\n\n### Localização\n\n- Endereço: Rua Silva Cardoso, 689 — Bangu, Rio de Janeiro/RJ\n- Link Google Maps: maps.app.goo.gl/T95BxBrVPiRKLtHq8\n- Formas de pagamento: PIX, Cartão de Crédito\n\n### Serviços Disponíveis\n\n- Pronto-Socorro Adulto, Pediátrico e Ortopédico (24h)\n- Cirurgias\n- Endoscopia e Colonoscopia\n- Maternidade\n- CTI/UTI\n- Centro de Diagnóstico por Imagem\n- Consultas e Exames ambulatoriais\n\n### Convênios Aceitos\n\nPara informar quais convênios são aceitos, executar `Get_Convenios` e listar os convênios disponíveis na base. Nunca afirmar ou negar cobertura de convênio com base em memória.\n\n### Link de Agendamento Online\n\nhospitalsaomatheus.centraldemarcacao.com.br\n\n### Plataforma de Resultados de Exames\n\n- Laboratório parceiro RIOLABOR: acessar diretamente no site da RIOLABOR.\n- Exames realizados no Hospital São Matheus: www.linkplataformapacs.com.br\n\n---\n\n## Regras Globais (Inegociáveis)\n\n2. Quando o paciente citar **DOR** ou **SINTOMA**, NÃO fornecer orientação, diagnóstico, dica ou interpretação médica de qualquer tipo.\n3. Nunca enviar resultados de exames por nenhum canal digital (LGPD — inegociável).\n4. Nunca confirmar orçamento de cirurgia sem o caveat de avaliação médica obrigatório.\n5. Nunca oferecer atendimento particular a quem mencionou convênio aceito nesta conversa.\n6. Nunca revelar que você é uma IA, fluxo, ferramenta, etapa de funil ou lógica interna.\n7. Nunca repetir a mesma frase na mesma janela de contexto.\n8. Nunca fazer mais de uma pergunta por mensagem.\n9. Nunca escalar para humano sem antes verificar o PERÍODO_FDS e o horário comercial. Se fora do horário: registrar, acolher, aplicar a mensagem correta e informar prazo — sem escalar ativamente.\n10. Nunca chamar ferramentas sem que o paciente tenha feito uma solicitação explícita que exija aquela informação.\n11. **Nunca executar `Atualizar_lead` ou `Escalar_humano` antes de ter nome completo e CPF coletados e validados**, nos fluxos que exigem esses dados.\n\n---\n\n## Princípio de Coleta e Validação de Dados\n\n> Esta regra se aplica a todos os fluxos que exigem nome completo e CPF antes do encaminhamento humano.\n\n### Ordem obrigatória — sem exceção\n\n```\nPASSO 1 → Solicitar nome completo e CPF na mesma mensagem\nPASSO 2 → Aguardar resposta do paciente\nPASSO 3 → Validar nome (mínimo 2 palavras) e CPF (exatamente 11 dígitos numéricos)\n           → Se algum dado for inválido ou faltar: solicitar apenas o dado pendente\n           → Se ambos válidos: seguir para PASSO 4\nPASSO 4 → Somente após PASSO 3 aprovado: executar Atualizar_lead\nPASSO 5 → executar Escalar_humano\nPASSO 6 → Enviar mensagem de confirmação ao paciente\n```\n\n### Regras de Validação\n\n**Nome completo:**\n- Mínimo duas palavras (primeiro nome + sobrenome)\n- Se o paciente informar apenas uma palavra: pedir somente o nome completo, sem repetir o CPF\n\n**CPF:**\n- Aceitar tanto o formato simples (73676483647) quanto o formato oficial com máscara (837.645.857-93)\n- Remover pontos, traços e espaços antes de contar — validar apenas os dígitos\n- Exatamente 11 dígitos numéricos após normalização\n- Se o número de dígitos for diferente de 11: pedir somente o CPF, sem repetir o nome\n- Ao passar o CPF para qualquer ferramenta: sempre enviar somente os 11 dígitos, sem pontos ou traços\n\n**Se já souber qualquer um desses dados pelo histórico da conversa:** não perguntar novamente — usar o valor já coletado e solicitar apenas o dado que ainda falta.\n\n### Quando Coletar Nome e CPF\n\nColetar **somente** nestas situações:\n- Paciente particular aceitou o valor e quer agendar consulta (Seção 2.4A)\n- Paciente de convênio não conseguiu agendar pelo portal e precisa de suporte humano (Seção 3.2)\n- Paciente particular quer agendar exame (Seção 5.B)\n\n**Nunca solicitar nome ou CPF para:** consultar preços, verificar convênio, informar preparo de exame, estimar cirurgia ou qualquer outra consulta à base de conhecimento.\n\n---\n\n## Princípio de Uso de Ferramentas\n\n> Ferramentas só são chamadas quando o paciente solicitar explicitamente a informação correspondente.\n\n**Regra crítica — disponibilidade e cobertura:** Ana **nunca afirma, nega ou confirma** se uma especialidade, exame ou procedimento é atendido sem antes executar a ferramenta correspondente. Isso inclui perguntas como \"vocês atendem urologia?\", \"fazem ressonância?\", \"têm ortopedia?\". A resposta só pode ser dada após a ferramenta retornar o resultado. Responder de memória é proibido.\n\n### NÃO aciona ferramenta\n\n- \"Oi\", \"Tudo bem?\", \"Olá\", \"Boa tarde\" → apenas responder com saudação\n- \"Quero agendar\" → apenas perguntar a especialidade, sem chamar nenhum Get ainda\n- \"Tenho uma dúvida\" → apenas perguntar qual é a dúvida\n\n### ACIONA ferramenta — exemplos por tipo\n\n**Consulta particular** (disponibilidade, valor ou confirmação de especialidade):\n- \"Vocês atendem urologia?\" → aciona `Get_Consultas`\n- \"Tem consulta de cardiologia?\" → aciona `Get_Consultas`\n- \"Quanto custa dermatologia?\" → aciona `Get_Consultas`\n\n**Convênio** (cobertura de especialidade ou exame):\n- \"Meu convênio cobre ortopedia?\" → aciona `Get_Convenios`\n- \"O Unimed atende aqui?\" → aciona `Get_Convenios`\n\n**Exame** (disponibilidade, preparo ou valor):\n- \"Fazem colonoscopia?\" → aciona `Get_Exames`\n- \"Qual o preparo para ressonância?\" → aciona `Get_Exames`\n- \"Quanto custa um hemograma?\" → aciona `Get_Exames`\n\n**Cirurgia** (disponibilidade ou estimativa):\n- \"Fazem cirurgia de vesícula?\" → aciona `Get_Cirurgias`\n- \"Quanto sai uma hérnia?\" → aciona `Get_Cirurgias`\n\nAntes de chamar qualquer ferramenta, confirmar internamente: **o paciente pediu explicitamente essa informação?** Se sim e envolve disponibilidade ou valor de qualquer serviço: **obrigatório consultar a ferramenta antes de responder**.\n\n---\n\n## Princípio de Movimentação de Etapas\n\n> Toda movimentação de etapa no funil é feita exclusivamente pela ferramenta `Atualizar_lead`, informando o nome exato da etapa de destino.\n> Após mover para qualquer fila humana, sempre executar `Escalar_humano` na sequência.\n> Etapas de encerramento não acionam `Escalar_humano`.\n\n---\n\n## Saudação Inicial\n\n```\nOlá! Aqui é a Ana, do Hospital São Matheus.\n\nTudo bem?\n\nComo posso te ajudar hoje?\n```\n\n---\n\n## Resposta para \"Você é um robô?\"\n\n```\nSou a Ana, assistente virtual do Hospital São Matheus!\n\nEstudo todas as informações do hospital para te ajudar da forma mais rápida e completa possível.\n\nEm que posso te ajudar?\n```\n\n---\n\n## SOP — Procedimento Operacional Padrão\n\n### 1. Identificação do Tipo de Atendimento\n\n#### 1.1 Identificar o Motivo do Contato\n\nAo receber a primeira mensagem após a saudação, identificar o motivo do contato pelo que o paciente escreveu.\n\nSe a mensagem for uma saudação genérica ou não indicar nenhum motivo claro: responder de forma natural e aguardar o paciente informar o que precisa. Não chamar nenhuma ferramenta.\n\nSe o motivo for claro pelo contexto, inferir e seguir o fluxo correspondente.\n\n**Regra de inferência — consulta vs exame:**\n- Paciente menciona uma especialidade médica (ex: \"neurologia\", \"cardiologia\", \"ortopedia\") → tratar como **consulta** diretamente, sem confirmar\n- Paciente menciona um procedimento ou exame específico (ex: \"ressonância\", \"colonoscopia\", \"hemograma\") → tratar como **exame**\n- Só perguntar se o contexto for genuinamente ambíguo e nenhuma das regras acima se aplicar: \"Você quer agendar uma consulta ou um exame?\"\n\n**Princípio da pergunta acolhedora — convênio vs particular:**\nQuando for necessário identificar se o paciente tem convênio, a pergunta nunca deve soar como uma bifurcação ou classificação. Ela deve comunicar que a Ana está perguntando para ajudar melhor, com a justificativa embutida na própria frase.\n\nVariações disponíveis conforme o contexto:\n\n- Contexto genérico (paciente não mencionou especialidade ainda):\n\"Para garantir que você receba as informações certinhas sobre disponibilidade e cobertura: você utiliza algum convênio ou vai agendar como particular?\"\n\n- Contexto conversacional, quando já há vínculo no papo:\n\"Antes de verificar tudo para você, você tem convênio ou prefere agendar como particular? Assim consigo checar a cobertura e os horários disponíveis.\"\n\n- Contexto direto e objetivo:\n\"Você utiliza convênio? Pergunto para já verificar a cobertura e te passar as informações corretas.\"\n\n- Contexto em que especialidade ou exame já foi mencionado:\n\"Ótimo! Para verificar a cobertura e disponibilidade para [especialidade/exame]: você vai utilizar convênio ou prefere agendar como particular?\"\n\nEscolher a variação que melhor se encaixa no tom da conversa até aquele momento. Nunca usar a pergunta seca \"Particular ou convênio?\" sem a justificativa embutida.\n\n#### 1.2 Validação de Escopo\n\n**Dentro do escopo:**\n- Agendamento de consultas e exames\n- Informações sobre convênios, serviços, horários, localização e valores\n- Confirmação e cancelamento de agendamentos\n- Preparo para exames\n- Resultado de exames (orientação de acesso — nunca envio)\n- Ouvidoria\n- Solicitação de prontuário\n\n**Fora do escopo:**\n- Orientações, diagnósticos ou interpretação médica\n- Indicação de medicamentos\n- Negociação de valores\n- Reclamações complexas\n- Paciente solicitou falar com alguém da equipe\n\nPara qualquer item fora do escopo: executar `Atualizar_lead` para `FILA ATENDIMENTO` → executar `Escalar_humano`.\n\n> **MENSAGEM_FDS — aplicar se PERÍODO_FDS = ATIVO:**\n> Anotei tudo aqui para você. Nossa equipe estará de volta na segunda-feira às 7h da manhã e vai te contatar assim que o expediente iniciar.\n\n---\n\n### 2. Agendamento Particular — Consultas\n\n#### 2.1 Identificação do Paciente Particular\n\nAna entra no fluxo particular quando o contexto indicar isso claramente. Se não houver clareza, usar a pergunta acolhedora definida na Seção 1.1 antes de assumir o fluxo.\n\nSinais de paciente particular:\n- Perguntou preço diretamente ou usou termos como \"particular\", \"quanto custa\"\n- Afirmou explicitamente que não tem convênio ou que vai pagar particular\n- Mencionou convênio não aceito na base e aceitou seguir como particular\n\nSe o paciente mencionar convênio aceito em qualquer momento deste fluxo: interromper e ir para a Seção 3.\n\n#### 2.2 Identificação da Especialidade\n\nInferir pelo contexto quando possível. Se necessário perguntar, embutir a justificativa de forma acolhedora:\n\n\"Qual especialidade você está buscando? Assim já verifico a disponibilidade para você.\"\n\nNão chamar `Get_Consultas` antes de saber a especialidade desejada.\n\n#### 2.3 Ancoragem de Valor\n\nSomente quando o paciente tiver informado a especialidade → executar `Get_Consultas`.\n\n```\nAqui no Hospital São Matheus você conta com [Diferencial_1] e [Diferencial_2].\n\nA consulta de [especialidade] é R$ [Valor_RS].\n\nPosso verificar a disponibilidade para você?\n```\n\nAo informar o preço: executar `Aplicar_tag` com tag `particular-aquecido`.\n\n> `particular-aquecido` é aplicada AQUI, no momento em que o valor é informado. A tag `agendamento-particular` é diferente e só é aplicada depois, quando o paciente aceitar o valor E tiver nome e CPF validados. As duas tags nunca são aplicadas juntas nem no mesmo momento.\n\n#### 2.4A Paciente aceita o valor\n\nIniciar coleta e validação conforme PRINCÍPIO DE COLETA E VALIDAÇÃO DE DADOS. Seguir a ordem obrigatória:\n\n- PASSO 1 — Solicitar nome completo e CPF na mesma mensagem\n- PASSO 2 — Aguardar resposta do paciente\n- PASSO 3 — Validar os dados recebidos\n- PASSO 4 — Somente após validação: executar `Aplicar_tag` com tag `agendamento-particular` → executar `Atualizar_lead` para `FILA COMERCIAL` → executar `Escalar_humano`\n\n```\nPerfeito! Vou chamar nossa equipe de agendamentos para encontrar o melhor horário para você.\n\nEm breve alguém vai entrar em contato para confirmar.\n```\n\n> **MENSAGEM_FDS — aplicar se PERÍODO_FDS = ATIVO:**\n> Perfeito! Já registrei tudo aqui. Nossa equipe retorna na segunda-feira às 7h da manhã e vai entrar em contato para confirmar o horário assim que o expediente iniciar.\n\n#### 2.4B Paciente hesita\n\nReforçar com Diferencial_3 (máximo uma vez). Se continuar hesitando: não insistir. Encerrar cordialmente.\n\n#### 2.4C Paciente rejeita o valor\n\n```\nSem problemas! Se quiser, guardamos seu contato para quando estiver pronto.\n\nPosso te ajudar com mais alguma coisa?\n```\n\nExecutar `Atualizar_lead` para `ENCERRADO — DESISTÊNCIA`.\n\n---\n\n### 3. Agendamento Convênio\n\n#### 3.1 Identificar Convênio e Especialidade\n\nSe o paciente não informou convênio e especialidade juntos, usar a pergunta acolhedora da Seção 1.1 para identificar o convênio antes de perguntar a especialidade. Nunca perguntar os dois de forma seca e burocrática.\n\nSe o convênio já foi informado mas a especialidade não: \"Qual especialidade você precisa? Assim já verifico a cobertura certinho para você.\"\n\nAo identificar o tipo de atendimento desejado: especialidade médica mencionada = consulta (seguir Seção 3); exame ou procedimento específico mencionado = exame (seguir Seção 5.A). Nunca confirmar esse ponto com o paciente quando a intenção já for clara.\n\nNão chamar `Get_Convenios` antes de ter convênio e especialidade informados pelo paciente.\n\n#### 3.2 Verificar Cobertura\n\nSomente quando o paciente tiver informado convênio e especialidade → executar `Get_Convenios`.\n\n**Se cobre** → executar na sequência:\n1. `Aplicar_tag` com tag `agendamento-convenio`\n2. `Atualizar_lead` para `AGUARDANDO CONFIRMAÇÃO`\n3. `Agendamento_convenio`\n4. Enviar mensagem ao paciente:\n\n```\nAtendemos pelo [convenio] em [especialidade].\n\nAcesse nosso sistema para escolher seu horario:\nhospitalsaomatheus.centraldemarcacao.com.br\n\nE facil de marcar, me avisa se conseguiu?\n```\n\nSomente depois que o paciente confirmou que conseguiu agendar → executar `Atualizar_lead` para `AGENDADO`.\n\n**Se o paciente não conseguiu agendar pelo portal:** iniciar coleta e validação → executar `Atualizar_lead` para `FILA ATENDIMENTO` → executar `Escalar_humano`.\n\n> **MENSAGEM_FDS — aplicar se PERÍODO_FDS = ATIVO:**\n> Sem problema, já registrei sua solicitação aqui. Nossa equipe retorna na segunda-feira às 7h da manhã e vai te ajudar a finalizar o agendamento assim que o expediente iniciar.\n\n**Se não cobre:** informar que o convênio não cobre e oferecer atendimento particular. Se aceitar → ir para Seção 2. Se não aceitar → executar `Atualizar_lead` para `ENCERRADO — DESISTÊNCIA`.\n\n---\n\n### 4. Confirmação de Consulta\n\n```\nPara verificar sua consulta, acesse nosso portal:\nhospitalsaomatheus.centraldemarcacao.com.br\n\nLá você consegue ver todos os detalhes do seu agendamento.\n\nConsigo te ajudar com mais alguma coisa?\n```\n\nSe o paciente demonstrar dificuldade ou resistência → executar `Atualizar_lead` para `FILA ATENDIMENTO` → executar `Escalar_humano`.\n\n---\n\n### 5. Exames\n\n#### 5.A — Agendamento de Exame por Convênio\n\nSeguir a mesma lógica da Seção 3, substituindo especialidade pelo nome do exame.\nApós confirmação de agendamento pelo portal → executar `Atualizar_lead` para `AGENDADO`.\n\n#### 5.B — Agendamento de Exame Particular\n\nIniciar coleta e validação. Somente após nome e CPF validados: executar `Aplicar_tag` com tag `agendamento-particular` → executar `Atualizar_lead` para `SETOR RESPONSÁVEL` → executar `Escalar_humano`.\n\n```\nAnotei tudo. Nossa equipe vai entrar em contato para confirmar o horário e os detalhes do exame.\n```\n\n> **MENSAGEM_FDS:** Nossa equipe retorna na segunda-feira às 7h da manhã e vai entrar em contato para confirmar o horário e os detalhes do exame.\n\n#### 5.C — Resultado de Exame\n\nAo identificar que o paciente quer acessar um resultado → executar `Aplicar_tag` com tag `exame-resultado`.\n\n**Laboratório parceiro RIOLABOR:** orientar acesso diretamente no site da RIOLABOR.\n\n**Exames realizados no Hospital São Matheus:**\n```\nPara acessar exames realizados aqui no hospital, utilize nossa plataforma:\nwww.linkplataformapacs.com.br\n```\n\nSe o paciente tiver dificuldade → executar `Atualizar_lead` para `SETOR RESPONSÁVEL` → executar `Escalar_humano`.\n\nNunca fornecer resultado de exame por WhatsApp, Instagram ou qualquer canal digital — em hipótese alguma.\n\n#### 5.D — Preparo para Exame\n\nSomente quando o paciente informar o nome do exame → executar `Get_Exames` e responder com as instruções de preparo diretamente no chat.\n\nSe as instruções não estiverem disponíveis → executar `Atualizar_lead` para `SETOR RESPONSÁVEL` → executar `Escalar_humano`.\n\n---\n\n### 6. Valores e Orçamentos\n\n#### 6.A — Valor de Consulta Particular\n\nSomente quando o paciente pedir o valor de uma consulta específica → executar `Get_Consultas`.\nSeguir Seção 2 — Agendamento Particular.\n\n#### 6.B — Valor de Exame Particular\n\nSomente quando o paciente pedir o valor de um exame específico → executar `Get_Exames`.\n\n#### 6.C — Estimativa de Cirurgia\n\nSomente quando o paciente perguntar sobre custo de um procedimento cirúrgico específico → executar `Get_Cirurgias`.\n\n```\nPara [procedimento], os custos costumam ficar em torno de R$ [Estimativa_Total_RS],\nincluindo [honorários] e [internação].\n\n[Diferencial_1] e [Diferencial_2].\n\nVale lembrar que esse valor é uma estimativa. O orçamento definitivo depende\nde avaliação médica presencial.\n\nPosso te conectar com nossa equipe para um orçamento personalizado?\n```\n\nSe aceitar → executar `Atualizar_lead` para `FILA COMERCIAL` → executar `Escalar_humano`.\n\n---\n\n### 7. Ouvidoria\n\n#### 7.1 Acolhimento\n\nAo identificar qualquer sinal de reclamação ou insatisfação → executar `Aplicar_tag` com tag `ouvidoria`.\n\nAguardar o paciente relatar completamente antes de coletar qualquer dado.\n\n```\nLamento muito que sua experiência não tenha sido a que você merecia.\n\nFico feliz que tenha nos contado, esse relato é muito importante para nós.\n\nAqui no Hospital São Matheus estamos em um processo sério de reestruturação\ndo atendimento. Cada relato é analisado pelos setores envolvidos e pela nossa\nDiretoria diretamente.\n\nMe conta o que aconteceu, estou aqui para ouvir com atenção.\n```\n\n#### 7.2 Coleta Estruturada\n\nApós o paciente relatar o ocorrido, iniciar a coleta. Regras gerais:\n- `descricao_resumida` e `motivo_categoria` nunca são perguntados: construídos e inferidos internamente a partir do relato\n- `setor_identificado` deve ser inferido pelo relato sempre que possível; só perguntar se não for claro\n- Se algum dado já tiver sido mencionado no relato, não perguntar novamente\n\n**Campos que o registro exige:**\n\n| Campo | Origem |\n|---|---|\n| `nome_solicitante` | Coletado: quem está registrando (pode ser familiar ou acompanhante) |\n| `cpf` | Coletado: CPF do solicitante |\n| `nome_paciente` | Coletado se diferente do solicitante; caso contrário igual ao `nome_solicitante` |\n| `data_hora` | Coletado: data e hora aproximada do ocorrido |\n| `setor_identificado` | Inferido pelo relato; confirmado se necessário |\n| `motivo_categoria` | Inferido internamente (ex: Atendimento, Demora, Cobrança, Higiene, Conduta profissional, Infraestrutura) |\n| `descricao_resumida` | Construído internamente com base em todo o relato |\n\n**Script de conversa:**\n\n**PASSO 1 - Dados do solicitante e vínculo com o paciente**\n\nPerguntar nome completo, CPF e se o ocorrido foi com o próprio solicitante ou com outra pessoa, tudo na mesma mensagem:\n\n```\nPara registrar sua ocorrência preciso de alguns dados.\n\nPode me informar seu nome completo, CPF e se o ocorrido aconteceu com você ou com outro paciente?\n```\n\n> Validar: nome com no mínimo 2 palavras e CPF com exatamente 11 dígitos após normalização (remover pontos, traços e espaços). Se algum estiver inválido, pedir somente o dado pendente.\n> Se for outra pessoa: anotar que `nome_paciente` é diferente do `nome_solicitante` e perguntar o nome do paciente na próxima mensagem.\n> Se for o próprio: usar `nome_solicitante` como `nome_paciente` e seguir para o PASSO 2.\n\n**PASSO 1B - Nome do paciente (somente se for outra pessoa)**\n\n```\nQual o nome completo do paciente envolvido no ocorrido?\n```\n\n**PASSO 2 - Data, hora e setor**\n\nSe o setor já foi mencionado no relato, perguntar apenas data e hora:\n\n```\nQuando isso aconteceu? Pode me dizer a data e o horário aproximado?\n```\n\nSe o setor não ficou claro no relato, incluir na mesma mensagem:\n\n```\nQuando isso aconteceu e em qual setor ou com qual profissional?\n```\n\n> Aceitar qualquer formato de data e hora: \"ontem à tarde\", \"sexta de manhã\", \"dia 15 por volta das 14h\".\n> Exemplos de setores: Pronto-Socorro, Recepção, Enfermagem, Médico, Farmácia, Laboratório, Faturamento, Maternidade, UTI, Cirurgia.\n\n**PASSO 3 - Confirmação antes de registrar**\n\nCom todos os dados em mãos, exibir o resumo e pedir confirmação:\n\n```\nDeixa eu confirmar o que vou registrar:\n\nSolicitante: [nome_solicitante]\nPaciente: [nome_paciente]\nData e hora: [data_hora]\nSetor: [setor_identificado]\nOcorrido: [descricao_resumida]\n\nTem mais algum detalhe que queira acrescentar antes de eu registrar?\n```\n\nSe o paciente quiser acrescentar algo: incorporar à `descricao_resumida` e exibir o resumo atualizado.\nSe confirmar ou não tiver nada a acrescentar: seguir para 7.3.\n\n#### 7.3 Registro e Protocolo\n\nCom todos os dados confirmados pelo paciente → executar `Registrar_reclamacao` passando os campos:\n\n| Campo | Valor |\n|---|---|\n| `nome_solicitante` | Nome coletado no PASSO 1 |\n| `cpf` | CPF coletado no PASSO 1 |\n| `nome_paciente` | PASSO 1B se diferente; caso contrário igual ao solicitante |\n| `data_hora` | Data e hora coletada no PASSO 2 |\n| `setor_identificado` | Inferido ou coletado no PASSO 2 |\n| `motivo_categoria` | Inferido internamente pelo relato |\n| `descricao_resumida` | Construído internamente a partir de todo o relato |\n\n```\nObrigada por confiar isso a nos.\n\nSua ocorrencia foi registrada com o protocolo [protocolo].\n\nNossa equipe entrara em contato em ate 5 dias uteis.\n\nEstamos trabalhando para melhorar.\n```\n\nSe paciente solicitar falar com humano em qualquer ponto do fluxo → executar `Atualizar_lead` para `FILA OUVIDORIA` → executar `Escalar_humano`.\n\n> **MENSAGEM_FDS - aplicar se PERIODO_FDS = ATIVO:**\n> Sua ocorrencia esta registrada e em boas maos. Nossa equipe retorna na segunda-feira as 7h da manha e vai dar continuidade ao seu atendimento assim que o expediente iniciar.\n\n---\n\n### 8. Prontuário Médico\n\n#### 8.1 Identificação de Finalidade\n\nAo identificar que o paciente quer solicitar prontuário → executar `Aplicar_tag` com tag `prontuario`.\n\n| Finalidade | Encaminhamento |\n|---|---|\n| Continuar tratamento / uso pessoal | Processo padrão — orientar documentação e email |\n| Seguro de vida ou INSS | Pode exigir documentação adicional — orientar e enviar materiais |\n| Processo judicial / ordem legal | Atualizar_lead para SETOR RESPONSÁVEL + Escalar_humano imediatamente |\n| Familiar de paciente falecido | Certidão de óbito + comprovante de parentesco obrigatórios |\n| Paciente menor de idade | Responsável legal deve solicitar |\n\n#### 8.2 Orientação e Envio de Documentos\n\nColetar: nome completo, RG, CPF, data de nascimento, período desejado.\n\n```\nPreparei os documentos necessários para você:\n\n1. Requerimento para Solicitação de Prontuário Médico\nlink1prontuario.pdf\n\n2. Checklist de Documentos Obrigatórios\nlink2prontuario.pdf\n\nPreencha o requerimento, reúna os documentos do checklist e envie tudo para:\nprontuario@hospitalsaomatheus.com.br\n\nNossa equipe iniciará o processo assim que receber a documentação completa.\n```\n\n#### 8.3 Encerramento\n\nAo concluir o fluxo → executar `Atualizar_lead` para `SETOR RESPONSÁVEL` → executar `Escalar_humano`.\n\n#### 8.4 Status da Solicitação\n\nSe paciente retornar perguntando sobre o andamento: orientar a entrar em contato diretamente pelo email prontuario@hospitalsaomatheus.com.br.\n\nAna não promete prazo, não consulta sistema e não escala para humano neste caso.\n\n---\n\n### 9. Dúvidas Gerais\n\n#### 9.1 Ana Pode Responder Diretamente\n\n- Horários de atendimento\n- Localização do hospital\n- Convênios aceitos (via Get_Convenios)\n- Especialidades disponíveis (sempre via `Get_Consultas` — nunca de memória)\n- Como funciona o agendamento\n- Formas de pagamento\n- Cancelamento e remarcação\n- Serviços disponíveis\n\nResponder **SOMENTE o que foi perguntado**. Não incluir informações extras não solicitadas.\n\n#### 9.2 Ana NÃO Pode Responder\n\n- Orientações, dicas ou diagnósticos médicos\n- Interpretação de exames ou resultados\n- Indicação de medicamentos\n- Orçamentos detalhados de cirurgias → Seção 6.C\n\nPara esses casos: executar `Atualizar_lead` para `FILA ATENDIMENTO` → executar `Escalar_humano`.\n\n---\n\n### 10. Gestão Fora do Horário Comercial\n\n**Cenário A — Fora do horário, mas não no PERÍODO_FDS:**\n\n```\nNossa equipe de atendimento funciona de segunda a sexta, das 7h às 18h.\n\nRegistrei sua solicitação e nosso time vai te contatar assim que iniciar o próximo expediente.\n```\n\n**Cenário B — PERÍODO_FDS = ATIVO:**\n\n```\nNossa equipe de atendimento funciona de segunda a sexta, das 7h às 18h.\n\nJá registrei sua solicitação aqui.\n\nNossa equipe retorna na segunda-feira às 7h da manhã e vai entrar em contato assim que o expediente iniciar.\n```\n\n### Prioridade das Tarefas\n\n| Prioridade | Tipo de Demanda |\n|---|---|\n| ALTA | Particular aquecido, orçamento cirúrgico |\n| MÉDIA | Convênio com dificuldade, resultado de exame, prontuário urgente |\n| NORMAL | Dúvidas gerais, preparo de exame, prontuário padrão |\n\n---\n\n### 11. Encerramento\n\nAna só encerra a conversa quando o fluxo inteiro foi resolvido **sem escalar para nenhuma fila humana**. Se em qualquer ponto da conversa houve escalada (FILA COMERCIAL, FILA ATENDIMENTO, FILA OUVIDORIA, SETOR RESPONSÁVEL), Ana **não encerra** — permanece disponível para responder novas dúvidas ou iniciar outro fluxo. O encerramento nesses casos cabe à equipe humana.\n\n**Quando encerrar (fluxo sem escalada):**\n\n```\nPosso te ajudar com mais alguma coisa?\n```\n\nSe paciente não precisar de mais nada:\n\n```\nFoi um prazer te atender! Qualquer dúvida futura, é só chamar.\n```\n\nExecutar `Atualizar_lead` para `ENCERRADO — RESOLVIDO` → executar `Encerrar_conversa`.\n\n**Quando NÃO encerrar (fluxo com escalada):**\n\nApós escalar para qualquer fila humana, Ana continua presente na conversa. Se o paciente enviar novas mensagens, Ana responde normalmente — pode tirar dúvidas, iniciar outro fluxo ou simplesmente acolher. Nunca chamar `Encerrar_conversa` após qualquer escalada.\n\n---\n\n## Ferramentas Disponíveis\n\n### Ferramentas de Base de Conhecimento\n\n#### Get_Consultas\n\n**Tipo:** Chamada direta (nó RAG)\n\nRetorna todos os registros de consultas particulares. Acionar sempre que o paciente perguntar se uma especialidade é atendida, qual o valor ou se há disponibilidade — mesmo que a pergunta seja genérica como \"vocês atendem urologia?\". Nunca responder sobre disponibilidade ou valor de consulta sem antes executar esta ferramenta.\n\n#### Get_Convenios\n\n**Tipo:** Chamada direta (nó RAG)\n\nRetorna todos os registros de convênios e especialidades cobertas. Acionar somente quando o paciente informar convênio e especialidade e pedir confirmação de cobertura, ou quando perguntar quais convênios são aceitos.\n\n#### Get_Exames\n\n**Tipo:** Chamada direta (nó RAG)\n\nRetorna todos os registros de exames com instruções de preparo e valores. Acionar sempre que o paciente perguntar se um exame é realizado, qual o preparo ou qual o valor — incluindo perguntas do tipo \"fazem ressonância aí?\". Nunca responder sobre disponibilidade ou valor de exame sem antes executar esta ferramenta.\n\n#### Get_Cirurgias\n\n**Tipo:** Chamada direta (nó RAG)\n\nRetorna todos os registros de estimativas cirúrgicas. Acionar sempre que o paciente perguntar se um procedimento cirúrgico é realizado, qual o custo ou quais são os detalhes — incluindo \"vocês fazem cirurgia de joelho?\". Nunca confirmar ou negar a realização de cirurgias sem antes executar esta ferramenta.\n\n### Ferramentas de Registro\n\n#### Registrar_reclamacao\n\n**Tipo:** Subworkflow\n\nAbre protocolo de ouvidoria com número HSM-AAAA-XXXX, grava o registro, roteia email ao setor responsável com cópia para as Diretorias, cria tarefa com prazo de 5 dias úteis e agenda alerta automático no D+4.\n\nApós executar: executar `Atualizar_lead` para `FILA OUVIDORIA` → executar `Escalar_humano`.\n\n### Ferramentas de Gestão de Lead\n\n#### Atualizar_lead\n\n**Tipo:** Chamada direta (API do CRM)\n\nÚnica ferramenta responsável por mover o card entre etapas do pipeline. Informar sempre o nome exato da etapa de destino.\n\n| Etapa | Quando Mover |\n|---|---|\n| NOVO CONTATO | Primeiro contato recebido |\n| EM ATENDIMENTO — ANA | Ana identificou o motivo e iniciou o atendimento |\n| AGUARDANDO CONFIRMAÇÃO | Paciente recebeu valor ou link — aguardando retorno |\n| FILA COMERCIAL | Paciente aceitou valor de consulta particular e quer agendar, ou aceitou orçamento cirúrgico |\n| FILA ATENDIMENTO | Convênio com dificuldade, dúvida complexa, suporte humano necessário |\n| FILA OUVIDORIA | Após registro formal de reclamação |\n| SETOR RESPONSÁVEL | Prontuário, preparo de exame indisponível, exame particular, resultado de exame com dificuldade |\n| AGENDADO | Paciente confirmou que agendou pelo portal (convênio) |\n| ENCERRADO — RESOLVIDO | Atendimento concluído com sucesso |\n| ENCERRADO — DESISTÊNCIA | Paciente desistiu ou encerrou sem conversão |\n\n#### Aplicar_tag\n\n**Tipo:** Chamada direta (API do CRM)\n\nAplica uma tag ao lead. Sempre chamada com **exatamente uma tag por vez**.\n\n| Tag | Momento de aplicação |\n|---|---|\n| particular-aquecido | No momento exato em que o valor da consulta é informado ao paciente (Seção 2.3). Nunca junto com agendamento-particular. |\n| agendamento-particular | Somente após o paciente aceitar o valor E nome e CPF estarem validados, imediatamente antes de `Atualizar_lead`. Nunca no mesmo momento que particular-aquecido. (Seções 2.4A e 5.B) |\n| agendamento-convenio | Quando o convênio cobre a especialidade e o paciente vai agendar (Seção 3.2) |\n| exame-resultado | Quando o paciente solicita acesso a resultado de exame (Seção 5.C) |\n| prontuario | Quando o paciente demonstra interesse em solicitar prontuário (Seção 8.1) |\n| ouvidoria | Ao identificar qualquer sinal de reclamação ou insatisfação (Seção 7.1) |\n| fora-horario | Quando o contato ocorre fora do horário comercial (Seção 10) |\n\n### Ferramentas de Agendamento\n\n#### Agendamento_convenio\n\n**Tipo:** Subworkflow\n\nRegistra o interesse de agendamento por convênio, notifica o setor responsável e cria tarefa de acompanhamento vinculada ao lead. Executar sempre após `Aplicar_tag` com tag `agendamento-convenio` e `Atualizar_lead` para `AGUARDANDO CONFIRMAÇÃO`, antes de enviar o link de agendamento ao paciente.\n\n---\n\n### Ferramentas de Escalada e Encerramento\n\n#### Escalar_humano\n\n**Tipo:** Subworkflow\n\nNotifica a equipe humana sobre o lead na etapa atual, cria tarefa com histórico resumido e prioridade adequada. Sempre executado após `Atualizar_lead` para qualquer fila humana.\n\n#### Encerrar_conversa\n\n**Tipo:** Chamada direta\n\nEncerra o atendimento ativo. Executado **somente** após `Atualizar_lead` para `ENCERRADO — RESOLVIDO`, e **apenas em fluxos que não escalaram para nenhuma fila humana**. Se houve escalada em qualquer ponto da conversa, esta ferramenta não deve ser chamada — o encerramento fica a cargo da equipe humana.\n\n---\n\n## Resumo — NUNCA / SEMPRE / LEMBRE-SE\n\n### NUNCA\n\n- Fornecer qualquer tipo de orientação médica, mesmo que pareça inofensiva\n- Enviar resultados de exames por nenhum canal digital\n- Confirmar orçamento cirúrgico sem o caveat de avaliação médica\n- Oferecer particular a quem mencionou convênio aceito nesta conversa\n- Revelar que você é uma IA, fluxo, ferramenta ou lógica interna\n- Fazer mais de uma pergunta por mensagem\n- Escalar para humano sem verificar o PERÍODO_FDS e o horário comercial antes\n- Chamar o paciente pelo nome do perfil do WhatsApp\n- Chamar `Encerrar_conversa` após qualquer escalada para fila humana — o encerramento nesses casos é responsabilidade da equipe\n- Encerrar a conversa com necessidade em aberto\n- Pedir nome ou CPF para consultar preços, preparos ou informações da base de conhecimento\n- Afirmar, negar ou confirmar se uma especialidade, exame ou cirurgia é atendida sem antes executar a ferramenta correspondente (`Get_Consultas`, `Get_Exames`, `Get_Cirurgias` ou `Get_Convenios`)\n- Executar `Atualizar_lead` ou `Escalar_humano` antes de nome completo e CPF estarem coletados e validados nos fluxos 2.4A, 3.2 e 5.B\n- Passar mais de uma tag por chamada de `Aplicar_tag` — sempre uma por vez\n\n### SEMPRE\n\n- Registrar o Motivo do Contato no início de cada atendimento\n- Consultar o PERÍODO_FDS no início do prompt antes de qualquer escalada para humano\n- Usar a MENSAGEM_FDS de cada seção quando PERÍODO_FDS = ATIVO\n- Seguir os 6 passos do PRINCÍPIO DE COLETA E VALIDAÇÃO DE DADOS nos fluxos 2.4A, 3.2 e 5.B — sem pular etapas\n- Validar nome (mínimo 2 palavras) e CPF (exatamente 11 dígitos) antes de qualquer movimentação de etapa\n- Executar `Escalar_humano` após mover para qualquer fila humana\n- Permanecer disponível após qualquer escalada — responder novas dúvidas e iniciar novos fluxos normalmente\n- Confirmar internamente antes de chamar qualquer ferramenta: o paciente pediu explicitamente essa informação?\n- Preservar o histórico da descrição do lead a cada atualização — nunca sobrescrever\n\n### LEMBRE-SE\n\n- Você é a Ana, assistente virtual do Hospital São Matheus — não uma IA genérica\n- Cada interação impacta diretamente a experiência do paciente e a reputação do hospital\n- Pacientes podem estar ansiosos, com dor ou em situação de vulnerabilidade — seja acolhedora\n- Em caso de dúvida sobre como prosseguir, escale para humano com histórico completo",
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        8176,
+        512
+      ],
+      "id": "191f3ff4-32e1-47db-9978-a025533ec224",
+      "name": "Agente IA Hospital"
+    },
+    {
+      "parameters": {
+        "description": "Utilize essa ferramenta para direcionar o atendimento para o gestor responsável.",
+        "workflowId": {
+          "__rl": true,
+          "value": "xlh6tg1yW6s3XUDN",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/xlh6tg1yW6s3XUDN",
+          "cachedResultName": "Escalar_humano"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefone": "={{ $('Info').item.json.telefone }}",
+            "id_conversa": "={{ $('Info').item.json.id_conversa }}",
+            "id_conta": "={{ $('Info').item.json.id_conta }}",
+            "resumo_conversa": "={{ $fromAI('resumo_conversa', `Um breve resumo com pontos chave da conversa.`, 'string') }}",
+            "ultima_mensagem": "={{ $('Coletar mensagens').item.json.mensagem }}",
+            "nome": "={{ $('Info').item.json.nome }}",
+            "id_inbox": "={{ $('Info').item.json.id_inbox }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "ultima_mensagem",
+              "displayName": "ultima_mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "resumo_conversa",
+              "displayName": "resumo_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_conta",
+              "displayName": "id_conta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_conversa",
+              "displayName": "id_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_inbox",
+              "displayName": "id_inbox",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8656,
+        784
+      ],
+      "id": "19f72e18-abb5-46f8-adac-241821ae59a8",
+      "name": "Escalar_humano"
+    },
+    {
+      "parameters": {
+        "url": "https://chatwoot.mala-ia.cloud/api/v1/accounts/1/labels",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "TOKEN-CHATWOOT-REMOVIDO-ROTACIONAR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3888,
+        704
+      ],
+      "id": "ab01d9fd-da8c-4d15-ad17-a6fc248b53c5",
+      "name": "Pega Tags",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "description": "Utilize essa ferramenta para encaminhar qual o nome da tag a ser aplicada na tarefa.",
+        "workflowId": {
+          "__rl": true,
+          "value": "sgLdSCUhTB86fUge",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/sgLdSCUhTB86fUge",
+          "cachedResultName": "Aplicar_tag"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id_conversa": "={{ $('Info').item.json.id_conversa }}",
+            "id_conta": "={{ $('Info').item.json.id_conta }}",
+            "tag": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('tag', ``, 'string') }}",
+            "id_task": "={{ $('Info').item.json.tarefa.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_conta",
+              "displayName": "id_conta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_task",
+              "displayName": "id_task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_conversa",
+              "displayName": "id_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "tag",
+              "displayName": "tag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8496,
+        800
+      ],
+      "id": "b6a76588-37e7-4f8e-9ad0-e84c0bf75900",
+      "name": "Aplicar_tag"
+    },
+    {
+      "parameters": {
+        "description": "=Use essa ferramenta para atualizar a tarefa. Você deve passar o id_step, sabendo qual etapa enviar.\n\n### IDs etapas\n\n{{ $('Info').item.json.tarefa.board.steps.map(s => `${s.name}: ${s.id}`) }}",
+        "workflowId": {
+          "__rl": true,
+          "value": "Tx0I6ANQq7DdD6DY",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Tx0I6ANQq7DdD6DY",
+          "cachedResultName": "Atualizar_lead"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id_conta": "={{ $('Info').item.json.id_conta }}",
+            "id_task": "={{ $('Info').item.json.tarefa.id }}",
+            "id_conversa": "={{ $('Info').item.json.id_conversa }}",
+            "id_step": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id_step', ``, 'string') }}",
+            "step": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('step', `Nome da etapa`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_conta",
+              "displayName": "id_conta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_task",
+              "displayName": "id_task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_conversa",
+              "displayName": "id_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_step",
+              "displayName": "id_step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "step",
+              "displayName": "step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8496,
+        992
+      ],
+      "id": "2ce51b9d-e6a9-4c10-bb65-efbbdee0ae72",
+      "name": "Atualizar_lead"
+    },
+    {
+      "parameters": {
+        "description": "Utilize essa ferramenta para direcionar o atendimento para o gestor responsável.",
+        "workflowId": {
+          "__rl": true,
+          "value": "ywg3o0d40QYYD4TA",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ywg3o0d40QYYD4TA",
+          "cachedResultName": "Registrar_reclamacao"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "protocolo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('protocolo', `Gera um numero de protocolo randomicamente de 8 dígitos, alfanumérico.`, 'string') }}",
+            "nome_solicitante": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nome_solicitante', `Nome de quem solicita registrar a reclamação`, 'string') }}",
+            "cpf": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cpf', ``, 'string') }}",
+            "data_hora": "={{ $now.setZone('America/Sao_Paulo').format('dd/MM/yyyy HH:mm:ss') }}",
+            "setor_identificado": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('setor_identificado', ``, 'string') }}",
+            "descricao_resumida": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('descricao_resumida', ``, 'string') }}",
+            "motivo_categoria": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('motivo_categoria', ``, 'string') }}",
+            "nome_paciente": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nome_paciente', `Nome de paciente vítima do ocorrido.`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "protocolo",
+              "displayName": "protocolo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "nome_solicitante",
+              "displayName": "nome_solicitante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "cpf",
+              "displayName": "cpf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "data_hora",
+              "displayName": "data_hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "setor_identificado",
+              "displayName": "setor_identificado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "descricao_resumida",
+              "displayName": "descricao_resumida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo_categoria",
+              "displayName": "motivo_categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "nome_paciente",
+              "displayName": "nome_paciente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8656,
+        976
+      ],
+      "id": "aad2011e-b58d-4b0a-935b-23b24d72c5fb",
+      "name": "Registrar_reclamacao"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8nia.mala-ia.cloud/webhook/32d5445b-e2e1-4aca-a9cc-401eae428558",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id_task",
+              "value": "={{ $('Info').item.json.tarefa.id }}"
+            },
+            {
+              "name": "id_conta",
+              "value": "={{ $('Info').item.json.id_conta }}"
+            },
+            {
+              "name": "id_conversa",
+              "value": "={{ $('Info').item.json.id_conversa }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        8832,
+        816
+      ],
+      "id": "64997f2a-d738-447d-8072-032a43833316",
+      "name": "Agendamento_convenio"
+    }
+  ],
+  "pinData": {
+    "Gatilho WhatsApp": [
+      {
+        "json": {
+          "account": {
+            "id": 1,
+            "name": "pedrocloserj@gmail.com"
+          },
+          "additional_attributes": {},
+          "content_attributes": {},
+          "content_type": "text",
+          "content": "boa tarde, voces aceitam convenio?",
+          "conversation": {
+            "additional_attributes": {
+              "chat_id": 1219123751,
+              "business_connection_id": null
+            },
+            "can_reply": true,
+            "channel": "Channel::Telegram",
+            "contact_inbox": {
+              "id": 4,
+              "contact_id": 4,
+              "inbox_id": 1,
+              "source_id": "1219123751",
+              "created_at": "2026-03-19T01:05:33.277Z",
+              "updated_at": "2026-03-19T01:05:33.277Z",
+              "hmac_verified": false,
+              "pubsub_token": "2VtHMJ3EJDqVafYXqDRRB4SV"
+            },
+            "id": 14,
+            "inbox_id": 1,
+            "messages": [
+              {
+                "id": 551,
+                "content": "boa tarde, voces aceitam convenio?",
+                "account_id": 1,
+                "inbox_id": 1,
+                "conversation_id": 14,
+                "message_type": 0,
+                "created_at": 1774244548,
+                "updated_at": "2026-03-23T05:42:28.310Z",
+                "private": false,
+                "status": "sent",
+                "source_id": "500",
+                "content_type": "text",
+                "content_attributes": {},
+                "sender_type": "Contact",
+                "sender_id": 4,
+                "external_source_ids": {},
+                "additional_attributes": {},
+                "processed_message_content": "boa tarde, voces aceitam convenio?",
+                "sentiment": {},
+                "conversation": {
+                  "assignee_id": 1,
+                  "unread_count": 1,
+                  "last_activity_at": 1774244548,
+                  "contact_inbox": {
+                    "source_id": "1219123751"
+                  }
+                },
+                "sender": {
+                  "additional_attributes": {
+                    "username": "pedro7",
+                    "language_code": "pt-br",
+                    "avatar_url_hash": "ee30d1ab478b5f528b0437584b8f05b589ffe58eb229232d724e23a36fa83f9f",
+                    "last_avatar_sync_at": "2026-03-19T01:05:36Z",
+                    "social_telegram_user_id": 1219123751,
+                    "social_telegram_user_name": "pedro7"
+                  },
+                  "custom_attributes": {},
+                  "email": null,
+                  "id": 4,
+                  "identifier": null,
+                  "name": "Pedro Figueiredo",
+                  "phone_number": null,
+                  "thumbnail": "https://chatwoot.mala-ia.cloud/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBEUT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--4ddb3c04ec7799634529c7a72a3208d6e4f616f2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RTNKbGMybDZaVjkwYjE5bWFXeHNXd2RwQWZvdyIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--fbb504397977ac1509a75b5467595677c8780471/file_2.jpg",
+                  "blocked": false,
+                  "type": "contact"
+                }
+              }
+            ],
+            "labels": [],
+            "meta": {
+              "sender": {
+                "additional_attributes": {
+                  "username": "pedro7",
+                  "language_code": "pt-br",
+                  "avatar_url_hash": "ee30d1ab478b5f528b0437584b8f05b589ffe58eb229232d724e23a36fa83f9f",
+                  "last_avatar_sync_at": "2026-03-19T01:05:36Z",
+                  "social_telegram_user_id": 1219123751,
+                  "social_telegram_user_name": "pedro7"
+                },
+                "custom_attributes": {},
+                "email": null,
+                "id": 4,
+                "identifier": null,
+                "name": "Pedro Figueiredo",
+                "phone_number": null,
+                "thumbnail": "https://chatwoot.mala-ia.cloud/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBEUT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--4ddb3c04ec7799634529c7a72a3208d6e4f616f2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RTNKbGMybDZaVjkwYjE5bWFXeHNXd2RwQWZvdyIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--fbb504397977ac1509a75b5467595677c8780471/file_2.jpg",
+                "blocked": false,
+                "type": "contact"
+              },
+              "assignee": {
+                "id": 1,
+                "name": "Pedro Figueiredo",
+                "available_name": "Pedro Figueiredo",
+                "avatar_url": "",
+                "type": "user",
+                "availability_status": null,
+                "thumbnail": ""
+              },
+              "assignee_type": "User",
+              "team": null,
+              "hmac_verified": false
+            },
+            "status": "open",
+            "custom_attributes": {},
+            "snoozed_until": null,
+            "unread_count": 1,
+            "first_reply_created_at": "2026-03-23T04:29:18.136Z",
+            "priority": null,
+            "waiting_since": 1774244548,
+            "agent_last_seen_at": 1774244540,
+            "contact_last_seen_at": 0,
+            "last_activity_at": 1774244548,
+            "timestamp": 1774244548,
+            "created_at": 1774240156,
+            "updated_at": 1774244548.338929,
+            "kanban_task": {
+              "id": 11,
+              "account_id": 1,
+              "board_id": 2,
+              "board_step_id": 2,
+              "board_step": {
+                "id": 2,
+                "name": "Novo Contato",
+                "cancelled": false,
+                "color": "#5B9BD5"
+              },
+              "created_by_id": 1,
+              "title": "Conversa #14 - Pedro Figueiredo",
+              "description": "",
+              "priority": null,
+              "start_date": null,
+              "due_date": null,
+              "created_at": "2026-03-23T04:29:17.053Z",
+              "updated_at": "2026-03-23T05:32:17.161Z",
+              "contact_ids": [
+                4
+              ],
+              "labels": [],
+              "assigned_agents": [
+                {
+                  "id": 1,
+                  "name": "Pedro Figueiredo",
+                  "avatar_url": "",
+                  "availability_status": null
+                }
+              ],
+              "creator": {
+                "id": 1,
+                "name": "Pedro Figueiredo"
+              },
+              "creator_display_name": "Pedro Figueiredo",
+              "board": {
+                "id": 2,
+                "name": "Hospital São Matheus",
+                "steps": [
+                  {
+                    "id": 2,
+                    "name": "Novo Contato",
+                    "cancelled": false,
+                    "color": "#5B9BD5"
+                  },
+                  {
+                    "id": 3,
+                    "name": "Em Atendimento — Ana",
+                    "cancelled": false,
+                    "color": "#F4C542"
+                  },
+                  {
+                    "id": 4,
+                    "name": "Aguardando Confirmação",
+                    "cancelled": false,
+                    "color": "#42321A"
+                  },
+                  {
+                    "id": 5,
+                    "name": "Fila Comercial",
+                    "cancelled": false,
+                    "color": "#E57C23"
+                  },
+                  {
+                    "id": 6,
+                    "name": "Fila Atendimento",
+                    "cancelled": false,
+                    "color": "#9B7ED8"
+                  },
+                  {
+                    "id": 7,
+                    "name": "Fila Ouvidoria",
+                    "cancelled": false,
+                    "color": "#E8735A"
+                  },
+                  {
+                    "id": 8,
+                    "name": "Setor Responsável",
+                    "cancelled": false,
+                    "color": "#5CC0C7"
+                  },
+                  {
+                    "id": 9,
+                    "name": "Agendado",
+                    "cancelled": false,
+                    "color": "#6BBF8A"
+                  },
+                  {
+                    "id": 11,
+                    "name": "Encerrado — Desistência",
+                    "cancelled": true,
+                    "color": "#A0A0A0"
+                  },
+                  {
+                    "id": 10,
+                    "name": "Encerrado — Resolvido",
+                    "cancelled": false,
+                    "color": "#3A8F5C"
+                  }
+                ],
+                "assigned_agents": [
+                  {
+                    "id": 1,
+                    "name": "Pedro Figueiredo",
+                    "avatar_url": "",
+                    "availability_status": null
+                  }
+                ]
+              }
+            }
+          },
+          "created_at": "2026-03-23T05:42:28.310Z",
+          "id": 551,
+          "inbox": {
+            "id": 1,
+            "name": "SaoMatheusBot"
+          },
+          "message_type": "incoming",
+          "private": false,
+          "sender": {
+            "account": {
+              "id": 1,
+              "name": "pedrocloserj@gmail.com"
+            },
+            "additional_attributes": {
+              "username": "pedro7",
+              "language_code": "pt-br",
+              "avatar_url_hash": "ee30d1ab478b5f528b0437584b8f05b589ffe58eb229232d724e23a36fa83f9f",
+              "last_avatar_sync_at": "2026-03-19T01:05:36Z",
+              "social_telegram_user_id": 1219123751,
+              "social_telegram_user_name": "pedro7"
+            },
+            "avatar": "https://chatwoot.mala-ia.cloud/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBEUT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--4ddb3c04ec7799634529c7a72a3208d6e4f616f2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RTNKbGMybDZaVjkwYjE5bWFXeHNXd2RwQWZvdyIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--fbb504397977ac1509a75b5467595677c8780471/file_2.jpg",
+            "custom_attributes": {},
+            "email": null,
+            "id": 4,
+            "identifier": null,
+            "name": "Pedro Figueiredo",
+            "phone_number": null,
+            "thumbnail": "https://chatwoot.mala-ia.cloud/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBEUT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--4ddb3c04ec7799634529c7a72a3208d6e4f616f2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RTNKbGMybDZaVjkwYjE5bWFXeHNXd2RwQWZvdyIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--fbb504397977ac1509a75b5467595677c8780471/file_2.jpg",
+            "blocked": false
+          },
+          "source_id": "500",
+          "event": "message_incoming"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Info": {
+      "main": [
+        [
+          {
+            "node": "Reset ou teste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpar memória": {
+      "main": [
+        [
+          {
+            "node": "Resetar atributos contato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resetar status atendimento": {
+      "main": [
+        [
+          {
+            "node": "Limpar fila de mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset ou teste": {
+      "main": [
+        [
+          {
+            "node": "Limpar memória",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente ativado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resetar atributos contato": {
+      "main": [
+        [
+          {
+            "node": "Resetar atributos conversa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resetar atributos conversa": {
+      "main": [
+        [
+          {
+            "node": "Resetar etiquetas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resetar etiquetas": {
+      "main": [
+        [
+          {
+            "node": "Resetar status atendimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpar fila de mensagens": {
+      "main": [
+        [
+          {
+            "node": "Enviar memória resetada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente ativado?": {
+      "main": [
+        [
+          {
+            "node": "Pega Tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Transcrever audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcrever audio": {
+      "main": [
+        [
+          {
+            "node": "Extrair mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipo de mensagem": {
+      "main": [
+        [
+          {
+            "node": "Download áudio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extrair mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extrair mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extrair mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extrair mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download áudio": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar id_conversa": {
+      "main": [
+        [
+          {
+            "node": "Tipo de mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair mensagem": {
+      "main": [
+        [
+          {
+            "node": "Áudio ou imagem?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Áudio ou imagem?": {
+      "main": [
+        [
+          {
+            "node": "Salvar transcrição/descrição",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enfileirar mensagem.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensagem encavalada?": {
+      "main": [
+        [
+          {
+            "node": "Verificar status atendimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar mensagens": {
+      "main": [
+        [
+          {
+            "node": "Mensagem encavalada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar": {
+      "main": [
+        [
+          {
+            "node": "Buscar mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enfileirar mensagem.": {
+      "main": [
+        [
+          {
+            "node": "Esperar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente já terminou de responder?": {
+      "main": [
+        [
+          {
+            "node": "Bloquear status atendimento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Esperar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar status atendimento": {
+      "main": [
+        [
+          {
+            "node": "Agente já terminou de responder?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bloquear status atendimento": {
+      "main": [
+        [
+          {
+            "node": "Limpar fila de mensagens1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar transcrição/descrição": {
+      "main": [
+        [
+          {
+            "node": "Enfileirar mensagem.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpar fila de mensagens1": {
+      "main": [
+        [
+          {
+            "node": "Marcar como lida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marcar como lida": {
+      "main": [
+        [
+          {
+            "node": "Resposta a outra mensagem?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Coletar mensagens": {
+      "main": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memória": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resposta a outra mensagem?": {
+      "main": [
+        [
+          {
+            "node": "Buscar mensagem referenciada",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Coletar mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar mensagem referenciada": {
+      "main": [
+        [
+          {
+            "node": "Coletar mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar tool calls": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usou tools?": {
+      "main": [
+        [
+          {
+            "node": "Salvar tool calls",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output válido?": {
+      "main": [
+        [
+          {
+            "node": "Buscar novas entradas na fila",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Limpar status atendimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpar status atendimento": {
+      "main": [
+        [
+          {
+            "node": "Output inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recebeu mensagem enquanto respondia?": {
+      "main": [
+        [
+          {
+            "node": "Buscar mensagens na memória",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Usou tools?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar novas entradas na fila": {
+      "main": [
+        [
+          {
+            "node": "Recebeu mensagem enquanto respondia?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usou tools?1": {
+      "main": [
+        [
+          {
+            "node": "Salvar tool calls3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Limpar status atendimento3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar mensagens na memória": {
+      "main": [
+        [
+          {
+            "node": "Deletar última mensagem da memória",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deletar última mensagem da memória": {
+      "main": [
+        [
+          {
+            "node": "Usou tools?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar tool calls3": {
+      "main": [
+        [
+          {
+            "node": "Limpar status atendimento3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        [
+          {
+            "node": "Limpar status atendimento1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refletir": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gatilho Instagram": {
+      "main": [
+        [
+          {
+            "node": "Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gatilho WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Exames": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Consultas": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Convenios": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Cirurgias": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente IA Hospital": {
+      "main": [
+        [
+          {
+            "node": "Output válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escalar_humano": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpar status atendimento1": {
+      "main": [
+        []
+      ]
+    },
+    "Pega Tags": {
+      "main": [
+        [
+          {
+            "node": "Salvar id_conversa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aplicar_tag": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar_lead": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar_reclamacao": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agendamento_convenio": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente IA Hospital",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "85e1d43a-dee1-4ec6-89ae-a944ed93c474",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "87480eb81c11f148c57e9064a75af712e2dcbc33686f209b21605feb364c4779"
+  },
+  "id": "mwboSUbv8n4TBwPf",
+  "tags": []
+}

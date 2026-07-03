@@ -1,0 +1,234 @@
+{
+  "name": "Agendamento_convenio",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "32d5445b-e2e1-4aca-a9cc-401eae428558",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5b74d2fb-9b03-4b2c-b8de-873ea23832a8",
+      "name": "Webhook",
+      "webhookId": "32d5445b-e2e1-4aca-a9cc-401eae428558"
+    },
+    {
+      "parameters": {
+        "amount": 40
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "53d95310-c0b3-4657-b1dd-6248bb8a030c",
+      "name": "Wait",
+      "webhookId": "99e16a56-3d6c-4615-989c-1c47c9322773"
+    },
+    {
+      "parameters": {
+        "url": "=https://chatwoot.mala-ia.cloud/api/v1/accounts/{{ $('Webhook').item.json.body.id_conta }}/kanban/tasks/{{ $('Webhook').item.json.body.id_task }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "TOKEN-CHATWOOT-REMOVIDO-ROTACIONAR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        432,
+        0
+      ],
+      "id": "10ae7034-3341-4836-ba7c-32c9ff463dfd",
+      "name": "Get Step"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "db4a0e7f-e9db-4269-9afb-07caa26bad72",
+              "leftValue": "={{ $json.board_step_id }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        640,
+        0
+      ],
+      "id": "08bc4141-b63c-4c67-babe-f7800aeef47b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "accountId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - pedrocloserj@gmail.com",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/dashboard"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - SaoMatheusBot",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/settings/inboxes/1"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.id_conversa }}",
+          "mode": "id"
+        },
+        "content": "Eaí, conseguiu agendar?",
+        "replyToMessageId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "additionalFields": {}
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -176
+      ],
+      "id": "04c5056f-c96c-4841-b301-72a4ecd2cbd3",
+      "name": "Send text message in conversation",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8nia.mala-ia.cloud",
+            "user-agent": "axios/1.13.5",
+            "content-length": "48",
+            "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "31.97.29.32",
+            "cf-ipcountry": "BR",
+            "cf-ray": "9e0b71cb3cf04051-GRU",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/json",
+            "x-forwarded-for": "104.22.10.53",
+            "x-forwarded-host": "n8nia.mala-ia.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "bb394db56325",
+            "x-real-ip": "104.22.10.53"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "id_task": 11,
+            "id_conta": "1",
+            "id_conversa": "14"
+          },
+          "webhookUrl": "https://n8nia.mala-ia.cloud/webhook/32d5445b-e2e1-4aca-a9cc-401eae428558",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Step": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send text message in conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "02b43369-3516-420f-8196-155224da507b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "87480eb81c11f148c57e9064a75af712e2dcbc33686f209b21605feb364c4779"
+  },
+  "id": "HiFrboYuTemRl5vR",
+  "tags": []
+}

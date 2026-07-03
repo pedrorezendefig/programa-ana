@@ -1,0 +1,139 @@
+{
+  "name": "Aplicar_tag",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://chatwoot.mala-ia.cloud/api/v1/accounts/1/kanban/tasks/{{ $('Gatilho').item.json.id_task }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "TOKEN-CHATWOOT-REMOVIDO-ROTACIONAR"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task\": {\n    \"labels\": {{ \n      JSON.stringify(\n        ($node[\"Get Labels\"].json[\"labels\"] || \"\")\n        .toString()\n        .split(',')\n        .map(item => item.trim())\n        .filter(item => item !== \"\")\n        .concat([$('Gatilho').item.json.tag])\n      )\n    }}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        672,
+        352
+      ],
+      "id": "e250f049-295b-4654-8ae4-85e8fcac99a4",
+      "name": "Tag Task"
+    },
+    {
+      "parameters": {
+        "url": "https://chatwoot.mala-ia.cloud/api/v1/accounts/1/kanban/tasks/9",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "TOKEN-CHATWOOT-REMOVIDO-ROTACIONAR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        352
+      ],
+      "id": "18737518-bf7a-481b-a80a-38bfeeb3149e",
+      "name": "Get Labels"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "id_conta"
+            },
+            {
+              "name": "id_task"
+            },
+            {
+              "name": "id_conversa"
+            },
+            {
+              "name": "tag"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "Gatilho",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        272,
+        352
+      ]
+    }
+  ],
+  "pinData": {
+    "Gatilho": [
+      {
+        "json": {
+          "id_conta": "1",
+          "id_task": 9,
+          "id_conversa": "12",
+          "tag": "particular-aquecido"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Tag Task": {
+      "main": [
+        []
+      ]
+    },
+    "Get Labels": {
+      "main": [
+        [
+          {
+            "node": "Tag Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gatilho": {
+      "main": [
+        [
+          {
+            "node": "Get Labels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "be51f4a2-0ca9-4586-9c08-1c260889e208",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "87480eb81c11f148c57e9064a75af712e2dcbc33686f209b21605feb364c4779"
+  },
+  "id": "sgLdSCUhTB86fUge",
+  "tags": []
+}

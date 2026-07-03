@@ -1,0 +1,557 @@
+{
+  "name": "Desliga Ana",
+  "nodes": [
+    {
+      "parameters": {
+        "accountId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - pedrocloserj@gmail.com",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/dashboard"
+        },
+        "events": [
+          "message_outgoing"
+        ],
+        "inboxId": {
+          "__rl": true,
+          "value": "all",
+          "mode": "list",
+          "cachedResultName": "All Inboxes",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/settings/inboxes"
+        }
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwootTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -64
+      ],
+      "id": "ba4b0a32-45f0-49a9-bc98-404897e4bde4",
+      "name": "Gatilho WhatsApp",
+      "webhookId": "47a7bf44-b097-4958-a63a-3344246efa9a",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "838067e0-9afb-4ddb-a6a1-b214779a96e7",
+              "name": "conversation.messages[0].account_id",
+              "value": "={{ $json.conversation.messages[0].account_id }}",
+              "type": "number"
+            },
+            {
+              "id": "d1833a7a-8316-445d-8a28-c21446693882",
+              "name": "conversation.messages[0].content",
+              "value": "={{ $json.conversation.messages[0].content }}",
+              "type": "string"
+            },
+            {
+              "id": "ac54c06b-ea5a-4c09-b66c-af98d260bcc8",
+              "name": "conversation.messages[0].conversation_id",
+              "value": "={{ $json.conversation.messages[0].conversation_id }}",
+              "type": "number"
+            },
+            {
+              "id": "c5546ec1-4d93-43c0-ae92-99bf82f5d5a2",
+              "name": "private",
+              "value": "={{ $json.private }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f5754a28-5e0d-4930-adaa-a0530a50bf64",
+              "name": "conversation.meta.team.name",
+              "value": "={{ $json.conversation.meta.team.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a164c539-23e6-4f4c-98d7-7f6e32c35431",
+              "name": "conversation.messages[0].sender.available_name",
+              "value": "={{ $json.conversation.messages[0].sender.available_name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        -64
+      ],
+      "id": "f84b74bf-1cd4-4855-9175-5b92465d30dd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ !!($json.private === false && $json.conversation.messages[0].sender.available_name !== 'Ana') }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "3404dae6-a2b5-43f9-a04e-48bd8aabcb53"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Desliga Ana"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "def1cd63-9fae-4fd1-ba6d-d3ce7ec328d7",
+                    "leftValue": "={{ $json.conversation.messages[0].content }}",
+                    "rightValue": "/ana",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Liga Ana"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -176
+      ],
+      "id": "9735b216-9f58-4d66-a6c9-cf9698112bf0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "accountId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - pedrocloserj@gmail.com",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/dashboard"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - SaoMatheusBot",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/settings/inboxes/1"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $json.conversation.messages[0].conversation_id }}",
+          "mode": "id"
+        },
+        "labels": [
+          "agente-off"
+        ]
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -336
+      ],
+      "id": "0f21f00c-0b60-4476-8cef-3fd0f7f8a437",
+      "name": "Aplica Agente Off",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "accountId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - pedrocloserj@gmail.com",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/dashboard"
+        },
+        "inboxId": {
+          "__rl": true,
+          "value": "1",
+          "mode": "list",
+          "cachedResultName": "#1 - SaoMatheusBot",
+          "cachedResultUrl": "https://chatwoot.mala-ia.cloud/app/accounts/1/settings/inboxes/1"
+        },
+        "conversationId": {
+          "__rl": true,
+          "value": "={{ $json.conversation.messages[0].conversation_id }}",
+          "mode": "id"
+        },
+        "labels": [
+          "agente-off"
+        ]
+      },
+      "type": "@fazer-ai/n8n-nodes-chatwoot.chatwoot",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -144
+      ],
+      "id": "c4328be0-d141-46e5-a630-0832b4d31630",
+      "name": "Remove Agente Off",
+      "credentials": {
+        "fazerAiChatwootApi": {
+          "id": "PFTNCChK1dwYELUt",
+          "name": "Chatwoot fazer.ai account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Gatilho WhatsApp": [
+      {
+        "json": {
+          "account": {
+            "id": 1,
+            "name": "pedrocloserj@gmail.com"
+          },
+          "additional_attributes": {},
+          "content_attributes": {},
+          "content_type": "text",
+          "content": "Como posso te ajudar hoje?",
+          "conversation": {
+            "additional_attributes": {
+              "chat_id": 1219123751,
+              "business_connection_id": null
+            },
+            "can_reply": true,
+            "channel": "Channel::Telegram",
+            "contact_inbox": {
+              "id": 4,
+              "contact_id": 4,
+              "inbox_id": 1,
+              "source_id": "1219123751",
+              "created_at": "2026-03-19T01:05:33.277Z",
+              "updated_at": "2026-03-19T01:05:33.277Z",
+              "hmac_verified": false,
+              "pubsub_token": "2VtHMJ3EJDqVafYXqDRRB4SV"
+            },
+            "id": 16,
+            "inbox_id": 1,
+            "messages": [
+              {
+                "id": 709,
+                "content": "Como posso te ajudar hoje?",
+                "account_id": 1,
+                "inbox_id": 1,
+                "conversation_id": 16,
+                "message_type": 1,
+                "created_at": 1774300305,
+                "updated_at": "2026-03-23T21:11:45.197Z",
+                "private": false,
+                "status": "sent",
+                "source_id": null,
+                "content_type": "text",
+                "content_attributes": {},
+                "sender_type": "User",
+                "sender_id": 1,
+                "external_source_ids": {},
+                "additional_attributes": {},
+                "processed_message_content": "Como posso te ajudar hoje?",
+                "sentiment": {},
+                "conversation": {
+                  "assignee_id": 2,
+                  "unread_count": 0,
+                  "last_activity_at": 1774300305,
+                  "contact_inbox": {
+                    "source_id": "1219123751"
+                  }
+                },
+                "sender": {
+                  "id": 1,
+                  "name": "Pedro Figueiredo",
+                  "available_name": "Ana",
+                  "avatar_url": "",
+                  "type": "user",
+                  "availability_status": null,
+                  "thumbnail": ""
+                }
+              }
+            ],
+            "labels": [],
+            "meta": {
+              "sender": {
+                "additional_attributes": {
+                  "username": "pedro7",
+                  "language_code": "pt-br",
+                  "avatar_url_hash": "ee30d1ab478b5f528b0437584b8f05b589ffe58eb229232d724e23a36fa83f9f",
+                  "last_avatar_sync_at": "2026-03-19T01:05:36Z",
+                  "social_telegram_user_id": 1219123751,
+                  "social_telegram_user_name": "pedro7"
+                },
+                "custom_attributes": {},
+                "email": null,
+                "id": 4,
+                "identifier": null,
+                "name": "Pedro Figueiredo",
+                "phone_number": null,
+                "thumbnail": "https://chatwoot.mala-ia.cloud/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBEUT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--4ddb3c04ec7799634529c7a72a3208d6e4f616f2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RTNKbGMybDZaVjkwYjE5bWFXeHNXd2RwQWZvdyIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--fbb504397977ac1509a75b5467595677c8780471/file_2.jpg",
+                "blocked": false,
+                "type": "contact"
+              },
+              "assignee": {
+                "id": 2,
+                "name": "Pedro Rezende",
+                "available_name": "Pedro Rezende",
+                "avatar_url": "",
+                "type": "user",
+                "availability_status": null,
+                "thumbnail": ""
+              },
+              "assignee_type": "User",
+              "team": null,
+              "hmac_verified": false
+            },
+            "status": "open",
+            "custom_attributes": {},
+            "snoozed_until": null,
+            "unread_count": 0,
+            "first_reply_created_at": "2026-03-23T19:44:29.839Z",
+            "priority": null,
+            "waiting_since": 0,
+            "agent_last_seen_at": 1774300303,
+            "contact_last_seen_at": 0,
+            "last_activity_at": 1774300305,
+            "timestamp": 1774300305,
+            "created_at": 1774295066,
+            "updated_at": 1774300305.2005372,
+            "kanban_task": {
+              "id": 13,
+              "account_id": 1,
+              "board_id": 2,
+              "board_step_id": 6,
+              "board_step": {
+                "id": 6,
+                "name": "Fila Atendimento",
+                "cancelled": false,
+                "color": "#9B7ED8"
+              },
+              "created_by_id": 2,
+              "title": "Conversa #16 - Pedro Figueiredo",
+              "description": "",
+              "priority": null,
+              "start_date": null,
+              "due_date": null,
+              "created_at": "2026-03-23T19:44:26.964Z",
+              "updated_at": "2026-03-23T20:03:13.022Z",
+              "contact_ids": [
+                4
+              ],
+              "labels": [],
+              "assigned_agents": [
+                {
+                  "id": 2,
+                  "name": "Pedro Rezende",
+                  "avatar_url": "",
+                  "availability_status": null
+                }
+              ],
+              "creator": {
+                "id": 2,
+                "name": "Pedro Rezende"
+              },
+              "creator_display_name": "Pedro Rezende",
+              "board": {
+                "id": 2,
+                "name": "Hospital São Matheus",
+                "steps": [
+                  {
+                    "id": 2,
+                    "name": "Novo Contato",
+                    "cancelled": false,
+                    "color": "#5B9BD5"
+                  },
+                  {
+                    "id": 3,
+                    "name": "Em Atendimento — Ana",
+                    "cancelled": false,
+                    "color": "#F4C542"
+                  },
+                  {
+                    "id": 4,
+                    "name": "Aguardando Confirmação",
+                    "cancelled": false,
+                    "color": "#42321A"
+                  },
+                  {
+                    "id": 5,
+                    "name": "Fila Comercial",
+                    "cancelled": false,
+                    "color": "#E57C23"
+                  },
+                  {
+                    "id": 6,
+                    "name": "Fila Atendimento",
+                    "cancelled": false,
+                    "color": "#9B7ED8"
+                  },
+                  {
+                    "id": 7,
+                    "name": "Fila Ouvidoria",
+                    "cancelled": false,
+                    "color": "#E8735A"
+                  },
+                  {
+                    "id": 8,
+                    "name": "Setor Responsável",
+                    "cancelled": false,
+                    "color": "#5CC0C7"
+                  },
+                  {
+                    "id": 9,
+                    "name": "Agendado",
+                    "cancelled": false,
+                    "color": "#6BBF8A"
+                  },
+                  {
+                    "id": 11,
+                    "name": "Encerrado — Desistência",
+                    "cancelled": true,
+                    "color": "#A0A0A0"
+                  },
+                  {
+                    "id": 10,
+                    "name": "Encerrado — Resolvido",
+                    "cancelled": false,
+                    "color": "#3A8F5C"
+                  }
+                ],
+                "assigned_agents": [
+                  {
+                    "id": 1,
+                    "name": "Pedro Figueiredo",
+                    "avatar_url": "",
+                    "availability_status": null
+                  },
+                  {
+                    "id": 2,
+                    "name": "Pedro Rezende",
+                    "avatar_url": "",
+                    "availability_status": null
+                  }
+                ]
+              }
+            }
+          },
+          "created_at": "2026-03-23T21:11:45.197Z",
+          "id": 709,
+          "inbox": {
+            "id": 1,
+            "name": "SaoMatheusBot"
+          },
+          "message_type": "outgoing",
+          "private": false,
+          "sender": {
+            "id": 1,
+            "name": "Pedro Figueiredo",
+            "email": "pedrocloserj@gmail.com",
+            "type": "user"
+          },
+          "source_id": null,
+          "event": "message_outgoing"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gatilho WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Aplica Agente Off",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Remove Agente Off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0d483195-28b7-434f-9b70-e8012379c555",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "87480eb81c11f148c57e9064a75af712e2dcbc33686f209b21605feb364c4779"
+  },
+  "id": "g5F3UjcwzQdsNLfh",
+  "tags": []
+}

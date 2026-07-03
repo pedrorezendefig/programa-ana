@@ -1,0 +1,321 @@
+{
+  "name": "Registrar_reclamacao",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "protocolo"
+            },
+            {
+              "name": "nome_solicitante"
+            },
+            {
+              "name": "cpf"
+            },
+            {
+              "name": "data_hora"
+            },
+            {
+              "name": "setor_identificado"
+            },
+            {
+              "name": "descricao_resumida"
+            },
+            {
+              "name": "motivo_categoria"
+            },
+            {
+              "name": "nome_paciente"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "Gatilho",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        288,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw",
+          "mode": "list",
+          "cachedResultName": "Base_Ana_HospitalSaoMatheus_CONSOLIDADA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 571876387,
+          "mode": "list",
+          "cachedResultName": "6_Ouvidoria_Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e726ys6VOc7faBxyUui8lBAEpznVHkFpohah37KKjmw/edit#gid=571876387"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Motivo_Categoria": "={{ $json.motivo_categoria }}",
+            "Protocolo_HSM": "={{ $json.protocolo }}",
+            "Data_Hora": "={{ $json.data_hora }}",
+            "Nome_Solicitante": "={{ $json.nome_solicitante }}",
+            "CPF_Solicitante": "={{ $json.cpf }}",
+            "Nome_Paciente": "={{ $json.nome_paciente }}",
+            "Descricao_Resumida": "={{ $json.descricao_resumida }}",
+            "Setor_Identificado": "={{ $json.setor_identificado }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Protocolo_HSM",
+              "displayName": "Protocolo_HSM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Data_Hora",
+              "displayName": "Data_Hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Canal",
+              "displayName": "Canal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Nome_Solicitante",
+              "displayName": "Nome_Solicitante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CPF_Solicitante",
+              "displayName": "CPF_Solicitante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nome_Paciente",
+              "displayName": "Nome_Paciente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Setor_Identificado",
+              "displayName": "Setor_Identificado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Descricao_Resumida",
+              "displayName": "Descricao_Resumida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Motivo_Categoria",
+              "displayName": "Motivo_Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Data_Resposta",
+              "displayName": "Data_Resposta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Responsavel_Resposta",
+              "displayName": "Responsavel_Resposta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Observacoes",
+              "displayName": "Observacoes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        352
+      ],
+      "id": "6e1666a9-394e-469f-92bd-d58ffd16eba0",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IknPG2W05hh7ssDX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "06363c5d-1920-4c62-88fd-2a0183201e7b",
+              "name": "protocolo",
+              "value": "={{ $json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "116668fa-a4dc-4a59-a414-292ee5a88e48",
+              "name": "data_hora",
+              "value": "={{ $json.data_hora }}",
+              "type": "string"
+            },
+            {
+              "id": "e23584fb-6477-48d8-9a88-be242f9af338",
+              "name": "descricao_resumida",
+              "value": "={{ $json.descricao_resumida }}",
+              "type": "string"
+            },
+            {
+              "id": "f7a62abb-3654-4f85-8d37-00967ece7da5",
+              "name": "motivo_categoria",
+              "value": "={{ $json.motivo_categoria }}",
+              "type": "string"
+            },
+            {
+              "id": "e525a8af-c128-43a0-81d2-6a3d7344af2b",
+              "name": "cpf",
+              "value": "={{ $json.cpf }}",
+              "type": "string"
+            },
+            {
+              "id": "383501d5-dc96-49d5-9f87-91e07fd58fb7",
+              "name": "nome_solicitante",
+              "value": "={{ $json.nome_solicitante }}",
+              "type": "string"
+            },
+            {
+              "id": "b371e39c-f1f8-4f53-9aa5-f67ce104f035",
+              "name": "nome_paciente",
+              "value": "={{ $json.nome_paciente }}",
+              "type": "string"
+            },
+            {
+              "id": "b7a62e96-2c67-46ad-887a-78dd44a853da",
+              "name": "setor_identificado",
+              "value": "={{ $json.setor_identificado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        352
+      ],
+      "id": "397f20eb-8319-4290-8be2-01c9dbefc74d",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gatilho": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "33193691-fb75-46fa-a23f-c5d5162d4b63",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "87480eb81c11f148c57e9064a75af712e2dcbc33686f209b21605feb364c4779"
+  },
+  "id": "ywg3o0d40QYYD4TA",
+  "tags": []
+}

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana · Hospital São Matheus — Mapa de Funções</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..600&family=Hanken+Grotesk:wght@300..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08110f;
+    --bg-2:#0b1a16;
+    --surface:#0f211b;
+    --surface-2:#13291f;
+    --line:#1f3a31;
+    --line-soft:#16302700;
+    --ink:#eef4f0;
+    --ink-dim:#b9ccc3;
+    --muted:#7f9a90;
+    --teal:#2dd4a7;     /* agenda / sucesso / IA */
+    --teal-deep:#0e7f63;
+    --amber:#f0a830;    /* fallback / atenção / CRM */
+    --blue:#6aa5d8;     /* conhecimento / dados */
+    --lilac:#b394e0;    /* infra */
+    --coral:#e58a6b;    /* operacional */
+    --rose:#e06a6a;     /* destrutivo / LGPD */
+    --maxw:1180px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:84px}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Hanken Grotesk",system-ui,sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* atmosphere */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(60% 50% at 78% 8%, rgba(45,212,167,.14), transparent 60%),
+      radial-gradient(50% 45% at 12% 22%, rgba(106,165,216,.10), transparent 60%),
+      radial-gradient(55% 50% at 50% 110%, rgba(240,168,48,.07), transparent 55%);
+  }
+  .grain{
+    position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:2}
+
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--teal);color:#04140f}
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky;top:0;z-index:40;
+    backdrop-filter:blur(14px);
+    background:linear-gradient(180deg,rgba(8,17,15,.92),rgba(8,17,15,.6));
+    border-bottom:1px solid var(--line);
+  }
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:12px;font-family:"Fraunces";font-weight:600;font-size:19px;letter-spacing:.2px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(45,212,167,.18);animation:pulse 2.6s var(--ease) infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(45,212,167,.18)}50%{box-shadow:0 0 0 8px rgba(45,212,167,.05)}}
+  .nav-links{display:flex;gap:6px}
+  .nav-links a{font-size:13px;color:var(--muted);padding:7px 12px;border-radius:8px;transition:.25s var(--ease);font-weight:500}
+  .nav-links a:hover{color:var(--ink);background:var(--surface)}
+  .nav-links a.active{color:var(--teal)}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* ---------- reveal ---------- */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal[data-d="1"]{transition-delay:.08s}
+  .reveal[data-d="2"]{transition-delay:.16s}
+  .reveal[data-d="3"]{transition-delay:.24s}
+  .reveal[data-d="4"]{transition-delay:.32s}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:92px 0 70px;position:relative}
+  .eyebrow{font-family:"IBM Plex Mono";font-size:12.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--teal);margin-bottom:26px;display:flex;align-items:center;gap:14px}
+  .eyebrow::before{content:"";width:42px;height:1px;background:var(--teal);opacity:.6}
+  .hero h1{font-family:"Fraunces";font-weight:340;font-size:clamp(44px,8vw,104px);line-height:.98;letter-spacing:-.02em;margin-bottom:22px}
+  .hero h1 em{font-style:italic;color:var(--teal)}
+  .hero h1 .out{color:transparent;-webkit-text-stroke:1.3px var(--ink-dim)}
+  .hero p.lead{font-size:clamp(17px,2.1vw,21px);max-width:620px;color:var(--ink-dim);font-weight:330}
+  .hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+  .chip{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink-dim);border:1px solid var(--line);background:var(--surface);padding:8px 13px;border-radius:999px;display:flex;gap:8px;align-items:center}
+  .chip b{color:var(--teal);font-weight:500}
+  .chip.warm b{color:var(--amber)}
+
+  /* section heads */
+  section{padding:70px 0;position:relative}
+  .sec-head{margin-bottom:46px;max-width:760px}
+  .sec-tag{font-family:"IBM Plex Mono";font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:16px}
+  .sec-head h2{font-family:"Fraunces";font-weight:380;font-size:clamp(30px,4.4vw,50px);line-height:1.04;letter-spacing:-.015em;margin-bottom:16px}
+  .sec-head h2 em{font-style:italic;color:var(--teal)}
+  .sec-head p{color:var(--ink-dim);font-size:16.5px;font-weight:330}
+  .divider{height:1px;background:linear-gradient(90deg,var(--line),transparent);margin:0}
+
+  /* ---------- ECOSSISTEMA (hub) ---------- */
+  .hub{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
+  @media(max-width:840px){.hub{grid-template-columns:1fr}}
+  .hub-col{display:flex;flex-direction:column;gap:14px}
+  .core{
+    text-align:center;padding:30px 22px;border-radius:20px;
+    background:radial-gradient(120% 120% at 50% 0%,rgba(45,212,167,.16),var(--surface) 60%);
+    border:1px solid var(--teal-deep);position:relative;min-width:200px;
+    box-shadow:0 24px 60px -30px rgba(45,212,167,.5);
+  }
+  .core .k{font-family:"Fraunces";font-style:italic;font-size:34px;color:var(--teal)}
+  .core .s{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px}
+  .core .e{font-size:13px;color:var(--muted);margin-top:10px}
+  .node{
+    border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:15px 17px;
+    transition:.3s var(--ease);position:relative;
+  }
+  .node:hover{transform:translateX(var(--shift,0));border-color:var(--nc,var(--teal));background:var(--surface-2)}
+  .hub-col.left .node:hover{--shift:6px}
+  .hub-col.right .node:hover{--shift:-6px}
+  .node .t{font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px}
+  .node .t::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--nc,var(--teal))}
+  .node .d{font-size:13px;color:var(--muted);margin-top:4px}
+  .node.api{--nc:var(--teal)} .node.cw{--nc:var(--blue)} .node.sheet{--nc:var(--blue)}
+  .node.kanban{--nc:var(--amber)} .node.human{--nc:var(--coral)} .node.db{--nc:var(--lilac)}
+
+  /* ---------- FLUXO HÍBRIDO ---------- */
+  .flow{display:flex;flex-direction:column;gap:0;max-width:840px;margin:0 auto}
+  .frow{display:flex;align-items:stretch;gap:18px;position:relative}
+  .fstep{
+    flex:1;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+    display:flex;gap:14px;align-items:flex-start;position:relative;transition:.3s var(--ease)
+  }
+  .fstep:hover{border-color:var(--teal);background:var(--surface-2)}
+  .fstep .num{font-family:"IBM Plex Mono";font-size:12px;color:var(--teal);border:1px solid var(--teal-deep);border-radius:8px;min-width:30px;height:30px;display:grid;place-items:center;font-weight:600}
+  .fstep .ft{font-weight:600;font-size:15px}
+  .fstep .fd{font-size:13px;color:var(--muted);margin-top:3px}
+  .fstep .tool{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--teal);margin-top:7px;display:inline-block;background:rgba(45,212,167,.08);padding:2px 8px;border-radius:6px}
+  .connector{height:26px;width:2px;background:linear-gradient(var(--teal),var(--line));margin:0 auto;position:relative}
+  .connector::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--line)}
+  .decision{
+    margin:0 auto;max-width:520px;text-align:center;border:1px dashed var(--amber);border-radius:14px;
+    padding:14px 20px;color:var(--amber);font-weight:600;font-size:15px;background:rgba(240,168,48,.06)
+  }
+  .branches{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+  @media(max-width:680px){.branches{grid-template-columns:1fr}}
+  .branch{border-radius:14px;padding:18px;border:1px solid}
+  .branch.ok{border-color:var(--teal-deep);background:linear-gradient(180deg,rgba(45,212,167,.1),transparent)}
+  .branch.fb{border-color:#7a5a1e;background:linear-gradient(180deg,rgba(240,168,48,.09),transparent)}
+  .branch h4{font-family:"Fraunces";font-weight:500;font-size:19px;margin-bottom:7px}
+  .branch.ok h4{color:var(--teal)} .branch.fb h4{color:var(--amber)}
+  .branch p{font-size:13.5px;color:var(--ink-dim)}
+  .branch .mono{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--muted);margin-top:10px;display:block}
+
+  /* ---------- TOOLS GRID ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:30px}
+  .legend span{font-size:12.5px;color:var(--muted);font-family:"IBM Plex Mono";display:flex;align-items:center;gap:7px}
+  .legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:14px}
+  .tcard{
+    background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:18px;
+    position:relative;overflow:hidden;transition:.35s var(--ease);cursor:default
+  }
+  .tcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--teal))}
+  .tcard:hover{transform:translateY(-5px);border-color:var(--c);box-shadow:0 22px 44px -26px var(--c)}
+  .tcard.isNew::after{content:"NOVO";position:absolute;top:13px;right:13px;font-family:"IBM Plex Mono";font-size:9.5px;letter-spacing:.14em;color:#04140f;background:var(--teal);padding:3px 7px;border-radius:5px;font-weight:600}
+  .tcard .cat{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);margin-bottom:9px}
+  .tcard h3{font-family:"Fraunces";font-weight:500;font-size:21px;letter-spacing:-.01em;margin-bottom:7px}
+  .tcard .desc{font-size:13.5px;color:var(--ink-dim);min-height:42px}
+  .tcard .ep{font-family:"IBM Plex Mono";font-size:11px;color:var(--muted);margin-top:11px;padding-top:11px;border-top:1px solid var(--line);word-break:break-word}
+  .tcard.write .ep::before{content:"⚠ escrita · ";color:var(--rose)}
+
+  /* ---------- JORNADA / STEPPER ---------- */
+  .journey{position:relative;padding-left:4px}
+  .jstep{display:grid;grid-template-columns:54px 1fr;gap:20px;padding-bottom:6px;position:relative}
+  .jrail{display:flex;flex-direction:column;align-items:center}
+  .jdot{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:"IBM Plex Mono";font-weight:600;font-size:14px;background:var(--surface);border:1px solid var(--teal-deep);color:var(--teal);flex:none;z-index:2}
+  .jline{width:2px;flex:1;background:linear-gradient(var(--teal-deep),var(--line));min-height:26px}
+  .jstep:last-child .jline{display:none}
+  .jbody{padding-bottom:30px}
+  .jbody h4{font-size:16px;font-weight:700;margin-bottom:4px}
+  .jbody p{font-size:14px;color:var(--ink-dim)}
+  .idtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .idtag{font-family:"IBM Plex Mono";font-size:11px;padding:3px 9px;border-radius:6px;background:rgba(106,165,216,.1);color:var(--blue);border:1px solid rgba(106,165,216,.25)}
+  .idtag.born{background:rgba(45,212,167,.12);color:var(--teal);border-color:rgba(45,212,167,.3)}
+  .idtag.born::before{content:"+ ";opacity:.7}
+
+  /* ---------- KANBAN ---------- */
+  .board{display:flex;gap:12px;overflow-x:auto;padding-bottom:14px;scroll-snap-type:x mandatory}
+  .col{flex:0 0 188px;scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:14px;border-top:3px solid var(--ct,var(--muted))}
+  .col h5{font-size:13px;font-weight:700;letter-spacing:.01em;margin-bottom:6px}
+  .col p{font-size:12px;color:var(--muted)}
+  .col .badge{font-family:"IBM Plex Mono";font-size:9.5px;letter-spacing:.1em;color:var(--ct);text-transform:uppercase;display:block;margin-top:9px}
+  .col.auto{--ct:var(--teal)} .col.fail{--ct:var(--amber)} .col.human{--ct:var(--coral)} .col.start{--ct:var(--blue)} .col.end{--ct:var(--lilac)}
+  .tagline{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+  .tg{font-family:"IBM Plex Mono";font-size:11.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--ink-dim)}
+  .tg.new{border-color:var(--teal-deep);color:var(--teal);background:rgba(45,212,167,.07)}
+
+  /* ---------- SECUNDÁRIOS ---------- */
+  .mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .mini{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:20px;transition:.3s var(--ease)}
+  .mini:hover{border-color:var(--mc,var(--teal));background:var(--surface-2)}
+  .mini h4{font-family:"Fraunces";font-weight:500;font-size:22px;margin-bottom:12px;color:var(--mc,var(--teal))}
+  .mini ol{list-style:none;counter-reset:s}
+  .mini li{counter-increment:s;font-size:13.5px;color:var(--ink-dim);padding:5px 0 5px 28px;position:relative}
+  .mini li::before{content:counter(s);position:absolute;left:0;top:5px;font-family:"IBM Plex Mono";font-size:11px;color:var(--mc,var(--teal));border:1px solid currentColor;border-radius:5px;width:19px;height:19px;display:grid;place-items:center;opacity:.8}
+  .mini.cancel{--mc:var(--rose)} .mini.remark{--mc:var(--amber)} .mini.list{--mc:var(--blue)}
+
+  /* ---------- GUARDRAILS ---------- */
+  .guards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+  .guard{border:1px solid var(--line);border-radius:14px;padding:20px;background:var(--surface);position:relative}
+  .guard .ic{font-size:22px;margin-bottom:12px;display:block}
+  .guard h4{font-size:15.5px;font-weight:700;margin-bottom:6px}
+  .guard p{font-size:13.5px;color:var(--ink-dim)}
+  .guard.rose{border-color:rgba(224,106,106,.4)} .guard.rose h4{color:var(--rose)}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:46px 0 60px;color:var(--muted)}
+  .foot-in{display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;align-items:flex-end}
+  .foot-in .big{font-family:"Fraunces";font-style:italic;font-size:26px;color:var(--ink)}
+  .foot-links{display:flex;flex-direction:column;gap:6px;font-family:"IBM Plex Mono";font-size:12.5px}
+  .foot-links a{color:var(--muted);transition:.2s}
+  .foot-links a:hover{color:var(--teal)}
+
+  .callout{font-family:"IBM Plex Mono";font-size:12.5px;color:var(--ink-dim);background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:10px;padding:14px 16px;margin-top:24px}
+  .callout b{color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <div class="brand"><span class="dot"></span> Ana <span style="color:var(--muted);font-weight:400;font-size:14px;font-family:'Hanken Grotesk'">/ São Matheus</span></div>
+    <nav class="nav-links">
+      <a href="#ecossistema">Ecossistema</a>
+      <a href="#fluxo">Fluxo híbrido</a>
+      <a href="#tools">Ferramentas</a>
+      <a href="#jornada">Jornada</a>
+      <a href="#kanban">Funil</a>
+      <a href="#guardrails">Guardrails</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow reveal">Mapa de funções · integração de agendamento</div>
+      <h1 class="reveal" data-d="1">A <em>Ana</em> agora<br>agenda de <span class="out">verdade</span>.</h1>
+      <p class="lead reveal" data-d="2">Assistente virtual do Hospital São Matheus. Atende por WhatsApp, Instagram e Facebook — 24/7 — e passa a marcar, consultar, remarcar e cancelar consultas e exames diretamente pela API, com a equipe humana sempre como rede de segurança.</p>
+      <div class="meta reveal" data-d="3">
+        <span class="chip"><b>n8n</b> · Tools Agent gpt-5.2</span>
+        <span class="chip"><b>Chatwoot</b> · WhatsApp/IG/FB</span>
+        <span class="chip"><b>Global Health/MV</b> · API de agenda</span>
+        <span class="chip warm"><b>híbrido</b> · API → humano</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- ECOSSISTEMA -->
+  <section id="ecossistema">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">01 — O ecossistema</span>
+        <h2>Tudo orbita um <em>único agente</em>.</h2>
+        <p>O paciente conversa pelo Chatwoot; o n8n orquestra; a Ana raciocina e aciona as ferramentas. Cada peça já existe — a novidade é a ponte com a API de agenda.</p>
+      </div>
+      <div class="hub reveal" data-d="1">
+        <div class="hub-col left">
+          <div class="node cw"><div class="t">Chatwoot</div><div class="d">Canais + caixa de entrada omnichannel</div></div>
+          <div class="node sheet"><div class="t">Google Sheets</div><div class="d">Discurso comercial: valores, diferenciais, cirurgias</div></div>
+          <div class="node db"><div class="t">Postgres</div><div class="d">Memória, fila e lock da conversa</div></div>
+        </div>
+        <div class="core">
+          <div class="k">Ana</div>
+          <div class="s">Agente IA · n8n</div>
+          <div class="e">gpt-5.2 + memória<br>+ SOP no system prompt</div>
+        </div>
+        <div class="hub-col right">
+          <div class="node api"><div class="t">API Global Health/MV</div><div class="d">Agendar · consultar · remarcar · cancelar</div></div>
+          <div class="node kanban"><div class="t">Chatwoot Kanban</div><div class="d">CRM: etapas do funil + tags</div></div>
+          <div class="node human"><div class="t">Equipe humana</div><div class="d">Fallback, ouvidoria e casos complexos</div></div>
+        </div>
+      </div>
+      <div class="callout reveal" data-d="2"><b>Princípio híbrido:</b> a Ana tenta resolver pela API. Se bloquear, falhar ou o caso fugir do escopo, ela acolhe e cai no fluxo humano que já funciona hoje — sem nunca expor jargão técnico ao paciente.</div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- FLUXO HÍBRIDO -->
+  <section id="fluxo">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">02 — Fluxo principal</span>
+        <h2>Do "quero agendar" ao <em>protocolo</em>.</h2>
+        <p>O caminho de agendamento ponta a ponta. No fim, uma bifurcação decide tudo: deu certo na API ou cai no humano.</p>
+      </div>
+      <div class="flow reveal" data-d="1">
+        <div class="frow"><div class="fstep"><div class="num">1</div><div><div class="ft">Identifica a intenção</div><div class="fd">Consulta ou exame · convênio ou particular (pergunta acolhedora).</div></div></div></div>
+        <div class="connector"></div>
+        <div class="frow"><div class="fstep"><div class="num">2</div><div><div class="ft">Mostra horários reais</div><div class="fd">Resolve item, convênio e plano; devolve uma lista numerada.</div><span class="tool">Buscar_disponibilidade</span></div></div></div>
+        <div class="connector"></div>
+        <div class="frow"><div class="fstep"><div class="num">3</div><div><div class="ft">Paciente escolhe o número + dá nome e CPF</div><div class="fd">A Ana localiza ou cria o cadastro.</div><span class="tool">Identificar_paciente</span></div></div></div>
+        <div class="connector"></div>
+        <div class="frow"><div class="fstep"><div class="num">4</div><div><div class="ft">Pré-requisitos</div><div class="fd">Tipo de consulta, perguntas de triagem do exame, anexos.</div><span class="tool">Pre_requisitos_agendamento · Gerenciar_anexos</span></div></div></div>
+        <div class="connector"></div>
+        <div class="frow"><div class="fstep" style="border-color:var(--amber)"><div class="num" style="color:var(--amber);border-color:#7a5a1e">5</div><div><div class="ft">Confirma com o paciente</div><div class="fd">Repete data, hora, profissional e valor — e só então grava.</div><span class="tool" style="color:var(--amber);background:rgba(240,168,48,.08)">Efetivar_agendamento</span></div></div></div>
+        <div class="connector"></div>
+        <div class="decision">A API retornou sucesso?</div>
+        <div class="branches">
+          <div class="branch ok"><h4>Sim → Agendado</h4><p>Informa o protocolo e as instruções. Move o card para AGENDADO e aplica a tag de bot.</p><span class="mono">AGENDADO · tag agendado-bot</span></div>
+          <div class="branch fb"><h4>Não → Humano</h4><p>Acolhe sem jargão, registra, move para a fila certa e escala para a equipe. Convênio ainda pode receber o link do portal.</p><span class="mono">Atualizar_lead + Escalar_humano</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- TOOLS -->
+  <section id="tools">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">03 — Catálogo de ferramentas</span>
+        <h2>Tudo o que a Ana <em>sabe fazer</em>.</h2>
+        <p>As funções de hoje convivem com as sete novas de agendamento. Cada cartão é uma ferramenta ligada ao agente.</p>
+      </div>
+      <div class="legend reveal" data-d="1">
+        <span><i style="background:var(--teal)"></i> Agenda (API · novo)</span>
+        <span><i style="background:var(--blue)"></i> Conhecimento (Sheets)</span>
+        <span><i style="background:var(--amber)"></i> CRM / Kanban</span>
+        <span><i style="background:var(--coral)"></i> Operacional</span>
+        <span><i style="background:var(--lilac)"></i> Infraestrutura</span>
+      </div>
+      <div class="tools-grid reveal" data-d="2" id="toolsGrid"></div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- JORNADA -->
+  <section id="jornada">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">04 — Anatomia de um agendamento</span>
+        <h2>Onde cada <em>ID</em> nasce.</h2>
+        <p>O segredo contra erros: o agente nunca digita IDs longos. Ele guarda um mapa no estado da conversa e o paciente escolhe por número.</p>
+      </div>
+      <div class="journey reveal" data-d="1" id="journey"></div>
+      <div class="callout reveal" data-d="2"><b>Estado da jornada</b> vive em <span style="font-family:'IBM Plex Mono'">custom_attributes.agendamento_estado</span> da conversa no Chatwoot. O LLM só vê números amigáveis; o subfluxo resolve o ID real.</div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- KANBAN -->
+  <section id="kanban">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">05 — Funil no Chatwoot Kanban</span>
+        <h2>O caminho do <em>card</em>.</h2>
+        <p>As etapas do CRM. <b style="color:var(--teal)">AGENDADO</b> agora é atingido automaticamente pela Ana; <b style="color:var(--amber)">FALHA AGENDAMENTO</b> é a nova rede de segurança técnica.</p>
+      </div>
+      <div class="board reveal" data-d="1" id="board"></div>
+      <div class="tagline reveal" data-d="2" id="tags"></div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- SECUNDÁRIOS -->
+  <section id="secundarios">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">06 — Gestão de agendamentos</span>
+        <h2>Consultar, remarcar, <em>cancelar</em>.</h2>
+        <p>Jornadas que hoje nem existem. Toda escrita passa por confirmação — cancelar exige um "sim" inequívoco.</p>
+      </div>
+      <div class="mini-grid reveal" data-d="1">
+        <div class="mini list">
+          <h4>Consultar</h4>
+          <ol><li>Valida o CPF</li><li>Listar_agendamentos</li><li>Lê a lista numerada</li><li>Oferece a próxima ação</li></ol>
+        </div>
+        <div class="mini remark">
+          <h4>Remarcar</h4>
+          <ol><li>Lista e escolhe qual</li><li>Busca novos horários</li><li>Confirma o "de / para"</li><li>Reagendar → novo protocolo</li></ol>
+        </div>
+        <div class="mini cancel">
+          <h4>Cancelar</h4>
+          <ol><li>Lista e escolhe qual</li><li>Confirmação reforçada</li><li>Só com "sim" inequívoco</li><li>Cancela e oferece reagendar</li></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- GUARDRAILS -->
+  <section id="guardrails">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">07 — Guardrails</span>
+        <h2>O que mantém tudo <em>seguro</em>.</h2>
+      </div>
+      <div class="guards reveal" data-d="1">
+        <div class="guard"><span class="ic">🔢</span><h4>Zero IDs inventados</h4><p>Horário, valor e protocolo só existem se vieram de uma ferramenta. O paciente escolhe por número.</p></div>
+        <div class="guard"><span class="ic">✋</span><h4>Confirmação em 3 camadas</h4><p>Regra de prompt + parâmetro confirmado + um nó-gate determinístico antes de qualquer escrita.</p></div>
+        <div class="guard rose"><span class="ic">🔒</span><h4>LGPD</h4><p>CPF e anexos só trafegam para a API de agenda. Nunca reenviados, descritos ou usados para outro fim. Resultado de exame nunca por chat.</p></div>
+        <div class="guard"><span class="ic">🩺</span><h4>Bloqueios clínicos</h4><p>Triagem com impedimento (ex.: gravidez) ou item indisponível nunca são contornados — viram acolhimento + humano.</p></div>
+        <div class="guard"><span class="ic">🔁</span><h4>Sem duplicidade</h4><p>Nunca reefetiva em retentativa cega. Em dúvida, confere via Listar_agendamentos antes de repetir.</p></div>
+        <div class="guard"><span class="ic">🛟</span><h4>Fallback total</h4><p>Nenhum erro quebra a conversa: prefixos-sinal disparam a escalada humana já existente.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <div>
+      <div class="big">Ana · Hospital São Matheus</div>
+      <p style="font-size:13px;margin-top:8px;max-width:420px">Documentação viva do agente. Detalhe técnico nos arquivos .md ao lado deste painel.</p>
+    </div>
+    <div class="foot-links">
+      <a href="../00-visao-geral.md">↳ 00 · Visão geral</a>
+      <a href="../01-catalogo-funcoes.md">↳ 01 · Catálogo de funções</a>
+      <a href="../02-arquitetura-agendamento.md">↳ 02 · Arquitetura de agendamento</a>
+      <a href="../03-fluxos-conversacionais.md">↳ 03 · Fluxos conversacionais</a>
+      <a href="../04-sop-ana-reescrito.md">↳ 04 · SOP reescrito</a>
+      <a href="../05-guia-implementacao-n8n.md">↳ 05 · Guia de implementação</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---- dados das tools ----
+  const tools = [
+    {cat:"Agenda · API", c:"--teal", n:"Identificar_paciente", d:"Localiza o cadastro pelo CPF; cria se não existir.", ep:"GET/POST /pessoas", new:true},
+    {cat:"Agenda · API", c:"--teal", n:"Buscar_disponibilidade", d:"Orquestrador: resolve item, convênio e plano e traz horários numerados.", ep:"/consultas·/exames·/convenios·/agendas/v2", new:true},
+    {cat:"Agenda · API", c:"--teal", n:"Pre_requisitos_agendamento", d:"Tipo de consulta ou perguntas de triagem do exame.", ep:"/consultas/tipos · /exames/perguntas", new:true},
+    {cat:"Agenda · API", c:"--teal", n:"Gerenciar_anexos", d:"Descobre anexos exigidos e sobe os arquivos enviados.", ep:"/anexos/agendamento · /anexos/upload", new:true},
+    {cat:"Agenda · API", c:"--teal", n:"Efetivar_agendamento", d:"Grava o agendamento e retorna o protocolo.", ep:"POST /horarios/agendar", new:true, write:true},
+    {cat:"Agenda · API", c:"--teal", n:"Listar_agendamentos", d:"Lista os agendamentos ativos do paciente.", ep:"GET /agendamentos?cpf=", new:true},
+    {cat:"Agenda · API", c:"--teal", n:"Remarcar_ou_cancelar", d:"Troca o horário ou cancela um agendamento.", ep:"/horarios/reagendar · DELETE /agendamentos", new:true, write:true},
+    {cat:"Conhecimento", c:"--blue", n:"Get_Consultas", d:"Valor e diferenciais de consultas particulares.", ep:"Google Sheets (RAG)"},
+    {cat:"Conhecimento", c:"--blue", n:"Get_Convenios", d:"Convênios aceitos e especialidades cobertas.", ep:"Google Sheets (RAG)"},
+    {cat:"Conhecimento", c:"--blue", n:"Get_Exames", d:"Preparo e valor de exames.", ep:"Google Sheets (RAG)"},
+    {cat:"Conhecimento", c:"--blue", n:"Get_Cirurgias", d:"Estimativa de cirurgias (a API não cobre cirurgia).", ep:"Google Sheets (RAG)"},
+    {cat:"CRM / Kanban", c:"--amber", n:"Atualizar_lead", d:"Move o card entre as etapas do funil.", ep:"POST /kanban/tasks/{id}/move"},
+    {cat:"CRM / Kanban", c:"--amber", n:"Aplicar_tag", d:"Etiqueta o card — uma tag por chamada.", ep:"PATCH /kanban/tasks/{id}"},
+    {cat:"Operacional", c:"--coral", n:"Registrar_reclamacao", d:"Abre protocolo de ouvidoria e grava em planilha.", ep:"Append · Google Sheets"},
+    {cat:"Operacional", c:"--coral", n:"Escalar_humano", d:"Notifica a equipe com resumo da conversa.", ep:"Nota privada · Chatwoot"},
+    {cat:"Operacional", c:"--coral", n:"Encerrar_conversa", d:"Encerra atendimento resolvido sem escalada.", ep:"Chatwoot"},
+    {cat:"Infraestrutura", c:"--lilac", n:"Transcrição de áudio", d:"Converte áudios do paciente em texto.", ep:"OpenAI Whisper · pt"},
+    {cat:"Infraestrutura", c:"--lilac", n:"Fila & Lock", d:"Evita respostas duplicadas e mensagens encavaladas.", ep:"Postgres"},
+    {cat:"Infraestrutura", c:"--lilac", n:"Memória da conversa", d:"Contexto por conversa; injeta resultados de tools.", ep:"memoryPostgresChat"},
+    {cat:"Infraestrutura", c:"--lilac", n:"Ligar / Desligar Ana", d:"Pausa quando um humano assume; religa com /ana.", ep:"tag agente-off"},
+  ];
+  const grid = document.getElementById('toolsGrid');
+  tools.forEach(t=>{
+    const el=document.createElement('div');
+    el.className='tcard'+(t.new?' isNew':'')+(t.write?' write':'');
+    el.style.setProperty('--c',`var(${t.c})`);
+    el.innerHTML=`<div class="cat">${t.cat}</div><h3>${t.n}</h3><div class="desc">${t.d}</div><div class="ep">${t.ep}</div>`;
+    grid.appendChild(el);
+  });
+
+  // ---- jornada ----
+  const journey=[
+    {h:"Busca disponibilidade", p:"Resolve o que agendar e a cobertura, depois lista horários.", born:["idItemAgendamento","idConvenio","idPlano","mapa[ ordem→idHorario ]"], have:["cpf","procedimento","convenio"]},
+    {h:"Paciente escolhe o número", p:"O subfluxo traduz a ordem no idHorario real, guardado no estado.", born:["idHorario","idAgenda"], have:["numero_escolhido"]},
+    {h:"Identifica o paciente", p:"Localiza pelo CPF ou cadastra com nome e nascimento.", born:["idPaciente"], have:["cpf","nome"]},
+    {h:"Pré-requisitos", p:"Tipo de consulta ou triagem do exame; carteirinha no convênio.", born:["idTipoMarcacao","respostas[ ]","nrCarteira"], have:[]},
+    {h:"Confirma e efetiva", p:"Com o aval do paciente, grava o agendamento.", born:["protocolo"], have:["confirmado = true"]},
+  ];
+  const jw=document.getElementById('journey');
+  journey.forEach((j,i)=>{
+    const tags=[...j.have.map(x=>`<span class="idtag">${x}</span>`),...j.born.map(x=>`<span class="idtag born">${x}</span>`)].join('');
+    const el=document.createElement('div');el.className='jstep';
+    el.innerHTML=`<div class="jrail"><div class="jdot">${i+1}</div><div class="jline"></div></div><div class="jbody"><h4>${j.h}</h4><p>${j.p}</p><div class="idtags">${tags}</div></div>`;
+    jw.appendChild(el);
+  });
+
+  // ---- kanban ----
+  const cols=[
+    {k:"start",t:"NOVO CONTATO",d:"Primeiro contato",b:"entrada"},
+    {k:"start",t:"EM ATENDIMENTO — ANA",d:"Motivo identificado",b:"ativo"},
+    {k:"auto",t:"AGENDADO",d:"Concluído pela Ana via API",b:"automático ✦"},
+    {k:"fail",t:"FALHA AGENDAMENTO — FILA",d:"Erro técnico após tentar",b:"novo · fallback"},
+    {k:"human",t:"FILA COMERCIAL",d:"Particular sem API / orçamento",b:"humano"},
+    {k:"human",t:"AGUARDANDO CONFIRMAÇÃO",d:"Convênio via portal",b:"humano"},
+    {k:"human",t:"FILA ATENDIMENTO",d:"Caso complexo / fora de escopo",b:"humano"},
+    {k:"human",t:"SETOR RESPONSÁVEL",d:"Prontuário / exame particular",b:"humano"},
+    {k:"human",t:"FILA OUVIDORIA",d:"Após reclamação",b:"humano"},
+    {k:"end",t:"ENCERRADO — RESOLVIDO",d:"Sucesso, sem escalada",b:"fim"},
+    {k:"end",t:"ENCERRADO — DESISTÊNCIA",d:"Paciente desistiu",b:"fim"},
+  ];
+  const board=document.getElementById('board');
+  cols.forEach(c=>{const el=document.createElement('div');el.className='col '+c.k;el.innerHTML=`<h5>${c.t}</h5><p>${c.d}</p><span class="badge">${c.b}</span>`;board.appendChild(el);});
+
+  const tags=[
+    {t:"particular-aquecido"},{t:"agendado-bot",n:1},{t:"remarcacao",n:1},{t:"cancelamento",n:1},
+    {t:"agendamento-convenio"},{t:"agendamento-particular"},{t:"exame-resultado"},{t:"prontuario"},{t:"ouvidoria"},{t:"fora-horario"}
+  ];
+  const tg=document.getElementById('tags');
+  tg.innerHTML='<span style="font-family:\'IBM Plex Mono\';font-size:11px;color:var(--muted);align-self:center">TAGS:</span>'+tags.map(x=>`<span class="tg${x.n?' new':''}">${x.t}</span>`).join('');
+
+  // ---- reveal on scroll ----
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ---- active nav ----
+  const secs=[...document.querySelectorAll('section[id]')];
+  const links=[...document.querySelectorAll('.nav-links a')];
+  const navIo=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const id=e.target.id;links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+id));}})},{rootMargin:"-45% 0px -50% 0px"});
+  secs.forEach(s=>navIo.observe(s));
+</script>
+</body>
+</html>

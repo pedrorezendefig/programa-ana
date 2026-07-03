@@ -1,0 +1,67 @@
+{
+  "doc": {
+    "title": "VITTA TECH · Contrato de Serviços Contínuos",
+    "brand": "VITTA TECH",
+    "brandSub": "Contrato de Serviços Contínuos",
+    "kicker": "Contrato de Prestação de Serviços de Tecnologia",
+    "heroTitle": "Serviços <em>contínuos</em>",
+    "heroSub": "Aplicativo do hospital, Site institucional com Central de Comando e atendimento via WhatsApp, com sustentação e evolução contínua."
+  },
+  "contratada": {
+    "tag": "Contratada · presta o serviço",
+    "name": "VITTA TECH",
+    "lines": [
+      "Desenvolvimento de Software Customizável Ltda",
+      "CNPJ 67.009.477/0001-09 · Insc. Municipal 1.644.052-3",
+      "Barra da Tijuca, Rio de Janeiro/RJ",
+      "Rep.: Pedro Malafaia Rezende de Figueiredo · sócio-administrador"
+    ]
+  },
+  "contratante": {
+    "tag": "Contratante · cliente da saúde",
+    "foot": "Controladora dos dados pessoais"
+  },
+  "facts": [
+    {"t": "Prazo indeterminado", "c": "pine"},
+    {"t": "Aviso de 30 dias para encerrar", "c": "gold"},
+    {"t": "NFS-e mensal · Simples Nacional", "c": "pine"},
+    {"t": "LGPD sob a Contratante (Controladora)", "c": "rose"},
+    {"t": "Foro: Rio de Janeiro/RJ", "c": "pine"}
+  ],
+  "pricing": {
+    "title": "A escada de valor",
+    "note": "Cada entrega aceita sobe a mensalidade. Você só paga o degrau quando ele entra em operação; o desenvolvimento até lá já está incluído.",
+    "rows": [
+      {"name": "Aplicativo do hospital", "cond": "em operação (vigente)", "val": "R$ 5.000", "w": 56, "gold": false},
+      {"name": "+ Site e Central de Comando", "cond": "no aceite do MVP", "val": "R$ 6.000", "w": 67, "gold": true},
+      {"name": "+ Ana (WhatsApp funcional)", "cond": "na entrega funcional", "val": "R$ 8.000", "w": 89, "gold": true},
+      {"name": "+ Ana (meta de KPI)", "cond": "marco a definir", "val": "R$ 9.000", "w": 100, "gold": true}
+    ],
+    "totalLabel": "Com todos os entregáveis aceitos",
+    "totalVal": "R$ 9.000",
+    "totalSuffix": "/mês · bruto"
+  },
+  "tokens": {
+    "RAZÃO SOCIAL DA CONTRATANTE": "razão social",
+    "NOME FANTASIA": "nome fantasia",
+    "CNPJ": "cnpj",
+    "ENDEREÇO COMPLETO": "endereço",
+    "marco a ser definido entre as Partes": "marco a definir"
+  },
+  "sections": {
+    "considerandos": {"title": "Considerandos"},
+    "clausula-1":  {"title": "Objeto", "gloss": "O que a VITTA entrega: sustentar e desenvolver o Aplicativo do hospital, entregar e cuidar do Site e da Central de Comando, implantar a Ana de atendimento via WhatsApp e atuar como consultoria e desenvolvimento de software em projetos de infraestrutura e hardware liderados pelo hospital."},
+    "clausula-2":  {"title": "Prazo e vigência", "gloss": "Sem prazo final. Qualquer lado encerra avisando por escrito com 30 dias de antecedência."},
+    "clausula-3":  {"title": "Remuneração e pagamento", "gloss": "A mensalidade sobe a cada entrega aceita: R$ 5.000 (aplicativo do hospital) para 6.000 (site e central de comando), 8.000 (Ana no WhatsApp) e 9.000 (meta de KPI). Você só paga o degrau quando ele entra em operação."},
+    "clausula-4":  {"title": "Obrigações da Contratada", "gloss": "Entregar com qualidade, corrigir defeitos, manter sigilo e tratar dados como Operadora. Não responde por falhas de terceiros."},
+    "clausula-5":  {"title": "Obrigações da Contratante", "gloss": "Pagar, dar acessos e informações, indicar quem decide, custear a infraestrutura e, como Controladora, responder pela LGPD e segurança dos dados."},
+    "clausula-6":  {"title": "Propriedade intelectual", "gloss": "Durante o contrato, o código é da VITTA e a Contratante tem licença de uso. Se o contrato acabar, a Contratante continua com a solução feita sob medida (licença perpétua), recebe o código-fonte, os dados e a documentação e a passagem de conhecimento. Os dados, conteúdos e POPs são sempre da Contratante."},
+    "clausula-7":  {"title": "Confidencialidade", "gloss": "Cada Parte mantém em sigilo as informações confidenciais a que tiver acesso."},
+    "clausula-8":  {"title": "Proteção de dados e segurança", "gloss": "A Contratante é a Controladora e responde pela LGPD, pelo consentimento dos pacientes e pela segurança dos dados sensíveis. A VITTA é Operadora, sob instrução."},
+    "clausula-9":  {"title": "Rescisão", "gloss": "Encerra por aviso de 30 dias ou por falta grave (inadimplência, violação de dados, insolvência). Sem multas."},
+    "clausula-10": {"title": "Disposições gerais", "gloss": "Sem vínculo empregatício, alterações por escrito, força maior, e os Anexos integram o contrato."},
+    "clausula-11": {"title": "Foro", "gloss": "Foro do Rio de Janeiro/RJ para resolver qualquer disputa."},
+    "anexo-i":   {"title": "Escopo dos entregáveis", "gloss": "Resumo de cada entregável (Aplicativo do hospital, Site com Central de Comando, Ana), sem detalhe técnico, o que conta como \"pronto\" e o que não está incluso."},
+    "anexo-ii":  {"title": "Infraestrutura e custos de terceiros", "gloss": "Quem custeia cada serviço e as estimativas: servidor com backup R$ 300/mês e atendimento R$ 90/mês (Contratante); assinaturas Claude R$ 2.200/mês e 1Password R$ 30/mês (VITTA). Demais itens sem custo neste momento."}
+  }
+}
