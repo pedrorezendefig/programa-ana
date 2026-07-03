@@ -17,7 +17,7 @@
 | C1 | Pedir credencial Oracle read-only ao analista | P | Destrava toda a Trilha C; mensagem pronta na ficha C1 |
 | D1 | Pedir token GH (homolog + prod) + rate limit | P→E | CAMINHO CRÍTICO: lead time externo domina a Fase 1 |
 | E2 | Abrir a pergunta LGPD com o jurídico do hospital | P→E | Lead time externo; trava o POC do pós-atendimento |
-| B1 | Sessão ultracode rodando | E | Só aguardar e revisar quando terminar |
+| B2 | Revisar os 8 artefatos do ultracode (entregues em 03/jul) e ratificar decisões com o Felipe | P+C | Destrava D2, D3 e E3; síntese em `roadmap/relatorio-pesquisa.md` |
 | C5 | (Opcional) Varredura do Power BI/SCMA via Chrome | C+P | A qualquer momento, com o navegador aberto |
 
 ---
@@ -102,7 +102,7 @@ Leituras da árvore:
 
 **Pronto quando:** diff aprovado pelo Pedro; blocos de mensagem respeitam o limite de 320 caracteres; numeração das Regras Globais íntegra de 1 a 11; nenhuma tag/etapa referenciada fora da tabela de ferramentas.
 
-**Referências:** `ana/briefings/Briefing...md` (I.1 a I.7), `docs/04-sop-ana-reescrito.md` (Regras 1 a 10 renumeradas), decisões do grilling de 03/jul.
+**Referências:** `ana/briefings/Briefing...md` (I.1 a I.7), decisões do grilling de 03/jul e, principalmente, `ana/prompt/Ana_System_Prompt_v2.md`: o preâmbulo do v2 mapeia exatamente os blocos do hotfix (Fase 0) a portar para o prompt de produção, já revisados pelas melhores práticas da pesquisa (inclui a saudação "assistente virtual" exigida pela CFM 2.454/2026 e o texto fixo de urgência com CVV 188). O trabalho de A1 vira: extrair o delta Fase 0 do v2, não redigir do zero.
 
 ### A2 · Aplicar no n8n
 
@@ -140,13 +140,15 @@ Leituras da árvore:
 
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
-| B1 | `[~]` | Sessão ultracode em execução (disparada em 03/jul) | E | nada |
+| B1 | `[x]` | Sessão ultracode concluída (03/jul): 8 artefatos commitados | E | nada |
 | B2 | `[ ]` | Revisar os 8 artefatos, decidir o que entra, commitar | P+C | B1 |
 | B3 | `[ ]` | Consolidar SOP v2 (hotfix + agendamento + pesquisa) | C | A1, B2 |
 
-### B1 · Sessão em execução
+### B1 · Sessão concluída (03/jul/2026)
 
-**Artefatos esperados** (conferir se todos chegaram): `ana/prompt/Ana_System_Prompt_v2.md`, `pos-atendimento/viabilidade-webchat.md`, `docs/adr/0003-base-de-conhecimento.md`, `pos-atendimento/templates-meta.md`, `docs/06-spec-classificador-urgencia.md`, `pos-atendimento/arquitetura-analitica.md`, `ana/api-mv/perguntas-global-health.md`, `roadmap/relatorio-pesquisa.md`.
+**Todos os 8 artefatos entregues e commitados:** `ana/prompt/Ana_System_Prompt_v2.md`, `pos-atendimento/viabilidade-webchat.md`, `docs/adr/0003-base-de-conhecimento.md`, `pos-atendimento/templates-meta.md`, `docs/06-spec-classificador-urgencia.md`, `pos-atendimento/arquitetura-analitica.md`, `ana/api-mv/perguntas-global-health.md`, `roadmap/relatorio-pesquisa.md` (+ roadmap visual e queries da Trilha C atualizados).
+
+**Achados que mudam o plano** (detalhe no relatório): fim da janela grátis da Meta em 01/out/2026; CFM 2.454/2026 exige comunicar o uso de IA (~ago/2026); CPF em texto livre conflita com a policy da Meta; D1 grave no desenho do T2 (convênio particular tem id próprio); desfecho no MV vive em `MOT_ALT` (`TP_MOT_ALTA='O'` = óbito); webchat por link reprovado; fator utility vs marketing é ~9x.
 
 ### B2 · Revisão dos artefatos
 
@@ -198,7 +200,7 @@ Leituras da árvore:
 
 **Contexto:** é a pré-condição da Fase 3 inteira (briefing II.2/II.3). Sem saber distinguir "alta melhorado" de "óbito" no banco, não há disparo seguro.
 
-**Passos:** estrutura de `ATENDIME` (tipo de atendimento, motivo de alta, datas) + `MOTIVO_ALTA` (classificar cada motivo como benigno/adverso/óbito) + investigar tabela de óbito se existir; escrever a query candidata: "atendimentos eletivos concluídos ontem com desfecho benigno + telefone do paciente".
+**Passos:** estrutura de `ATENDIME` (tipo de atendimento, motivo de alta, datas) + `MOT_ALT` (nome no MV clássico; `MOTIVO_ALTA` como fallback; classificar cada motivo como benigno/adverso/óbito) + `PACIENTE_OBITO`; a pesquisa ultracode já deixou a query candidata pronta com 3 sinais redundantes de óbito em `ana/api-mv/perguntas-global-health.md` (seção de hipóteses): validar contra o banco real.
 
 **Pronto quando:** a query candidata roda e o analista confirma a semântica dos motivos de alta (C6).
 
@@ -298,11 +300,13 @@ Leituras da árvore:
 
 **Pergunta ao jurídico:** o termo de atendimento assinado autoriza contato proativo por WhatsApp para pesquisa de satisfação? Se não: qual o caminho (ajuste do termo para novos pacientes? legítimo interesse documentado? opt-in na alta?).
 
+**Insumo da pesquisa (03/jul):** o guia da ANPD veda legítimo interesse para dado sensível, e o disparo revela vínculo com serviço de saúde: o caminho seguro é consentimento específico no termo, nomeando hospital + canal WhatsApp + finalidade. Isso resolve simultaneamente o opt-in exigido pela Meta (papel assinado é canal aceito). Levar junto: a decisão documentada sobre coleta de CPF em texto livre (conflita com a policy da Meta) e a pauta CFM 2.454/2026 (avaliação de risco + Comissão de IA até ~ago/2026). Perguntas prontas na seção f.4 do draft de compliance, resumidas no `roadmap/relatorio-pesquisa.md`.
+
 **Pronto quando:** base legal documentada por escrito (guardar em `pos-atendimento/`).
 
 ### E3 · Template de abertura
 
-**Contexto:** a diferença entre utility (US$ 0,008) e marketing (US$ 0,0625) é ~8x no custo de 25 a 35 mil disparos/mês. A Meta reclassifica unilateralmente; o texto precisa nascer transacional puro (draft vem do ultracode em `pos-atendimento/templates-meta.md`).
+**Contexto:** a diferença entre utility (US$ 0,0068 a 0,008) e marketing (US$ 0,0625) é ~9x no custo de 25 a 35 mil disparos/mês. A Meta reclassifica unilateralmente e em silêncio desde abr/2025; o texto precisa nascer transacional puro. Os 5 drafts prontos estão em `pos-atendimento/templates-meta.md`, com o processo de validação e o webhook `template_category_update` a assinar. Atenção ao bloqueante novo: opt-in válido exige o termo de balcão reescrito (nomear hospital + WhatsApp + finalidade), ver E2.
 
 **Passos:** escolher draft → registrar template na Meta (via BSP) → disparar amostra pequena (dezenas) → verificar na fatura/painel como foi classificado e cobrado → medir taxa de resposta da amostra.
 
@@ -353,3 +357,4 @@ Dois assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e imp
 - `[x]` 03/jul: Dicionário de tabelas MV destilado da planilha do TI (`ana/api-mv/dicionario-tabelas-mv.md`)
 - `[x]` 03/jul: Decisões do grilling registradas (hotfix primeiro, urgência 2 camadas, Regra 6, ultracode = pesquisa+SOP+specs)
 - `[x]` 03/jul: Skill local `/check` criada (`.claude/skills/check/`)
+- `[x]` 03/jul: Sessão ultracode concluída: 8 artefatos commitados (69 agentes, verificação adversarial); síntese e 8 decisões recomendadas em `roadmap/relatorio-pesquisa.md`; roadmap visual e queries da Trilha C (MOT_ALT) atualizados

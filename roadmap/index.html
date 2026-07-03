@@ -264,11 +264,11 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
         <li><span class="pill p-feito">Feito</span><div class="txt">Repo git + reorganização por domínio (ana/, pos-atendimento/, roadmap/)<small>2 commits: snapshot do estado anterior + estrutura nova, com README</small></div></li>
         <li><span class="pill p-feito">Feito</span><div class="txt">Glossário do domínio atualizado (CONTEXT.md)<small>Modos da Ana, Diferenciais, Pós-atendimento, Hotfix</small></div></li>
         <li><span class="pill p-feito">Feito</span><div class="txt">Meta-prompt da sessão ultracode salvo<small>roadmap/prompt-sessao-ultracode.md · 8 frentes de pesquisa, 8 artefatos</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Triagem de urgência como nova Regra Global 1<small>Sinais de emergência no topo do SOP · PS 24h / SAMU 192 · sem agendar, sem comercial</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Regra 6 reescrita: Ana assume "assistente virtual"<small>Resolve a contradição interna e alinha com a política Meta 2026</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Regra de exclusão: ouvidoria desliga o modo comercial na thread</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Guardrails jurídicos da ouvidoria<small>Acolher o sentimento sem validar a acusação · nunca admitir culpa nem prometer providência</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Ajustes menores: acentuação, tag fora-horario, etapa órfã, rastreabilidade 8.4</div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">Ana_System_Prompt_v2.md redigido e revisado (pesquisa ultracode)<small>Urgência Regra 1 + Seção 0 · Regra 6 nova + saudação "assistente virtual" (CFM 2.454/2026) · Regra 12 ouvidoria↔comercial · guardrails jurídicos · acentos, fora-horario, 1.1, 8.4 · preâmbulo mapeia o delta da Fase 0</small></div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Aplicar o hotfix no nó Agente IA Hospital (delta Fase 0 do v2)<small>Blocos independentes da API · re-exportar Ana.json e commitar</small></div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Medir no Chatwoot o volume real de mensagens da Ana/mês<small>Base do orçamento pós-out/2026 (fim da janela grátis da Meta)</small></div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Retry on Fail + filtro Ativo=S nas 4 tools de Sheets (ADR-0003, Fase 0)</div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Pauta com a diretoria: CFM 2.454/2026 (vigor ~26/08/2026)<small>Avaliação de risco da Ana · Comissão de IA e Telemedicina · comunicação de IA ao paciente</small></div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">Segurança: token Chatwoot para Credential do n8n + rotação<small>Hoje hardcoded nos nós HTTP · não dar push do repo antes de limpar histórico</small></div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">Validação em sombra por período curto<small>Revisão humana antes do envio para calibrar tom (urgência e comercial)</small></div></li>
       </ul>
@@ -277,20 +277,20 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
 
   <section id="pesquisa">
     <div class="sec-head"><span class="sec-num">TRILHA PARALELA</span><h2>Pesquisa ultracode</h2></div>
-    <p class="sec-note">Sessão multi-agente dedicada (Fable 5) que roda em paralelo à Fase 0 e alimenta as fases 1 a 3. Prompt pronto em <b>roadmap/prompt-sessao-ultracode.md</b>.</p>
+    <p class="sec-note">Sessão multi-agente concluída em 03/jul/2026 (69 agentes, verificação adversarial das afirmações). Síntese com decisões recomendadas em <b>roadmap/relatorio-pesquisa.md</b>.</p>
     <div class="fase" style="--fase-cor:var(--blue)">
-      <div class="fase-top"><span class="fase-tag">Paralela · disparar já</span><h3>8 frentes, 8 artefatos</h3></div>
+      <div class="fase-top"><span class="fase-tag">Concluída · 03/jul/2026</span><h3>8 frentes, 8 artefatos entregues</h3></div>
       <ul class="items">
-        <li><span class="pill p-pesq">Pesquisa</span><div class="txt">Ideia do diretor: WhatsApp com link para chat na web<small>Viabilidade, custo real (premissa dos 3 centavos corrigida), rate limits, quem fez, custos ocultos, alternativas (widget Chatwoot, WhatsApp Flows)</small></div></li>
-        <li><span class="pill p-pesq">Pesquisa</span><div class="txt">Economia Meta 2026 aplicada ao volume do hospital<small>Utility vs marketing (risco de reclassificação 8x), limites de disparo, plano B</small></div></li>
-        <li><span class="pill p-pesq">Pesquisa</span><div class="txt">Melhores práticas de agente único multi-modo em saúde + evals</div></li>
-        <li><span class="pill p-pesq">Pesquisa</span><div class="txt">Spec do classificador de urgência (falso-negativo perto de zero)</div></li>
-        <li><span class="pill p-pesq">Pesquisa</span><div class="txt">Base de conhecimento: Sheets vs Supabase vs Postgres + UI na Central de Comando</div></li>
-        <li><span class="pill p-pesq">Pesquisa</span><div class="txt">Arquitetura analítica do pós-atendimento + compliance (Google, LGPD)</div></li>
-        <li><span class="pill p-pesq">Pesquisa</span><div class="txt">Validação das 7 tools contra a API v1.10 + perguntas para a Global Health</div></li>
-        <li><span class="pill p-pesq">Pesquisa</span><div class="txt">Conformidade Meta 2026 para agentes de IA no WhatsApp</div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">Webchat por link: INVIÁVEL como economia (economia Meta = zero no cenário base)<small>pos-atendimento/viabilidade-webchat.md · aproveitar: widget Chatwoot no site + WhatsApp Flows · reavaliar números em set/2026</small></div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">Economia Meta 2026: pesquisa vinculada a atendimento é utility OFICIAL; fator real ~9x<small>pos-atendimento/templates-meta.md · 5 templates prontos · ACHADO: fim da janela grátis em 01/out/2026</small></div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">Melhores práticas: 17 problemas concretos no prompt corrigidos no v2<small>Mount Sinai/Nature Medicine e ECRI validam a dupla camada de urgência · evals: promptfoo + Langfuse · shadow via private notes</small></div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">Spec do classificador de urgência: híbrido regex + gpt-5.4-mini, golden set 135 casos<small>docs/06-spec-classificador-urgencia.md · fail-safe = SUSPEITA · judge noturno de cobertura total</small></div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">Base de conhecimento: Sheets como UI, Postgres como runtime (fase MV)<small>docs/adr/0003-base-de-conhecimento.md · Central de Comando como alvo final · NocoDB plano B</small></div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">Arquitetura analítica: schema Postgres, auditoria amostral, relatório semanal, loop com SLA<small>pos-atendimento/arquitetura-analitica.md · nominal só com n≥5 + revisão humana · convite Google universal (sem gating)</small></div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">API v1.10 validada: 8 divergências (1 grave no T2) + 18 perguntas GH + 20 perguntas TI<small>ana/api-mv/perguntas-global-health.md · desfecho vive em MOT_ALT (TP_MOT_ALTA='O') · API não serve ao pós-atendimento</small></div></li>
+        <li><span class="pill p-feito">Feito</span><div class="txt">Compliance Meta: Ana permitida com folga; Meta não exige disclosure, o CFM sim<small>CFM 2.454/2026 (~ago/2026): IA comunicada + avaliação de risco + Comissão de IA · CPF em texto livre conflita com a policy</small></div></li>
       </ul>
-      <div class="unlock"><b>Entrega principal:</b> Ana_System_Prompt_v2.md consolidado (hotfix + agendamento) revisado pelas melhores práticas, mais specs e ADRs gravados no repo.</div>
+      <div class="unlock"><b>Entregue:</b> Ana_System_Prompt_v2.md consolidado e revisado + 7 artefatos de spec/decisão + relatório de síntese. Próximo passo: Pedro revisa e ratifica as 8 decisões recomendadas com o Felipe.</div>
     </div>
   </section>
 
@@ -301,8 +301,10 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
       <div class="fase-top"><span class="fase-tag">Próxima · após hotfix</span><h3>MVP de consultas (T1, T2, T5, T6, T7)</h3></div>
       <p class="goal">Identificar paciente, buscar disponibilidade, efetivar, listar e remarcar/cancelar consultas. Exames com triagem e anexos ficam para a Fase 2. Rollout: homologação com checklist, canário por inbox, produção com portal como fallback.</p>
       <ul class="items">
-        <li><span class="pill p-ext">Externo</span><div class="txt">Token da API Global Health (homologação e produção) + limite de chamadas<small>Bloqueia tudo · pergunta já formalizada no briefing (III.2.3)</small></div></li>
+        <li><span class="pill p-ext">Externo</span><div class="txt">Token da API Global Health (homologação e produção) + respostas às 18 perguntas técnicas<small>Bloqueia tudo · perguntas prontas em ana/api-mv/perguntas-global-health.md</small></div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Corrigir o docs/02 com as divergências D1 a D8 da validação contra a v1.10<small>D1 grave: fluxo particular do T2 precisa resolver o convênio particular (id próprio)</small></div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">Construir os 5 subfluxos do MVP (ordem: T6, T1, T2, T5, T7)</div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Sync Sheets → Postgres + tools em postgresTool (ADR-0003)<small>Hospital segue editando a planilha; runtime sai da rota do Google</small></div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">Estado da jornada em custom_attributes + limpeza no /reset<small>Confirmar que a credencial Chatwoot escreve custom_attributes</small></div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">Classificador de urgência dedicado antes do agente (2ª camada)</div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">SOP v2 no nó do agente + etapa FALHA AGENDAMENTO e tags novas no Kanban</div></li>
@@ -319,9 +321,10 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
       <ul class="items">
         <li><span class="pill p-pend">Pendente</span><div class="txt">T3: perguntas de triagem de exame (impedeRealizacao com confirmação explícita)</div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">T4: anexos obrigatórios (pedido médico, carteirinha)<small>Depende de confirmar se a data_url do Chatwoot é acessível externamente</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Base de conhecimento: migração Sheets para Supabase/Postgres se a pesquisa recomendar<small>Requisito: hospital segue editando como planilha · candidata a UI: Central de Comando</small></div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">CRUD da base de conhecimento na Central de Comando (alvo final do ADR-0003)<small>Pré-requisito: sync + Postgres da Fase 1 · plano B: NocoDB sobre o mesmo Postgres</small></div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">Definir e pactuar a Meta de desempenho (KPI) da Ana com o Felipe<small>Candidatos: taxa de agendamento pela Ana, captura noturna, tempo de resposta</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Web-chat via link (se a pesquisa aprovar) para o fluxo proativo</div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Widget Chatwoot no site (canal adicional, frente Lucas/Rib) + teste de WhatsApp Flows<small>Substitui a ideia do web-chat via link, reprovada pela pesquisa (economia zero, metade das respostas)</small></div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Observabilidade: promptfoo em CI (golden set, gate 100% red flags) + Langfuse self-hosted</div></li>
       </ul>
       <div class="unlock"><b>Destrava + R$ 1.000/mês</b> quando a meta pactuada for atingida (mensalidade cheia: R$ 9.000).</div>
     </div>
@@ -334,8 +337,8 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
       <div class="fase-top"><span class="fase-tag">Após Fase 1 · pré-condições duras</span><h3>POC eletivo primeiro, emergência só com filtro de desfecho</h3></div>
       <ul class="items">
         <li><span class="pill p-ext">Externo</span><div class="txt">Fonte de dados do MV com serviço, data, setor/profissional e desfecho<small>Pré-condição absoluta · esquemas MVBIKE e MVINTEGRA em estudo · sem isso não há disparo seguro</small></div></li>
-        <li><span class="pill p-ext">Externo</span><div class="txt">Base legal LGPD: termo de atendimento autoriza contato proativo?</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Template de abertura redigido como utility pura + teste de classificação com amostra</div></li>
+        <li><span class="pill p-ext">Externo</span><div class="txt">Termo de balcão reescrito: nomear hospital + WhatsApp + finalidade<small>Resolve de uma vez o opt-in da Meta (papel é canal aceito) e o consentimento LGPD (ANPD veda legítimo interesse p/ dado sensível) · BLOQUEANTE do disparo</small></div></li>
+        <li><span class="pill p-pend">Pendente</span><div class="txt">Submeter os 5 templates prontos (pos-atendimento/templates-meta.md) + piloto de 200 a 500 envios<small>Monitorar categoria aprovada + webhook template_category_update (reclassificação = custo ~9x)</small></div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">POC só eletivo (exames, cirurgia eletiva, ambulatório) com 250 a 1.000 disparos/dia</div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">Camada analítica: categorias co-desenhadas com coordenadores, banco, relatórios evolutivos</div></li>
         <li><span class="pill p-pend">Pendente</span><div class="txt">Fechamento de loop: crítica grave roteada para ouvidoria/humano, sem evaporar</div></li>
@@ -353,8 +356,11 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
         <tr><td><span class="dot d-alta"></span>Alta</td><td>Falso-negativo de urgência (paciente em emergência tratado como eletivo)</td><td>Regra 1 no SOP (Fase 0) + classificador dedicado (Fase 1) + na dúvida, orientar PS</td></tr>
         <tr><td><span class="dot d-alta"></span>Alta</td><td>Disparo proativo para família em luto</td><td>Escopo eletivo até filtro de desfecho via MV; tom por tipo de serviço</td></tr>
         <tr><td><span class="dot d-alta"></span>Alta</td><td>Registro de ouvidoria virar prova com admissão de culpa</td><td>Guardrails jurídicos no hotfix; acolher sentimento sem validar acusação</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>Meta reclassificar template utility como marketing (custo ~8x)</td><td>Template transacional puro; teste com amostra; plano B de custo</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>Review gating no Google (remoção de avaliações/penalização)</td><td>Convite amplo sem condicionar à nota; volume e recência fazem a nota</td></tr>
+        <tr><td><span class="dot d-alta"></span>Alta</td><td>Fim da janela grátis da Meta em 01/out/2026 (Ana reativa e coleta passam a custar por mensagem)</td><td>Medir volume agora; recalcular em 01/set com o card oficial; coleta enxuta / WhatsApp Flows</td></tr>
+        <tr><td><span class="dot d-media"></span>Média</td><td>Meta reclassificar template utility como marketing (custo ~9x, silencioso)</td><td>Template transacional puro; piloto com amostra; webhook template_category_update + alerta; appeal em 60 dias</td></tr>
+        <tr><td><span class="dot d-media"></span>Média</td><td>CFM 2.454/2026 (vigor ~ago/2026): IA comunicada, avaliação de risco, Comissão de IA</td><td>Saudação "assistente virtual" (no v2); pauta com a diretoria antes de agosto</td></tr>
+        <tr><td><span class="dot d-media"></span>Média</td><td>Coleta de CPF em texto livre conflita com a policy da Meta (identificadores sensíveis)</td><td>Decisão documentada com o jurídico; avaliar WhatsApp Flows na fase MV</td></tr>
+        <tr><td><span class="dot d-media"></span>Média</td><td>Review gating no Google (remoção de avaliações/penalização)</td><td>Convite universal pós-pesquisa sem condicionar à nota; volume e recência fazem a nota</td></tr>
         <tr><td><span class="dot d-media"></span>Média</td><td>Token Chatwoot hardcoded nos workflows e no histórico git</td><td>Migrar para Credential n8n + rotacionar; nunca push antes de limpar histórico</td></tr>
         <tr><td><span class="dot d-media"></span>Média</td><td>Fadiga/banimento do número WhatsApp por volume proativo</td><td>Opt-out fácil, ritmo gerido, respeitar limites por qualidade</td></tr>
         <tr><td><span class="dot d-media"></span>Média</td><td>Classificação nominal errada de profissional no relatório</td><td>Auditoria amostral; cuidado redobrado em atribuição nominal</td></tr>
@@ -372,7 +378,9 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
     <table class="tbl">
       <thead><tr><th>Item</th><th>De quem</th><th>Bloqueia</th></tr></thead>
       <tbody>
-        <tr><td>Token da API (homologação + produção) e limites de chamadas</td><td>Global Health</td><td>Fase 1 inteira</td></tr>
+        <tr><td>Token da API (homologação + produção) + respostas às 18 perguntas técnicas</td><td>Global Health</td><td>Fase 1 inteira</td></tr>
+        <tr><td>Termo de balcão reescrito (hospital + WhatsApp + finalidade): opt-in Meta + consentimento LGPD</td><td>Jurídico do hospital</td><td>Fase 3 (disparo)</td></tr>
+        <tr><td>CFM 2.454/2026: avaliação de risco da Ana + Comissão de IA e Telemedicina (~ago/2026)</td><td>Diretoria + corpo clínico</td><td>Conformidade da Ana em produção</td></tr>
         <tr><td>Export do MV com serviço, data, setor/profissional e desfecho</td><td>TI do hospital (MVBIKE / MVINTEGRA)</td><td>Fase 3 inteira</td></tr>
         <tr><td>Materiais dos esquemas MVBIKE e MVINTEGRA + acesso ao Power BI (módulo SCMA)</td><td>TI do hospital</td><td>Fase 3 (fonte de dados)</td></tr>
         <tr><td>Decisão: postura do convite ao Google (amplo vs contextual)</td><td>Felipe (direção)</td><td>Fase 3 (mecanismo B)</td></tr>
@@ -391,14 +399,17 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
       <div class="dec"><div class="q">Transparência</div><div class="a"><b>Ana assume "assistente virtual"</b> quando perguntada; nunca nega ser IA, nunca expõe interna.</div></div>
       <div class="dec"><div class="q">Arquitetura</div><div class="a"><b>Agente único, 3 modos</b> (atendimento, comercial, ouvidoria); pós-atendimento como agente separado.</div></div>
       <div class="dec"><div class="q">Briefing I.5</div><div class="a"><b>Parcialmente superado:</b> a coluna de diferenciais por especialidade já alimenta a ancoragem de valor em produção.</div></div>
-      <div class="dec"><div class="q">Ultracode</div><div class="a"><b>Pesquisa + SOP final + specs.</b> Construção dos subfluxos em sessão dedicada, com token de homologação.</div></div>
-      <div class="dec"><div class="q">Custos Meta</div><div class="a"><b>Reativo é grátis</b> (janela 24h); o custo real e a estratégia de template moram no pós-atendimento proativo.</div></div>
+      <div class="dec"><div class="q">Ultracode</div><div class="a"><b>Concluída (03/jul).</b> 8 artefatos no repo; 8 decisões recomendadas para ratificar com o Felipe (relatorio-pesquisa.md).</div></div>
+      <div class="dec"><div class="q">Custos Meta</div><div class="a"><b>Reativo é grátis ATÉ 30/set/2026.</b> Em 01/out acaba a janela grátis: orçar a Ana por mensagem; fator utility vs marketing é ~9x.</div></div>
+      <div class="dec"><div class="q">Webchat (pesquisa)</div><div class="a"><b>Link-out reprovado:</b> economia Meta zero e metade das respostas. Aproveitar como widget no site + WhatsApp Flows.</div></div>
+      <div class="dec"><div class="q">Base de conhecimento</div><div class="a"><b>ADR-0003:</b> Sheets como UI de edição, Postgres como runtime (fase MV), Central de Comando como alvo final.</div></div>
+      <div class="dec"><div class="q">Convite ao Google</div><div class="a"><b>Universal pós-pesquisa, sem filtro por nota</b> (NPS 9-10 → Google é review gating na letra da política). Ratificar com o Felipe.</div></div>
       <div class="dec"><div class="q">Repositório</div><div class="a"><b>Git + organização por domínio.</b> Exports refletem produção; re-exportar e commitar a cada mudança.</div></div>
     </div>
   </section>
 
   <footer>
-    <p>Próxima ação: disparar a sessão ultracode com <code>roadmap/prompt-sessao-ultracode.md</code> e aplicar o hotfix do prompt. Este roadmap vive em <code>roadmap/index.html</code>; atualizar a cada fase concluída. Programa conduzido por Pedro (VITTA TECH) com direção de Felipe Malafaia (Hospital São Matheus).</p>
+    <p>Próxima ação: revisar <code>roadmap/relatorio-pesquisa.md</code>, aplicar o hotfix do prompt (delta Fase 0 do <code>Ana_System_Prompt_v2.md</code>) e ratificar as 8 decisões recomendadas com o Felipe. Este roadmap vive em <code>roadmap/index.html</code>; atualizar a cada fase concluída. Programa conduzido por Pedro (VITTA TECH) com direção de Felipe Malafaia (Hospital São Matheus).</p>
   </footer>
 
 </main>

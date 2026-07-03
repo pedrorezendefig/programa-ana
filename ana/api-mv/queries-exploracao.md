@@ -10,7 +10,8 @@ SELECT owner, table_name, num_rows, last_analyzed
 FROM   all_tables
 WHERE  table_name IN ('AGENDA_CENTRAL','IT_AGENDA_CENTRAL','ITEM_AGENDAMENTO',
                       'ESCALA_CENTRAL','ESCALA_CENTRAL_ITEM_AGENDA','GERACAO_AGENDA',
-                      'PACIENTE','EXA_RX','ATENDIME','ATENDIME_GLOBAL_HEALTH','MOTIVO_ALTA')
+                      'PACIENTE','EXA_RX','ATENDIME','ATENDIME_GLOBAL_HEALTH',
+                      'MOT_ALT','MOTIVO_ALTA','PACIENTE_OBITO')
 ORDER  BY table_name;
 
 -- 1.2 Colunas + comentários das 8 tabelas de agendamento
@@ -28,7 +29,7 @@ SELECT c.table_name, c.column_id, c.column_name, c.data_type, cc.comments
 FROM   all_tab_columns c
 LEFT   JOIN all_col_comments cc
        ON cc.owner = c.owner AND cc.table_name = c.table_name AND cc.column_name = c.column_name
-WHERE  c.table_name IN ('ATENDIME','ATENDIME_GLOBAL_HEALTH','MOTIVO_ALTA')
+WHERE  c.table_name IN ('ATENDIME','ATENDIME_GLOBAL_HEALTH','MOT_ALT','MOTIVO_ALTA','PACIENTE_OBITO')
 ORDER  BY c.table_name, c.column_id;
 ```
 
@@ -53,5 +54,9 @@ ORDER  BY a.table_name;
 SELECT * FROM IT_AGENDA_CENTRAL WHERE ROWNUM <= 5;
 
 -- 2.3 Motivos de alta (candidato a filtro de desfecho do pós-atendimento)
-SELECT * FROM MOTIVO_ALTA WHERE ROWNUM <= 50;
+-- Pesquisa ultracode (03/jul): no MV clássico a tabela é MOT_ALT
+-- (CD_MOT_ALT, DS_MOT_ALT, TP_MOT_ALTA, SN_ATIVO), com TP_MOT_ALTA = 'O' = óbito.
+-- Tentar MOT_ALT primeiro; MOTIVO_ALTA como fallback. Hipóteses de joins completas
+-- (incluindo a consulta-base do pós-atendimento) em ana/api-mv/perguntas-global-health.md.
+SELECT * FROM MOT_ALT WHERE ROWNUM <= 50;
 ```
