@@ -9,16 +9,18 @@
 
 ---
 
-## Fronteira de agora (03/jul/2026 · tudo abaixo pode andar em paralelo)
+## Fronteira de agora (04/jul/2026 · foco do dia: hotfix no n8n + banco via DBeaver)
+
+Verificado em 04/jul: a produção do n8n NÃO tem o hotfix (workflows com `updatedAt` de 28/mai, sem bloco de urgência no systemMessage). O MCP do n8n é somente leitura/execução; o token do MCP não autentica na API REST (401 testado). Para aplicação automática do hotfix, Pedro gera uma API key (Settings > n8n API).
 
 | # | Tarefa | Dono | Por que agora |
 |---|---|---|---|
-| A1 | Redigir o hotfix do prompt | C | Única tarefa técnica 100% desbloqueada; risco vivo em produção |
-| C1 | Pedir credencial Oracle read-only ao analista | P | Destrava toda a Trilha C; mensagem pronta na ficha C1 |
-| D1 | Pedir token GH (homolog + prod) + rate limit | P→E | CAMINHO CRÍTICO: lead time externo domina a Fase 1 |
-| E2 | Abrir a pergunta LGPD com o jurídico do hospital | P→E | Lead time externo; trava o POC do pós-atendimento |
-| B2 | Revisar os 8 artefatos do ultracode (entregues em 03/jul) e ratificar decisões com o Felipe | P+C | Destrava D2, D3 e E3; síntese em `roadmap/relatorio-pesquisa.md` |
-| C5 | (Opcional) Varredura do Power BI/SCMA via Chrome | C+P | A qualquer momento, com o navegador aberto |
+| A1 | Redigir o hotfix do prompt (extrair delta Fase 0 do v2) | C | Primeira coisa do dia; produção segue sem regra de urgência |
+| A2 | Aplicar no n8n (Pedro gera API key → Claude aplica via REST; fallback: colar manual) | P+C | Logo após A1 aprovado; foco declarado do dia |
+| C2 | Explorar o banco via DBeaver (Pedro já tem login/senha) | P+C | C1 destravou antes do previsto; 1º passo: confirmar dialeto (Pedro relatou "MySQL"; MV clássico é Oracle) e rodar pacote de descoberta |
+| D1 | Pedir token GH (homolog + prod) + rate limit | P→E | AINDA NÃO PEDIDO em 04/jul; caminho crítico da Fase 1, mensagem pronta na ficha |
+| E2 | Abrir a pergunta LGPD com o jurídico do hospital | P→E | Ainda não aberta; lead time longo, enviar esta semana |
+| B2 | Revisar os 8 artefatos do ultracode e ratificar decisões com o Felipe | P+C | Destrava D2, D3 e E3; síntese em `roadmap/relatorio-pesquisa.md` |
 
 ---
 
@@ -108,7 +110,7 @@ Leituras da árvore:
 
 **Contexto:** o systemMessage do nó é uma expressão n8n: começa com `=` e injeta data/hora e PERÍODO_FDS via `{{ }}`. Colar errado quebra a injeção.
 
-**Passos:** abrir o workflow `Ana` (id `mwboSUbv8n4TBwPf`) → nó `Agente IA Hospital` → substituir o systemMessage preservando o `=` inicial e as expressões `{{ }}` → salvar → enviar mensagem de teste num contato de teste. Alternativa sem toque manual: Pedro fornece API key do n8n e Claude aplica via REST (`PUT /api/v1/workflows/{id}`).
+**Passos:** abrir o workflow `Ana` (id `mwboSUbv8n4TBwPf`) → nó `Agente IA Hospital` → substituir o systemMessage preservando o `=` inicial e as expressões `{{ }}` → salvar → enviar mensagem de teste num contato de teste. Alternativa sem toque manual (preferida pelo Pedro em 04/jul): Pedro gera API key no n8n (Settings > n8n API em `n8nia.mala-ia.cloud`) e Claude aplica via REST (`PUT /api/v1/workflows/{id}`). Verificado em 04/jul: o MCP do n8n conectado à sessão é somente leitura/execução e o token dele retorna 401 na API REST; a API key é o único caminho automático.
 
 **Pronto quando:** mensagem de teste responde com o comportamento novo (ex.: "estou com dor no peito" retorna orientação de PS/SAMU imediatamente).
 
@@ -170,7 +172,7 @@ Leituras da árvore:
 
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
-| C1 | `[ ]` | Credencial Oracle read-only + dados de conexão + schema | P→E | nada |
+| C1 | `[~]` | Credencial Oracle read-only + dados de conexão + schema | P→E | nada |
 | C2 | `[ ]` | Explorar estrutura (VPN direta ou pacotes de query) | C | C1 |
 | C3 | `[ ]` | Dicionário de colunas + diagrama do fluxo de agendamento | C | C2 |
 | C4 | `[ ]` | Mapear onde vive o DESFECHO e como filtrar | C | C3 |
@@ -179,7 +181,7 @@ Leituras da árvore:
 
 ### C1 · Credencial e conexão
 
-**Pedir ao analista** (mensagem pronta): usuário Oracle somente leitura (SELECT) nos schemas onde vivem as tabelas de agendamento; host, porta, service name; confirmação de qual schema é o canônico de leitura (MVBIKE? MVINTEGRA? outro owner?).
+**Status 04/jul:** Pedro relatou já ter login e senha de banco funcionando no DBeaver, descrito como "MySQL". Pendências antes de dar C1 por fechada: (1) confirmar o dialeto real olhando o driver da conexão no DBeaver (MV clássico roda em Oracle; se for MySQL de fato, pode ser um espelho/BI ou outro sistema); (2) confirmar que é o banco onde vivem ATENDIME e as tabelas de agendamento; (3) confirmar o schema canônico de leitura (MVBIKE? MVINTEGRA? outro owner?). Se faltar algo, a mensagem original ao analista continua valendo: usuário somente leitura (SELECT) nos schemas de agendamento; host, porta, service name.
 
 **Cuidado:** credencial NUNCA entra no repo. Guardar em variável de ambiente local ou keychain; a sessão Claude usa em memória.
 
@@ -358,3 +360,5 @@ Dois assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e imp
 - `[x]` 03/jul: Decisões do grilling registradas (hotfix primeiro, urgência 2 camadas, Regra 6, ultracode = pesquisa+SOP+specs)
 - `[x]` 03/jul: Skill local `/check` criada (`.claude/skills/check/`)
 - `[x]` 03/jul: Sessão ultracode concluída: 8 artefatos commitados (69 agentes, verificação adversarial); síntese e 8 decisões recomendadas em `roadmap/relatorio-pesquisa.md`; roadmap visual e queries da Trilha C (MOT_ALT) atualizados
+- `[x]` 04/jul: `roadmap/pesquisa-ultracode.html` removido a pedido do Pedro (conteúdo preservado no histórico git e em `relatorio-pesquisa.md`; nenhum arquivo o referenciava)
+- `[x]` 04/jul: Verificado que a produção do n8n não contém o hotfix (updatedAt 28/mai em todos os workflows; export do repo sem bloco de urgência) e que não há drift produção vs `ana/workflows/`
