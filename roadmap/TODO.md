@@ -9,18 +9,18 @@
 
 ---
 
-## Fronteira de agora (04/jul/2026 · foco do dia: hotfix no n8n + banco via DBeaver)
+## Fronteira de agora (06/jul/2026 · destravou: token GH homolog + banco Oracle confirmado)
 
-Verificado em 04/jul: a produção do n8n NÃO tem o hotfix (workflows com `updatedAt` de 28/mai, sem bloco de urgência no systemMessage). O MCP do n8n é somente leitura/execução; o token do MCP não autentica na API REST (401 testado). Para aplicação automática do hotfix, Pedro gera uma API key (Settings > n8n API).
+Verificado em 06/jul: produção do n8n segue SEM o hotfix (todos os workflows com `updatedAt` de 28/mai). Novidades do dia: (1) token de homologação da GH recebido e salvo em `.env` na raiz (fora do git; ver .gitignore); (2) banco do DBeaver confirmado como Oracle, C1 fechada; (3) E2 (LGPD) adiada por decisão do Pedro: direção não prioriza LGPD nesta fase de testes (retomar antes de E4). Sobre A2: o MCP do n8n conectado só expõe leitura/execução (não tem tool de update); o caminho automático continua sendo Pedro gerar uma API key em Settings > n8n API, ou colar manual.
 
 | # | Tarefa | Dono | Por que agora |
 |---|---|---|---|
-| A1 | Redigir o hotfix do prompt (extrair delta Fase 0 do v2) | C | Primeira coisa do dia; produção segue sem regra de urgência |
-| A2 | Aplicar no n8n (Pedro gera API key → Claude aplica via REST; fallback: colar manual) | P+C | Logo após A1 aprovado; foco declarado do dia |
-| C2 | Explorar o banco via DBeaver (Pedro já tem login/senha) | P+C | C1 destravou antes do previsto; 1º passo: confirmar dialeto (Pedro relatou "MySQL"; MV clássico é Oracle) e rodar pacote de descoberta |
-| D1 | Pedir token GH (homolog + prod) + rate limit | P→E | AINDA NÃO PEDIDO em 04/jul; caminho crítico da Fase 1, mensagem pronta na ficha |
-| E2 | Abrir a pergunta LGPD com o jurídico do hospital | P→E | Ainda não aberta; lead time longo, enviar esta semana |
+| A1 | Redigir o hotfix do prompt (extrair delta Fase 0 do v2) | C | Produção segue sem regra de urgência; é a tarefa mais barata com maior redução de risco |
+| A2 | Aplicar no n8n (API key em Settings > n8n API, ou colar manual) | P+C | Logo após A1 aprovado |
+| C2 | Rodar Pacotes 1 e 2 de `ana/api-mv/queries-exploracao.md` no DBeaver (Oracle) | P+C | C1 fechou em 06/jul; os pacotes confirmam schema e destravam C3/C4 |
+| D1 | Pedir token de PRODUÇÃO + rate limit + contato técnico da GH | P→E | Homolog já chegou (06/jul); a metade que falta continua no caminho crítico |
 | B2 | Revisar os 8 artefatos do ultracode e ratificar decisões com o Felipe | P+C | Destrava D2, D3 e E3; síntese em `roadmap/relatorio-pesquisa.md` |
+| D2 | Começar os subfluxos MVP contra homologação (após B2) | C | Token homolog em mãos permite testar T6/T1/T2 de verdade |
 
 ---
 
@@ -172,7 +172,7 @@ Leituras da árvore:
 
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
-| C1 | `[~]` | Credencial Oracle read-only + dados de conexão + schema | P→E | nada |
+| C1 | `[x]` | Credencial Oracle read-only + dados de conexão + schema | P→E | nada |
 | C2 | `[ ]` | Explorar estrutura (VPN direta ou pacotes de query) | C | C1 |
 | C3 | `[ ]` | Dicionário de colunas + diagrama do fluxo de agendamento | C | C2 |
 | C4 | `[ ]` | Mapear onde vive o DESFECHO e como filtrar | C | C3 |
@@ -181,7 +181,7 @@ Leituras da árvore:
 
 ### C1 · Credencial e conexão
 
-**Status 04/jul:** Pedro relatou já ter login e senha de banco funcionando no DBeaver, descrito como "MySQL". Pendências antes de dar C1 por fechada: (1) confirmar o dialeto real olhando o driver da conexão no DBeaver (MV clássico roda em Oracle; se for MySQL de fato, pode ser um espelho/BI ou outro sistema); (2) confirmar que é o banco onde vivem ATENDIME e as tabelas de agendamento; (3) confirmar o schema canônico de leitura (MVBIKE? MVINTEGRA? outro owner?). Se faltar algo, a mensagem original ao analista continua valendo: usuário somente leitura (SELECT) nos schemas de agendamento; host, porta, service name.
+**Fechada em 06/jul:** Pedro confirmou que a conexão do DBeaver é Oracle (login/senha funcionando). As duas pendências restantes (confirmar que ATENDIME e as tabelas de agendamento vivem nesse banco; descobrir o owner/schema canônico) são exatamente o que a query 1.1 do Pacote 1 responde: viraram o primeiro passo de C2.
 
 **Cuidado:** credencial NUNCA entra no repo. Guardar em variável de ambiente local ou keychain; a sessão Claude usa em memória.
 
@@ -218,7 +218,7 @@ Leituras da árvore:
 
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
-| D1 | `[ ]` | Token GH homolog + prod e rate limit (pedir HOJE) | P→E | nada |
+| D1 | `[~]` | Token GH: homolog RECEBIDO (06/jul); falta prod + rate limit | P→E | nada |
 | D2 | `[ ]` | Construir subfluxos MVP (T6→T1→T2→T5→T7) | C | D1, B2 |
 | D3 | `[ ]` | Classificador de urgência antes do agente | C | B2 |
 | D4 | `[ ]` | Etapa `FALHA AGENDAMENTO — FILA` + tags novas no Kanban | P | nada |
@@ -229,9 +229,9 @@ Leituras da árvore:
 
 ### D1 · Token Global Health
 
-**Pedir** (via contato do hospital com a GH): token de homologação (`dem.agenda.globalhealth.mv/rest/whatsapp`) e produção (`whatsapp.agenda.globalhealth.mv/rest/whatsapp`); limite de chamadas simultâneas e rate limit; contato técnico para dúvidas da integração.
+**Status 06/jul:** token de homologação recebido e salvo em `.env` na raiz do repo (`GH_TOKEN_HOMOLOG`, fora do git via .gitignore). **Falta pedir** (via contato do hospital com a GH): token de produção (`whatsapp.agenda.globalhealth.mv/rest/whatsapp`); limite de chamadas simultâneas e rate limit; contato técnico para dúvidas da integração.
 
-**Pronto quando:** os dois tokens guardados como Credential no n8n (`GH Token (Homolog)` / `GH Token (Prod)`, header `Token`) e o rate limit documentado em `ana/api-mv/perguntas-global-health.md`.
+**Pronto quando:** os dois tokens guardados como Credential no n8n (`GH Token (Homolog)` / `GH Token (Prod)`, header `Token`) e o rate limit documentado em `ana/api-mv/perguntas-global-health.md`. (O `.env` local é ponte até as Credentials existirem no n8n.)
 
 ### D2 · Subfluxos MVP
 
@@ -286,7 +286,7 @@ Leituras da árvore:
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
 | E1 | `[ ]` | Fonte MV: atendidos com serviço, data, setor/profissional e DESFECHO | E | C4 |
-| E2 | `[ ]` | Base legal LGPD do contato proativo | P→E | nada |
+| E2 | `[ ]` | Base legal LGPD do contato proativo (ADIADA 06/jul: retomar antes de E4) | P→E | nada |
 | E3 | `[ ]` | Template utility de abertura + teste de classificação | C+P | B2 |
 | E4 | `[ ]` | POC eletivo (250 a 1.000/dia, opt-out, métricas) | P+C | E1, E2, E3 |
 | E5 | `[ ]` | Camada analítica (banco, classificação auditada, agregação) | C | E4 |
@@ -299,6 +299,8 @@ Leituras da árvore:
 **Pronto quando:** extração de um dia real validada: só eletivo, só desfecho benigno, com os campos para personalizar o template.
 
 ### E2 · Base legal LGPD
+
+**Adiada em 06/jul por decisão do Pedro:** a direção não prioriza LGPD nesta fase de desenvolvimento/testes. A tarefa NÃO está cancelada: ela é pré-condição dura do disparo em massa (E4) e o lead time do jurídico é longo; reabrir assim que a Fase 3 entrar no horizonte (o mais tardar junto com E3).
 
 **Pergunta ao jurídico:** o termo de atendimento assinado autoriza contato proativo por WhatsApp para pesquisa de satisfação? Se não: qual o caminho (ajuste do termo para novos pacientes? legítimo interesse documentado? opt-in na alta?).
 
@@ -362,3 +364,5 @@ Dois assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e imp
 - `[x]` 03/jul: Sessão ultracode concluída: 8 artefatos commitados (69 agentes, verificação adversarial); síntese e 8 decisões recomendadas em `roadmap/relatorio-pesquisa.md`; roadmap visual e queries da Trilha C (MOT_ALT) atualizados
 - `[x]` 04/jul: `roadmap/pesquisa-ultracode.html` removido a pedido do Pedro (conteúdo preservado no histórico git e em `relatorio-pesquisa.md`; nenhum arquivo o referenciava)
 - `[x]` 04/jul: Verificado que a produção do n8n não contém o hotfix (updatedAt 28/mai em todos os workflows; export do repo sem bloco de urgência) e que não há drift produção vs `ana/workflows/`
+- `[x]` 06/jul: C1 fechada: conexão DBeaver confirmada como Oracle; owner/schema vira a query 1.1 do Pacote 1 (C2)
+- `[x]` 06/jul: Token de homologação da Global Health recebido; salvo em `.env` local (fora do git), `.gitignore` atualizado (`.env`, `tokens/`)
