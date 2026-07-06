@@ -53,16 +53,46 @@ _Avoid_: Retail
 A Ana é um único agente com três modos de comportamento (atendimento, comercial, ouvidoria), não subagentes. Decisão fechada no briefing do diretor (jun/2026). Quando a tag `ouvidoria` é aplicada, o modo comercial morre para aquela thread (regra de exclusão).
 _Avoid_: subagentes, agentes especializados
 
+**Canal principal (WhatsApp oficial)**:
+O número de WhatsApp do hospital que concentra o volume real de pacientes (~20 mil mensagens/mês e a fila de não respondidas do baseline). Hoje está conectado ao Kommo e é atendido só por humanos; a Ana ainda não passa por ele. Levar a Ana para este canal é a entrega que ataca a fila e realiza o valor do programa.
+
+**Canal de teste (Telegram)**:
+Canal Telegram plugado no Chatwoot onde a Ana opera hoje, usado para testes e validação (hotfix, integração MV), sem o volume real do hospital.
+_Avoid_: dizer "Ana em produção" sem qualificar o canal; enquanto a migração não acontece, "produção" significa o ambiente vivo do n8n respondendo o canal de teste.
+
+**Kommo**:
+CRM legado do hospital, onde o canal principal está plugado hoje e onde os atendentes trabalham; fonte do baseline congelado do documento-mestre. Sai de cena quando o canal principal migrar para o Chatwoot.
+_Avoid_: buscar métricas da Ana no Kommo (a Ana não passa por lá)
+
+**Transbordo seletivo**:
+Política comercial decidida pela direção (jul/2026): a Ana fecha consulta e exame particular sozinha, 24/7; o humano entra só para cirurgia, procedimento e negociação de valores, além dos fallbacks técnicos. O SOP v2 já nasce com este desenho.
+_Avoid_: "Ana aquece e o humano fecha" como regra geral (modelo anterior à decisão)
+
+**Congelamento do Chatwoot (fase de testes)**:
+Decisão de 06/jul/2026: enquanto a fase de testes da integração MV não termina, a configuração atual do Chatwoot (etapas, tags, estados, nomes) não muda. A estrutura da seção 4 do documento-mestre (funil de 7 etapas, famílias de tags, estados, SLA) é a espec-alvo para depois, discutida e configurada junto com a entrada no canal principal.
+
 **Diferenciais**:
 Coluna da base de conhecimento (hoje Google Sheets, aba de consultas particulares) que traz o destaque do hospital por especialidade. É o insumo da ancoragem de valor no modo comercial (os `[Diferencial_1]`/`[Diferencial_2]` do SOP). Já funcional em produção via `Get_Consultas`.
 _Avoid_: "justificativa de especialidade" (termo usado na conversa com o diretor; o mecanismo é este)
 
 **Pós-atendimento**:
-Agente novo, separado da Ana, proativo e analítico: dispara pesquisa de satisfação em massa (começando só pelo eletivo), classifica respostas e gera relatório por setor/profissional/período. Dois mecanismos: escuta interna (sem filtro) + motor de reputação Google (sem review gating). Pré-condição: fonte de dados do MV com desfecho.
-_Avoid_: "modo pesquisa da Ana" (é agente separado); review gating
+Agente novo, separado da Ana, proativo e analítico: dispara pesquisa de satisfação em massa (começando só pelo eletivo), classifica respostas e gera relatório por setor/profissional/período. Dois mecanismos: escuta interna (sem filtro) + motor de reputação Google (sem review gating). Pré-condição: fonte de dados do MV com desfecho. A Frente 4 foi estendida (jul/2026) com a gestão de avaliações do Google Meu Negócio: rascunhos de resposta gerados por IA, publicação só com aprovação humana (regra dura para avaliações negativas).
+_Avoid_: "modo pesquisa da Ana" (é agente separado); review gating; publicar resposta a avaliação sem aprovação humana
 
 **Hotfix do prompt**:
 Primeira fase de execução (decisão desta sessão): corrigir o prompt em produção antes da integração MV. Escopo: triagem de urgência como nova Regra Global 1, Regra 6 reescrita (Ana assume "assistente virtual"), exclusão comercial↔ouvidoria, guardrails jurídicos da ouvidoria e ajustes menores.
+
+### Programa (documento-mestre)
+
+**Documento-mestre**:
+`Documento-Mestre_Programa-Ana-CRM.md`, na raiz do repo: o registro vivo do programa mantido com a direção do hospital. O log de decisões (seção 7) e as questões em aberto (seção 8) são a memória compartilhada; decisão fechada lá não se reabre, e o roadmap do repo deve se manter coerente com elas.
+
+**Frentes (1 a 4)**:
+As quatro frentes do programa: 1 atendimento e agendamento autônomo no WhatsApp; 2 captura e conversão do paciente particular; 3 ouvidoria 24/7; 4 voz do paciente e pós-atendimento (inclui a reputação no Google).
+
+**Fases do Programa**:
+Fase 1: Ana no WhatsApp (frentes 1 a 4 conforme maturidade). Fase 2: agente de voz no telefone. "Fase" sem qualificador refere-se a estas; as etapas internas de execução são as trilhas do TODO.
+_Avoid_: numerar entregas internas como "Fase N" solta (colide com as fases do programa)
 
 ### Pessoas e partes
 

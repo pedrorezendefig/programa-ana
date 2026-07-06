@@ -9,9 +9,9 @@
 
 ---
 
-## Fronteira de agora (06/jul/2026 · tarde: hotfix RECONFERIDO como pendente + fase de estudo da base estruturada)
+## Fronteira de agora (06/jul/2026 · noite: hotfix NO AR + documento-mestre do diretor absorvido no roadmap)
 
-Reconferido em 06/jul à tarde, a pedido do Pedro (que achava o hotfix já aplicado via MCP): o systemMessage do nó `Agente IA Hospital` em produção é byte a byte idêntico ao `Ana_System_Prompt.md` ANTIGO do repo (sem Seção 0, sem SAMU/CVV), e o workflow não é editado desde 28/mai. O MCP do n8n conectado só lê/executa, não grava. **A1 e A2 continuam abertas.** Decisões do Pedro hoje: (1) roadmap visual reorganizado por avanço funcional, sem valores de contrato; (2) a fase declarada após o hotfix é o ESTUDO DA BASE MV: Pedro roda as queries no DBeaver e cola os resultados em `ana/api-mv/resultados/` (amostras com dado pessoal em `resultados/amostras/`, fora do git); Claude digere tudo antes de seguir para a integração; (3) LGPD segue adiada nesta fase de testes. Token GH homolog recebido e salvo em `.env`; banco confirmado Oracle (C1 fechada).
+Hotfix em produção desde as 17h56 (A2 fechada via REST; A3 em validação). Na sequência, grilling do `Documento-Mestre_Programa-Ana-CRM.md` preparado pelo Felipe: ~80% consolida o que o repo já tinha; o resto virou o pacote desta revisão. Decisões do Pedro no grilling: (1) topologia revelada: a Ana opera num canal de TESTE (Chatwoot + Telegram); o WhatsApp oficial (~20 mil msgs/mês, fila de não respondidas crescendo +817/mês) segue no Kommo, só com humanos; (2) sequência: a integração MV termina primeiro no canal de teste (D2→D7); a entrada no canal principal virou a Trilha G, pós-D7; (3) CONGELAMENTO do Chatwoot na fase de testes: nenhuma reforma de board/tags/estados agora; a seção 4 do documento-mestre é espec-alvo adiada (G6); (4) foco declarado: provar que as tools chamam as APIs do MV documentadas, começando pelo smoke test da GH homolog com o token de 06/jul (novo sub-passo de D1). Estudo da base (C2/C3) e LGPD adiada seguem como estavam.
 
 | # | Tarefa | Dono | Por que agora |
 |---|---|---|---|
@@ -19,7 +19,7 @@ Reconferido em 06/jul à tarde, a pedido do Pedro (que achava o hotfix já aplic
 | A5 | Migrar token Chatwoot para Credential do n8n + rotacionar | P | Destrava o re-export dos workflows (A4); produção agora diverge do export antigo em `ana/workflows/` |
 | C2 | Rodar Pacotes 1, 2 e 3 de `queries-exploracao.md` no DBeaver e salvar em `resultados/` | P | Fase de estudo da base declarada como prioridade pós-hotfix |
 | C3 | Digerir os resultados: dicionário de colunas + diagrama do fluxo | C | Assim que os CSVs chegarem; é a "absorção de conhecimento" pedida |
-| D1 | Pedir token de PRODUÇÃO + rate limit + contato técnico da GH | P→E | Homolog já chegou (06/jul); a metade que falta continua no caminho crítico |
+| D1 | Smoke test da GH homolog (endpoints de `ana/api-mv/` com o token de 06/jul) + pedir token de PRODUÇÃO, rate limit e contato técnico | P+C→E | Prova barata de que as tools alcançam a API do MV antes de D2; a metade externa segue no caminho crítico |
 | B2 | Revisar os 8 artefatos do ultracode e ratificar decisões com o Felipe | P+C | Destrava D2, D3 e E3; síntese em `roadmap/relatorio-pesquisa.md` |
 
 ---
@@ -49,7 +49,7 @@ flowchart TD
         C5["C5 (C+P) Power BI SCMA (opcional)"]
     end
 
-    subgraph TD1["Trilha D · Fase 1: integração MV"]
+    subgraph TD1["Trilha D · Integração MV"]
         D1["D1 (E) Token GH + rate limit · CRÍTICO"] --> D2["D2 (C) Construir subfluxos MVP"]
         B2 --> D2
         B2 --> D3["D3 (C) Classificador de urgência"]
@@ -60,22 +60,34 @@ flowchart TD
     end
     C3 -.valida desenho.-> D2
 
-    subgraph TE["Trilha E · Fase 3: pós-atendimento"]
+    subgraph TE["Trilha E · Pós-atendimento"]
         C4 --> E1["E1 (E) Fonte MV com desfecho"]
         E2["E2 (E) Base legal LGPD"] --> E4
         B2 --> E3["E3 (C+P) Template utility + teste de classificação"]
         E1 --> E4["E4 (P+C) POC eletivo 250 a 1000/dia"]
         E3 --> E4
         E4 --> E5["E5 (C) Camada analítica"] --> E6["E6 (P+E) Relatórios, dono e ritual semanal"]
+        E4 --> E7["E7 (C+P) GMB: respostas a avaliações (backlog)"]
     end
-    D7 -.mesmo número WhatsApp: rodar após estabilizar.-> E4
+
+    subgraph TG["Trilha G · Ana no canal principal (pós-D7)"]
+        G1["G1 (P→E) Descobrir conexão do número/WABA"] --> G2["G2 (E+P) Migrar o número para o Chatwoot"]
+        G2 --> G3["G3 (E) Treinar atendentes no Chatwoot"]
+        G3 --> G4["G4 (P+C) Sombra com casos reais"]
+        G4 --> G5["G5 (P+C) Autônomo + canário real (estanca a fila)"]
+        G5 --> G6["G6 (P+C+E) Reforma Chatwoot + KPIs (§4/§5)"]
+    end
+    D7 --> G2
+    G1 --> E3
+    G5 -.canal principal estável.-> E4
 ```
 
 Leituras da árvore:
 - **Caminho crítico até a receita (+R$ 2k):** D1 → D2 → D5 → D6 → D7 → D8. Tudo começa no token GH; por isso D1 se pede HOJE.
 - **Trilhas A, B e C são independentes entre si**: hotfix, pesquisa e banco andam em paralelo total.
-- **C alimenta E**: sem mapear o desfecho no banco (C4), a Fase 3 não tem filtro seguro (E1).
+- **C alimenta E**: sem mapear o desfecho no banco (C4), a Trilha E não tem filtro seguro (E1).
 - **B2 é o pivô**: a revisão dos artefatos do ultracode destrava a construção (D2, D3) e o template (E3).
+- **G realiza o valor do programa**: a integração termina no canal de teste; a fila do WhatsApp real só é atacada quando G migra o número (pós-D7). E3 depende de G1 (a WABA precisa ser conhecida) e E4 do canal migrado e estável (G5).
 
 ---
 
@@ -214,7 +226,7 @@ Leituras da árvore:
 
 ---
 
-## Trilha D — Fase 1: integração MV
+## Trilha D · Integração MV
 
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
@@ -231,11 +243,13 @@ Leituras da árvore:
 
 **Status 06/jul:** token de homologação recebido e salvo em `.env` na raiz do repo (`GH_TOKEN_HOMOLOG`, fora do git via .gitignore). **Falta pedir** (via contato do hospital com a GH): token de produção (`whatsapp.agenda.globalhealth.mv/rest/whatsapp`); limite de chamadas simultâneas e rate limit; contato técnico para dúvidas da integração.
 
-**Pronto quando:** os dois tokens guardados como Credential no n8n (`GH Token (Homolog)` / `GH Token (Prod)`, header `Token`) e o rate limit documentado em `ana/api-mv/perguntas-global-health.md`. (O `.env` local é ponte até as Credentials existirem no n8n.)
+**Smoke test homolog (sub-passo novo, grilling de 06/jul):** antes de construir D2, chamar com o `GH_TOKEN_HOMOLOG` os endpoints documentados em `ana/api-mv/` (começando pelos de leitura: identificação de paciente e disponibilidade) e registrar em `ana/api-mv/resultados/` o que respondeu (shape do payload, erros, latência). Objetivo: provar que as tools conseguem falar com a API do MV como documentada, antes de qualquer construção.
+
+**Pronto quando:** smoke test registrado (pelo menos um endpoint de leitura respondendo com payload real de homologação); os dois tokens guardados como Credential no n8n (`GH Token (Homolog)` / `GH Token (Prod)`, header `Token`) e o rate limit documentado em `ana/api-mv/perguntas-global-health.md`. (O `.env` local é ponte até as Credentials existirem no n8n.)
 
 ### D2 · Subfluxos MVP
 
-**Escopo:** T6 `Listar_agendamentos` → T1 `Identificar_paciente` → T2 `Buscar_disponibilidade` → T5 `Efetivar_agendamento` → T7 `Remarcar_ou_cancelar`, conforme specs nó a nó de `docs/02-arquitetura-agendamento.md` §4 (T3/T4 ficam para a Fase 2). Inclui: estado em `custom_attributes.agendamento_estado` (ler/gravar/limpar), TTL de 24h, mapa número→ID, prefixos-sinal, confirmação em 3 camadas nos subfluxos de escrita, `onError: continueRegularOutput` em todo nó HTTP, e limpeza do estado no `/reset`.
+**Escopo:** T6 `Listar_agendamentos` → T1 `Identificar_paciente` → T2 `Buscar_disponibilidade` → T5 `Efetivar_agendamento` → T7 `Remarcar_ou_cancelar`, conforme specs nó a nó de `docs/02-arquitetura-agendamento.md` §4 (T3/T4 ficam para uma etapa posterior da integração). Inclui: estado em `custom_attributes.agendamento_estado` (ler/gravar/limpar), TTL de 24h, mapa número→ID, prefixos-sinal, confirmação em 3 camadas nos subfluxos de escrita, `onError: continueRegularOutput` em todo nó HTTP, e limpeza do estado no `/reset`.
 
 **Passos:** construir cada subfluxo → testar isolado com `Execute Workflow` + pinData contra homologação → plugar os 5 nós `toolWorkflow` no agente → subir SOP v2 → testar ponta a ponta.
 
@@ -254,6 +268,8 @@ Leituras da árvore:
 ### D4 · Kanban e tags
 
 **Passos:** criar a etapa `FALHA AGENDAMENTO — FILA` no board; criar tags `agendado-bot`, `remarcacao`, `cancelamento`; atualizar a descrição da tool `Atualizar_lead` (ela injeta a lista de etapas do board por expressão: conferir que a nova etapa aparece).
+
+**Escopo congelado (grilling de 06/jul):** aditivo mínimo, só o que os subfluxos do v2 exigem para funcionar; nenhum rename, nenhuma reforma de estrutura ou de estados, tudo validado com o Pedro na aplicação. A reforma completa do Chatwoot (documento-mestre §4) mora em G6, pós-fase de testes.
 
 ### D5 · Homologação
 
@@ -281,7 +297,7 @@ Leituras da árvore:
 
 ---
 
-## Trilha E — Fase 3: pós-atendimento
+## Trilha E · Pós-atendimento
 
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
@@ -291,6 +307,7 @@ Leituras da árvore:
 | E4 | `[ ]` | POC eletivo (250 a 1.000/dia, opt-out, métricas) | P+C | E1, E2, E3 |
 | E5 | `[ ]` | Camada analítica (banco, classificação auditada, agregação) | C | E4 |
 | E6 | `[ ]` | Categorias com coordenadores + dono + ritual semanal | P+E | E5 |
+| E7 | `[ ]` | GMB: rascunhos de resposta a avaliações (IA + aprovação humana) | C+P | E4 (backlog) |
 
 ### E1 · Fonte de dados com desfecho
 
@@ -332,23 +349,60 @@ Leituras da árvore:
 
 **Contexto:** relatório sem dono vira PDF morto (briefing II.6). Categorias co-desenhadas com quem age; metodologia congelada para permitir análise evolutiva; ritual semanal (Gisele + coordenadores) com regra "categoria acima do limiar vira ação com responsável".
 
+### E7 · Avaliações do Google Meu Negócio (backlog)
+
+**Contexto:** Frente 4 estendida por decisão da direção (jul/2026, documento-mestre §7): rascunhos de resposta a avaliações do Google Meu Negócio gerados por IA, publicação só com aprovação humana obrigatória; para avaliações negativas valem os guardrails jurídicos da ouvidoria (não admitir culpa, não expor dado de paciente). Nada se constrói agora: registrada para não evaporar.
+
+**Pré-requisitos quando ativar:** acesso ao perfil GMB do hospital; quem aprova (Gisele?); fluxo de publicação manual no início.
+
+---
+
+## Trilha G · Ana no canal principal (pós-D7)
+
+> Nascida do grilling do documento-mestre (06/jul): a Ana opera num canal de TESTE (Chatwoot + Telegram); o WhatsApp oficial do hospital (~20 mil msgs/mês, fila de não respondidas crescendo +817/mês) vive no Kommo, só com humanos. Esta trilha realiza os Passos 1 e 2 do roadmap do diretor (documento-mestre §10) e é onde o valor do programa acontece. Sequência decidida: começa depois de D7 (integração MV provada no canal de teste). "Atacar a fila" = estancar o fluxo novo (toda mensagem nova passa a ter resposta); varredura retroativa das ~3.295 antigas seria tarefa nova, dependente de E2/E3 (base legal + template).
+
+| ID | St | Tarefa | Dono | Depende de |
+|---|---|---|---|---|
+| G1 | `[ ]` | Descobrir como o número/WABA está conectado ao Kommo hoje | P→E | nada (lead time longo; perguntar cedo, num papo natural) |
+| G2 | `[ ]` | Migrar o número para a API oficial plugada no Chatwoot | E+P | D7, G1 |
+| G3 | `[ ]` | Treinar os atendentes no Chatwoot (eles são o transbordo) | E | G2 |
+| G4 | `[ ]` | Sombra com casos reais (Ana em nota privada; atendente revisa e envia) | P+C | G3 |
+| G5 | `[ ]` | Ativação autônoma + canário real; estancar a fila | P+C | G4 |
+| G6 | `[ ]` | Reforma do Chatwoot + camada de KPIs (documento-mestre §4 e §5) | P+C+E | G5 |
+
+### G1 · Descoberta da conexão do número
+
+**Contexto:** ninguém do projeto sabe hoje se o número no Kommo usa WABA oficial (e via qual BSP) ou conexão não oficial; a resposta define caminho e prazo da migração (porte entre BSPs vs cadastro novo na Cloud API). Custo zero: perguntar ao hospital num papo natural. É também pré-requisito de E3 (o template da Meta se registra na WABA).
+
+**Pronto quando:** documentado (tipo de conexão, BSP, dono da conta Meta Business, caminho de migração recomendado) em `pos-atendimento/` ou `ana/`.
+
+### G2 a G5 · Migração, treinamento, sombra e ativação
+
+**G2:** migrar o número para a API oficial plugada no Chatwoot; o histórico fica no Kommo (leitura); janela de cutover combinada com o hospital. **G3:** atendentes treinados no Chatwoot antes do cutover. **G4:** janela curta de sombra (dias): Ana rascunha em nota privada, atendente revisa e envia; calibra o tom com a população real de Bangu. **G5:** Ana autônoma na entrada, com transbordo; canário real por horário ou amostragem via n8n (um número = uma inbox); sucesso = fila de não respondidas para de crescer e a derivada vira negativa.
+
+### G6 · Reforma do Chatwoot + KPIs (a espec adiada)
+
+**Contexto:** o congelamento de 06/jul adiou a estrutura da seção 4 do documento-mestre (funil de 7 etapas, famílias de tags prefixadas, estados `pending`/`open`/`resolved`, SLA, atribuição automática no handoff) e os KPIs da seção 5 (Blocos A a D; regra de ouro: medir quem não foi atendido e separar mérito da Ana do humano). Discutir, configurar e homologar aqui, com o time já operando. Inclui: co-desenhar a família `tema:` com os coordenadores (casa com E6) e o watchdog de `PERDIDO` sem motivo. Avaliar na hora se parte da reforma antecede G3, para o time treinar já no board final.
+
 ---
 
 ## Trilha F — Contínuo
 
 | ID | St | Tarefa | Dono | Quando |
 |---|---|---|---|---|
-| F1 | `[ ]` | Comunicar ao Felipe: Regra 6 implementada + veredito do web-chat | P | após A2 e B2 |
+| F1 | `[ ]` | Pauta com o Felipe: Regra 6 + veredito web-chat + proposta da Meta da Ana | P | após A2 e B2 |
 | F2 | `[~]` | Manter exports, TODO, roadmap e memória sincronizados | C | sempre (via /check) |
 | F3 | `[ ]` | Dimensionar manutenção recorrente no contrato (III.2.8) | P | antes de D8 |
 
 ### F1 · Comunicação com o Felipe
 
-Dois assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e implementada, com o racional (política Meta 2026 + contradição interna do prompt antigo); (2) ideia do web-chat: levar o veredito da pesquisa com números, incluindo a correção da premissa (reativo já é grátis) e o atalho do widget Chatwoot.
+Três assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e implementada, com o racional (política Meta 2026 + contradição interna do prompt antigo); (2) ideia do web-chat: levar o veredito da pesquisa com números, incluindo a correção da premissa (reativo já é grátis) e o atalho do widget Chatwoot; (3) Meta da Ana: propor ancorar o KPI de desempenho (hoje indefinido no contrato) no limiar que o documento-mestre dele já sugere (§10, Passo 5: escala com resolução autônoma ≥70% nos fluxos de rotina), fechando a redação junto com o Termo do D8.
 
 ### F3 · Manutenção recorrente
 
 **Contexto:** briefing III.2.8: a economia de folha não é total; quando a GH muda a API, entra convênio novo, ou a Meta muda regra, há carga de engenharia. Estimar horas/mês típicas e refletir no contrato (a mensalidade da Ana já cobre? precisa de cláusula?). Fechar antes de assinar o Termo (D8) para não pactuar manutenção de graça.
+
+**Nota do grilling (06/jul):** alinhar também o gatilho do D8: pela letra atual, "em produção" se cumpre com o MV operante no canal de teste; a percepção de valor do Felipe mora no canal principal (Trilha G). Pactuar explicitamente qual marco destrava os +R$ 2.000 antes de emitir o Termo.
 
 ---
 
@@ -368,3 +422,4 @@ Dois assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e imp
 - `[x]` 06/jul: Token de homologação da Global Health recebido; salvo em `.env` local (fora do git), `.gitignore` atualizado (`.env`, `tokens/`)
 - `[x]` 06/jul: A1 concluída: `Ana_System_Prompt.md` v1.1 redigido (Regra 1 + Seção 0 de urgência com SAMU/CVV, Regra 6 assistente virtual + saudação CFM 2.454, Regra 12 + Seção 7 com guardrails jurídicos, 8.4 rastreável, tag fora-horario, acentuação 3.2/7.3, linha CRÍTICA na tabela de prioridades)
 - `[x]` 06/jul: A2 concluída às 17h56: hotfix aplicado em produção via REST (API key do Pedro, `PUT /api/v1/workflows/mwboSUbv8n4TBwPf`); prompt do nó verificado idêntico ao do repo e `versionId == activeVersionId` (versão ativa é a nova). API key salva no `.env`. Pendente: re-export para `ana/workflows/` após A5 (o export antigo agora diverge da produção, esperado)
+- `[x]` 06/jul: Grilling do documento-mestre do diretor: topologia dos canais revelada (Ana no Telegram de teste; WhatsApp real no Kommo), congelamento do Chatwoot na fase de testes, Trilha G criada (canal principal, pós-D7), smoke test GH virou sub-passo de D1, E7 (avaliações GMB) registrada, ganchos contratuais em F1/F3, headers de trilha sem "Fase N"; CONTEXT.md atualizado com os termos novos
