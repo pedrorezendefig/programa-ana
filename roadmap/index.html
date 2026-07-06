@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Roadmap · Programa Ana · Hospital São Matheus</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Archivo:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');
 
 :root{
   --paper:#F6F3EC;
@@ -23,8 +23,8 @@
   --red-soft:#F7E4E1;
   --blue:#1E5AA8;
   --blue-soft:#E4ECF6;
-  --serif:"Fraunces","Iowan Old Style","Palatino Linotype",Palatino,serif;
-  --sans:"Archivo","Avenir Next",Avenir,Seravek,"Helvetica Neue",sans-serif;
+  --serif:"Fraunces","Iowan Old Style",Palatino,serif;
+  --sans:"Archivo","Avenir Next",Avenir,"Helvetica Neue",sans-serif;
   --mono:"Spline Sans Mono","SF Mono",Menlo,monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -33,166 +33,201 @@ body{
   background:var(--paper);
   color:var(--ink);
   font-family:var(--sans);
-  font-size:16px;
-  line-height:1.55;
+  font-size:16px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
   background-image:
-    radial-gradient(circle at 15% 8%, rgba(15,118,110,.05), transparent 40%),
-    radial-gradient(circle at 90% 90%, rgba(180,83,9,.05), transparent 45%);
+    radial-gradient(circle at 12% 6%, rgba(15,118,110,.06), transparent 40%),
+    radial-gradient(circle at 92% 88%, rgba(180,83,9,.06), transparent 45%);
+  overflow-x:hidden;
 }
-.wrap{max-width:1080px;margin:0 auto;padding:0 32px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 32px}
+
+/* entrada em cascata */
+.rise{opacity:0;transform:translateY(18px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.d1{animation-delay:.05s}.d2{animation-delay:.15s}.d3{animation-delay:.25s}
+.d4{animation-delay:.35s}.d5{animation-delay:.5s}.d6{animation-delay:.65s}
+
+/* reveal no scroll */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
 
 /* ---------- header ---------- */
-header{padding:56px 0 0;position:relative}
+header{padding:52px 0 0;position:relative}
 .kicker{
   font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--teal);display:flex;align-items:center;gap:12px;
 }
 .kicker::before{content:"";width:34px;height:2px;background:var(--teal)}
 h1{
-  font-family:var(--serif);font-weight:600;font-size:clamp(40px,6vw,64px);
-  line-height:1.02;letter-spacing:-.015em;margin:18px 0 10px;
+  font-family:var(--serif);font-weight:600;font-size:clamp(42px,6.5vw,68px);
+  line-height:1.0;letter-spacing:-.015em;margin:18px 0 12px;
 }
 h1 em{font-style:italic;color:var(--teal-deep)}
-.sub{max-width:640px;color:var(--muted);font-size:17px}
-.meta-row{
-  display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 0;
-  font-family:var(--mono);font-size:12.5px;
-}
-.meta-chip{
-  border:1px solid var(--line);background:var(--card);border-radius:999px;
-  padding:6px 14px;color:var(--muted);
-}
+.sub{max-width:600px;color:var(--muted);font-size:16.5px}
+.meta-row{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 0;font-family:var(--mono);font-size:12.5px}
+.meta-chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;color:var(--muted)}
 .meta-chip b{color:var(--ink);font-weight:500}
-.ecg{display:block;width:100%;height:64px;margin-top:34px}
+.meta-chip.hot{border-color:var(--amber);color:var(--amber);background:var(--amber-soft)}
+.ecg{display:block;width:100%;height:60px;margin-top:30px}
 .ecg path{
   fill:none;stroke:var(--teal);stroke-width:2;
   stroke-dasharray:1600;stroke-dashoffset:1600;
-  animation:draw 2.6s ease-out .3s forwards;
+  animation:draw 2.4s ease-out .4s forwards;
 }
 @keyframes draw{to{stroke-dashoffset:0}}
+.ecg circle{fill:var(--teal);opacity:0;animation:blip 2.2s ease-in-out 2.6s infinite}
+@keyframes blip{0%,100%{opacity:0;r:3}50%{opacity:.9;r:5}}
+
+/* ---------- jornada (mapa de fases) ---------- */
+.jornada{margin:44px 0 0}
+.j-track{position:relative;padding:0 0 8px}
+.j-line{position:absolute;left:4%;right:4%;top:26px;height:3px;background:var(--line);border-radius:3px;overflow:visible}
+.j-fill{position:absolute;left:0;top:0;height:100%;width:0;border-radius:3px;
+  background:linear-gradient(90deg,var(--teal),var(--teal-deep));
+  transition:width 1.6s cubic-bezier(.3,.7,.2,1) .4s}
+.j-steps{display:grid;grid-template-columns:repeat(5,1fr);position:relative}
+.j-step{text-align:center;padding-top:0;position:relative}
+.j-dot{
+  width:22px;height:22px;border-radius:50%;margin:15px auto 14px;position:relative;z-index:2;
+  background:var(--paper);border:3px solid var(--line);transition:transform .3s;
+}
+.j-step:hover .j-dot{transform:scale(1.25)}
+.j-step.done .j-dot{background:var(--teal);border-color:var(--teal)}
+.j-step.done .j-dot::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700}
+.j-step.now .j-dot{background:var(--amber);border-color:var(--amber)}
+.j-step.now .j-dot::before{
+  content:"";position:absolute;inset:-10px;border-radius:50%;
+  border:2px solid var(--amber);opacity:0;animation:pulse 2s ease-out infinite;
+}
+@keyframes pulse{0%{transform:scale(.5);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.j-tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.j-step.now .j-tag{color:var(--amber);font-weight:500}
+.j-step.done .j-tag{color:var(--teal)}
+.j-name{font-family:var(--serif);font-size:16.5px;font-weight:600;margin-top:3px}
+.j-note{font-size:12px;color:var(--muted);margin-top:2px}
+.voce{
+  position:absolute;top:-38px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--ink);color:var(--paper);border-radius:6px;padding:4px 9px;white-space:nowrap;
+  animation:bob 2.4s ease-in-out infinite;
+}
+.voce::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--ink)}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
 
 /* ---------- escada de valor ---------- */
-.ladder{margin:8px 0 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--card)}
+.ladder{margin:46px 0 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--card)}
 .ladder-inner{display:grid;grid-template-columns:repeat(4,1fr)}
-.rung{
-  padding:22px 20px 20px;border-right:1px solid var(--line);position:relative;
-}
+.rung{padding:20px 20px 18px;border-right:1px solid var(--line);position:relative;overflow:hidden}
 .rung:last-child{border-right:none}
-.rung .amount{font-family:var(--serif);font-size:26px;font-weight:600}
-.rung .label{font-size:13.5px;color:var(--muted);margin-top:2px}
+.rung .amount{font-family:var(--serif);font-size:25px;font-weight:600}
+.rung .label{font-size:13px;color:var(--muted);margin-top:2px;min-height:34px}
 .rung .state{
-  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-  margin-top:10px;display:inline-block;padding:3px 9px;border-radius:999px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  margin-top:8px;display:inline-block;padding:3px 9px;border-radius:999px;
 }
 .rung.on .state{background:var(--teal-soft);color:var(--teal-deep)}
 .rung.next .state{background:var(--amber-soft);color:var(--amber)}
 .rung.off .state{background:var(--paper-deep);color:var(--muted)}
-.rung.on::after{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:var(--teal)}
-.rung.next::after{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
-  background:repeating-linear-gradient(90deg,var(--amber) 0 8px,transparent 8px 14px)}
-
-/* ---------- nav ---------- */
-nav.phases{
-  position:sticky;top:0;z-index:30;background:rgba(246,243,236,.92);
-  backdrop-filter:blur(6px);border-bottom:1px solid var(--line);
-}
-nav.phases .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
-nav.phases a{
-  font-family:var(--mono);font-size:12px;letter-spacing:.06em;white-space:nowrap;
-  color:var(--muted);text-decoration:none;padding:7px 13px;border-radius:999px;border:1px solid transparent;
-}
-nav.phases a:hover{color:var(--ink);border-color:var(--line)}
-nav.phases a.active{background:var(--ink);color:var(--paper)}
+.rung .bar{position:absolute;left:0;top:0;height:3px;width:100%;background:var(--paper-deep)}
+.rung .bar i{display:block;height:100%;width:0;background:var(--teal)}
+.rung.on .bar i{animation:fill 1s ease-out .8s forwards}
+.rung.next .bar i{background:repeating-linear-gradient(90deg,var(--amber) 0 8px,transparent 8px 14px);animation:fill 1.2s ease-out 1.4s forwards}
+@keyframes fill{to{width:100%}}
 
 /* ---------- seções ---------- */
-section{padding:64px 0 8px}
-.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:26px}
-.sec-num{font-family:var(--mono);font-size:13px;color:var(--teal);letter-spacing:.14em}
-h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,3.4vw,36px);letter-spacing:-.01em}
-.sec-note{color:var(--muted);max-width:680px;margin:-14px 0 26px;font-size:15.5px}
+section{padding:58px 0 6px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.sec-num{font-family:var(--mono);font-size:12.5px;color:var(--teal);letter-spacing:.14em;text-transform:uppercase}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,3.4vw,34px);letter-spacing:-.01em}
+.sec-note{color:var(--muted);max-width:660px;margin:0 0 24px;font-size:15px}
 
-/* fase card */
-.fase{
-  background:var(--card);border:1px solid var(--line);border-radius:14px;
-  padding:30px 32px;margin-bottom:22px;position:relative;overflow:hidden;
-  opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease;
+/* destravou hoje */
+.novidades{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:8px}
+.nov{
+  background:var(--teal-soft);border:1px solid var(--teal);border-radius:12px;padding:18px 20px;
+  position:relative;overflow:hidden;
 }
-.fase.reveal{opacity:1;transform:none}
-.fase::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--fase-cor,var(--teal))}
-.fase-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-bottom:6px}
-.fase-tag{
-  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--fase-cor,var(--teal));border:1px solid currentColor;border-radius:999px;padding:3px 10px;
-}
-h3{font-family:var(--serif);font-size:24px;font-weight:600}
-.fase .goal{color:var(--muted);font-size:15px;margin:6px 0 18px;max-width:720px}
-.fase .goal b{color:var(--ink);font-weight:600}
+.nov.warn{background:var(--amber-soft);border-color:var(--amber)}
+.nov .ic{font-size:22px;line-height:1;margin-bottom:8px;display:block}
+.nov b{display:block;font-family:var(--serif);font-size:17px;font-weight:600;color:var(--teal-deep);margin-bottom:3px}
+.nov.warn b{color:var(--amber)}
+.nov p{font-size:13.5px;color:var(--ink)}
+.nov::after{content:"";position:absolute;top:-40%;right:-20%;width:120px;height:120px;border-radius:50%;
+  background:rgba(255,255,255,.5);filter:blur(2px)}
 
-ul.items{list-style:none;display:grid;gap:9px}
-ul.items li{
-  display:flex;gap:12px;align-items:flex-start;font-size:15px;
-  padding:10px 14px;border-radius:9px;background:var(--paper);border:1px solid transparent;
+/* fronteira: cards */
+.frente{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.tarefa{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px 16px;
+  position:relative;transition:transform .25s,box-shadow .25s;overflow:hidden;
 }
-ul.items li:hover{border-color:var(--line)}
-.pill{
-  flex:none;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
-  padding:3px 9px;border-radius:999px;margin-top:2px;min-width:86px;text-align:center;
+.tarefa:hover{transform:translateY(-4px);box-shadow:0 14px 30px -18px rgba(26,42,47,.35)}
+.tarefa::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cor,var(--teal))}
+.t-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.t-id{
+  font-family:var(--mono);font-size:12px;font-weight:500;color:var(--cor,var(--teal));
+  border:1px solid currentColor;border-radius:7px;padding:2px 8px;
 }
-.p-feito{background:var(--teal);color:#fff}
-.p-curso{background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber)}
-.p-pend{background:transparent;color:var(--muted);border:1px solid var(--line)}
-.p-ext{background:var(--red-soft);color:var(--red);border:1px solid var(--red)}
-.p-pesq{background:var(--blue-soft);color:var(--blue);border:1px solid var(--blue)}
-ul.items li .txt small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
-.gate{
-  margin-top:18px;padding:14px 16px;border-radius:9px;background:var(--red-soft);
-  border:1px dashed var(--red);font-size:14px;color:var(--ink);
-}
-.gate b{color:var(--red);font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:4px}
-.unlock{
-  margin-top:18px;padding:14px 16px;border-radius:9px;background:var(--teal-soft);
-  border:1px solid var(--teal);font-size:14px;
-}
-.unlock b{color:var(--teal-deep)}
+.t-dono{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+.tarefa h4{font-family:var(--serif);font-size:17.5px;font-weight:600;line-height:1.25}
+.tarefa p{font-size:13.5px;color:var(--muted);margin-top:5px}
+.tarefa p code{font-family:var(--mono);font-size:12px;background:var(--paper-deep);padding:1px 6px;border-radius:5px;color:var(--ink)}
 
-/* ---------- riscos ---------- */
-.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:14.5px}
-.tbl-scroll{overflow-x:auto;border-radius:14px}
-.tbl th{
-  font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
-  text-align:left;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--paper-deep);
+/* queries */
+.sql-card{
+  background:#122B2E;border-radius:14px;padding:24px 26px;color:#D9E6E4;position:relative;overflow:hidden;
+  border:1px solid #1E4247;
 }
-.tbl td{padding:13px 18px;border-bottom:1px solid var(--line);vertical-align:top}
-.tbl tr:last-child td{border-bottom:none}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:1px}
-.d-alta{background:var(--red)}
+.sql-card::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 85% 10%, rgba(15,118,110,.35), transparent 50%)}
+.sql-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;position:relative}
+.sql-col h5{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#7FBAB2;margin-bottom:10px}
+.sql-col ol{list-style:none;display:grid;gap:8px}
+.sql-col li{font-size:13.5px;display:flex;gap:10px;align-items:baseline}
+.sql-col li b{font-family:var(--mono);font-weight:500;font-size:12px;color:#F0B27A;flex:none}
+.sql-foot{position:relative;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);
+  font-family:var(--mono);font-size:12px;color:#9DB8B4}
+.sql-foot code{color:#F0B27A}
+.cursor{display:inline-block;width:8px;height:14px;background:#7FBAB2;vertical-align:-2px;margin-left:4px;
+  animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* bloqueios + riscos */
+.lista{display:grid;gap:10px}
+.linha{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 14px;background:var(--card);
+  border:1px solid var(--line);border-radius:11px;padding:13px 18px;font-size:14.5px;
+  transition:border-color .25s;
+}
+.linha:hover{border-color:var(--muted)}
+.linha .quem{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;background:var(--red-soft);color:var(--red);flex:none}
+.linha .quem.soft{background:var(--blue-soft);color:var(--blue)}
+.linha .trava{margin-left:auto;font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:9px;flex:none;vertical-align:1px}
+.d-alta{background:var(--red);box-shadow:0 0 0 0 rgba(179,38,30,.5);animation:alerta 2.4s ease-out infinite}
+@keyframes alerta{70%{box-shadow:0 0 0 8px rgba(179,38,30,0)}100%{box-shadow:0 0 0 0 rgba(179,38,30,0)}}
 .d-media{background:var(--amber)}
-.d-baixa{background:var(--teal)}
 
-/* ---------- decisões ---------- */
-.decisoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
-.dec{
-  background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;
-}
-.dec .q{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.dec .a{font-size:15px}
-.dec .a b{color:var(--teal-deep)}
-
-/* ---------- footer ---------- */
-footer{margin-top:70px;border-top:1px solid var(--line);padding:30px 0 60px;color:var(--muted);font-size:13.5px}
+/* footer */
+footer{margin-top:64px;border-top:1px solid var(--line);padding:28px 0 60px;color:var(--muted);font-size:13.5px}
 footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep);padding:2px 7px;border-radius:5px;color:var(--ink)}
 
-@media(max-width:760px){
+@media(max-width:820px){
   .wrap{padding:0 18px}
   .ladder-inner{grid-template-columns:repeat(2,1fr)}
   .rung{border-bottom:1px solid var(--line)}
-  .fase{padding:22px 18px}
+  .j-steps{grid-template-columns:repeat(5,minmax(110px,1fr))}
+  .j-track{overflow-x:auto;padding-bottom:14px}
+  .sql-grid{grid-template-columns:1fr}
+  .voce{display:none}
 }
-@media print{
-  nav.phases{display:none}
-  .fase{break-inside:avoid;box-shadow:none}
-  body{background:#fff}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .rise,.reveal{opacity:1;transform:none}
+  .j-fill{width:34%!important}
 }
 </style>
 </head>
@@ -200,233 +235,200 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
 
 <header>
   <div class="wrap">
-    <div class="kicker">VITTA TECH · Programa Ana &amp; CRM · Atualizado em 03/jul/2026</div>
-    <h1>Roadmap do Programa <em>Ana</em></h1>
-    <p class="sub">Hospital São Matheus, Bangu/RJ. Da correção crítica do prompt em produção até o agente de pós-atendimento, com a integração real de agendamento (API Global Health/MV) no centro do caminho.</p>
-    <div class="meta-row">
-      <span class="meta-chip">Produção: <b>Ana reativa no ar (sem agendamento real)</b></span>
-      <span class="meta-chip">Stack: <b>n8n · Chatwoot · gpt-5.2 · Sheets · Postgres</b></span>
-      <span class="meta-chip">Mensalidade vigente: <b>R$ 6.000</b></span>
+    <div class="kicker rise d1">VITTA TECH · Programa Ana &amp; CRM · Atualizado em 06/jul/2026</div>
+    <h1 class="rise d2">Roadmap do Programa <em>Ana</em></h1>
+    <p class="sub rise d3">Hospital São Matheus, Bangu/RJ. Da correção crítica do prompt em produção até o pós-atendimento, com o agendamento real (API Global Health/MV) no centro do caminho.</p>
+    <div class="meta-row rise d4">
+      <span class="meta-chip hot"><b>Fase atual: 0 · Hotfix pendente em produção</b></span>
+      <span class="meta-chip">Mensalidade: <b>R$ 6.000</b> → alvo R$ 9.000</span>
+      <span class="meta-chip">Token GH homolog: <b>recebido 06/jul ✓</b></span>
+      <span class="meta-chip">Banco MV: <b>Oracle confirmado ✓</b></span>
     </div>
-    <svg class="ecg" viewBox="0 0 1080 64" preserveAspectRatio="none" aria-hidden="true">
+    <svg class="ecg rise d5" viewBox="0 0 1080 64" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0,40 L120,40 L150,40 L165,18 L180,54 L195,40 L340,40 L370,40 L385,10 L400,58 L415,40 L580,40 L610,40 L625,22 L640,50 L655,40 L820,40 L850,40 L865,6 L880,60 L895,40 L1080,40"/>
+      <circle cx="865" cy="6" r="4"/>
     </svg>
   </div>
 </header>
 
-<div class="ladder">
+<div class="wrap jornada rise d5">
+  <div class="j-track">
+    <div class="j-line"><div class="j-fill" id="jfill"></div></div>
+    <div class="j-steps">
+      <div class="j-step done">
+        <div class="j-dot"></div>
+        <div class="j-tag">Fundações</div>
+        <div class="j-name">Repo + Pesquisa</div>
+        <div class="j-note">ultracode: 8 artefatos</div>
+      </div>
+      <div class="j-step now">
+        <div class="voce">Você está aqui</div>
+        <div class="j-dot"></div>
+        <div class="j-tag">Fase 0 · agora</div>
+        <div class="j-name">Hotfix do prompt</div>
+        <div class="j-note">urgência + ouvidoria</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot"></div>
+        <div class="j-tag">Fase 1</div>
+        <div class="j-name">Integração MV</div>
+        <div class="j-note">agendar de verdade · +R$ 2k</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot"></div>
+        <div class="j-tag">Fase 2</div>
+        <div class="j-name">Expansão + KPI</div>
+        <div class="j-note">exames, base, meta · +R$ 1k</div>
+      </div>
+      <div class="j-step">
+        <div class="j-dot"></div>
+        <div class="j-tag">Fase 3</div>
+        <div class="j-name">Pós-atendimento</div>
+        <div class="j-note">pesquisa em massa</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ladder rise d6">
   <div class="wrap ladder-inner" style="padding:0">
-    <div class="rung on">
-      <div class="amount">R$ 5.000</div>
-      <div class="label">Aplicativo do hospital</div>
+    <div class="rung on"><div class="bar"><i></i></div>
+      <div class="amount">R$ 5.000</div><div class="label">Aplicativo do hospital</div>
       <span class="state">Em operação</span>
     </div>
-    <div class="rung on">
-      <div class="amount">+ R$ 1.000</div>
-      <div class="label">Site + Central de Comando</div>
+    <div class="rung on"><div class="bar"><i></i></div>
+      <div class="amount">+ R$ 1.000</div><div class="label">Site + Central de Comando</div>
       <span class="state">Em operação</span>
     </div>
-    <div class="rung next">
-      <div class="amount">+ R$ 2.000</div>
-      <div class="label">Ana funcional (integração MV)</div>
+    <div class="rung next"><div class="bar"><i></i></div>
+      <div class="amount">+ R$ 2.000</div><div class="label">Ana funcional (integração MV)</div>
       <span class="state">Fase 1 destrava</span>
     </div>
-    <div class="rung off">
-      <div class="amount">+ R$ 1.000</div>
-      <div class="label">Meta de desempenho (KPI a pactuar)</div>
+    <div class="rung off"><div class="bar"><i></i></div>
+      <div class="amount">+ R$ 1.000</div><div class="label">Meta de desempenho (KPI)</div>
       <span class="state">Fase 2</span>
     </div>
   </div>
 </div>
 
-<nav class="phases">
-  <div class="wrap">
-    <a href="#fase0">Fase 0 · Hotfix</a>
-    <a href="#pesquisa">Pesquisa ultracode</a>
-    <a href="#fase1">Fase 1 · Integração MV</a>
-    <a href="#fase2">Fase 2 · Expansão</a>
-    <a href="#fase3">Fase 3 · Pós-atendimento</a>
-    <a href="#riscos">Riscos</a>
-    <a href="#externas">Pendências externas</a>
-    <a href="#decisoes">Decisões</a>
-  </div>
-</nav>
-
 <main class="wrap">
 
-  <section id="fase0">
-    <div class="sec-head"><span class="sec-num">FASE 0</span><h2>Governança e hotfix do prompt</h2></div>
-    <p class="sec-note">Elimina o risco vivo em produção antes de qualquer coisa. São edições de texto no SOP atual: entrega em dias, não semanas.</p>
-    <div class="fase" style="--fase-cor:var(--teal)">
-      <div class="fase-top"><span class="fase-tag">Agora · Jul 2026</span><h3>Bloco crítico + fundações</h3></div>
-      <p class="goal">Pré-condição de produção segundo o briefing do diretor. A Ana <b>já está no ar</b> sem triagem de urgência: cada dia sem o hotfix é exposição real.</p>
-      <ul class="items">
-        <li><span class="pill p-feito">Feito</span><div class="txt">Repo git + reorganização por domínio (ana/, pos-atendimento/, roadmap/)<small>2 commits: snapshot do estado anterior + estrutura nova, com README</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Glossário do domínio atualizado (CONTEXT.md)<small>Modos da Ana, Diferenciais, Pós-atendimento, Hotfix</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Meta-prompt da sessão ultracode salvo<small>roadmap/prompt-sessao-ultracode.md · 8 frentes de pesquisa, 8 artefatos</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Ana_System_Prompt_v2.md redigido e revisado (pesquisa ultracode)<small>Urgência Regra 1 + Seção 0 · Regra 6 nova + saudação "assistente virtual" (CFM 2.454/2026) · Regra 12 ouvidoria↔comercial · guardrails jurídicos · acentos, fora-horario, 1.1, 8.4 · preâmbulo mapeia o delta da Fase 0</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Aplicar o hotfix no nó Agente IA Hospital (delta Fase 0 do v2)<small>Blocos independentes da API · re-exportar Ana.json e commitar</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Medir no Chatwoot o volume real de mensagens da Ana/mês<small>Base do orçamento pós-out/2026 (fim da janela grátis da Meta)</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Retry on Fail + filtro Ativo=S nas 4 tools de Sheets (ADR-0003, Fase 0)</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Pauta com a diretoria: CFM 2.454/2026 (vigor ~26/08/2026)<small>Avaliação de risco da Ana · Comissão de IA e Telemedicina · comunicação de IA ao paciente</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Segurança: token Chatwoot para Credential do n8n + rotação<small>Hoje hardcoded nos nós HTTP · não dar push do repo antes de limpar histórico</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Validação em sombra por período curto<small>Revisão humana antes do envio para calibrar tom (urgência e comercial)</small></div></li>
-      </ul>
+  <section id="novidades">
+    <div class="sec-head reveal"><span class="sec-num">Check de 06/jul</span><h2>Destravou agora</h2></div>
+    <div class="novidades">
+      <div class="nov reveal"><span class="ic">🔑</span><b>Token GH de homologação</b>
+        <p>Recebido e salvo em <strong>.env</strong> local (fora do git). Falta o de produção + rate limit.</p></div>
+      <div class="nov reveal"><span class="ic">🗄️</span><b>Banco MV é Oracle</b>
+        <p>Conexão do DBeaver confirmada. C1 fechada: os pacotes de query podem rodar.</p></div>
+      <div class="nov warn reveal"><span class="ic">⏸️</span><b>LGPD adiada (decisão Pedro)</b>
+        <p>Direção não prioriza agora. Reabrir antes do disparo em massa (E4): lead time longo.</p></div>
     </div>
   </section>
 
-  <section id="pesquisa">
-    <div class="sec-head"><span class="sec-num">TRILHA PARALELA</span><h2>Pesquisa ultracode</h2></div>
-    <p class="sec-note">Sessão multi-agente concluída em 03/jul/2026 (69 agentes, verificação adversarial das afirmações). Síntese com decisões recomendadas em <b>roadmap/relatorio-pesquisa.md</b>.</p>
-    <div class="fase" style="--fase-cor:var(--blue)">
-      <div class="fase-top"><span class="fase-tag">Concluída · 03/jul/2026</span><h3>8 frentes, 8 artefatos entregues</h3></div>
-      <ul class="items">
-        <li><span class="pill p-feito">Feito</span><div class="txt">Webchat por link: INVIÁVEL como economia (economia Meta = zero no cenário base)<small>pos-atendimento/viabilidade-webchat.md · aproveitar: widget Chatwoot no site + WhatsApp Flows · reavaliar números em set/2026</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Economia Meta 2026: pesquisa vinculada a atendimento é utility OFICIAL; fator real ~9x<small>pos-atendimento/templates-meta.md · 5 templates prontos · ACHADO: fim da janela grátis em 01/out/2026</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Melhores práticas: 17 problemas concretos no prompt corrigidos no v2<small>Mount Sinai/Nature Medicine e ECRI validam a dupla camada de urgência · evals: promptfoo + Langfuse · shadow via private notes</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Spec do classificador de urgência: híbrido regex + gpt-5.4-mini, golden set 135 casos<small>docs/06-spec-classificador-urgencia.md · fail-safe = SUSPEITA · judge noturno de cobertura total</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Base de conhecimento: Sheets como UI, Postgres como runtime (fase MV)<small>docs/adr/0003-base-de-conhecimento.md · Central de Comando como alvo final · NocoDB plano B</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Arquitetura analítica: schema Postgres, auditoria amostral, relatório semanal, loop com SLA<small>pos-atendimento/arquitetura-analitica.md · nominal só com n≥5 + revisão humana · convite Google universal (sem gating)</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">API v1.10 validada: 8 divergências (1 grave no T2) + 18 perguntas GH + 20 perguntas TI<small>ana/api-mv/perguntas-global-health.md · desfecho vive em MOT_ALT (TP_MOT_ALTA='O') · API não serve ao pós-atendimento</small></div></li>
-        <li><span class="pill p-feito">Feito</span><div class="txt">Compliance Meta: Ana permitida com folga; Meta não exige disclosure, o CFM sim<small>CFM 2.454/2026 (~ago/2026): IA comunicada + avaliação de risco + Comissão de IA · CPF em texto livre conflita com a policy</small></div></li>
-      </ul>
-      <div class="unlock"><b>Entregue:</b> Ana_System_Prompt_v2.md consolidado e revisado + 7 artefatos de spec/decisão + relatório de síntese. Próximo passo: Pedro revisa e ratifica as 8 decisões recomendadas com o Felipe.</div>
+  <section id="fronteira">
+    <div class="sec-head reveal"><span class="sec-num">O que fazer agora</span><h2>Fronteira de 06/jul</h2></div>
+    <p class="sec-note reveal">Somente o que está desbloqueado neste momento. Fonte de verdade: <strong>roadmap/TODO.md</strong> (atualize com /check).</p>
+    <div class="frente">
+      <div class="tarefa reveal" style="--cor:var(--red)">
+        <div class="t-top"><span class="t-id">A1</span><span class="t-dono">Claude</span></div>
+        <h4>Redigir o hotfix do prompt</h4>
+        <p>Extrair o delta Fase 0 do <code>Ana_System_Prompt_v2.md</code>: urgência como Regra 1, Regra 6, exclusão ouvidoria, guardrails.</p>
+      </div>
+      <div class="tarefa reveal" style="--cor:var(--red)">
+        <div class="t-top"><span class="t-id">A2</span><span class="t-dono">Pedro + Claude</span></div>
+        <h4>Aplicar no n8n</h4>
+        <p>API key (Settings &gt; n8n API) para eu aplicar via REST, ou colar manual no nó preservando o <code>=</code> e as <code>{{ }}</code>.</p>
+      </div>
+      <div class="tarefa reveal" style="--cor:var(--blue)">
+        <div class="t-top"><span class="t-id">C2</span><span class="t-dono">Pedro + Claude</span></div>
+        <h4>Explorar o banco Oracle</h4>
+        <p>Rodar os Pacotes 1 e 2 de <code>queries-exploracao.md</code> no DBeaver e salvar resultados em <code>ana/api-mv/resultados/</code>.</p>
+      </div>
+      <div class="tarefa reveal" style="--cor:var(--amber)">
+        <div class="t-top"><span class="t-id">D1</span><span class="t-dono">Pedro → externo</span></div>
+        <h4>Pedir token de produção + rate limit</h4>
+        <p>Homolog chegou; falta produção, limites de chamada e um contato técnico da Global Health.</p>
+      </div>
+      <div class="tarefa reveal" style="--cor:var(--teal)">
+        <div class="t-top"><span class="t-id">B2</span><span class="t-dono">Pedro + Claude</span></div>
+        <h4>Revisar os 8 artefatos do ultracode</h4>
+        <p>Começar por <code>relatorio-pesquisa.md</code>; ratificar as 8 decisões com o Felipe. Destrava D2, D3 e E3.</p>
+      </div>
+      <div class="tarefa reveal" style="--cor:var(--teal)">
+        <div class="t-top"><span class="t-id">D2</span><span class="t-dono">Claude · após B2</span></div>
+        <h4>Subfluxos MVP contra homologação</h4>
+        <p>Com o token em mãos: T6 listar → T1 identificar → T2 disponibilidade → T5 efetivar → T7 remarcar.</p>
+      </div>
     </div>
   </section>
 
-  <section id="fase1">
-    <div class="sec-head"><span class="sec-num">FASE 1</span><h2>Integração MV: agendamento real</h2></div>
-    <p class="sec-note">A Ana passa a agendar, remarcar e cancelar de verdade pela API Global Health/MV. Arquitetura 100% projetada em docs/02 e docs/05; falta construir.</p>
-    <div class="fase" style="--fase-cor:var(--teal)">
-      <div class="fase-top"><span class="fase-tag">Próxima · após hotfix</span><h3>MVP de consultas (T1, T2, T5, T6, T7)</h3></div>
-      <p class="goal">Identificar paciente, buscar disponibilidade, efetivar, listar e remarcar/cancelar consultas. Exames com triagem e anexos ficam para a Fase 2. Rollout: homologação com checklist, canário por inbox, produção com portal como fallback.</p>
-      <ul class="items">
-        <li><span class="pill p-ext">Externo</span><div class="txt">Token da API Global Health (homologação e produção) + respostas às 18 perguntas técnicas<small>Bloqueia tudo · perguntas prontas em ana/api-mv/perguntas-global-health.md</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Corrigir o docs/02 com as divergências D1 a D8 da validação contra a v1.10<small>D1 grave: fluxo particular do T2 precisa resolver o convênio particular (id próprio)</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Construir os 5 subfluxos do MVP (ordem: T6, T1, T2, T5, T7)</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Sync Sheets → Postgres + tools em postgresTool (ADR-0003)<small>Hospital segue editando a planilha; runtime sai da rota do Google</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Estado da jornada em custom_attributes + limpeza no /reset<small>Confirmar que a credencial Chatwoot escreve custom_attributes</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Classificador de urgência dedicado antes do agente (2ª camada)</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">SOP v2 no nó do agente + etapa FALHA AGENDAMENTO e tags novas no Kanban</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Checklist de homologação: caso feliz, 7 fallbacks, guardrails de escrita</div></li>
-      </ul>
-      <div class="unlock"><b>Destrava + R$ 2.000/mês</b> (Entregável Ana funcional · Termo de Entregável · mensalidade vai a R$ 8.000).</div>
-    </div>
-  </section>
-
-  <section id="fase2">
-    <div class="sec-head"><span class="sec-num">FASE 2</span><h2>Expansão e maturidade</h2></div>
-    <div class="fase" style="--fase-cor:var(--amber)">
-      <div class="fase-top"><span class="fase-tag">Depois do MVP em produção</span><h3>Exames completos, base de conhecimento e KPI</h3></div>
-      <ul class="items">
-        <li><span class="pill p-pend">Pendente</span><div class="txt">T3: perguntas de triagem de exame (impedeRealizacao com confirmação explícita)</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">T4: anexos obrigatórios (pedido médico, carteirinha)<small>Depende de confirmar se a data_url do Chatwoot é acessível externamente</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">CRUD da base de conhecimento na Central de Comando (alvo final do ADR-0003)<small>Pré-requisito: sync + Postgres da Fase 1 · plano B: NocoDB sobre o mesmo Postgres</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Definir e pactuar a Meta de desempenho (KPI) da Ana com o Felipe<small>Candidatos: taxa de agendamento pela Ana, captura noturna, tempo de resposta</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Widget Chatwoot no site (canal adicional, frente Lucas/Rib) + teste de WhatsApp Flows<small>Substitui a ideia do web-chat via link, reprovada pela pesquisa (economia zero, metade das respostas)</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Observabilidade: promptfoo em CI (golden set, gate 100% red flags) + Langfuse self-hosted</div></li>
-      </ul>
-      <div class="unlock"><b>Destrava + R$ 1.000/mês</b> quando a meta pactuada for atingida (mensalidade cheia: R$ 9.000).</div>
-    </div>
-  </section>
-
-  <section id="fase3">
-    <div class="sec-head"><span class="sec-num">FASE 3</span><h2>Agente de pós-atendimento</h2></div>
-    <p class="sec-note">Novo agente, separado da Ana: dispara pesquisa de satisfação, escuta, classifica e transforma 25 a 35 mil atendimentos/mês em relatório de gestão. Escuta interna sem filtro + reputação Google sem review gating.</p>
-    <div class="fase" style="--fase-cor:var(--red)">
-      <div class="fase-top"><span class="fase-tag">Após Fase 1 · pré-condições duras</span><h3>POC eletivo primeiro, emergência só com filtro de desfecho</h3></div>
-      <ul class="items">
-        <li><span class="pill p-ext">Externo</span><div class="txt">Fonte de dados do MV com serviço, data, setor/profissional e desfecho<small>Pré-condição absoluta · esquemas MVBIKE e MVINTEGRA em estudo · sem isso não há disparo seguro</small></div></li>
-        <li><span class="pill p-ext">Externo</span><div class="txt">Termo de balcão reescrito: nomear hospital + WhatsApp + finalidade<small>Resolve de uma vez o opt-in da Meta (papel é canal aceito) e o consentimento LGPD (ANPD veda legítimo interesse p/ dado sensível) · BLOQUEANTE do disparo</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Submeter os 5 templates prontos (pos-atendimento/templates-meta.md) + piloto de 200 a 500 envios<small>Monitorar categoria aprovada + webhook template_category_update (reclassificação = custo ~9x)</small></div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">POC só eletivo (exames, cirurgia eletiva, ambulatório) com 250 a 1.000 disparos/dia</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Camada analítica: categorias co-desenhadas com coordenadores, banco, relatórios evolutivos</div></li>
-        <li><span class="pill p-pend">Pendente</span><div class="txt">Fechamento de loop: crítica grave roteada para ouvidoria/humano, sem evaporar</div></li>
-      </ul>
-      <div class="gate"><b>Trava de segurança</b>Emergência adulto/pediátrica/ortopédica e obstetrícia ficam FORA de qualquer disparo até existir filtro de desfecho confiável vindo do MV. Disparo alegre para família em luto não é risco de reputação: é crueldade operacional, manchete e processo.</div>
-    </div>
-  </section>
-
-  <section id="riscos">
-    <div class="sec-head"><span class="sec-num">VIGIAR SEMPRE</span><h2>Riscos e mitigação</h2></div>
-    <div class="tbl-scroll">
-    <table class="tbl">
-      <thead><tr><th>Severidade</th><th>Risco</th><th>Mitigação</th></tr></thead>
-      <tbody>
-        <tr><td><span class="dot d-alta"></span>Alta</td><td>Falso-negativo de urgência (paciente em emergência tratado como eletivo)</td><td>Regra 1 no SOP (Fase 0) + classificador dedicado (Fase 1) + na dúvida, orientar PS</td></tr>
-        <tr><td><span class="dot d-alta"></span>Alta</td><td>Disparo proativo para família em luto</td><td>Escopo eletivo até filtro de desfecho via MV; tom por tipo de serviço</td></tr>
-        <tr><td><span class="dot d-alta"></span>Alta</td><td>Registro de ouvidoria virar prova com admissão de culpa</td><td>Guardrails jurídicos no hotfix; acolher sentimento sem validar acusação</td></tr>
-        <tr><td><span class="dot d-alta"></span>Alta</td><td>Fim da janela grátis da Meta em 01/out/2026 (Ana reativa e coleta passam a custar por mensagem)</td><td>Medir volume agora; recalcular em 01/set com o card oficial; coleta enxuta / WhatsApp Flows</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>Meta reclassificar template utility como marketing (custo ~9x, silencioso)</td><td>Template transacional puro; piloto com amostra; webhook template_category_update + alerta; appeal em 60 dias</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>CFM 2.454/2026 (vigor ~ago/2026): IA comunicada, avaliação de risco, Comissão de IA</td><td>Saudação "assistente virtual" (no v2); pauta com a diretoria antes de agosto</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>Coleta de CPF em texto livre conflita com a policy da Meta (identificadores sensíveis)</td><td>Decisão documentada com o jurídico; avaliar WhatsApp Flows na fase MV</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>Review gating no Google (remoção de avaliações/penalização)</td><td>Convite universal pós-pesquisa sem condicionar à nota; volume e recência fazem a nota</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>Token Chatwoot hardcoded nos workflows e no histórico git</td><td>Migrar para Credential n8n + rotacionar; nunca push antes de limpar histórico</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>Fadiga/banimento do número WhatsApp por volume proativo</td><td>Opt-out fácil, ritmo gerido, respeitar limites por qualidade</td></tr>
-        <tr><td><span class="dot d-media"></span>Média</td><td>Classificação nominal errada de profissional no relatório</td><td>Auditoria amostral; cuidado redobrado em atribuição nominal</td></tr>
-        <tr><td><span class="dot d-baixa"></span>Baixa</td><td>Rate limit desconhecido da API Global Health no pico</td><td>Perguntar limites antes do rollout; retry e fila no n8n</td></tr>
-        <tr><td><span class="dot d-baixa"></span>Baixa</td><td>Manutenção recorrente subdimensionada (API muda, convênio novo, regra Meta)</td><td>Dimensionar carga de engenharia contínua no contrato (questão III.2.8)</td></tr>
-      </tbody>
-    </table>
+  <section id="queries">
+    <div class="sec-head reveal"><span class="sec-num">Trilha C · banco MV</span><h2>Queries para executar</h2></div>
+    <div class="sql-card reveal">
+      <div class="sql-grid">
+        <div class="sql-col">
+          <h5>Pacote 1 · Estrutura</h5>
+          <ol>
+            <li><b>1.1</b> Em qual schema/owner vivem as 13 tabelas-chave (e volume estimado)</li>
+            <li><b>1.2</b> Colunas + comentários das 8 tabelas de agendamento</li>
+            <li><b>1.3</b> Colunas do núcleo de atendimento e desfecho (ATENDIME, MOT_ALT...)</li>
+          </ol>
+        </div>
+        <div class="sql-col">
+          <h5>Pacote 2 · Relações e amostras</h5>
+          <ol>
+            <li><b>2.1</b> Chaves estrangeiras: quem aponta para quem</li>
+            <li><b>2.2</b> Amostra de horários da Central de Marcações</li>
+            <li><b>2.3</b> Motivos de alta em MOT_ALT (TP_MOT_ALTA = 'O' é óbito)</li>
+          </ol>
+        </div>
+      </div>
+      <div class="sql-foot">Prontas em <code>ana/api-mv/queries-exploracao.md</code> · todas somente leitura · rodar no DBeaver e colar os resultados na sessão<span class="cursor"></span></div>
     </div>
   </section>
 
   <section id="externas">
-    <div class="sec-head"><span class="sec-num">FORA DO NOSSO CONTROLE</span><h2>Pendências externas</h2></div>
-    <p class="sec-note">Tudo aqui depende do hospital ou da Global Health. Cobrar cedo: são os únicos itens que podem travar o cronograma inteiro.</p>
-    <div class="tbl-scroll">
-    <table class="tbl">
-      <thead><tr><th>Item</th><th>De quem</th><th>Bloqueia</th></tr></thead>
-      <tbody>
-        <tr><td>Token da API (homologação + produção) + respostas às 18 perguntas técnicas</td><td>Global Health</td><td>Fase 1 inteira</td></tr>
-        <tr><td>Termo de balcão reescrito (hospital + WhatsApp + finalidade): opt-in Meta + consentimento LGPD</td><td>Jurídico do hospital</td><td>Fase 3 (disparo)</td></tr>
-        <tr><td>CFM 2.454/2026: avaliação de risco da Ana + Comissão de IA e Telemedicina (~ago/2026)</td><td>Diretoria + corpo clínico</td><td>Conformidade da Ana em produção</td></tr>
-        <tr><td>Export do MV com serviço, data, setor/profissional e desfecho</td><td>TI do hospital (MVBIKE / MVINTEGRA)</td><td>Fase 3 inteira</td></tr>
-        <tr><td>Materiais dos esquemas MVBIKE e MVINTEGRA + acesso ao Power BI (módulo SCMA)</td><td>TI do hospital</td><td>Fase 3 (fonte de dados)</td></tr>
-        <tr><td>Decisão: postura do convite ao Google (amplo vs contextual)</td><td>Felipe (direção)</td><td>Fase 3 (mecanismo B)</td></tr>
-        <tr><td>Termo de atendimento: base legal LGPD para contato proativo</td><td>Jurídico do hospital</td><td>Fase 3 (disparo)</td></tr>
-        <tr><td>Ciência da Regra 6 nova (assistente virtual)</td><td>Felipe (direção)</td><td>Nada (recomendação já implementada no hotfix)</td></tr>
-      </tbody>
-    </table>
+    <div class="sec-head reveal"><span class="sec-num">Fora do nosso controle</span><h2>Bloqueios externos</h2></div>
+    <div class="lista">
+      <div class="linha reveal"><span class="quem">Global Health</span>Token de produção + rate limit + contato técnico<span class="trava">trava a Fase 1 final</span></div>
+      <div class="linha reveal"><span class="quem">Global Health</span>Respostas às 18 perguntas técnicas da API v1.10<span class="trava">trava homologação</span></div>
+      <div class="linha reveal"><span class="quem soft">TI do hospital</span>Validar a leitura do modelo MV (após Pacotes 1 e 2)<span class="trava">trava C6 e Fase 3</span></div>
+      <div class="linha reveal"><span class="quem soft">Diretoria</span>Pauta CFM 2.454/2026: comunicar IA + Comissão (vigor ~ago/2026)<span class="trava">conformidade</span></div>
+      <div class="linha reveal"><span class="quem soft">Jurídico</span>LGPD do contato proativo (adiada; reabrir antes de E4)<span class="trava">trava Fase 3</span></div>
     </div>
   </section>
 
-  <section id="decisoes">
-    <div class="sec-head"><span class="sec-num">SESSÃO 03/JUL/2026</span><h2>Decisões fechadas</h2></div>
-    <div class="decisoes">
-      <div class="dec"><div class="q">Sequência</div><div class="a"><b>Hotfix primeiro</b>, integração MV depois. O risco vivo em produção vence a receita no desempate.</div></div>
-      <div class="dec"><div class="q">Urgência</div><div class="a"><b>Defesa em profundidade:</b> Regra Global 1 no SOP agora, classificador dedicado na Fase 1.</div></div>
-      <div class="dec"><div class="q">Transparência</div><div class="a"><b>Ana assume "assistente virtual"</b> quando perguntada; nunca nega ser IA, nunca expõe interna.</div></div>
-      <div class="dec"><div class="q">Arquitetura</div><div class="a"><b>Agente único, 3 modos</b> (atendimento, comercial, ouvidoria); pós-atendimento como agente separado.</div></div>
-      <div class="dec"><div class="q">Briefing I.5</div><div class="a"><b>Parcialmente superado:</b> a coluna de diferenciais por especialidade já alimenta a ancoragem de valor em produção.</div></div>
-      <div class="dec"><div class="q">Ultracode</div><div class="a"><b>Concluída (03/jul).</b> 8 artefatos no repo; 8 decisões recomendadas para ratificar com o Felipe (relatorio-pesquisa.md).</div></div>
-      <div class="dec"><div class="q">Custos Meta</div><div class="a"><b>Reativo é grátis ATÉ 30/set/2026.</b> Em 01/out acaba a janela grátis: orçar a Ana por mensagem; fator utility vs marketing é ~9x.</div></div>
-      <div class="dec"><div class="q">Webchat (pesquisa)</div><div class="a"><b>Link-out reprovado:</b> economia Meta zero e metade das respostas. Aproveitar como widget no site + WhatsApp Flows.</div></div>
-      <div class="dec"><div class="q">Base de conhecimento</div><div class="a"><b>ADR-0003:</b> Sheets como UI de edição, Postgres como runtime (fase MV), Central de Comando como alvo final.</div></div>
-      <div class="dec"><div class="q">Convite ao Google</div><div class="a"><b>Universal pós-pesquisa, sem filtro por nota</b> (NPS 9-10 → Google é review gating na letra da política). Ratificar com o Felipe.</div></div>
-      <div class="dec"><div class="q">Repositório</div><div class="a"><b>Git + organização por domínio.</b> Exports refletem produção; re-exportar e commitar a cada mudança.</div></div>
+  <section id="riscos">
+    <div class="sec-head reveal"><span class="sec-num">Vigiar sempre</span><h2>Top riscos</h2></div>
+    <div class="lista">
+      <div class="linha reveal"><span class="dot d-alta"></span>Ana no ar SEM triagem de urgência: cada dia sem o hotfix é exposição real<span class="trava">mitigação: A1 + A2 já</span></div>
+      <div class="linha reveal"><span class="dot d-alta"></span>Fim da janela grátis da Meta em 01/out/2026: Ana reativa passa a custar por mensagem<span class="trava">medir volume agora</span></div>
+      <div class="linha reveal"><span class="dot d-media"></span>Meta reclassificar template utility como marketing (custo ~9x, silencioso)<span class="trava">webhook + piloto</span></div>
+      <div class="linha reveal"><span class="dot d-media"></span>Token Chatwoot hardcoded nos workflows e no histórico git<span class="trava">A5: Credential + rotação</span></div>
+      <div class="linha reveal"><span class="dot d-media"></span>Disparo proativo para família em luto (Fase 3)<span class="trava">só eletivo até C4 mapear MOT_ALT</span></div>
     </div>
   </section>
 
-  <footer>
-    <p>Próxima ação: revisar <code>roadmap/relatorio-pesquisa.md</code>, aplicar o hotfix do prompt (delta Fase 0 do <code>Ana_System_Prompt_v2.md</code>) e ratificar as 8 decisões recomendadas com o Felipe. Este roadmap vive em <code>roadmap/index.html</code>; atualizar a cada fase concluída. Programa conduzido por Pedro (VITTA TECH) com direção de Felipe Malafaia (Hospital São Matheus).</p>
+  <footer class="reveal">
+    <p><strong>Como checar o status a qualquer momento:</strong> digite <code>/check</code> numa sessão Claude Code aberta neste diretório. A skill lê o TODO, o git e o n8n, reescreve a fronteira e devolve os próximos passos. Guia completo de execução: <code>roadmap/TODO.md</code> · síntese da pesquisa: <code>roadmap/relatorio-pesquisa.md</code>. Programa conduzido por Pedro (VITTA TECH) com direção de Felipe Malafaia (Hospital São Matheus).</p>
   </footer>
 
 </main>
 
 <script>
-const seções=document.querySelectorAll('section, .fase');
-const nav=document.querySelectorAll('nav.phases a');
-const io=new IntersectionObserver(es=>es.forEach(e=>{
-  if(e.isIntersecting){e.target.classList.add('reveal');}
-}),{threshold:.08});
-document.querySelectorAll('.fase').forEach(f=>io.observe(f));
-const secIO=new IntersectionObserver(es=>es.forEach(e=>{
+// preenche a linha da jornada até a Fase 0 (etapa 2 de 5)
+requestAnimationFrame(()=>{document.getElementById('jfill').style.width='34%'});
+// reveal em cascata no scroll
+const io=new IntersectionObserver(es=>es.forEach((e)=>{
   if(e.isIntersecting){
-    nav.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+    const el=e.target;
+    const sibs=[...el.parentElement.children].filter(c=>c.classList.contains('reveal'));
+    el.style.transitionDelay=(sibs.indexOf(el)%6)*0.09+'s';
+    el.classList.add('in');
+    io.unobserve(el);
   }
-}),{rootMargin:'-30% 0px -60% 0px'});
-document.querySelectorAll('main section').forEach(s=>secIO.observe(s));
+}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>
 </body>
 </html>
