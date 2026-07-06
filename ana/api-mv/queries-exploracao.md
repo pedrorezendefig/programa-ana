@@ -60,3 +60,35 @@ SELECT * FROM IT_AGENDA_CENTRAL WHERE ROWNUM <= 5;
 -- (incluindo a consulta-base do pós-atendimento) em ana/api-mv/perguntas-global-health.md.
 SELECT * FROM MOT_ALT WHERE ROWNUM <= 50;
 ```
+
+## Pacote 3: amostras dirigidas (rodar depois dos Pacotes 1 e 2)
+
+> Prefixar cada tabela com o owner descoberto na query 1.1 (ex.: `DBAMV.PACIENTE`).
+> ATENÇÃO: os resultados deste pacote contêm dados pessoais (nome, celular com DDD).
+> Salvar SEMPRE em `ana/api-mv/resultados/amostras/`, que fica fora do git (.gitignore).
+
+```sql
+-- 3.1 Paciente: ver as colunas de contato reais (celular com DDD, telefone, e-mail)
+SELECT * FROM PACIENTE WHERE ROWNUM <= 5;
+
+-- 3.2 Item de agendamento: a unidade que a Central de Marcações manipula
+SELECT * FROM ITEM_AGENDAMENTO WHERE ROWNUM <= 5;
+
+-- 3.3 Atendimento: núcleo do pós-atendimento (tipo, datas, motivo de alta)
+SELECT * FROM ATENDIME WHERE ROWNUM <= 5;
+
+-- 3.4 Ponte com a API Global Health: como um agendamento via API aparece no banco
+SELECT * FROM ATENDIME_GLOBAL_HEALTH WHERE ROWNUM <= 5;
+
+-- 3.5 Agenda central e horários: estrutura viva da agenda
+SELECT * FROM AGENDA_CENTRAL WHERE ROWNUM <= 5;
+```
+
+## Como exportar e onde salvar (DBeaver)
+
+1. Rodar a query → clicar com o botão direito na grade de resultados → **Export resultset** → CSV (UTF-8, separador `;`).
+2. Nomear pelo número da query: `1-1-owners.csv`, `1-2-colunas-agendamento.csv`, `2-1-fks.csv`...
+3. Salvar em:
+   - `ana/api-mv/resultados/` → estrutura e metadados (Pacotes 1 e 2, exceto 2.2): entram no git.
+   - `ana/api-mv/resultados/amostras/` → qualquer resultado com dados de paciente (2.2 e todo o Pacote 3): fora do git.
+4. Avisar na sessão Claude (`/check` ou mensagem): eu digiro os arquivos, escrevo o dicionário de colunas (C3) e o diagrama do fluxo de agendamento.

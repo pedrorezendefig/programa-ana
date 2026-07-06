@@ -9,18 +9,18 @@
 
 ---
 
-## Fronteira de agora (06/jul/2026 · destravou: token GH homolog + banco Oracle confirmado)
+## Fronteira de agora (06/jul/2026 · tarde: hotfix RECONFERIDO como pendente + fase de estudo da base estruturada)
 
-Verificado em 06/jul: produção do n8n segue SEM o hotfix (todos os workflows com `updatedAt` de 28/mai). Novidades do dia: (1) token de homologação da GH recebido e salvo em `.env` na raiz (fora do git; ver .gitignore); (2) banco do DBeaver confirmado como Oracle, C1 fechada; (3) E2 (LGPD) adiada por decisão do Pedro: direção não prioriza LGPD nesta fase de testes (retomar antes de E4). Sobre A2: o MCP do n8n conectado só expõe leitura/execução (não tem tool de update); o caminho automático continua sendo Pedro gerar uma API key em Settings > n8n API, ou colar manual.
+Reconferido em 06/jul à tarde, a pedido do Pedro (que achava o hotfix já aplicado via MCP): o systemMessage do nó `Agente IA Hospital` em produção é byte a byte idêntico ao `Ana_System_Prompt.md` ANTIGO do repo (sem Seção 0, sem SAMU/CVV), e o workflow não é editado desde 28/mai. O MCP do n8n conectado só lê/executa, não grava. **A1 e A2 continuam abertas.** Decisões do Pedro hoje: (1) roadmap visual reorganizado por avanço funcional, sem valores de contrato; (2) a fase declarada após o hotfix é o ESTUDO DA BASE MV: Pedro roda as queries no DBeaver e cola os resultados em `ana/api-mv/resultados/` (amostras com dado pessoal em `resultados/amostras/`, fora do git); Claude digere tudo antes de seguir para a integração; (3) LGPD segue adiada nesta fase de testes. Token GH homolog recebido e salvo em `.env`; banco confirmado Oracle (C1 fechada).
 
 | # | Tarefa | Dono | Por que agora |
 |---|---|---|---|
-| A1 | Redigir o hotfix do prompt (extrair delta Fase 0 do v2) | C | Produção segue sem regra de urgência; é a tarefa mais barata com maior redução de risco |
-| A2 | Aplicar no n8n (API key em Settings > n8n API, ou colar manual) | P+C | Logo após A1 aprovado |
-| C2 | Rodar Pacotes 1 e 2 de `ana/api-mv/queries-exploracao.md` no DBeaver (Oracle) | P+C | C1 fechou em 06/jul; os pacotes confirmam schema e destravam C3/C4 |
+| A1 | Redigir o hotfix do prompt (extrair delta Fase 0 do v2) | C | RECONFERIDO 06/jul: produção segue sem regra de urgência |
+| A2 | Aplicar no n8n (API key em Settings > n8n API, ou colar manual) | P+C | Logo após A1 aprovado; MCP não grava |
+| C2 | Rodar Pacotes 1, 2 e 3 de `queries-exploracao.md` no DBeaver e salvar em `resultados/` | P | Fase de estudo da base declarada como prioridade pós-hotfix |
+| C3 | Digerir os resultados: dicionário de colunas + diagrama do fluxo | C | Assim que os CSVs chegarem; é a "absorção de conhecimento" pedida |
 | D1 | Pedir token de PRODUÇÃO + rate limit + contato técnico da GH | P→E | Homolog já chegou (06/jul); a metade que falta continua no caminho crítico |
 | B2 | Revisar os 8 artefatos do ultracode e ratificar decisões com o Felipe | P+C | Destrava D2, D3 e E3; síntese em `roadmap/relatorio-pesquisa.md` |
-| D2 | Começar os subfluxos MVP contra homologação (após B2) | C | Token homolog em mãos permite testar T6/T1/T2 de verdade |
 
 ---
 
