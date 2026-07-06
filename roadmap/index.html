@@ -223,7 +223,7 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .rise,.reveal{opacity:1;transform:none}
-  .j-fill{width:30%!important}
+  .j-fill{width:50%!important}
 }
 </style>
 </head>
@@ -235,10 +235,10 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
     <h1 class="rise d2">Roadmap do Programa <em>Ana</em></h1>
     <p class="sub rise d3">Hospital São Matheus, Bangu/RJ. Avanço por capacidade: corrigir o prompt em produção, absorver o conhecimento da base MV, integrar o agendamento real e chegar ao pós-atendimento.</p>
     <div class="meta-row rise d4">
-      <span class="meta-chip hot"><b>Hotfix: NÃO aplicado (reconferido 06/jul)</b></span>
+      <span class="meta-chip ok"><b>Hotfix NO AR desde 06/jul às 17h56 ✓</b></span>
       <span class="meta-chip ok">Token GH homolog: <b>recebido ✓</b></span>
       <span class="meta-chip ok">Banco MV: <b>Oracle confirmado ✓</b></span>
-      <span class="meta-chip">Próxima fase: <b>estudo da base por queries</b></span>
+      <span class="meta-chip hot"><b>Fase atual: estudo da base por queries</b></span>
     </div>
     <svg class="ecg rise d5" viewBox="0 0 1080 64" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0,40 L120,40 L150,40 L165,18 L180,54 L195,40 L340,40 L370,40 L385,10 L400,58 L415,40 L580,40 L610,40 L625,22 L640,50 L655,40 L820,40 L850,40 L865,6 L880,60 L895,40 L1080,40"/>
@@ -257,16 +257,16 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
         <div class="j-name">Repo + Pesquisa</div>
         <div class="j-note">ultracode: 8 artefatos</div>
       </div>
+      <div class="j-step done">
+        <div class="j-dot"></div>
+        <div class="j-tag">Fase 0 · 06/jul</div>
+        <div class="j-name">Hotfix do prompt</div>
+        <div class="j-note">no ar; validação em sombra em curso</div>
+      </div>
       <div class="j-step now">
         <div class="voce">Você está aqui</div>
         <div class="j-dot"></div>
-        <div class="j-tag">Fase 0 · agora</div>
-        <div class="j-name">Hotfix do prompt</div>
-        <div class="j-note">urgência + ouvidoria em produção</div>
-      </div>
-      <div class="j-step">
-        <div class="j-dot"></div>
-        <div class="j-tag">Fase 1</div>
+        <div class="j-tag">Fase 1 · agora</div>
         <div class="j-name">Estudo da base MV</div>
         <div class="j-note">queries, dicionário, pleno entendimento</div>
       </div>
@@ -291,8 +291,8 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
   <section id="status">
     <div class="sec-head reveal"><span class="sec-num">Check de 06/jul</span><h2>Status verificado</h2></div>
     <div class="novidades">
-      <div class="nov alert reveal"><span class="ic">🚨</span><b>Hotfix ainda não está no ar</b>
-        <p>Reconferido no n8n: o prompt do nó é idêntico ao antigo (sem Seção 0, sem SAMU) e nada foi editado desde 28/mai. A1 e A2 seguem abertas.</p></div>
+      <div class="nov reveal"><span class="ic">🛡️</span><b>Hotfix NO AR (06/jul, 17h56)</b>
+        <p>Aplicado via API e verificado byte a byte: Seção 0 de urgência (SAMU/CVV), assistente virtual, guardrails da ouvidoria. Falta a bateria de validação.</p></div>
       <div class="nov reveal"><span class="ic">🔑</span><b>Token GH de homologação</b>
         <p>Recebido e salvo em <strong>.env</strong> local (fora do git). Falta o de produção + rate limit.</p></div>
       <div class="nov reveal"><span class="ic">🗄️</span><b>Banco MV é Oracle</b>
@@ -305,14 +305,14 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
     <p class="sec-note reveal">Somente o que está desbloqueado neste momento. Fonte de verdade: <code>roadmap/TODO.md</code> (atualize com <code>/check</code>).</p>
     <div class="frente">
       <div class="tarefa reveal" style="--cor:var(--red)">
-        <div class="t-top"><span class="t-id">A1</span><span class="t-dono">Claude</span></div>
-        <h4>Redigir o hotfix do prompt</h4>
-        <p>Extrair o delta Fase 0 do <code>Ana_System_Prompt_v2.md</code>: urgência como Regra 1, Regra 6, exclusão ouvidoria, guardrails.</p>
+        <div class="t-top"><span class="t-id">A3</span><span class="t-dono">Pedro + Claude</span></div>
+        <h4>Validar o hotfix no ar</h4>
+        <p>Smoke test agora ("estou com dor no peito" num contato de teste) + bateria de ~15 mensagens + olhar as conversas reais por 2-3 dias.</p>
       </div>
-      <div class="tarefa reveal" style="--cor:var(--red)">
-        <div class="t-top"><span class="t-id">A2</span><span class="t-dono">Pedro + Claude</span></div>
-        <h4>Aplicar no n8n</h4>
-        <p>API key (Settings &gt; n8n API) para eu aplicar via REST, ou colar manual no nó preservando o <code>=</code> e as <code>{{ }}</code>. O MCP conectado não grava.</p>
+      <div class="tarefa reveal" style="--cor:var(--amber)">
+        <div class="t-top"><span class="t-id">A5</span><span class="t-dono">Pedro</span></div>
+        <h4>Token Chatwoot vira Credential</h4>
+        <p>Migrar o token hardcoded para Credential do n8n e rotacionar; destrava o re-export dos workflows para o repo (A4).</p>
       </div>
       <div class="tarefa reveal" style="--cor:var(--blue)">
         <div class="t-top"><span class="t-id">C2</span><span class="t-dono">Pedro</span></div>
@@ -394,7 +394,7 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
   <section id="riscos">
     <div class="sec-head reveal"><span class="sec-num">Vigiar sempre</span><h2>Top riscos</h2></div>
     <div class="lista">
-      <div class="linha reveal"><span class="dot d-alta"></span>Ana no ar SEM triagem de urgência: cada dia sem o hotfix é exposição real<span class="trava">mitigação: A1 + A2 já</span></div>
+      <div class="linha reveal"><span class="dot d-alta"></span>Hotfix no ar mas ainda sem bateria de validação nem período de sombra<span class="trava">A3: validar já</span></div>
       <div class="linha reveal"><span class="dot d-alta"></span>Fim da janela grátis da Meta em 01/out/2026: mensagens passam a ser cobradas<span class="trava">medir volume agora</span></div>
       <div class="linha reveal"><span class="dot d-media"></span>Token Chatwoot hardcoded nos workflows e no histórico git<span class="trava">A5: Credential + rotação</span></div>
       <div class="linha reveal"><span class="dot d-media"></span>Disparo proativo para família em luto (Fase 3)<span class="trava">só eletivo até mapear MOT_ALT</span></div>
@@ -409,8 +409,8 @@ footer code{font-family:var(--mono);font-size:12.5px;background:var(--paper-deep
 </main>
 
 <script>
-// preenche a linha da jornada até a Fase 0 (etapa 2 de 5)
-requestAnimationFrame(()=>{document.getElementById('jfill').style.width='30%'});
+// preenche a linha da jornada até a Fase 1 (etapa 3 de 5)
+requestAnimationFrame(()=>{document.getElementById('jfill').style.width='50%'});
 // reveal em cascata no scroll
 const io=new IntersectionObserver(es=>es.forEach((e)=>{
   if(e.isIntersecting){

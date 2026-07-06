@@ -15,8 +15,8 @@ Reconferido em 06/jul à tarde, a pedido do Pedro (que achava o hotfix já aplic
 
 | # | Tarefa | Dono | Por que agora |
 |---|---|---|---|
-| A1 | FEITO 06/jul: v1.1 redigido e commitado (delta Fase 0 do v2 aplicado ao prompt) | C | Pedro revisa o diff se quiser; commit `hotfix:` no git |
-| A2 | Aplicar no n8n: Pedro gera API key (Settings > n8n API) e cola na sessão, ou cola o prompt manual no nó | P+C | É o único passo que falta para a Fase 0 proteger pacientes de verdade |
+| A3 | Validação do hotfix: smoke test do Pedro ("estou com dor no peito" em contato de teste) + bateria sintética de ~15 mensagens + revisão das conversas reais por 2-3 dias | P+C | Hotfix entrou NO AR em 06/jul às 17h56 (aplicado via REST, versão ativa confirmada); falta provar que se comporta |
+| A5 | Migrar token Chatwoot para Credential do n8n + rotacionar | P | Destrava o re-export dos workflows (A4); produção agora diverge do export antigo em `ana/workflows/` |
 | C2 | Rodar Pacotes 1, 2 e 3 de `queries-exploracao.md` no DBeaver e salvar em `resultados/` | P | Fase de estudo da base declarada como prioridade pós-hotfix |
 | C3 | Digerir os resultados: dicionário de colunas + diagrama do fluxo | C | Assim que os CSVs chegarem; é a "absorção de conhecimento" pedida |
 | D1 | Pedir token de PRODUÇÃO + rate limit + contato técnico da GH | P→E | Homolog já chegou (06/jul); a metade que falta continua no caminho crítico |
@@ -84,8 +84,8 @@ Leituras da árvore:
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
 | A1 | `[x]` | Redigir `Ana_System_Prompt.md` v1.1 (bloco crítico completo) | C | nada |
-| A2 | `[ ]` | Aplicar no nó `Agente IA Hospital` do n8n | P | A1 |
-| A3 | `[ ]` | Validação em sombra por período curto | P+C | A2 |
+| A2 | `[x]` | Aplicar no nó `Agente IA Hospital` do n8n | P | A1 |
+| A3 | `[~]` | Validação em sombra por período curto | P+C | A2 |
 | A4 | `[ ]` | Re-exportar workflows para `ana/workflows/` e commitar | C | A3, A5 |
 | A5 | `[ ]` | Migrar token Chatwoot para Credential + rotacionar | P | nada |
 
@@ -367,3 +367,4 @@ Dois assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e imp
 - `[x]` 06/jul: C1 fechada: conexão DBeaver confirmada como Oracle; owner/schema vira a query 1.1 do Pacote 1 (C2)
 - `[x]` 06/jul: Token de homologação da Global Health recebido; salvo em `.env` local (fora do git), `.gitignore` atualizado (`.env`, `tokens/`)
 - `[x]` 06/jul: A1 concluída: `Ana_System_Prompt.md` v1.1 redigido (Regra 1 + Seção 0 de urgência com SAMU/CVV, Regra 6 assistente virtual + saudação CFM 2.454, Regra 12 + Seção 7 com guardrails jurídicos, 8.4 rastreável, tag fora-horario, acentuação 3.2/7.3, linha CRÍTICA na tabela de prioridades)
+- `[x]` 06/jul: A2 concluída às 17h56: hotfix aplicado em produção via REST (API key do Pedro, `PUT /api/v1/workflows/mwboSUbv8n4TBwPf`); prompt do nó verificado idêntico ao do repo e `versionId == activeVersionId` (versão ativa é a nova). API key salva no `.env`. Pendente: re-export para `ana/workflows/` após A5 (o export antigo agora diverge da produção, esperado)
