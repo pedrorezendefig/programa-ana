@@ -15,8 +15,8 @@ Reconferido em 06/jul à tarde, a pedido do Pedro (que achava o hotfix já aplic
 
 | # | Tarefa | Dono | Por que agora |
 |---|---|---|---|
-| A1 | Redigir o hotfix do prompt (extrair delta Fase 0 do v2) | C | RECONFERIDO 06/jul: produção segue sem regra de urgência |
-| A2 | Aplicar no n8n (API key em Settings > n8n API, ou colar manual) | P+C | Logo após A1 aprovado; MCP não grava |
+| A1 | FEITO 06/jul: v1.1 redigido e commitado (delta Fase 0 do v2 aplicado ao prompt) | C | Pedro revisa o diff se quiser; commit `hotfix:` no git |
+| A2 | Aplicar no n8n: Pedro gera API key (Settings > n8n API) e cola na sessão, ou cola o prompt manual no nó | P+C | É o único passo que falta para a Fase 0 proteger pacientes de verdade |
 | C2 | Rodar Pacotes 1, 2 e 3 de `queries-exploracao.md` no DBeaver e salvar em `resultados/` | P | Fase de estudo da base declarada como prioridade pós-hotfix |
 | C3 | Digerir os resultados: dicionário de colunas + diagrama do fluxo | C | Assim que os CSVs chegarem; é a "absorção de conhecimento" pedida |
 | D1 | Pedir token de PRODUÇÃO + rate limit + contato técnico da GH | P→E | Homolog já chegou (06/jul); a metade que falta continua no caminho crítico |
@@ -83,7 +83,7 @@ Leituras da árvore:
 
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
-| A1 | `[ ]` | Redigir `Ana_System_Prompt.md` v1.1 (bloco crítico completo) | C | nada |
+| A1 | `[x]` | Redigir `Ana_System_Prompt.md` v1.1 (bloco crítico completo) | C | nada |
 | A2 | `[ ]` | Aplicar no nó `Agente IA Hospital` do n8n | P | A1 |
 | A3 | `[ ]` | Validação em sombra por período curto | P+C | A2 |
 | A4 | `[ ]` | Re-exportar workflows para `ana/workflows/` e commitar | C | A3, A5 |
@@ -366,3 +366,4 @@ Dois assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e imp
 - `[x]` 04/jul: Verificado que a produção do n8n não contém o hotfix (updatedAt 28/mai em todos os workflows; export do repo sem bloco de urgência) e que não há drift produção vs `ana/workflows/`
 - `[x]` 06/jul: C1 fechada: conexão DBeaver confirmada como Oracle; owner/schema vira a query 1.1 do Pacote 1 (C2)
 - `[x]` 06/jul: Token de homologação da Global Health recebido; salvo em `.env` local (fora do git), `.gitignore` atualizado (`.env`, `tokens/`)
+- `[x]` 06/jul: A1 concluída: `Ana_System_Prompt.md` v1.1 redigido (Regra 1 + Seção 0 de urgência com SAMU/CVV, Regra 6 assistente virtual + saudação CFM 2.454, Regra 12 + Seção 7 com guardrails jurídicos, 8.4 rastreável, tag fora-horario, acentuação 3.2/7.3, linha CRÍTICA na tabela de prioridades)
