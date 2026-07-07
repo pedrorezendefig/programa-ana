@@ -169,12 +169,29 @@
   .passo-titulo { font-family: var(--serif); font-size: 16.5px; font-weight: 700; margin: 0 0 2px; }
   .passo-chamada { font-family: var(--mono); font-size: 12px; color: var(--verde-escuro); margin-bottom: 3px; }
   .passo-texto { font-size: 13.5px; color: var(--tinta-suave); max-width: 72ch; margin: 0 0 5px; }
-  .produz { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .produz .rotulo { font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--tinta-apagada); }
+  .io-linhas { display: grid; gap: 6px; margin-top: 4px; }
+  .io-linha { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .io-rotulo {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--tinta-apagada); flex: 0 0 auto; min-width: 118px;
+  }
+  .io-linha.saida .io-rotulo { color: var(--verde); }
+  .io-ou { font-size: 12px; color: var(--tinta-apagada); }
   .chip-id {
     font-family: var(--mono); font-size: 11.5px; font-weight: 700; color: var(--verde-escuro);
     background: rgba(23, 105, 90, 0.10); border: 1px solid rgba(23, 105, 90, 0.35);
     border-radius: 3px; padding: 1px 8px;
+  }
+  .chip-param {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: var(--tinta);
+    background: var(--papel-card); border: 1px solid var(--tinta-apagada);
+    border-radius: 3px; padding: 1px 8px;
+  }
+  .chip-param.op, .chip-id.op { border-style: dashed; font-weight: 400; opacity: .8; }
+  .legenda-fluxo {
+    font-size: 13px; color: var(--tinta-suave);
+    background: var(--papel-card); border: 1px dashed var(--linha); border-radius: 5px;
+    padding: 9px 13px; margin: 0 0 16px; display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap;
   }
   table.dicionario-ids { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
   table.dicionario-ids th {
@@ -374,68 +391,100 @@
         <div class="aula-titulo">Leia isto antes de apertar qualquer botão</div>
         <p><b>Ninguém "cria uma consulta".</b> A consulta (cardiologia, ortopedia...) e o exame (tomografia, ultrassom...) já existem no catálogo do hospital: no banco MV, cada um é uma linha da tabela ITEM_AGENDAMENTO. O que você cria de verdade é a <b>marcação</b>: pegar um horário livre da agenda de um médico e prendê-lo a um paciente. A API expõe esse caminho em passos, e <b>cada passo devolve o id que o passo seguinte pede</b>. A ordem é esta:</p>
 
+        <div class="legenda-fluxo">
+          <b>Como ler os passos:</b>
+          <span class="chip-param">assim</span> = você digita/escolhe
+          <span class="chip-id">assim</span> = número que um passo ANTERIOR devolveu
+          <span class="chip-param op">tracejado</span> = opcional (sem tracejado é obrigatório)
+        </div>
+
         <div class="fluxo">
           <div class="passo">
             <div class="passo-num">1</div>
             <div class="passo-corpo">
               <div class="passo-titulo">Quem é o paciente</div>
-              <div class="passo-chamada">GET /pessoas (por cpf ou telefone) · se não existir: POST /pessoas</div>
+              <div class="passo-chamada">GET /pessoas · se não existir: POST /pessoas</div>
               <p class="passo-texto">A API confere o cadastro central de pacientes. Sem paciente, nada pode ser marcado em nome dele.</p>
-              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">cpf confirmado</span></span>
+              <div class="io-linhas">
+                <div class="io-linha"><span class="io-rotulo">você envia</span> <span class="chip-param">cpf</span> <span class="io-ou">ou</span> <span class="chip-param">telefone</span> <span class="io-ou">(um dos dois basta)</span></div>
+                <div class="io-linha saida"><span class="io-rotulo">recebe e guarda</span> <span class="chip-id">cpf confirmado</span> <span class="io-ou">(identifica o paciente daqui em diante)</span></div>
+              </div>
             </div>
           </div>
           <div class="passo">
             <div class="passo-num">2</div>
             <div class="passo-corpo">
               <div class="passo-titulo">O que ele quer (escolher do catálogo)</div>
-              <div class="passo-chamada">GET /consultas?pesquisa=... ou GET /exames?pesquisa=...</div>
+              <div class="passo-chamada">GET /consultas ou GET /exames</div>
               <p class="passo-texto">Busca por texto no catálogo. O campo "id" de cada item da resposta é o número mais importante do fluxo inteiro: quase todos os passos seguintes pedem ele.</p>
-              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idItemAgendamento</span></span>
+              <div class="io-linhas">
+                <div class="io-linha"><span class="io-rotulo">você envia</span> <span class="chip-param op">pesquisa</span> <span class="io-ou">(texto livre; vazio lista tudo)</span></div>
+                <div class="io-linha saida"><span class="io-rotulo">recebe e guarda</span> <span class="chip-id">idItemAgendamento</span> <span class="io-ou">(o campo "id" do item escolhido)</span></div>
+              </div>
             </div>
           </div>
           <div class="passo">
             <div class="passo-num">3</div>
             <div class="passo-corpo">
               <div class="passo-titulo">Quem paga</div>
-              <div class="passo-chamada">GET /convenios?idItemAgendamento=...</div>
+              <div class="passo-chamada">GET /convenios</div>
               <p class="passo-texto">Todo agendamento tem um pagador. Particular NÃO é "sem convênio": é um convênio com flag particular: true e id próprio. Passar o idItemAgendamento filtra só os convênios aceitos naquele item.</p>
-              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idConvenio</span></span>
+              <div class="io-linhas">
+                <div class="io-linha"><span class="io-rotulo">você envia</span> <span class="chip-id op">idItemAgendamento</span> <span class="io-ou">(do passo 2)</span> <span class="chip-param op">pesquisa</span></div>
+                <div class="io-linha saida"><span class="io-rotulo">recebe e guarda</span> <span class="chip-id">idConvenio</span></div>
+              </div>
             </div>
           </div>
           <div class="passo">
             <div class="passo-num">4</div>
             <div class="passo-corpo">
               <div class="passo-titulo">Qual plano do convênio</div>
-              <div class="passo-chamada">GET /convenios/{idConvenio}/planos?idItemAgendamento=...</div>
+              <div class="passo-chamada">GET /convenios/{idConvenio}/planos</div>
               <p class="passo-texto">O convênio se subdivide em planos (Familiar, Empresarial...). Mesmo o particular tem um plano. Se houver um só, é ele.</p>
-              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idPlano</span></span>
+              <div class="io-linhas">
+                <div class="io-linha"><span class="io-rotulo">você envia</span> <span class="chip-id">idConvenio</span> <span class="io-ou">(do passo 3, vai na URL)</span> <span class="chip-id op">idItemAgendamento</span> <span class="io-ou">(do passo 2)</span></div>
+                <div class="io-linha saida"><span class="io-rotulo">recebe e guarda</span> <span class="chip-id">idPlano</span></div>
+              </div>
             </div>
           </div>
           <div class="passo">
             <div class="passo-num">5</div>
             <div class="passo-corpo">
               <div class="passo-titulo">Quando (a busca de horários livres)</div>
-              <div class="passo-chamada">GET /agendas/v2?idItemAgendamento=&amp;idConvenio=&amp;idPlano=</div>
+              <div class="passo-chamada">GET /agendas/v2</div>
               <p class="passo-texto">Com os três ids na mão, a API devolve os horários livres, agrupados por unidade e por médico. Cada horário da resposta carrega DOIS ids: o idHorario (o slot exato: médico + dia + hora) e o idAgenda (a agenda daquele dia do médico).</p>
-              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idHorario</span> <span class="chip-id">idAgenda</span></span>
+              <div class="io-linhas">
+                <div class="io-linha"><span class="io-rotulo">você envia</span> <span class="chip-id">idItemAgendamento</span> <span class="chip-id">idConvenio</span> <span class="chip-id">idPlano</span> <span class="io-ou">(passos 2, 3 e 4)</span></div>
+                <div class="io-linha"><span class="io-rotulo">se quiser</span> <span class="chip-id op">idPrestador</span> <span class="chip-param op">turno</span> <span class="chip-param op">dataInicial</span></div>
+                <div class="io-linha saida"><span class="io-rotulo">recebe e guarda</span> <span class="chip-id">idHorario</span> <span class="chip-id">idAgenda</span> <span class="io-ou">(cada horário da lista traz os dois)</span></div>
+              </div>
             </div>
           </div>
           <div class="passo">
             <div class="passo-num">6</div>
             <div class="passo-corpo">
               <div class="passo-titulo">Os detalhes finais (dependem do tipo)</div>
-              <div class="passo-chamada">consulta: GET /consultas/tipos?idAgenda=... · exame: GET /exames/perguntas</div>
+              <div class="passo-chamada">consulta: GET /consultas/tipos · exame: GET /exames/perguntas</div>
               <p class="passo-texto">Consulta: o hospital quer saber o "tipo de marcação": é a PRIMEIRA consulta ou um RETORNO? Isso é o idTipoMarcacao. Exame: responder a triagem obrigatória (grávida? marca-passo?) e, se exigido, anexar documentos (pedido médico).</p>
-              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idTipoMarcacao</span> <span class="chip-id">respostas de triagem</span></span>
+              <div class="io-linhas">
+                <div class="io-linha"><span class="io-rotulo">consulta envia</span> <span class="chip-id">idAgenda</span> <span class="io-ou">(do passo 5)</span></div>
+                <div class="io-linha saida"><span class="io-rotulo">e recebe</span> <span class="chip-id">idTipoMarcacao</span></div>
+                <div class="io-linha"><span class="io-rotulo">exame envia</span> <span class="chip-id">idItemAgendamento</span> <span class="io-ou">(do passo 2)</span> <span class="chip-id">cpf</span> <span class="io-ou">(do passo 1)</span></div>
+                <div class="io-linha saida"><span class="io-rotulo">e recebe</span> <span class="chip-id">respostas de triagem</span></div>
+              </div>
             </div>
           </div>
           <div class="passo escreve">
             <div class="passo-num">7</div>
             <div class="passo-corpo">
               <div class="passo-titulo">Efetivar (a única escrita do caminho feliz)</div>
-              <div class="passo-chamada">POST /horarios/agendar { cpf, idItemAgendamento, idConvenio, idPlano, idHorario, ... }</div>
+              <div class="passo-chamada">POST /horarios/agendar</div>
               <p class="passo-texto">Junta tudo e grava. No banco, isso significa preencher o slot: o CD_PACIENTE do horário deixa de ser nulo. A resposta traz o protocolo e o id do agendamento, que você usa depois para listar (GET /agendamentos), remarcar (POST /horarios/reagendar) e cancelar (DELETE /agendamentos/{id}).</p>
-              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">id do agendamento</span> <span class="chip-id">protocolo</span></span>
+              <div class="io-linhas">
+                <div class="io-linha"><span class="io-rotulo">você envia</span> <span class="chip-id">cpf</span> <span class="chip-id">idItemAgendamento</span> <span class="chip-id">idConvenio</span> <span class="chip-id">idPlano</span> <span class="chip-id">idHorario</span> <span class="io-ou">(tudo dos passos 1 a 5)</span></div>
+                <div class="io-linha"><span class="io-rotulo">conforme o caso</span> <span class="chip-id op">idTipoMarcacao</span> <span class="io-ou">(se consulta)</span> <span class="chip-id op">respostas</span> <span class="io-ou">(se exame)</span> <span class="chip-param op">nrCarteira</span> <span class="io-ou">(se convênio)</span></div>
+                <div class="io-linha saida"><span class="io-rotulo">recebe e guarda</span> <span class="chip-id">id do agendamento</span> <span class="chip-id">protocolo</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1221,8 +1270,8 @@ function renderAula(aula) {
   let html = `<div class="aula"><div class="aula-titulo">A aula do tema · antes de chamar</div>`;
   html += `<p>${aula.resumo}</p>`;
   html += `<div class="aula-io">`;
-  html += `<div><span class="rotulo">Precisa de</span><span class="valor">${aula.precisa}</span></div>`;
-  html += `<div><span class="rotulo">Produz</span><span class="valor">${aula.produz}</span></div>`;
+  html += `<div><span class="rotulo">O que você envia</span><span class="valor">${aula.precisa}</span></div>`;
+  html += `<div><span class="rotulo">O que a resposta devolve</span><span class="valor">${aula.produz}</span></div>`;
   html += `</div>`;
   if (aula.tabelas && aula.tabelas.length) {
     html += `<div class="aula-tabelas">`;
