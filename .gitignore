@@ -2,3 +2,4 @@
 .env
 tokens/
 ana/api-mv/resultados/amostras/
+.venv-mv/
