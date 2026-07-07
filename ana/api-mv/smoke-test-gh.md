@@ -59,6 +59,10 @@ SELECT * FROM DBAMV.ATENDIME_GLOBAL_HEALTH;
 
 Interpretação: query 1 com linha = mesmo ambiente (melhor cenário). Query 1 vazia = ambientes distintos; levar à GH. As queries 3 e 4 só fazem sentido depois que existir massa para agendar (hoje não há catálogo publicado).
 
+### Resultado da verificação (07/jul, DBeaver do Pedro)
+
+A query 1 voltou **VAZIA** no Oracle acessado pelo DBeaver (host `tst19044.db9044.mv9044vcn.oraclevcn.com`, ambiente de teste em Oracle Cloud). Conclusão: **a homolog da GH não grava neste Oracle**: ou aponta para outro banco MV, ou a GH mantém um registro próprio de pessoas até o primeiro agendamento materializar no MV. A pergunta GH-18 passou a ser crítica; as queries 3 e 4 ficam suspensas até existir massa publicada (GH-19).
+
 ## Perguntas para a Global Health (somar às GH-1..17 de `perguntas-global-health.md`)
 
 - **GH-18:** A homolog (`dem.agenda...`) aponta para qual banco MV? É o mesmo Oracle da credencial read-only do hospital?
@@ -68,5 +72,7 @@ Interpretação: query 1 com linha = mesmo ambiente (melhor cenário). Query 1 v
 
 ## Estado
 
-- Paciente de teste deixado na homolog de propósito (CPF `66301102770`, id `1681`): é a sonda para a query de verificação. Nenhum agendamento criado (não há horário publicado).
-- Próximos passos: rodar as queries de verificação no Oracle; pedir massa de homolog à GH (GH-19); seguir com o restante da D1 (token de produção + rate limit + contato técnico).
+- Paciente de teste deixado na homolog de propósito (CPF `66301102770`, id `1681`): é a sonda das verificações. Nenhum agendamento criado (não há horário publicado).
+- Verificação no Oracle RODADA em 07/jul: negativa; ambientes distintos (ver seção acima).
+- Próximos passos: pedidos à GH (massa GH-19, ambiente GH-18, token de produção, rate limit, contato técnico): texto pronto para encaminhar em `roadmap/PENDENCIAS.md` §2.
+- Para re-testar a API a qualquer momento: `python3 ana/api-mv/scripts/smoke-gh.py` (imprime OK/VAZIO/FALHOU por endpoint e um veredito).

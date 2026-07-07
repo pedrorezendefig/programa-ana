@@ -2,6 +2,17 @@
 
 > Objetivo: a sessão Claude Code (e você, no terminal do VS Code) consultar o banco de HOMOLOGAÇÃO diretamente, sem o ciclo exportar-CSV-colar. Caminho: `python-oracledb` em **modo thin** (driver puro Python, sem instalar Oracle Client). Política combinada em 07/jul/2026: **homolog = acesso total da sessão; produção = só o Pedro, manualmente, no DBeaver.**
 
+## Estado atual: ADIADO por decisão do Pedro (07/jul/2026)
+
+Nada disto está feito ainda, de propósito: fica para quando você quiser. O que falta, na ordem:
+
+- [ ] Passo 1: copiar os dados da conexão do DBeaver (host, porta, service/SID, usuário, senha)
+- [ ] Passo 2: colar no `.env` da raiz (campos `ORACLE_...` abaixo)
+- [ ] Passo 3: instalar o driver: `python3 -m pip install --user oracledb`
+- [ ] Avisar a sessão Claude: eu testo a conexão e assumo as consultas dali em diante
+
+Dado já conhecido para o Passo 1: o host da conexão atual é `tst19044.db9044.mv9044vcn.oraclevcn.com` (visto no DBeaver em 07/jul; repare no prefixo `tst`, mais um indício de ambiente de teste). Porta, service/SID, usuário e senha estão na tela Edit Connection do DBeaver.
+
 ## Passo 1: copiar os dados da conexão do DBeaver
 
 No DBeaver: clique direito na conexão Oracle → **Edit Connection**. Anote:
