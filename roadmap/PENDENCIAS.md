@@ -124,6 +124,12 @@ Ele imprime, linha por linha, OK / VAZIO / FALHOU e um veredito no final, em por
 
 ---
 
+## Extra. Montar o Playground da API (quando quiser estudar as chamadas)
+
+**O que é:** uma tela local, leve e visual, onde você aperta botões para chamar cada API da Global Health, com explicação e parâmetros de cada uma, status de conexão/autenticação no topo e, nos botões de escrita, a query pronta para conferir no DBeaver se o registro apareceu no banco (a prova que você procura).
+
+**O que fazer:** abra uma NOVA sessão Claude Code nesta pasta e cole o conteúdo de **`ana/api-mv/prompt-playground-api.md`** (tudo abaixo da linha). A sessão constrói e commita o app; depois é só rodar `python3 ana/api-mv/playground/server.py` e abrir `http://localhost:8777`.
+
 ## 6. Revisar a pesquisa ultracode (B2): fazer JUNTO comigo (~1h de sessão)
 
 **Por que importa:** são 8 documentos de decisão (prompt v2, templates da Meta, classificador de urgência, arquitetura analítica...). A revisão destrava a construção da integração (D2), o classificador (D3) e o template do pós-atendimento (E3).
