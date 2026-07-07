@@ -5,101 +5,275 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Playground API Global Health (homolog)</title>
 <style>
+  :root {
+    --papel: #f4eee1;
+    --papel-card: #fdfaf2;
+    --tinta: #22291f;
+    --tinta-suave: #5b6357;
+    --tinta-apagada: #8a9184;
+    --verde: #17695a;
+    --verde-escuro: #0e4c41;
+    --ambar: #9a5b0f;
+    --ambar-papel: #f7ecd7;
+    --vermelho: #a63325;
+    --vermelho-papel: #f8e6e0;
+    --console: #14231e;
+    --console-borda: #24382f;
+    --console-texto: #cfe3d4;
+    --linha: rgba(34, 41, 31, 0.16);
+    --serif: "New York", "Iowan Old Style", "Palatino", "Charter", Georgia, serif;
+    --sans: "Avenir Next", "Avenir", "Seravek", "Gill Sans", -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
   * { box-sizing: border-box; font-style: normal; }
+  html { scroll-behavior: smooth; }
   body {
-    margin: 0; padding: 24px 16px 60px;
-    background: #f3f5f7; color: #1f2933;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 15px; line-height: 1.5;
+    margin: 0; padding: 34px 20px 80px;
+    color: var(--tinta);
+    font-family: var(--sans);
+    font-size: 15px; line-height: 1.55;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 27px, rgba(34, 41, 31, 0.045) 27px 28px),
+      repeating-linear-gradient(90deg, transparent 0 27px, rgba(34, 41, 31, 0.028) 27px 28px),
+      var(--papel);
   }
-  main { max-width: 900px; margin: 0 auto; }
-  h1 { font-size: 24px; margin: 0 0 4px; }
-  .subtitulo { color: #52606d; margin: 0 0 20px; }
-  h2 { font-size: 18px; margin: 32px 0 4px; }
-  .grupo-desc { color: #52606d; margin: 0 0 12px; font-size: 14px; }
-  a { text-decoration: none; }
-
-  .card {
-    background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 14px;
-    box-shadow: 0 1px 3px rgba(16, 42, 67, 0.10);
-  }
-  .card h3 { margin: 0 0 2px; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
-  .badge.GET { background: #e8f1fd; color: #1a5dc8; }
-  .badge.POST { background: #fdefe3; color: #b45309; }
-  .badge.DELETE { background: #fde8e7; color: #c5221f; }
-  .path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: #52606d; }
-  .expl { margin: 6px 0 10px; font-size: 14px; color: #3e4c59; }
-  .nota { border-radius: 6px; padding: 8px 12px; margin: 8px 0; font-size: 13.5px; }
-  .nota.ambar { background: #fdf3e1; color: #7c4a03; border: 1px solid #f0d5a3; }
-  .nota.vermelha { background: #fdecea; color: #a4211e; border: 1px solid #f3c2c0; }
-  .nota.cinza { background: #f1f4f7; color: #52606d; border: 1px solid #dde3ea; }
-
-  .campos { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin: 10px 0; }
-  .campo label { display: block; font-size: 12.5px; font-weight: 600; color: #3e4c59; margin-bottom: 3px; }
-  .campo input, .campo select, .campo textarea {
-    width: 100%; padding: 7px 9px; border: 1px solid #cbd4dd; border-radius: 6px;
-    font-size: 13.5px; background: #fff; color: #1f2933; font-family: inherit;
-  }
-  .campo textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; min-height: 64px; grid-column: 1 / -1; }
-  .campo.largo { grid-column: 1 / -1; }
-  details.mais { margin: 4px 0 10px; }
-  details.mais summary { cursor: pointer; font-size: 13px; color: #1a5dc8; user-select: none; }
-
-  button { cursor: pointer; font-family: inherit; }
-  .chamar {
-    background: #1a5dc8; color: #fff; border: 0; border-radius: 6px;
-    padding: 8px 18px; font-size: 14px; font-weight: 600;
-  }
-  .chamar:hover { background: #164ea8; }
-  .chamar.confirmar { background: #c5221f; }
-  .mini { background: #f1f4f7; border: 1px solid #cbd4dd; border-radius: 5px; padding: 3px 10px; font-size: 12px; color: #3e4c59; }
-
-  .resposta { margin-top: 12px; display: none; }
-  .resposta.aberta { display: block; }
-  .resp-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; font-size: 13px; }
-  .status-chip { font-weight: 700; padding: 2px 10px; border-radius: 10px; font-size: 12.5px; }
-  .status-chip.ok { background: #e3f4e5; color: #1e7e34; }
-  .status-chip.atencao { background: #fdf3e1; color: #92610a; }
-  .status-chip.erro { background: #fdecea; color: #c5221f; }
-  pre {
-    background: #0f1720; color: #d5e0ec; border-radius: 8px; padding: 12px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
-    overflow-x: auto; margin: 6px 0; white-space: pre-wrap; word-break: break-word;
-  }
-  pre.sql { background: #f6f8fa; color: #24333f; border: 1px solid #dde3ea; }
-  .dica-banco { margin-top: 10px; border-top: 1px dashed #dde3ea; padding-top: 8px; }
-  .dica-banco .titulo-dica { font-size: 13px; font-weight: 700; color: #3e4c59; }
-  .frase-prova { font-size: 13px; color: #1e7e34; font-weight: 600; }
-
-  #barra-status { position: sticky; top: 8px; z-index: 5; border: 1px solid #dde3ea; }
-  .luzes { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
-  .luz { display: flex; align-items: center; gap: 6px; font-size: 13.5px; }
-  .bolinha { width: 12px; height: 12px; border-radius: 50%; background: #9aa5b1; display: inline-block; }
-  .bolinha.verde { background: #34a853; }
-  .bolinha.ambar { background: #f0a30a; }
-  .bolinha.vermelha { background: #ea4335; }
-  #veredito { margin-top: 6px; font-weight: 600; font-size: 14px; }
-
-  table.historico { width: 100%; border-collapse: collapse; font-size: 13px; }
-  table.historico th, table.historico td { text-align: left; padding: 5px 8px; border-bottom: 1px solid #e7ebf0; }
-  table.historico th { color: #52606d; font-size: 12px; }
-  .hist-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
-
-  footer { max-width: 900px; margin: 40px auto 0; color: #7b8794; font-size: 12.5px; border-top: 1px solid #dde3ea; padding-top: 14px; }
+  main { max-width: 980px; margin: 0 auto; }
+  a { color: var(--verde); text-decoration: none; }
   em, i, u { font-style: normal; text-decoration: none; }
+
+  /* ---------- cabecalho ---------- */
+  header.topo { margin-bottom: 26px; animation: chegar .5s ease both; }
+  .selo {
+    display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--verde);
+    border: 1.5px solid var(--verde); border-radius: 3px; padding: 3px 10px;
+    margin-bottom: 14px; background: var(--papel-card);
+    transform: rotate(-1deg);
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(30px, 5vw, 44px);
+    line-height: 1.08; margin: 0 0 10px; letter-spacing: -0.5px;
+  }
+  h1 .fino { color: var(--verde); }
+  .subtitulo { color: var(--tinta-suave); max-width: 62ch; margin: 0; font-size: 15.5px; }
+
+  /* ---------- barra de status ---------- */
+  #barra-status {
+    position: sticky; top: 10px; z-index: 20;
+    background: var(--papel-card);
+    border: 1px solid var(--linha); border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(34, 41, 31, 0.10);
+    padding: 13px 18px; margin: 24px 0 8px;
+    animation: chegar .5s .05s ease both;
+  }
+  .luzes { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  .luz { display: flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--tinta-suave); }
+  .luz b { color: var(--tinta); font-weight: 600; }
+  .bolinha {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--tinta-apagada); display: inline-block;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
+    transition: background .3s;
+  }
+  .bolinha.testando { animation: pulsar 1s ease-in-out infinite; }
+  .bolinha.verde { background: #2e9e6b; }
+  .bolinha.ambar { background: #d99114; }
+  .bolinha.vermelha { background: #cf4631; }
+  #veredito { margin-top: 7px; font-family: var(--serif); font-size: 15px; font-weight: 600; }
+  .mini {
+    background: transparent; border: 1px solid var(--linha); border-radius: 4px;
+    padding: 3px 12px; font-size: 12px; font-family: var(--mono);
+    color: var(--tinta-suave); cursor: pointer; transition: all .15s;
+  }
+  .mini:hover { border-color: var(--verde); color: var(--verde); }
+
+  /* ---------- secoes ---------- */
+  section.grupo { margin-top: 44px; animation: chegar .55s ease both; }
+  section.grupo:nth-of-type(2) { animation-delay: .08s; }
+  section.grupo:nth-of-type(3) { animation-delay: .14s; }
+  section.grupo:nth-of-type(4) { animation-delay: .20s; }
+  section.grupo:nth-of-type(5) { animation-delay: .26s; }
+  .grupo-cabeca { display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid var(--tinta); padding-bottom: 8px; margin-bottom: 6px; }
+  .grupo-num { font-family: var(--mono); font-size: 13px; color: var(--verde); letter-spacing: 1px; }
+  h2 { font-family: var(--serif); font-size: 24px; margin: 0; letter-spacing: -0.3px; }
+  .grupo-desc { color: var(--tinta-suave); margin: 6px 0 18px; font-size: 14px; max-width: 70ch; }
+  details.grupo-avancado > summary { list-style: none; cursor: pointer; outline: none; }
+  details.grupo-avancado > summary::-webkit-details-marker { display: none; }
+  details.grupo-avancado > summary .grupo-cabeca::after {
+    content: "abrir +"; font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--verde); margin-left: auto; align-self: center;
+  }
+  details.grupo-avancado[open] > summary .grupo-cabeca::after { content: "fechar -"; }
+
+  /* ---------- cards ---------- */
+  .card {
+    background: var(--papel-card);
+    border: 1px solid var(--linha); border-radius: 6px;
+    padding: 20px 22px 18px; margin-bottom: 18px;
+    box-shadow: 4px 4px 0 rgba(34, 41, 31, 0.07);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 6px 8px 0 rgba(34, 41, 31, 0.09); }
+  .card h3 { margin: 0 0 4px; font-family: var(--serif); font-size: 19px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; letter-spacing: -0.2px; }
+  .badge {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 2px;
+    padding: 3px 9px; border-radius: 3px; border: 1.5px solid currentColor;
+    background: transparent; transform: rotate(-1.2deg);
+  }
+  .badge.GET { color: var(--verde); }
+  .badge.POST { color: var(--ambar); }
+  .badge.DELETE { color: var(--vermelho); }
+  .path { font-family: var(--mono); font-size: 12.5px; color: var(--tinta-apagada); font-weight: 400; }
+  .expl { margin: 8px 0 12px; font-size: 14.5px; color: var(--tinta-suave); max-width: 74ch; }
+
+  .nota { border-radius: 4px; padding: 9px 13px; margin: 10px 0; font-size: 13.5px; border-left: 4px solid; }
+  .nota.ambar { background: var(--ambar-papel); color: #6e4a10; border-color: var(--ambar); }
+  .nota.vermelha { background: var(--vermelho-papel); color: #7e2d1f; border-color: var(--vermelho); }
+  .nota.cinza { background: rgba(34,41,31,.05); color: var(--tinta-suave); border-color: var(--tinta-apagada); }
+
+  /* ---------- campos ---------- */
+  .campos { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 12px 0 14px; }
+  .campo label {
+    display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--tinta-suave); margin-bottom: 4px;
+  }
+  .campo input, .campo select, .campo textarea {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid var(--linha); border-radius: 4px;
+    font-size: 13.5px; background: #fff; color: var(--tinta); font-family: var(--sans);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .campo input:focus, .campo select:focus, .campo textarea:focus {
+    outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px rgba(23, 105, 90, 0.12);
+  }
+  .campo textarea { font-family: var(--mono); font-size: 12.5px; min-height: 66px; }
+  .campo.largo { grid-column: 1 / -1; }
+  details.mais { margin: 2px 0 12px; }
+  details.mais summary {
+    cursor: pointer; font-family: var(--mono); font-size: 11.5px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--verde); user-select: none;
+  }
+
+  /* ---------- botoes ---------- */
+  button { cursor: pointer; }
+  .chamar {
+    background: var(--verde); color: #f6f3ea; border: 0; border-radius: 4px;
+    padding: 9px 22px; font-size: 13px; font-weight: 600; font-family: var(--mono);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    box-shadow: 3px 3px 0 rgba(14, 76, 65, 0.35);
+    transition: all .15s;
+  }
+  .chamar:hover { background: var(--verde-escuro); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgba(14, 76, 65, 0.35); }
+  .chamar:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(14, 76, 65, 0.35); }
+  .chamar:disabled { opacity: .65; cursor: wait; transform: none; }
+  .chamar.confirmar { background: var(--vermelho); box-shadow: 3px 3px 0 rgba(122, 32, 20, 0.4); animation: tremer .3s ease; }
+
+  /* ---------- resultado: resposta + banco ---------- */
+  .resultado { margin-top: 16px; display: none; grid-template-columns: 1fr; gap: 14px; }
+  .resultado.aberta { display: grid; animation: subir .35s ease both; }
+  @media (min-width: 880px) { .resultado.aberta.com-banco { grid-template-columns: minmax(0, 11fr) minmax(0, 9fr); align-items: start; } }
+
+  .painel-resposta { min-width: 0; }
+  .resp-meta { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+  .status-chip {
+    font-family: var(--mono); font-weight: 700; padding: 2px 11px; border-radius: 3px;
+    font-size: 12px; letter-spacing: 1px; border: 1.5px solid currentColor;
+  }
+  .status-chip.ok { color: var(--verde); background: rgba(23, 105, 90, 0.08); }
+  .status-chip.atencao { color: var(--ambar); background: rgba(154, 91, 15, 0.08); }
+  .status-chip.erro { color: var(--vermelho); background: rgba(166, 51, 37, 0.08); }
+  .latencia { font-family: var(--mono); font-size: 12px; color: var(--tinta-apagada); }
+
+  pre.json {
+    background: #1d2a24; color: #d9e7dc; border-radius: 6px; padding: 14px 16px;
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.55;
+    overflow-x: auto; margin: 6px 0; white-space: pre-wrap; word-break: break-word;
+    border: 1px solid #2c3e35;
+  }
+  .j-key { color: #8fd4b8; }
+  .j-str { color: #e8d9a0; }
+  .j-num { color: #a8c8f0; }
+  .j-bool { color: #e0a3d0; }
+  .j-null { color: #9aa89e; }
+
+  /* ---------- painel do banco ---------- */
+  .painel-banco {
+    background: var(--console); border: 1px solid var(--console-borda); border-radius: 6px;
+    padding: 14px 16px 12px; color: var(--console-texto); min-width: 0;
+    box-shadow: 4px 4px 0 rgba(20, 35, 30, 0.25);
+  }
+  .banco-titulo {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: #7fc7a4; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .banco-titulo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7fc7a4; box-shadow: 0 0 8px #7fc7a4; }
+  .banco-intro { font-size: 13px; color: #a9c2b0; margin: 0 0 10px; }
+  .banco-tabelas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .chip-tabela {
+    font-family: var(--mono); font-size: 11px; color: #cfe3d4;
+    border: 1px solid #3a5548; border-radius: 3px; padding: 2px 8px; background: rgba(255,255,255,0.03);
+  }
+  .banco-query { margin-bottom: 10px; }
+  .banco-query-cabeca { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .banco-query-titulo { font-size: 12.5px; color: #9fbfa8; }
+  .copiar-sql {
+    background: transparent; border: 1px solid #3a5548; border-radius: 3px;
+    color: #8fd4b8; font-family: var(--mono); font-size: 10.5px; letter-spacing: 1px;
+    text-transform: uppercase; padding: 2px 9px; transition: all .15s; white-space: nowrap;
+  }
+  .copiar-sql:hover { border-color: #8fd4b8; background: rgba(143, 212, 184, 0.08); }
+  pre.sql {
+    background: rgba(0, 0, 0, 0.28); color: #d5efe0; border: 1px solid #2b4237;
+    border-radius: 4px; padding: 10px 12px; margin: 0;
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.5;
+    overflow-x: auto; white-space: pre;
+  }
+  .banco-alerta { font-size: 12px; color: #d9b06c; border-top: 1px dashed #3a5548; padding-top: 8px; margin-top: 4px; }
+  .banco-prova { font-size: 12.5px; font-weight: 600; color: #8fd4b8; border-top: 1px dashed #3a5548; padding-top: 8px; margin-top: 4px; }
+
+  .corpo-vazio {
+    font-family: var(--mono); font-size: 13px; color: var(--tinta-suave);
+    background: rgba(34,41,31,.05); border: 1px dashed var(--linha); border-radius: 4px;
+    padding: 10px 14px;
+  }
+
+  /* ---------- historico ---------- */
+  table.historico { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.historico th {
+    text-align: left; padding: 6px 10px; font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--tinta-apagada);
+    border-bottom: 2px solid var(--tinta);
+  }
+  table.historico td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--linha); }
+  table.historico tr:hover td { background: rgba(23, 105, 90, 0.05); }
+  .hist-mono { font-family: var(--mono); font-size: 12px; }
+
+  footer {
+    max-width: 980px; margin: 56px auto 0; color: var(--tinta-apagada); font-size: 12.5px;
+    border-top: 2px solid var(--tinta); padding-top: 14px;
+    display: flex; gap: 16px; align-items: baseline;
+  }
+  footer .selo-rodape { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--vermelho); white-space: nowrap; }
+
+  @keyframes chegar { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes subir { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes pulsar { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+  @keyframes tremer { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
 </style>
 </head>
 <body>
 <main>
-  <h1>Playground API Global Health (homolog)</h1>
-  <p class="subtitulo">Aperte os botões, veja a resposta crua e entenda cada chamada do fluxo de agendamento da Ana. Tudo passa pelo backend local, que guarda o token.</p>
+  <header class="topo">
+    <div class="selo">Homologação · dem.agenda</div>
+    <h1>Playground <span class="fino">API Global Health</span></h1>
+    <p class="subtitulo">Aperte os botões, leia a resposta crua e entenda cada chamada do fluxo de agendamento da Ana. Ao lado de cada resposta, o playground mostra onde procurar o efeito na Base TST (o Oracle do MV que você acessa pelo DBeaver), com a query pronta para copiar.</p>
+  </header>
 
-  <div class="card" id="barra-status">
+  <div id="barra-status">
     <div class="luzes">
-      <span class="luz"><span class="bolinha" id="luz-backend"></span> Backend local: <b id="txt-backend">testando...</b></span>
-      <span class="luz"><span class="bolinha" id="luz-gh"></span> API GH: <b id="txt-gh">testando...</b></span>
-      <span class="luz"><span class="bolinha" id="luz-token"></span> Token: <b id="txt-token">testando...</b></span>
+      <span class="luz"><span class="bolinha testando" id="luz-backend"></span> Backend local: <b id="txt-backend">testando...</b></span>
+      <span class="luz"><span class="bolinha testando" id="luz-gh"></span> API GH: <b id="txt-gh">testando...</b></span>
+      <span class="luz"><span class="bolinha testando" id="luz-token"></span> Token: <b id="txt-token">testando...</b></span>
       <button class="mini" onclick="atualizarStatus()">re-testar</button>
     </div>
     <div id="veredito">Verificando as conexões...</div>
@@ -107,20 +281,21 @@
 
   <div id="grupos"></div>
 
-  <h2>Histórico da sessão</h2>
-  <p class="grupo-desc">As últimas 20 chamadas desta página (somem ao recarregar). <button class="mini" onclick="limparHistorico()">limpar</button></p>
-  <div class="card">
-    <table class="historico">
-      <thead><tr><th>Hora</th><th>Método</th><th>Path</th><th>Status</th><th>Latência</th></tr></thead>
-      <tbody id="corpo-historico"><tr><td colspan="5" style="color:#7b8794">Nenhuma chamada ainda.</td></tr></tbody>
-    </table>
-  </div>
+  <section class="grupo">
+    <div class="grupo-cabeca"><span class="grupo-num">07</span><h2>Histórico da sessão</h2></div>
+    <p class="grupo-desc">As últimas 20 chamadas desta página (somem ao recarregar). <button class="mini" onclick="limparHistorico()">limpar</button></p>
+    <div class="card">
+      <table class="historico">
+        <thead><tr><th>Hora</th><th>Método</th><th>Path</th><th>Status</th><th>Latência</th></tr></thead>
+        <tbody id="corpo-historico"><tr><td colspan="5" style="color:var(--tinta-apagada)">Nenhuma chamada ainda.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
 </main>
 
 <footer>
-  <main>
-    Este playground fala SOMENTE com a homologação da Global Health. A URL de produção existe, mas é proibida aqui: não há seletor de ambiente de propósito. O token nunca chega ao navegador (fica no backend local, lido do .env). Latência típica da API: 500 a 800ms por chamada; timeout de 30s.
-  </main>
+  <span class="selo-rodape">Só homolog</span>
+  <span>Este playground fala SOMENTE com a homologação da Global Health. A URL de produção existe, mas é proibida aqui: não há seletor de ambiente de propósito. O token nunca chega ao navegador (fica no backend local, lido do .env). Latência típica da API: 500 a 800ms; timeout de 30s.</span>
 </footer>
 
 <script>
@@ -128,17 +303,40 @@
 
 const CPF_SONDA = "66301102770";
 const NOTA_CATALOGO = "Em 07/jul/2026 este catálogo vinha vazio: a massa de homologação não foi publicada ainda (pedido GH-19 à Global Health). Resposta com conteudo: [] aqui é esperada por enquanto.";
-const SQL_PACIENTE = "SELECT CD_PACIENTE, NM_PACIENTE, NR_CPF\nFROM DBAMV.PACIENTE\nWHERE NR_CPF = '<cpf usado>';";
-const SQL_AGENDA = "SELECT CD_IT_AGENDA_CENTRAL, HR_AGENDA, CD_PACIENTE,\n       TP_FORMA_AGENDAMENTO, CD_USUARIO, DT_GRAVACAO\nFROM DBAMV.IT_AGENDA_CENTRAL\nWHERE DT_GRAVACAO >= SYSDATE - 1\nORDER BY DT_GRAVACAO DESC;";
-const SQL_INTERFACE_GH = "SELECT * FROM DBAMV.ATENDIME_GLOBAL_HEALTH;";
-const FRASE_PROVA = "Se aparecer aqui, a API grava no SEU banco; é a prova que você procura.";
+const ALERTA_GH18 = "Atenção: em 07/jul/2026 a homolog da GH NÃO gravava na Base TST (pergunta GH-18 em aberto). Query vazia pode significar ambiente distinto, não erro seu.";
 const PAG = [
   { k: "page", label: "page", ph: "Página, começa em 0 (default 0)", where: "query", adv: true },
   { k: "size", label: "size", ph: "Itens por página (default 10)", where: "query", adv: true }
 ];
 
+// helpers das queries dinamicas
+function sv(valor, placeholder) {
+  const v = (valor || "").trim().replace(/'/g, "''");
+  return v || placeholder;
+}
+function likeTermo(valor, placeholder) {
+  const v = (valor || "").trim().replace(/'/g, "''");
+  return v ? "%" + v + "%" : placeholder;
+}
+const Q_SLOT_RECENTES = () => `SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA, ic.CD_PACIENTE,
+       ic.NM_PACIENTE, ic.TP_SITUACAO, ic.TP_FORMA_AGENDAMENTO,
+       ic.CD_USUARIO, ic.DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+WHERE  ic.DT_GRAVACAO >= SYSDATE - 1
+ORDER  BY ic.DT_GRAVACAO DESC;`;
+const Q_INTERFACE_GH = (cpf) => `SELECT *
+FROM   DBAMV.ATENDIME_GLOBAL_HEALTH
+WHERE  LPAD(NR_CPF, 11, '0') = '${sv(cpf, "<cpf>")}';`;
+const Q_AGENDA_POR_CPF = (cpf) => `SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA, ic.TP_SITUACAO,
+       ic.CD_ITEM_AGENDAMENTO, ic.CD_CONVENIO, ic.DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+JOIN   DBAMV.PACIENTE p ON p.CD_PACIENTE = ic.CD_PACIENTE
+WHERE  p.NR_CPF = '${sv(cpf, "<cpf>")}'
+ORDER  BY ic.DT_GRAVACAO DESC;`;
+
 // Cada card descreve um endpoint da doc oficial (v1.10).
-// where: query | body | path. num: converte para número no body (ids). CPF fica string sempre.
+// where: query | body | path. num: converte para numero no body (ids). CPF fica string sempre.
+// db(v): painel "No banco": o que a chamada significa na Base TST + queries com os SEUS valores.
 const GRUPOS = [
   {
     titulo: "Pessoas (o cadastro do paciente)",
@@ -148,19 +346,42 @@ const GRUPOS = [
         titulo: "Buscar paciente por CPF", method: "GET", path: "/pessoas",
         expl: "É o passo 1 de qualquer atendimento: a Ana descobre se o paciente já existe no sistema de agendamento. Sem match, a API responde 200 com corpo VAZIO (não é 404 nem erro).",
         emptyMsg: "pessoa não encontrada",
-        fields: [{ k: "cpf", label: "cpf", def: CPF_SONDA, ph: "11 dígitos, só números (zeros à esquerda contam)", where: "query" }]
+        fields: [{ k: "cpf", label: "cpf", def: CPF_SONDA, ph: "11 dígitos, só números (zeros à esquerda contam)", where: "query" }],
+        db: v => ({
+          intro: "Leitura: a API consulta o cadastro de pacientes. No MV, esse cadastro é a tabela PACIENTE. Compare: se a API achou e a query abaixo não, os ambientes são distintos.",
+          tabelas: ["DBAMV.PACIENTE"],
+          queries: [{ t: "O mesmo paciente existe na Base TST?", sql:
+`SELECT CD_PACIENTE, NM_PACIENTE, NR_CPF, DT_NASCIMENTO,
+       NR_DDD_CELULAR, NR_CELULAR
+FROM   DBAMV.PACIENTE
+WHERE  NR_CPF = '${sv(v.cpf, "<cpf>")}';` }],
+          alerta: ALERTA_GH18
+        })
       },
       {
         titulo: "Buscar paciente por telefone", method: "GET", path: "/pessoas",
         expl: "Atalho útil no WhatsApp: o telefone de quem escreve já é conhecido, então dá para localizar o paciente sem pedir o CPF de cara.",
         emptyMsg: "pessoa não encontrada",
-        fields: [{ k: "telefone", label: "telefone", def: "21999990000", ph: "Só números; a sonda foi criada com 21999990000", where: "query" }]
+        fields: [{ k: "telefone", label: "telefone", def: "21999990000", ph: "Só números; a sonda foi criada com 21999990000", where: "query" }],
+        db: v => {
+          const fim = (v.telefone || "").replace(/\D/g, "").slice(-8);
+          return {
+            intro: "Leitura no cadastro de pacientes. No MV o telefone fica separado: DDD numa coluna, número noutra. A busca abaixo usa os últimos 8 dígitos.",
+            tabelas: ["DBAMV.PACIENTE"],
+            queries: [{ t: "Algum paciente com esse celular na Base TST?", sql:
+`SELECT CD_PACIENTE, NM_PACIENTE, NR_CPF,
+       NR_DDD_CELULAR, NR_CELULAR, NR_DDD_FONE, NR_FONE
+FROM   DBAMV.PACIENTE
+WHERE  NR_CELULAR LIKE '%${fim || "<fim do numero>"}%'
+   OR  NR_FONE    LIKE '%${fim || "<fim do numero>"}%';` }],
+            alerta: ALERTA_GH18
+          };
+        }
       },
       {
         titulo: "Criar ou atualizar paciente", method: "POST", path: "/pessoas", write: true,
         expl: "Cadastra uma pessoa nova ou ATUALIZA a existente de mesmo CPF (a doc diz: cadastrar ou atualizar). É o que a Ana faz quando o paciente ainda não existe.",
         warn: "Cria (ou altera) registro REAL na homologação. Use apenas CPF sintético de teste, nunca dado de paciente real.",
-        amber: "Verificação de 07/jul/2026: o paciente criado por aqui NÃO apareceu no Oracle de teste acessado pelo DBeaver (a query abaixo voltou vazia). Descobrir onde a API grava é a pergunta GH-18.",
         fields: [
           { k: "cpf", label: "cpf", ph: "11 dígitos, só números. Sonda já criada: 66301102770", where: "body" },
           { k: "nome", label: "nome", ph: "Nome completo, ex.: TESTE INTEGRACAO ANA VITTA", where: "body" },
@@ -169,7 +390,17 @@ const GRUPOS = [
           { k: "sexo", label: "sexo", where: "body", type: "select", opts: [["M", "M (masculino)"], ["F", "F (feminino)"]] },
           { k: "email", label: "email", ph: "(opcional)", where: "body", adv: true }
         ],
-        sql: [{ titulo: "O paciente apareceu no Oracle do MV? (troque o CPF)", q: SQL_PACIENTE }]
+        db: v => ({
+          intro: "Escrita: se a homolog da GH gravar neste MV, o paciente novo tem que aparecer como uma linha na tabela PACIENTE, com DT_CADASTRO de agora.",
+          tabelas: ["DBAMV.PACIENTE"],
+          queries: [{ t: "O paciente que você criou apareceu?", sql:
+`SELECT CD_PACIENTE, NM_PACIENTE, NR_CPF,
+       DT_CADASTRO, NM_USUARIO
+FROM   DBAMV.PACIENTE
+WHERE  NR_CPF = '${sv(v.cpf, "<cpf usado>")}';` }],
+          prova: "Se aparecer aqui, a API grava no SEU banco; é a prova que você procura (GH-18).",
+          alerta: "Em 07/jul/2026 esta verificação deu NEGATIVA para o paciente-sonda: a linha não apareceu na Base TST."
+        })
       }
     ]
   },
@@ -186,7 +417,18 @@ const GRUPOS = [
           { k: "listarBloqueados", label: "listarBloqueados", where: "query", type: "select", opts: [["", "(default: true)"], ["true", "true"], ["false", "false"]], adv: true },
           { k: "idPrestador", label: "idPrestador", ph: "Filtrar pelas consultas de um prestador", where: "query", adv: true },
           ...PAG
-        ]
+        ],
+        db: v => ({
+          intro: "Leitura de catálogo. No MV, o que se agenda (consultas E exames) vive numa tabela só: ITEM_AGENDAMENTO. O que a API expõe para o canal é um recorte dela, publicado pela GH.",
+          tabelas: ["DBAMV.ITEM_AGENDAMENTO"],
+          queries: [{ t: "Itens de agendamento parecidos com a sua pesquisa:", sql:
+`SELECT CD_ITEM_AGENDAMENTO, DS_ITEM_AGENDAMENTO,
+       TP_ITEM, SN_ATIVO
+FROM   DBAMV.ITEM_AGENDAMENTO
+WHERE  UPPER(DS_ITEM_AGENDAMENTO) LIKE UPPER('${likeTermo(v.pesquisa, "%<pesquisa>%")}')
+ORDER  BY DS_ITEM_AGENDAMENTO;` }],
+          alerta: "Se a query traz itens e a API vem vazia, o catálogo existe no MV mas não foi publicado para o canal (é o cenário do GH-19)."
+        })
       },
       {
         titulo: "Buscar exames", method: "GET", path: "/exames",
@@ -196,7 +438,24 @@ const GRUPOS = [
           { k: "pesquisa", label: "pesquisa", def: "ULTRA", ph: "Texto livre; vazio lista todos", where: "query" },
           { k: "listarBloqueados", label: "listarBloqueados", where: "query", type: "select", opts: [["", "(default: true)"], ["true", "true"], ["false", "false"]], adv: true },
           ...PAG
-        ]
+        ],
+        db: v => ({
+          intro: "Leitura de catálogo. Exames também são ITEM_AGENDAMENTO (TP_ITEM = I aponta para EXA_RX, o cadastro de exames de imagem, que guarda até o texto de preparo).",
+          tabelas: ["DBAMV.ITEM_AGENDAMENTO", "DBAMV.EXA_RX"],
+          queries: [
+            { t: "Itens de agendamento parecidos com a sua pesquisa:", sql:
+`SELECT CD_ITEM_AGENDAMENTO, DS_ITEM_AGENDAMENTO,
+       TP_ITEM, SN_ATIVO
+FROM   DBAMV.ITEM_AGENDAMENTO
+WHERE  UPPER(DS_ITEM_AGENDAMENTO) LIKE UPPER('${likeTermo(v.pesquisa, "%<pesquisa>%")}')
+ORDER  BY DS_ITEM_AGENDAMENTO;` },
+            { t: "E no cadastro de exames de imagem:", sql:
+`SELECT CD_EXA_RX, DS_EXA_RX, NR_DIAS_ENTREGA, SN_ATIVO
+FROM   DBAMV.EXA_RX
+WHERE  UPPER(DS_EXA_RX) LIKE UPPER('${likeTermo(v.pesquisa, "%<pesquisa>%")}');` }
+          ],
+          alerta: "Catálogo no MV + API vazia = massa não publicada para o canal (GH-19)."
+        })
       }
     ]
   },
@@ -212,7 +471,17 @@ const GRUPOS = [
           { k: "idItemAgendamento", label: "idItemAgendamento", ph: "Filtra pelos convênios aceitos no item (id de /consultas ou /exames)", where: "query" },
           { k: "idServico", label: "idServico", ph: "Filtrar pelo serviço", where: "query", adv: true },
           ...PAG
-        ]
+        ],
+        db: v => ({
+          intro: "Leitura do cadastro de convênios do MV (tabela CONVENIO). O 'particular' também é uma linha dela.",
+          tabelas: ["DBAMV.CONVENIO"],
+          queries: [{ t: "Convênios parecidos com a sua pesquisa:", sql:
+`SELECT CD_CONVENIO, NM_CONVENIO
+FROM   DBAMV.CONVENIO
+WHERE  UPPER(NM_CONVENIO) LIKE UPPER('${likeTermo(v.pesquisa, "%<pesquisa>%")}')
+ORDER  BY NM_CONVENIO;` }],
+          alerta: "O id que a API devolve não é garantido ser o CD_CONVENIO do MV; confirme comparando os nomes."
+        })
       },
       {
         titulo: "Planos de um convênio", method: "GET", path: "/convenios/{idConvenio}/planos",
@@ -223,7 +492,16 @@ const GRUPOS = [
           { k: "pesquisa", label: "pesquisa", ph: "Texto livre; vazio lista todos", where: "query", adv: true },
           { k: "idServico", label: "idServico", ph: "Filtrar pelo serviço", where: "query", adv: true },
           ...PAG
-        ]
+        ],
+        db: v => ({
+          intro: "Leitura dos planos do convênio. No MV, o plano é a tabela CON_PLA (é o CD_CON_PLA que aparece nas marcações da agenda).",
+          tabelas: ["DBAMV.CON_PLA"],
+          queries: [{ t: "Planos do convênio na Base TST:", sql:
+`SELECT *
+FROM   DBAMV.CON_PLA
+WHERE  CD_CONVENIO = ${sv(v.idConvenio, "<idConvenio>")};` }],
+          alerta: "Mesma ressalva do convênio: o id da API pode não ser o CD do MV; use SELECT * para conhecer as colunas na primeira rodada."
+        })
       }
     ]
   },
@@ -239,7 +517,16 @@ const GRUPOS = [
           { k: "idItemAgendamento", label: "idItemAgendamento", ph: "Filtra pelos prestadores do item", where: "query" },
           { k: "somentePrestadoresComHorario", label: "somentePrestadoresComHorario", def: "true", where: "query", type: "select", opts: [["", "(default: false)"], ["true", "true"], ["false", "false"]] },
           ...PAG
-        ]
+        ],
+        db: v => ({
+          intro: "Leitura do cadastro de prestadores (médicos e recursos). No MV é a tabela PRESTADOR; quem realiza cada item está em ITEM_AGENDAMENTO_PRESTADOR.",
+          tabelas: ["DBAMV.PRESTADOR", "DBAMV.ITEM_AGENDAMENTO_PRESTADOR"],
+          queries: [{ t: "Prestadores parecidos com a sua pesquisa:", sql:
+`SELECT CD_PRESTADOR, NM_PRESTADOR
+FROM   DBAMV.PRESTADOR
+WHERE  UPPER(NM_PRESTADOR) LIKE UPPER('${likeTermo(v.pesquisa, "%<pesquisa>%")}')
+ORDER  BY NM_PRESTADOR;` }]
+        })
       },
       {
         titulo: "Horários livres", method: "GET", path: "/agendas/v2",
@@ -254,12 +541,36 @@ const GRUPOS = [
           { k: "idSubPlano", label: "idSubPlano", ph: "(opcional) raro: só se o hospital usar sub-plano", where: "query", adv: true },
           { k: "data", label: "data", ph: "(opcional) ISO: todos os horários de um dia específico", where: "query", adv: true },
           { k: "modoHorarios", label: "modoHorarios", where: "query", type: "select", opts: [["", "(default: UM_POR_TURNO)"], ["UM_POR_TURNO", "UM_POR_TURNO"], ["TODOS", "TODOS (só com idPrestador)"]], adv: true }
-        ]
+        ],
+        db: () => ({
+          intro: "Leitura de disponibilidade. No MV, horário livre é um SLOT da IT_AGENDA_CENTRAL sem paciente (CD_PACIENTE nulo), não bloqueado, numa agenda do dia (AGENDA_CENTRAL) liberada. É isso que a API deve estar varrendo por baixo.",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL", "DBAMV.AGENDA_CENTRAL"],
+          queries: [{ t: "Slots livres de hoje em diante na Base TST:", sql:
+`SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA,
+       ac.DT_AGENDA, ac.CD_PRESTADOR, ac.QT_MARCADOS, ac.QT_ATENDIMENTO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+JOIN   DBAMV.AGENDA_CENTRAL ac
+       ON ac.CD_AGENDA_CENTRAL = ic.CD_AGENDA_CENTRAL
+WHERE  ic.CD_PACIENTE IS NULL
+AND    ic.SN_BLOQUEADO = 'N'
+AND    ac.DT_AGENDA >= TRUNC(SYSDATE)
+ORDER  BY ac.DT_AGENDA, ic.HR_AGENDA;` }],
+          alerta: "Se a query traz slots e a API responde sem horários, faltou publicar a agenda para o canal (GH-19)."
+        })
       },
       {
         titulo: "Tipos de consulta", method: "GET", path: "/consultas/tipos",
         expl: "Para consulta, o hospital distingue tipos de marcação (primeira consulta, retorno...). O id escolhido vira o idTipoMarcacao na hora de agendar.",
-        fields: [{ k: "idAgenda", label: "idAgenda", ph: "id da agenda do horário escolhido (campo idAgenda em /agendas/v2)", where: "query" }]
+        fields: [{ k: "idAgenda", label: "idAgenda", ph: "id da agenda do horário escolhido (campo idAgenda em /agendas/v2)", where: "query" }],
+        db: () => ({
+          intro: "Leitura de configuração da agenda. No MV, os tipos de marcação permitidos por agenda ficam em AGENDA_CENTRAL_SER_TIPO (candidata: confirme as colunas na primeira rodada).",
+          tabelas: ["DBAMV.AGENDA_CENTRAL_SER_TIPO"],
+          queries: [{ t: "Tipos de marcação permitidos nas agendas:", sql:
+`SELECT *
+FROM   DBAMV.AGENDA_CENTRAL_SER_TIPO
+WHERE  ROWNUM <= 50;` }],
+          alerta: "O idAgenda da API pode não ser o CD_AGENDA_CENTRAL do MV; use a amostra para mapear."
+        })
       },
       {
         titulo: "Perguntas de triagem do exame", method: "GET", path: "/exames/perguntas",
@@ -267,7 +578,16 @@ const GRUPOS = [
         fields: [
           { k: "idItemAgendamento", label: "idItemAgendamento", ph: "id do exame, vindo de /exames", where: "query" },
           { k: "cpf", label: "cpf", def: CPF_SONDA, ph: "CPF do paciente", where: "query" }
-        ]
+        ],
+        db: v => ({
+          intro: "As perguntas de triagem provavelmente vivem do lado da GH (não achamos tabela MV específica). Uma candidata a explorar são os pré-requisitos do item.",
+          tabelas: ["DBAMV.ITEM_AGENDAMENTO_PRE_REQ"],
+          queries: [{ t: "Pré-requisitos cadastrados para o item:", sql:
+`SELECT *
+FROM   DBAMV.ITEM_AGENDAMENTO_PRE_REQ
+WHERE  CD_ITEM_AGENDAMENTO = ${sv(v.idItemAgendamento, "<idItemAgendamento>")};` }],
+          alerta: "Tabela candidata, sem descrição no dicionário do TI. Se vier vazia, a triagem é mesmo só do lado GH."
+        })
       }
     ]
   },
@@ -293,11 +613,16 @@ const GRUPOS = [
           { k: "anexos", label: "anexos (JSON, urls devolvidas pelo upload; vazio = não envia)", where: "body", type: "json",
             ph: '[{"idTipoAnexo": 94, "identificador": null, "url": "https://s3.amazonaws.com/..."}]' }
         ],
-        sql: [
-          { titulo: "A marcação apareceu na agenda central do MV?", q: SQL_AGENDA },
-          { titulo: "A tabela de interface da GH ganhou linhas?", q: SQL_INTERFACE_GH }
-        ],
-        fraseProva: FRASE_PROVA
+        db: v => ({
+          intro: "Escrita no coração do MV: agendar é PREENCHER um slot da IT_AGENDA_CENTRAL (o CD_PACIENTE deixa de ser nulo). Se a integração gravar aqui, aparece nas queries abaixo.",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL", "DBAMV.ATENDIME_GLOBAL_HEALTH"],
+          queries: [
+            { t: "Marcações gravadas nas últimas 24h:", sql: Q_SLOT_RECENTES() },
+            { t: "Agendamentos do SEU paciente (via CPF):", sql: Q_AGENDA_POR_CPF(v.cpf) },
+            { t: "A tabela de interface da GH ganhou linhas? (CPF é NUMBER: por isso o LPAD)", sql: Q_INTERFACE_GH(v.cpf) }
+          ],
+          prova: "Se aparecer aqui, a API grava no SEU banco; é a prova que você procura (GH-18)."
+        })
       },
       {
         titulo: "Listar agendamentos do paciente", method: "GET", path: "/agendamentos",
@@ -306,12 +631,30 @@ const GRUPOS = [
           { k: "cpf", label: "cpf", def: CPF_SONDA, ph: "CPF do paciente", where: "query" },
           { k: "tipoAgendamento", label: "tipoAgendamento", where: "query", type: "select", opts: [["", "(sem filtro)"], ["CONSULTA", "CONSULTA"], ["EXAME", "EXAME"]] },
           ...PAG
-        ]
+        ],
+        db: v => ({
+          intro: "Leitura das marcações do paciente. No MV, são os slots da IT_AGENDA_CENTRAL onde ele é o CD_PACIENTE (TP_SITUACAO: M marcado, A aguardando, E atendido, C cancelado).",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL", "DBAMV.PACIENTE"],
+          queries: [{ t: "Marcações do paciente na Base TST:", sql: Q_AGENDA_POR_CPF(v.cpf) }],
+          alerta: ALERTA_GH18
+        })
       },
       {
         titulo: "Consultar um agendamento", method: "GET", path: "/agendamentos/{id}",
         expl: "Busca um agendamento pelo id e mostra o status dele. Útil depois de um timeout: antes de tentar agendar de novo, confira se o agendamento chegou a existir.",
-        fields: [{ k: "id", label: "id (na URL)", ph: "id do agendamento (campo id em /agendamentos)", where: "path" }]
+        fields: [{ k: "id", label: "id (na URL)", ph: "id do agendamento (campo id em /agendamentos)", where: "path" }],
+        db: v => ({
+          intro: "Leitura de uma marcação específica. O id da API não é garantido ser o CD_IT_AGENDA_CENTRAL do MV, mas vale testar direto e, se falhar, procurar pela gravação recente.",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL"],
+          queries: [
+            { t: "Tentativa direta pelo id da API:", sql:
+`SELECT CD_IT_AGENDA_CENTRAL, HR_AGENDA, CD_PACIENTE,
+       NM_PACIENTE, TP_SITUACAO, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  CD_IT_AGENDA_CENTRAL = ${sv(v.id, "<id>")};` },
+            { t: "Plano B: gravações recentes:", sql: Q_SLOT_RECENTES() }
+          ]
+        })
       },
       {
         titulo: "Remarcar (reagendar)", method: "POST", path: "/horarios/reagendar", write: true,
@@ -321,8 +664,12 @@ const GRUPOS = [
           { k: "idHorario", label: "idHorario", ph: "novo horário, escolhido em /agendas/v2", where: "body", num: true },
           { k: "idAgendamentoAnterior", label: "idAgendamentoAnterior", ph: "id do agendamento que será trocado", where: "body", num: true }
         ],
-        sql: [{ titulo: "A remarcação apareceu na agenda central do MV?", q: SQL_AGENDA }],
-        fraseProva: FRASE_PROVA
+        db: () => ({
+          intro: "Escrita: remarcar deve liberar (ou cancelar) o slot antigo e preencher o novo na IT_AGENDA_CENTRAL. Compare as duas gravações mais recentes.",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL"],
+          queries: [{ t: "Gravações das últimas 24h (antigo e novo devem aparecer):", sql: Q_SLOT_RECENTES() }],
+          prova: "Se aparecer aqui, a API grava no SEU banco; é a prova que você procura (GH-18)."
+        })
       },
       {
         titulo: "Cancelar agendamento", method: "DELETE", path: "/agendamentos/{id}", write: true,
@@ -331,8 +678,24 @@ const GRUPOS = [
         warn: "Escrita REAL: cancela um agendamento de verdade na homologação.",
         emptyMsg: "cancelado (a doc diz que a resposta do cancelamento é vazia mesmo)",
         fields: [{ k: "id", label: "id (na URL)", ph: "id do agendamento (campo id em /agendamentos)", where: "path" }],
-        sql: [{ titulo: "O cancelamento refletiu na agenda central do MV?", q: SQL_AGENDA }],
-        fraseProva: FRASE_PROVA
+        db: v => ({
+          intro: "Escrita: no MV, cancelar uma marcação vira TP_SITUACAO = 'C' no slot (ou o slot é liberado; é uma das coisas a descobrir aqui).",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL"],
+          queries: [
+            { t: "Slots cancelados nas últimas 24h:", sql:
+`SELECT CD_IT_AGENDA_CENTRAL, HR_AGENDA, CD_PACIENTE,
+       TP_SITUACAO, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  TP_SITUACAO = 'C'
+AND    DT_GRAVACAO >= SYSDATE - 1
+ORDER  BY DT_GRAVACAO DESC;` },
+            { t: "Tentativa direta pelo id da API:", sql:
+`SELECT CD_IT_AGENDA_CENTRAL, TP_SITUACAO, CD_PACIENTE, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  CD_IT_AGENDA_CENTRAL = ${sv(v.id, "<id>")};` }
+          ],
+          prova: "Se aparecer aqui, a API grava no SEU banco; é a prova que você procura (GH-18)."
+        })
       }
     ]
   },
@@ -349,7 +712,16 @@ const GRUPOS = [
           { k: "idConvenio", label: "idConvenio", where: "body", num: true, ph: "id do convênio" },
           { k: "idPlano", label: "idPlano", where: "body", num: true, ph: "id do plano" },
           { k: "idHorario", label: "idHorario", where: "body", num: true, ph: "id do horário escolhido" }
-        ]
+        ],
+        db: () => ({
+          intro: "Configuração de documentos exigidos: provavelmente vive do lado da GH. No MV, o parente mais próximo é a orientação de convênio por item de agendamento.",
+          tabelas: ["DBAMV.ORIENTACAO_CONVENIO_ITEM_AGE"],
+          queries: [{ t: "Orientações de convênio por item (amostra):", sql:
+`SELECT *
+FROM   DBAMV.ORIENTACAO_CONVENIO_ITEM_AGE
+WHERE  ROWNUM <= 50;` }],
+          alerta: "Tabela candidata (dicionário do TI: 'Orientação dos Convenios para o agendamento de exame/procedimento no SCMA'). Pode não ser a fonte da API."
+        })
       },
       {
         titulo: "Enviar anexo (upload por URL)", method: "POST", path: "/anexos/upload", write: true,
@@ -358,17 +730,35 @@ const GRUPOS = [
         fields: [
           { k: "url", label: "url", ph: "URL pública do arquivo, ex.: https://exemplo.com/pedido.pdf", where: "body" },
           { k: "tipo", label: "tipo (MIME)", where: "body", type: "select", opts: [["application/pdf", "application/pdf"], ["image/jpeg", "image/jpeg"], ["image/png", "image/png"]] }
-        ]
+        ],
+        db: () => ({
+          intro: "Este não toca o Oracle: o arquivo vai para o storage da própria GH (um S3, como a URL da resposta mostra). Não há tabela MV para conferir.",
+          tabelas: [],
+          queries: [],
+          alerta: "Guarde a URL devolvida: ela é o que vai no campo anexos do agendar."
+        })
       },
       {
         titulo: "Carteiras do paciente", method: "GET", path: "/carteiras",
         expl: "Lista as carteirinhas de convênio que o paciente tem cadastradas (número, convênio, plano).",
-        fields: [{ k: "cpf", label: "cpf", def: CPF_SONDA, ph: "CPF do paciente", where: "query" }, ...PAG]
+        fields: [{ k: "cpf", label: "cpf", def: CPF_SONDA, ph: "CPF do paciente", where: "query" }, ...PAG],
+        db: v => ({
+          intro: "O cadastro da carteirinha em si parece viver do lado da GH. No MV, o número da carteira aparece NA MARCAÇÃO (coluna NR_CARTEIRA do slot).",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL"],
+          queries: [{ t: "Marcações do paciente que registraram carteira:", sql:
+`SELECT ic.CD_IT_AGENDA_CENTRAL, ic.NR_CARTEIRA,
+       ic.DT_VALIDADE_CARTEIRA, ic.CD_CONVENIO, ic.DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+JOIN   DBAMV.PACIENTE p ON p.CD_PACIENTE = ic.CD_PACIENTE
+WHERE  p.NR_CPF = '${sv(v.cpf, "<cpf>")}'
+AND    ic.NR_CARTEIRA IS NOT NULL;` }],
+          alerta: "Boa pergunta para a GH (somar às GH-18+): onde a carteira cadastrada via API é persistida?"
+        })
       },
       {
         titulo: "Cadastrar ou atualizar carteira", method: "POST", path: "/carteiras", write: true,
         expl: "Guarda a carteirinha do paciente para os próximos agendamentos. A doc pede os ids E os nomes de convênio e plano juntos.",
-        nota: "Card fora do prompt original: incluído por estar na doc oficial (v1.1). Não sabemos a tabela MV correspondente às carteiras (provável registro só do lado GH): boa pergunta para somar às GH-18 em diante.",
+        nota: "Card fora do prompt original: incluído por estar na doc oficial (v1.1).",
         warn: "Cria (ou altera) registro REAL na homologação.",
         fields: [
           { k: "cpf", label: "cpf", ph: "CPF do paciente (string)", where: "body" },
@@ -379,7 +769,16 @@ const GRUPOS = [
           { k: "nomePlano", label: "nomePlano", ph: "Nome do plano, ex.: Familiar Ap", where: "body" },
           { k: "idSubPlano", label: "idSubPlano", ph: "(raro)", where: "body", num: true, adv: true },
           { k: "nomeSubPlano", label: "nomeSubPlano", ph: "(raro)", where: "body", adv: true }
-        ]
+        ],
+        db: v => ({
+          intro: "Escrita cujo destino no MV é desconhecido: não achamos tabela de carteiras no dicionário. A hipótese é registro só do lado GH, usado depois para preencher NR_CARTEIRA na marcação.",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL"],
+          queries: [{ t: "Depois de AGENDAR com esta carteira, ela deve aparecer no slot:", sql:
+`SELECT CD_IT_AGENDA_CENTRAL, NR_CARTEIRA, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  NR_CARTEIRA = '${sv(v.nrCarteira, "<nrCarteira>")}';` }],
+          alerta: "Se nada aparecer nem após um agendamento, a carteira vive só na GH (pergunta para somar às GH-18+)."
+        })
       },
       {
         titulo: "Excluir carteira", method: "DELETE", path: "/carteiras/{id}", write: true,
@@ -387,7 +786,13 @@ const GRUPOS = [
         nota: "Card fora do prompt original: incluído por estar na doc oficial (v1.1).",
         warn: "Escrita REAL: exclui a carteira na homologação.",
         emptyMsg: "excluída (a doc diz que este endpoint não tem retorno)",
-        fields: [{ k: "id", label: "id (na URL)", ph: "id da carteira (campo id em GET /carteiras)", where: "path" }]
+        fields: [{ k: "id", label: "id (na URL)", ph: "id da carteira (campo id em GET /carteiras)", where: "path" }],
+        db: () => ({
+          intro: "Mesma situação do cadastro de carteira: destino desconhecido no MV, provável registro só do lado GH.",
+          tabelas: [],
+          queries: [],
+          alerta: "Confira o efeito pelo próprio GET /carteiras logo acima."
+        })
       },
       {
         titulo: "Sub-planos de um plano", method: "GET", path: "/convenios/{idConvenio}/planos/{idPlano}/subPlanos",
@@ -398,7 +803,16 @@ const GRUPOS = [
           { k: "idPlano", label: "idPlano (na URL)", ph: "id do plano", where: "path" },
           { k: "pesquisa", label: "pesquisa", ph: "Texto livre; vazio lista todos", where: "query", adv: true },
           ...PAG
-        ]
+        ],
+        db: () => ({
+          intro: "O slot da marcação tem a coluna CD_SUB_PLANO, então o conceito existe no MV; o cadastro deve acompanhar o CON_PLA.",
+          tabelas: ["DBAMV.IT_AGENDA_CENTRAL"],
+          queries: [{ t: "Alguma marcação já usou sub-plano nesta base?", sql:
+`SELECT CD_IT_AGENDA_CENTRAL, CD_CONVENIO, CD_CON_PLA, CD_SUB_PLANO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  CD_SUB_PLANO IS NOT NULL
+AND    ROWNUM <= 50;` }]
+        })
       },
       {
         titulo: "Instruções do horário", method: "GET", path: "/horarios/{id}/instrucoes",
@@ -407,12 +821,33 @@ const GRUPOS = [
           { k: "id", label: "id (na URL)", ph: "id do horário (idHorario de /agendas/v2)", where: "path" },
           { k: "idItemAgendamento", label: "idItemAgendamento", ph: "id do item", where: "query" },
           { k: "idConvenio", label: "idConvenio", ph: "id do convênio", where: "query" }
-        ]
+        ],
+        db: v => ({
+          intro: "Leitura do texto de preparo. No MV, para exames de imagem, esse texto vive em EXA_RX.DS_ORIENTACAO; o item de agendamento aponta para o exame via CD_EXA_RX.",
+          tabelas: ["DBAMV.ITEM_AGENDAMENTO", "DBAMV.EXA_RX"],
+          queries: [{ t: "O preparo do item, direto na fonte:", sql:
+`SELECT ia.CD_ITEM_AGENDAMENTO, ia.DS_ITEM_AGENDAMENTO,
+       ex.DS_EXA_RX, ex.DS_ORIENTACAO
+FROM   DBAMV.ITEM_AGENDAMENTO ia
+LEFT JOIN DBAMV.EXA_RX ex ON ex.CD_EXA_RX = ia.CD_EXA_RX
+WHERE  ia.CD_ITEM_AGENDAMENTO = ${sv(v.idItemAgendamento, "<idItemAgendamento>")};` }],
+          alerta: "Compare o texto da API com DS_ORIENTACAO: se baterem, achamos a fonte."
+        })
       },
       {
         titulo: "Instrução geral do exame", method: "GET", path: "/exames/instrucaoGeral",
         expl: "Instruções gerais de um exame, sem depender de horário: útil quando o paciente pergunta o preparo antes de escolher a data.",
-        fields: [{ k: "idItemAgendamento", label: "idItemAgendamento", ph: "id do exame, vindo de /exames", where: "query" }]
+        fields: [{ k: "idItemAgendamento", label: "idItemAgendamento", ph: "id do exame, vindo de /exames", where: "query" }],
+        db: v => ({
+          intro: "Mesma fonte provável do card anterior: o preparo do exame de imagem em EXA_RX.DS_ORIENTACAO.",
+          tabelas: ["DBAMV.ITEM_AGENDAMENTO", "DBAMV.EXA_RX"],
+          queries: [{ t: "O preparo do item, direto na fonte:", sql:
+`SELECT ia.CD_ITEM_AGENDAMENTO, ia.DS_ITEM_AGENDAMENTO,
+       ex.DS_EXA_RX, ex.DS_ORIENTACAO
+FROM   DBAMV.ITEM_AGENDAMENTO ia
+LEFT JOIN DBAMV.EXA_RX ex ON ex.CD_EXA_RX = ia.CD_EXA_RX
+WHERE  ia.CD_ITEM_AGENDAMENTO = ${sv(v.idItemAgendamento, "<idItemAgendamento>")};` }]
+        })
       }
     ]
   }
@@ -422,6 +857,19 @@ const GRUPOS = [
 
 function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function escTexto(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function highlightJSON(obj) {
+  const bruto = escTexto(JSON.stringify(obj, null, 2));
+  return bruto.replace(/("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false)\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g, m => {
+    let cls = "j-num";
+    if (m[0] === '"') cls = /:$/.test(m) ? "j-key" : "j-str";
+    else if (m === "true" || m === "false") cls = "j-bool";
+    else if (m === "null") cls = "j-null";
+    return '<span class="' + cls + '">' + m + "</span>";
+  });
 }
 
 function renderCampo(f, cardId) {
@@ -453,17 +901,10 @@ function renderCard(card, cardId) {
     html += `<details class="mais"><summary>mais parâmetros (${avancados.length})</summary><div class="campos">${avancados.map(f => renderCampo(f, cardId)).join("")}</div></details>`;
   }
   html += `<button class="chamar" data-card="${cardId}">Chamar</button>`;
-  if (card.sql) {
-    html += `<div class="dica-banco"><div class="titulo-dica">Dica de verificação no banco (copie e rode no DBeaver):</div>`;
-    card.sql.forEach((s, i) => {
-      html += `<div style="font-size:13px;color:#52606d;margin-top:6px">${esc(s.titulo)} <button class="mini" data-copiar="${cardId}-sql-${i}">copiar</button></div>`;
-      html += `<pre class="sql" id="${cardId}-sql-${i}">${esc(s.q)}</pre>`;
-    });
-    if (card.fraseProva) html += `<div class="frase-prova">${esc(card.fraseProva)}</div>`;
-    html += `</div>`;
-  }
-  html += `<div class="resposta" id="${cardId}-resp"></div>`;
-  html += `</div>`;
+  html += `<div class="resultado" id="${cardId}-out">`;
+  html += `<div class="painel-resposta" id="${cardId}-resp"></div>`;
+  html += `<div class="painel-banco" id="${cardId}-banco" style="display:none"></div>`;
+  html += `</div></div>`;
   return html;
 }
 
@@ -472,15 +913,17 @@ const registroCards = {};
   const raiz = document.getElementById("grupos");
   let html = "";
   GRUPOS.forEach((g, gi) => {
+    const num = String(gi + 1).padStart(2, "0");
     const corpo = g.cards.map((c, ci) => {
       const cardId = `card-${gi}-${ci}`;
       registroCards[cardId] = c;
       return renderCard(c, cardId);
     }).join("");
+    const cabeca = `<div class="grupo-cabeca"><span class="grupo-num">${num}</span><h2>${esc(g.titulo)}</h2></div>`;
     if (g.colapsado) {
-      html += `<details><summary style="cursor:pointer"><h2 style="display:inline-block;margin:32px 0 4px">${esc(g.titulo)}</h2></summary><p class="grupo-desc">${esc(g.desc)}</p>${corpo}</details>`;
+      html += `<section class="grupo"><details class="grupo-avancado"><summary>${cabeca}</summary><p class="grupo-desc">${esc(g.desc)}</p>${corpo}</details></section>`;
     } else {
-      html += `<h2>${esc(g.titulo)}</h2><p class="grupo-desc">${esc(g.desc)}</p>${corpo}`;
+      html += `<section class="grupo">${cabeca}<p class="grupo-desc">${esc(g.desc)}</p>${corpo}</section>`;
     }
   });
   raiz.innerHTML = html;
@@ -490,11 +933,12 @@ const registroCards = {};
 
 function coletar(card, cardId) {
   let path = card.path;
-  const query = {}, body = {};
+  const query = {}, body = {}, valores = {};
   let temBody = false;
   for (const f of card.fields) {
     const el = document.getElementById(cardId + "-" + f.k);
     const bruto = el.value.trim();
+    valores[f.k] = bruto;
     if (f.where === "path") {
       if (!bruto) throw new Error(`Preencha o campo "${f.label}": ele faz parte da URL.`);
       path = path.replace("{" + f.k + "}", encodeURIComponent(bruto));
@@ -513,7 +957,7 @@ function coletar(card, cardId) {
       }
     }
   }
-  return { method: card.method, path, query, body: (card.method === "GET" || !temBody) ? null : body };
+  return { pedido: { method: card.method, path, query, body: (card.method === "GET" || !temBody) ? null : body }, valores };
 }
 
 function extrairErroLegivel(json) {
@@ -531,18 +975,38 @@ function renderResposta(card, cardId, r) {
   if (r.status >= 200 && r.status < 300) { classe = "ok"; rotulo = "HTTP " + r.status; }
   else if (r.status >= 400) { classe = "erro"; rotulo = "HTTP " + r.status; }
   else if (r.status === 0) { classe = "atencao"; rotulo = "rede: sem resposta"; }
-  let html = `<div class="resp-meta"><span class="status-chip ${classe}">${rotulo}</span><span>${r.latencia_ms} ms</span></div>`;
+  let html = `<div class="resp-meta"><span class="status-chip ${classe}">${rotulo}</span><span class="latencia">${r.latencia_ms} ms</span></div>`;
   const erroLegivel = extrairErroLegivel(r.json);
   if (erroLegivel) html += `<div class="nota vermelha">${esc(erroLegivel)}</div>`;
   if (r.status === 200 && !(r.corpo_cru || "").trim()) {
-    html += `<div class="nota cinza">200, corpo vazio: ${esc(card.emptyMsg || "não encontrado")}</div>`;
+    html += `<div class="corpo-vazio">200, corpo vazio: ${esc(card.emptyMsg || "não encontrado")}</div>`;
   } else if (r.json !== null && r.json !== undefined) {
-    html += `<pre>${esc(JSON.stringify(r.json, null, 2))}</pre>`;
+    html += `<pre class="json">${highlightJSON(r.json)}</pre>`;
   } else {
-    html += `<pre>${esc(r.corpo_cru || "(sem corpo)")}</pre>`;
+    html += `<pre class="json">${escTexto(r.corpo_cru || "(sem corpo)")}</pre>`;
   }
   alvo.innerHTML = html;
-  alvo.classList.add("aberta");
+}
+
+function renderBanco(card, cardId, valores) {
+  const alvo = document.getElementById(cardId + "-banco");
+  const out = document.getElementById(cardId + "-out");
+  if (!card.db) { alvo.style.display = "none"; out.classList.remove("com-banco"); return; }
+  const d = card.db(valores);
+  let html = `<div class="banco-titulo">No banco · Base TST (Oracle MV)</div>`;
+  html += `<p class="banco-intro">${esc(d.intro)}</p>`;
+  if (d.tabelas && d.tabelas.length) {
+    html += `<div class="banco-tabelas">${d.tabelas.map(t => `<span class="chip-tabela">${esc(t)}</span>`).join("")}</div>`;
+  }
+  (d.queries || []).forEach((q, i) => {
+    const sqlId = `${cardId}-sql-${i}`;
+    html += `<div class="banco-query"><div class="banco-query-cabeca"><span class="banco-query-titulo">${esc(q.t)}</span><button class="copiar-sql" data-copiar="${sqlId}">copiar</button></div><pre class="sql" id="${sqlId}">${escTexto(q.sql)}</pre></div>`;
+  });
+  if (d.prova) html += `<div class="banco-prova">${esc(d.prova)}</div>`;
+  if (d.alerta) html += `<div class="banco-alerta">${esc(d.alerta)}</div>`;
+  alvo.innerHTML = html;
+  alvo.style.display = "block";
+  out.classList.add("com-banco");
 }
 
 const historico = [];
@@ -552,40 +1016,47 @@ function registrarHistorico(method, path, status, latencia) {
   const corpo = document.getElementById("corpo-historico");
   corpo.innerHTML = historico.map(h => {
     const cls = h.status >= 200 && h.status < 300 ? "ok" : (h.status === 0 ? "atencao" : "erro");
-    return `<tr><td>${h.hora}</td><td class="hist-mono">${h.method}</td><td class="hist-mono">${esc(h.path)}</td><td><span class="status-chip ${cls}">${h.status || "rede"}</span></td><td>${h.latencia} ms</td></tr>`;
-  }).join("") || `<tr><td colspan="5" style="color:#7b8794">Nenhuma chamada ainda.</td></tr>`;
+    return `<tr><td class="hist-mono">${h.hora}</td><td class="hist-mono">${h.method}</td><td class="hist-mono">${esc(h.path)}</td><td><span class="status-chip ${cls}">${h.status || "rede"}</span></td><td class="hist-mono">${h.latencia} ms</td></tr>`;
+  }).join("") || `<tr><td colspan="5" style="color:var(--tinta-apagada)">Nenhuma chamada ainda.</td></tr>`;
 }
 function limparHistorico() {
   historico.length = 0;
-  document.getElementById("corpo-historico").innerHTML = `<tr><td colspan="5" style="color:#7b8794">Nenhuma chamada ainda.</td></tr>`;
+  document.getElementById("corpo-historico").innerHTML = `<tr><td colspan="5" style="color:var(--tinta-apagada)">Nenhuma chamada ainda.</td></tr>`;
 }
 
 async function chamar(cardId, botao) {
   const card = registroCards[cardId];
-  const alvo = document.getElementById(cardId + "-resp");
-  let pedido;
-  try { pedido = coletar(card, cardId); }
+  const out = document.getElementById(cardId + "-out");
+  const respAlvo = document.getElementById(cardId + "-resp");
+  let coletado;
+  try { coletado = coletar(card, cardId); }
   catch (e) {
-    alvo.innerHTML = `<div class="nota vermelha">${esc(e.message)}</div>`;
-    alvo.classList.add("aberta");
+    respAlvo.innerHTML = `<div class="nota vermelha">${esc(e.message)}</div>`;
+    document.getElementById(cardId + "-banco").style.display = "none";
+    out.classList.remove("com-banco");
+    out.classList.add("aberta");
     return;
   }
   botao.disabled = true;
   botao.textContent = "Chamando...";
   try {
-    const resp = await fetch("/api/gh", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pedido) });
+    const resp = await fetch("/api/gh", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(coletado.pedido) });
     const r = await resp.json();
     if (r.erro) {
-      alvo.innerHTML = `<div class="nota vermelha">Backend recusou o pedido: ${esc(r.erro)}</div>`;
-      alvo.classList.add("aberta");
+      respAlvo.innerHTML = `<div class="nota vermelha">Backend recusou o pedido: ${esc(r.erro)}</div>`;
+      document.getElementById(cardId + "-banco").style.display = "none";
+      out.classList.remove("com-banco");
     } else {
       renderResposta(card, cardId, r);
-      registrarHistorico(card.method, pedido.path, r.status, r.latencia_ms);
+      renderBanco(card, cardId, coletado.valores);
+      registrarHistorico(card.method, coletado.pedido.path, r.status, r.latencia_ms);
     }
   } catch (e) {
-    alvo.innerHTML = `<div class="nota vermelha">Backend local fora do ar (a chamada nem saiu). Rode: python3 ana/api-mv/playground/server.py</div>`;
-    alvo.classList.add("aberta");
+    respAlvo.innerHTML = `<div class="nota vermelha">Backend local fora do ar (a chamada nem saiu). Rode: python3 ana/api-mv/playground/server.py</div>`;
+    document.getElementById(cardId + "-banco").style.display = "none";
+    out.classList.remove("com-banco");
   } finally {
+    out.classList.add("aberta");
     botao.disabled = false;
     botao.textContent = "Chamar";
     botao.classList.remove("confirmar");
@@ -606,7 +1077,7 @@ document.addEventListener("click", ev => {
   const cardId = botao.dataset.card;
   const card = registroCards[cardId];
   if (card.write && !botao.dataset.armado) {
-    // primeiro clique num card de escrita só arma o botão; o segundo dispara
+    // primeiro clique num card de escrita so arma o botao; o segundo dispara
     botao.dataset.armado = "1";
     botao.classList.add("confirmar");
     botao.textContent = "Confirmar chamada real?";
@@ -631,6 +1102,7 @@ function setLuz(id, cor, texto) {
 }
 
 async function atualizarStatus() {
+  ["backend", "gh", "token"].forEach(id => { document.getElementById("luz-" + id).className = "bolinha testando"; });
   document.getElementById("veredito").textContent = "Verificando as conexões...";
   try {
     const r = await (await fetch("/api/status")).json();
