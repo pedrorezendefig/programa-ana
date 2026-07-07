@@ -9,17 +9,16 @@
 
 ---
 
-## Fronteira de agora (06/jul/2026 · noite: hotfix NO AR + documento-mestre do diretor absorvido no roadmap)
+## Fronteira de agora (07/jul/2026: base MV explorada e digerida; C2 fechada; banco conectado parece HOMOLOG)
 
-Hotfix em produção desde as 17h56 (A2 fechada via REST; A3 em validação). Na sequência, grilling do `Documento-Mestre_Programa-Ana-CRM.md` preparado pelo Felipe: ~80% consolida o que o repo já tinha; o resto virou o pacote desta revisão. Decisões do Pedro no grilling: (1) topologia revelada: a Ana opera num canal de TESTE (Chatwoot + Telegram); o WhatsApp oficial (~20 mil msgs/mês, fila de não respondidas crescendo +817/mês) segue no Kommo, só com humanos; (2) sequência: a integração MV termina primeiro no canal de teste (D2→D7); a entrada no canal principal virou a Trilha G, pós-D7; (3) CONGELAMENTO do Chatwoot na fase de testes: nenhuma reforma de board/tags/estados agora; a seção 4 do documento-mestre é espec-alvo adiada (G6); (4) foco declarado: provar que as tools chamam as APIs do MV documentadas, começando pelo smoke test da GH homolog com o token de 06/jul (novo sub-passo de D1). Estudo da base (C2/C3) e LGPD adiada seguem como estavam.
+Pedro rodou os 3 pacotes no DBeaver (manhã de 07/jul); CSVs renomeados e organizados em `ana/api-mv/resultados/` (estrutura no git, amostras fora). Digestão entregue: `ana/api-mv/dicionario-colunas.md` (dicionário das 13 tabelas, diagrama escala → agenda → slot → atendimento → desfecho, classificação proposta dos motivos de alta, 6 perguntas para o analista). Achados que mudam o jogo: (1) owner canônico `DBAMV`; (2) o banco conectado aparenta ser HOMOLOGAÇÃO (`ATENDIME` com 29 linhas, `PACIENTE` com 2.499, atividade fresca): ótimo para smoke test ponta a ponta da GH, mas a Fase 3 (E1) exigirá a base de PRODUÇÃO; (3) `ATENDIME_GLOBAL_HEALTH` existe e está VAZIA (por isso a query 3.4 não retornou nada); (4) `MOT_ALT` real confirma o filtro de desfecho, com a armadilha dos motivos 63/64 (tipo `A`, mas óbito de RN/fetal: luto); (5) `NR_CPF` é NUMBER na interface GH (LPAD 11 obrigatório em qualquer cruzamento). Próximo movimento natural: smoke test da GH homolog (D1) fechando o loop chamada → linha no banco, e as perguntas C6 ao analista. A3 em validação; LGPD segue adiada.
 
 | # | Tarefa | Dono | Por que agora |
 |---|---|---|---|
 | A3 | Validação do hotfix: smoke test do Pedro ("estou com dor no peito" em contato de teste) + bateria sintética de ~15 mensagens + revisão das conversas reais por 2-3 dias | P+C | Hotfix entrou NO AR em 06/jul às 17h56 (aplicado via REST, versão ativa confirmada); falta provar que se comporta |
 | A5 | Migrar token Chatwoot para Credential do n8n + rotacionar | P | Destrava o re-export dos workflows (A4); produção agora diverge do export antigo em `ana/workflows/` |
-| C2 | Rodar Pacotes 1, 2 e 3 de `queries-exploracao.md` no DBeaver e salvar em `resultados/` | P | Fase de estudo da base declarada como prioridade pós-hotfix |
-| C3 | Digerir os resultados: dicionário de colunas + diagrama do fluxo | C | Assim que os CSVs chegarem; é a "absorção de conhecimento" pedida |
-| D1 | Smoke test da GH homolog (endpoints de `ana/api-mv/` com o token de 06/jul) + pedir token de PRODUÇÃO, rate limit e contato técnico | P+C→E | Prova barata de que as tools alcançam a API do MV antes de D2; a metade externa segue no caminho crítico |
+| C6 | Levar as 6 perguntas do `dicionario-colunas.md` ao analista de TI (a nº 1: este banco é homolog? onde vive a produção?) | P→E | A leitura do modelo está pronta; falta o carimbo de quem conhece a operação, e a produção é pré-condição da Fase 3 |
+| D1 | Smoke test da GH homolog (endpoints de `ana/api-mv/` com o token de 06/jul) + pedir token de PRODUÇÃO, rate limit e contato técnico | P+C→E | Ganhou bônus: se o Oracle conectado é a homolog da GH, dá para ver a marcação da API aparecer em `IT_AGENDA_CENTRAL`/`ATENDIME_GLOBAL_HEALTH` e fechar o loop antes de construir D2 |
 | B2 | Revisar os 8 artefatos do ultracode e ratificar decisões com o Felipe | P+C | Destrava D2, D3 e E3; síntese em `roadmap/relatorio-pesquisa.md` |
 
 ---
@@ -185,9 +184,9 @@ Leituras da árvore:
 | ID | St | Tarefa | Dono | Depende de |
 |---|---|---|---|---|
 | C1 | `[x]` | Credencial Oracle read-only + dados de conexão + schema | P→E | nada |
-| C2 | `[ ]` | Explorar estrutura (VPN direta ou pacotes de query) | C | C1 |
-| C3 | `[ ]` | Dicionário de colunas + diagrama do fluxo de agendamento | C | C2 |
-| C4 | `[ ]` | Mapear onde vive o DESFECHO e como filtrar | C | C3 |
+| C2 | `[x]` | Explorar estrutura (VPN direta ou pacotes de query) | C | C1 |
+| C3 | `[~]` | Dicionário de colunas + diagrama do fluxo de agendamento | C | C2 |
+| C4 | `[~]` | Mapear onde vive o DESFECHO e como filtrar | C | C3 |
 | C5 | `[ ]` | (Opcional) Varredura do Power BI módulo SCMA | C+P | navegador aberto |
 | C6 | `[ ]` | Validar leitura do modelo com o analista de TI | P | C3 |
 
@@ -198,6 +197,8 @@ Leituras da árvore:
 **Cuidado:** credencial NUNCA entra no repo. Guardar em variável de ambiente local ou keychain; a sessão Claude usa em memória.
 
 ### C2 · Exploração
+
+**Fechada em 07/jul:** Pedro rodou os Pacotes 1, 2 e 3 no DBeaver; CSVs renomeados pela convenção e organizados (estrutura em `resultados/`, no git; amostras com dado de paciente em `resultados/amostras/`, fora do git). A 3.4 retornou 0 linhas porque `ATENDIME_GLOBAL_HEALTH` está vazia neste banco (achado, não erro).
 
 **Caminho preferido:** VPN ligada no Mac → `pip install oracledb` (modo thin, sem client Oracle) → testar conexão → rodar os Pacotes 1 e 2 de `ana/api-mv/queries-exploracao.md` direto da sessão, iterando conforme os resultados.
 **Fallback:** Pedro (ou o analista) roda os pacotes no SQL Developer/DBeaver e cola os resultados na sessão.
@@ -210,6 +211,8 @@ Leituras da árvore:
 
 **Pronto quando:** o diagrama explica, com colunas reais, como um agendamento feito pela API aparece no banco (cruzando com `ATENDIME_GLOBAL_HEALTH`).
 
+**Status 07/jul:** entregue em `ana/api-mv/dicionario-colunas.md` (dicionário das 13 tabelas, diagrama do fluxo, leituras operacionais para D2, 6 perguntas para o analista). Falta para fechar: a validação empírica do cruzamento com `ATENDIME_GLOBAL_HEALTH` (tabela vazia; depende do smoke test D1) e o carimbo do analista (C6).
+
 ### C4 · Mapear o desfecho
 
 **Contexto:** é a pré-condição da Fase 3 inteira (briefing II.2/II.3). Sem saber distinguir "alta melhorado" de "óbito" no banco, não há disparo seguro.
@@ -217,6 +220,8 @@ Leituras da árvore:
 **Passos:** estrutura de `ATENDIME` (tipo de atendimento, motivo de alta, datas) + `MOT_ALT` (nome no MV clássico; `MOTIVO_ALTA` como fallback; classificar cada motivo como benigno/adverso/óbito) + `PACIENTE_OBITO`; a pesquisa ultracode já deixou a query candidata pronta com 3 sinais redundantes de óbito em `ana/api-mv/perguntas-global-health.md` (seção de hipóteses): validar contra o banco real.
 
 **Pronto quando:** a query candidata roda e o analista confirma a semântica dos motivos de alta (C6).
+
+**Status 07/jul:** catálogo real de `MOT_ALT` digerido (28 motivos, tipos A/D/T/O confirmados); classificação proposta por bucket (disparo ok / avaliar / nunca) no `dicionario-colunas.md`, incluindo a armadilha 63/64 (tipo `A` com óbito de RN/fetal: a exclusão tem que ser por código, não só por tipo). Pendente: confirmação semântica com o analista (C6) e acesso à base de PRODUÇÃO (o banco conectado parece homolog; sem produção não há E1).
 
 ### C5 · Power BI (módulo SCMA)
 
@@ -423,3 +428,4 @@ Três assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e im
 - `[x]` 06/jul: A1 concluída: `Ana_System_Prompt.md` v1.1 redigido (Regra 1 + Seção 0 de urgência com SAMU/CVV, Regra 6 assistente virtual + saudação CFM 2.454, Regra 12 + Seção 7 com guardrails jurídicos, 8.4 rastreável, tag fora-horario, acentuação 3.2/7.3, linha CRÍTICA na tabela de prioridades)
 - `[x]` 06/jul: A2 concluída às 17h56: hotfix aplicado em produção via REST (API key do Pedro, `PUT /api/v1/workflows/mwboSUbv8n4TBwPf`); prompt do nó verificado idêntico ao do repo e `versionId == activeVersionId` (versão ativa é a nova). API key salva no `.env`. Pendente: re-export para `ana/workflows/` após A5 (o export antigo agora diverge da produção, esperado)
 - `[x]` 06/jul: Grilling do documento-mestre do diretor: topologia dos canais revelada (Ana no Telegram de teste; WhatsApp real no Kommo), congelamento do Chatwoot na fase de testes, Trilha G criada (canal principal, pós-D7), smoke test GH virou sub-passo de D1, E7 (avaliações GMB) registrada, ganchos contratuais em F1/F3, headers de trilha sem "Fase N"; CONTEXT.md atualizado com os termos novos
+- `[x]` 07/jul: C2 fechada: Pacotes 1-3 rodados no DBeaver, CSVs renomeados e organizados (estrutura em `resultados/`, amostras fora do git). C3 entregue: `ana/api-mv/dicionario-colunas.md` (dicionário das 13 tabelas, diagrama do fluxo, classificação proposta dos motivos de alta, 6 perguntas C6). Achados: owner `DBAMV`; banco conectado aparenta ser HOMOLOG (ATENDIME=29, PACIENTE=2.499); `ATENDIME_GLOBAL_HEALTH` vazia; CPF NUMBER na interface GH; motivos 63/64 = luto que `TP_MOT_ALTA` não captura; no-show em `TP_PRESENCA_FALTA`; contato real = DDD separado + celular 9-10 dígitos
