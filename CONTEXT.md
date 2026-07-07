@@ -79,6 +79,13 @@ _Avoid_: "justificativa de especialidade" (termo usado na conversa com o diretor
 Agente novo, separado da Ana, proativo e analítico: dispara pesquisa de satisfação em massa (começando só pelo eletivo), classifica respostas e gera relatório por setor/profissional/período. Dois mecanismos: escuta interna (sem filtro) + motor de reputação Google (sem review gating). Pré-condição: fonte de dados do MV com desfecho. A Frente 4 foi estendida (jul/2026) com a gestão de avaliações do Google Meu Negócio: rascunhos de resposta gerados por IA, publicação só com aprovação humana (regra dura para avaliações negativas).
 _Avoid_: "modo pesquisa da Ana" (é agente separado); review gating; publicar resposta a avaliação sem aprovação humana
 
+**Paciente-sonda**:
+O cadastro de teste TESTE INTEGRACAO ANA VITTA (CPF 66301102770, id 1681) criado de propósito na homologação da Global Health (07/jul/2026). É a referência fixa dos testes de leitura da API e da investigação sobre qual banco MV a homolog enxerga.
+_Avoid_: apagar o registro; usar CPF de paciente real em teste.
+
+**Playground GH**:
+Ferramenta local de estudo da API de agendamento da Global Health: permite chamar cada endpoint da homologação, ver a resposta crua e conferir no Oracle onde a API grava. Fala somente com a homologação; produção é proibida nele.
+
 **Hotfix do prompt**:
 Primeira fase de execução (decisão desta sessão): corrigir o prompt em produção antes da integração MV. Escopo: triagem de urgência como nova Regra Global 1, Regra 6 reescrita (Ana assume "assistente virtual"), exclusão comercial↔ouvidoria, guardrails jurídicos da ouvidoria e ajustes menores.
 
