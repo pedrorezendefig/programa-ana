@@ -8,6 +8,7 @@
   :root {
     --papel: #f4eee1;
     --papel-card: #fdfaf2;
+    --papel-aula: #f0e9d8;
     --tinta: #22291f;
     --tinta-suave: #5b6357;
     --tinta-apagada: #8a9184;
@@ -87,23 +88,107 @@
   }
   .mini:hover { border-color: var(--verde); color: var(--verde); }
 
-  /* ---------- secoes ---------- */
-  section.grupo { margin-top: 44px; animation: chegar .55s ease both; }
-  section.grupo:nth-of-type(2) { animation-delay: .08s; }
-  section.grupo:nth-of-type(3) { animation-delay: .14s; }
-  section.grupo:nth-of-type(4) { animation-delay: .20s; }
-  section.grupo:nth-of-type(5) { animation-delay: .26s; }
-  .grupo-cabeca { display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid var(--tinta); padding-bottom: 8px; margin-bottom: 6px; }
+  /* ---------- grupos colapsaveis ---------- */
+  .controles-grupos { display: flex; gap: 8px; justify-content: flex-end; margin: 26px 0 2px; }
+  section.grupo { margin-top: 18px; animation: chegar .55s ease both; }
+  details.tema > summary { list-style: none; cursor: pointer; outline: none; }
+  details.tema > summary::-webkit-details-marker { display: none; }
+  .grupo-cabeca {
+    display: flex; align-items: baseline; gap: 14px;
+    border-bottom: 2px solid var(--tinta); padding-bottom: 8px;
+    transition: border-color .2s;
+  }
+  details.tema > summary:hover .grupo-cabeca { border-color: var(--verde); }
   .grupo-num { font-family: var(--mono); font-size: 13px; color: var(--verde); letter-spacing: 1px; }
   h2 { font-family: var(--serif); font-size: 24px; margin: 0; letter-spacing: -0.3px; }
-  .grupo-desc { color: var(--tinta-suave); margin: 6px 0 18px; font-size: 14px; max-width: 70ch; }
-  details.grupo-avancado > summary { list-style: none; cursor: pointer; outline: none; }
-  details.grupo-avancado > summary::-webkit-details-marker { display: none; }
-  details.grupo-avancado > summary .grupo-cabeca::after {
-    content: "abrir +"; font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--verde); margin-left: auto; align-self: center;
+  .abrir-indicador {
+    margin-left: auto; align-self: center; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--verde); white-space: nowrap;
   }
-  details.grupo-avancado[open] > summary .grupo-cabeca::after { content: "fechar -"; }
+  details.tema > summary .abrir-indicador::after { content: "abrir +"; }
+  details.tema[open] > summary .abrir-indicador::after { content: "fechar -"; }
+  .sumario-apis { display: flex; flex-wrap: wrap; gap: 6px; padding: 9px 0 2px; }
+  .chip-api {
+    font-family: var(--mono); font-size: 11px; padding: 2px 9px;
+    border: 1px solid var(--linha); border-radius: 3px; background: var(--papel-card);
+    color: var(--tinta-suave); white-space: nowrap;
+  }
+  .chip-api b { font-weight: 700; letter-spacing: 1px; }
+  .chip-api.GET b { color: var(--verde); }
+  .chip-api.POST b { color: var(--ambar); }
+  .chip-api.DELETE b { color: var(--vermelho); }
+  .grupo-desc { color: var(--tinta-suave); margin: 10px 0 14px; font-size: 14px; max-width: 70ch; }
+
+  /* ---------- aula ---------- */
+  .aula {
+    background: var(--papel-aula);
+    border: 1px solid var(--linha); border-left: 4px solid var(--verde);
+    border-radius: 6px; padding: 16px 18px 14px; margin: 0 0 18px;
+  }
+  .aula-titulo {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--verde); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .aula-titulo::before { content: "✎"; font-size: 13px; }
+  .aula p { margin: 0 0 10px; font-size: 14.5px; color: var(--tinta); max-width: 80ch; }
+  .aula-io { display: flex; flex-wrap: wrap; gap: 10px 26px; margin: 0 0 12px; }
+  .aula-io > div { font-size: 13.5px; color: var(--tinta-suave); }
+  .aula-io .rotulo {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--tinta-apagada); display: block; margin-bottom: 2px;
+  }
+  .aula-io .valor { font-weight: 600; color: var(--tinta); }
+  .aula-io .valor code { font-family: var(--mono); font-size: 12.5px; color: var(--verde); font-weight: 700; }
+  .aula-tabelas { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .aula-tabela { background: var(--papel-card); border: 1px solid var(--linha); border-radius: 5px; padding: 10px 12px; }
+  .aula-tabela-nome { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--verde-escuro); margin-bottom: 2px; }
+  .aula-tabela-papel { font-size: 12.5px; color: var(--tinta-suave); margin-bottom: 7px; }
+  table.colunas { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.colunas td { padding: 3px 6px 3px 0; border-bottom: 1px dotted var(--linha); vertical-align: top; }
+  table.colunas td:first-child { font-family: var(--mono); font-size: 11.5px; color: var(--tinta); white-space: nowrap; font-weight: 600; }
+  table.colunas td:last-child { color: var(--tinta-suave); }
+  table.colunas tr:last-child td { border-bottom: 0; }
+
+  /* ---------- aula geral (fluxo) ---------- */
+  .fluxo { display: flex; flex-direction: column; gap: 0; margin: 14px 0 4px; }
+  .passo { display: flex; gap: 14px; position: relative; padding-bottom: 18px; }
+  .passo::before {
+    content: ""; position: absolute; left: 15px; top: 34px; bottom: 0;
+    width: 2px; background: var(--linha);
+  }
+  .passo:last-child::before { display: none; }
+  .passo-num {
+    flex: 0 0 32px; height: 32px; border-radius: 50%;
+    background: var(--verde); color: #f6f3ea;
+    font-family: var(--mono); font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 2px 2px 0 rgba(14, 76, 65, 0.3); z-index: 1;
+  }
+  .passo.escreve .passo-num { background: var(--ambar); box-shadow: 2px 2px 0 rgba(122, 71, 12, 0.3); }
+  .passo-corpo { flex: 1; min-width: 0; padding-top: 3px; }
+  .passo-titulo { font-family: var(--serif); font-size: 16.5px; font-weight: 700; margin: 0 0 2px; }
+  .passo-chamada { font-family: var(--mono); font-size: 12px; color: var(--verde-escuro); margin-bottom: 3px; }
+  .passo-texto { font-size: 13.5px; color: var(--tinta-suave); max-width: 72ch; margin: 0 0 5px; }
+  .produz { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .produz .rotulo { font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--tinta-apagada); }
+  .chip-id {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 700; color: var(--verde-escuro);
+    background: rgba(23, 105, 90, 0.10); border: 1px solid rgba(23, 105, 90, 0.35);
+    border-radius: 3px; padding: 1px 8px;
+  }
+  table.dicionario-ids { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  table.dicionario-ids th {
+    text-align: left; font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--tinta-apagada); padding: 5px 10px 5px 0;
+    border-bottom: 2px solid var(--tinta);
+  }
+  table.dicionario-ids td { padding: 6px 10px 6px 0; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  table.dicionario-ids td:first-child { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--verde-escuro); white-space: nowrap; }
+  table.dicionario-ids td:nth-child(2) { font-family: var(--mono); font-size: 11.5px; color: var(--tinta-suave); }
+  .faq { margin-top: 14px; display: grid; gap: 10px; }
+  .faq-item { background: var(--papel-card); border: 1px solid var(--linha); border-radius: 5px; padding: 10px 14px; }
+  .faq-p { font-family: var(--serif); font-weight: 700; font-size: 14.5px; margin: 0 0 3px; }
+  .faq-r { font-size: 13.5px; color: var(--tinta-suave); margin: 0; max-width: 80ch; }
 
   /* ---------- cards ---------- */
   .card {
@@ -279,6 +364,118 @@
     <div id="veredito">Verificando as conexões...</div>
   </div>
 
+  <!-- ================= AULA GERAL ================= -->
+  <section class="grupo">
+    <details class="tema" open>
+      <summary>
+        <div class="grupo-cabeca"><span class="grupo-num">00</span><h2>A aula: o caminho de um agendamento</h2><span class="abrir-indicador"></span></div>
+      </summary>
+      <div class="aula" style="margin-top:14px">
+        <div class="aula-titulo">Leia isto antes de apertar qualquer botão</div>
+        <p><b>Ninguém "cria uma consulta".</b> A consulta (cardiologia, ortopedia...) e o exame (tomografia, ultrassom...) já existem no catálogo do hospital: no banco MV, cada um é uma linha da tabela ITEM_AGENDAMENTO. O que você cria de verdade é a <b>marcação</b>: pegar um horário livre da agenda de um médico e prendê-lo a um paciente. A API expõe esse caminho em passos, e <b>cada passo devolve o id que o passo seguinte pede</b>. A ordem é esta:</p>
+
+        <div class="fluxo">
+          <div class="passo">
+            <div class="passo-num">1</div>
+            <div class="passo-corpo">
+              <div class="passo-titulo">Quem é o paciente</div>
+              <div class="passo-chamada">GET /pessoas (por cpf ou telefone) · se não existir: POST /pessoas</div>
+              <p class="passo-texto">A API confere o cadastro central de pacientes. Sem paciente, nada pode ser marcado em nome dele.</p>
+              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">cpf confirmado</span></span>
+            </div>
+          </div>
+          <div class="passo">
+            <div class="passo-num">2</div>
+            <div class="passo-corpo">
+              <div class="passo-titulo">O que ele quer (escolher do catálogo)</div>
+              <div class="passo-chamada">GET /consultas?pesquisa=... ou GET /exames?pesquisa=...</div>
+              <p class="passo-texto">Busca por texto no catálogo. O campo "id" de cada item da resposta é o número mais importante do fluxo inteiro: quase todos os passos seguintes pedem ele.</p>
+              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idItemAgendamento</span></span>
+            </div>
+          </div>
+          <div class="passo">
+            <div class="passo-num">3</div>
+            <div class="passo-corpo">
+              <div class="passo-titulo">Quem paga</div>
+              <div class="passo-chamada">GET /convenios?idItemAgendamento=...</div>
+              <p class="passo-texto">Todo agendamento tem um pagador. Particular NÃO é "sem convênio": é um convênio com flag particular: true e id próprio. Passar o idItemAgendamento filtra só os convênios aceitos naquele item.</p>
+              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idConvenio</span></span>
+            </div>
+          </div>
+          <div class="passo">
+            <div class="passo-num">4</div>
+            <div class="passo-corpo">
+              <div class="passo-titulo">Qual plano do convênio</div>
+              <div class="passo-chamada">GET /convenios/{idConvenio}/planos?idItemAgendamento=...</div>
+              <p class="passo-texto">O convênio se subdivide em planos (Familiar, Empresarial...). Mesmo o particular tem um plano. Se houver um só, é ele.</p>
+              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idPlano</span></span>
+            </div>
+          </div>
+          <div class="passo">
+            <div class="passo-num">5</div>
+            <div class="passo-corpo">
+              <div class="passo-titulo">Quando (a busca de horários livres)</div>
+              <div class="passo-chamada">GET /agendas/v2?idItemAgendamento=&amp;idConvenio=&amp;idPlano=</div>
+              <p class="passo-texto">Com os três ids na mão, a API devolve os horários livres, agrupados por unidade e por médico. Cada horário da resposta carrega DOIS ids: o idHorario (o slot exato: médico + dia + hora) e o idAgenda (a agenda daquele dia do médico).</p>
+              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idHorario</span> <span class="chip-id">idAgenda</span></span>
+            </div>
+          </div>
+          <div class="passo">
+            <div class="passo-num">6</div>
+            <div class="passo-corpo">
+              <div class="passo-titulo">Os detalhes finais (dependem do tipo)</div>
+              <div class="passo-chamada">consulta: GET /consultas/tipos?idAgenda=... · exame: GET /exames/perguntas</div>
+              <p class="passo-texto">Consulta: o hospital quer saber o "tipo de marcação": é a PRIMEIRA consulta ou um RETORNO? Isso é o idTipoMarcacao. Exame: responder a triagem obrigatória (grávida? marca-passo?) e, se exigido, anexar documentos (pedido médico).</p>
+              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">idTipoMarcacao</span> <span class="chip-id">respostas de triagem</span></span>
+            </div>
+          </div>
+          <div class="passo escreve">
+            <div class="passo-num">7</div>
+            <div class="passo-corpo">
+              <div class="passo-titulo">Efetivar (a única escrita do caminho feliz)</div>
+              <div class="passo-chamada">POST /horarios/agendar { cpf, idItemAgendamento, idConvenio, idPlano, idHorario, ... }</div>
+              <p class="passo-texto">Junta tudo e grava. No banco, isso significa preencher o slot: o CD_PACIENTE do horário deixa de ser nulo. A resposta traz o protocolo e o id do agendamento, que você usa depois para listar (GET /agendamentos), remarcar (POST /horarios/reagendar) e cancelar (DELETE /agendamentos/{id}).</p>
+              <span class="produz"><span class="rotulo">produz</span> <span class="chip-id">id do agendamento</span> <span class="chip-id">protocolo</span></span>
+            </div>
+          </div>
+        </div>
+
+        <table class="dicionario-ids">
+          <thead><tr><th>id</th><th>de onde vem</th><th>o que significa</th></tr></thead>
+          <tbody>
+            <tr><td>idItemAgendamento</td><td>campo id de /consultas ou /exames</td><td>O QUE será agendado (a especialidade ou o exame). No MV: ITEM_AGENDAMENTO.CD_ITEM_AGENDAMENTO.</td></tr>
+            <tr><td>idConvenio</td><td>/convenios</td><td>Quem paga. Particular também é convênio. No MV: CONVENIO.</td></tr>
+            <tr><td>idPlano</td><td>/convenios/{id}/planos</td><td>O plano dentro do convênio. No MV: CON_PLA.</td></tr>
+            <tr><td>idAgenda</td><td>cada horário de /agendas/v2</td><td>A agenda de UM dia de UM médico. No MV: AGENDA_CENTRAL. Serve para buscar os tipos de consulta.</td></tr>
+            <tr><td>idHorario</td><td>cada horário de /agendas/v2</td><td>O slot exato (médico + dia + hora). No MV: IT_AGENDA_CENTRAL. É ele que o agendar ocupa.</td></tr>
+            <tr><td>idTipoMarcacao</td><td>/consultas/tipos</td><td>Primeira consulta ou retorno (só para consulta, não para exame).</td></tr>
+            <tr><td>id (agendamento)</td><td>resposta do agendar ou GET /agendamentos</td><td>A marcação criada. Com ele você consulta o status, remarca e cancela.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="faq">
+          <div class="faq-item">
+            <p class="faq-p">Preciso criar uma consulta para agendar um horário, ou vice-versa?</p>
+            <p class="faq-r">Nenhum dos dois. Consulta se ESCOLHE do catálogo (passo 2) e horário se ESCOLHE da agenda (passo 5). Criar, você só cria o cadastro do paciente (passo 1, quando não existe) e a marcação final (passo 7). O agendar não cria consulta nem horário: ele OCUPA um horário que já existia, com uma consulta que já existia.</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-p">Qual a diferença entre tipo de marcação e horário?</p>
+            <p class="faq-r">Horário (idHorario) é o slot físico da agenda: Dr. Fulano, dia 10, 14h. Tipo de marcação (idTipoMarcacao) é uma etiqueta administrativa da consulta: primeira consulta, retorno, subsequente. O hospital cobra e organiza diferente cada tipo, por isso o agendar pede os dois quando é consulta.</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-p">E se eu chamar fora de ordem?</p>
+            <p class="faq-r">As leituras funcionam soltas (você pode buscar convênios sem ter buscado consulta), mas os filtros ficam vazios ou incompletos. Já o agendar (passo 7) exige os ids verdadeiros dos passos 2 a 6: com id inventado a API recusa (sucesso: false) ou dá erro 500.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <div class="controles-grupos">
+    <button class="mini" onclick="abrirTodos(true)">abrir todos os temas</button>
+    <button class="mini" onclick="abrirTodos(false)">fechar todos</button>
+  </div>
+
   <div id="grupos"></div>
 
   <section class="grupo">
@@ -337,10 +534,26 @@ ORDER  BY ic.DT_GRAVACAO DESC;`;
 // Cada card descreve um endpoint da doc oficial (v1.10).
 // where: query | body | path. num: converte para numero no body (ids). CPF fica string sempre.
 // db(v): painel "No banco": o que a chamada significa na Base TST + queries com os SEUS valores.
+// aula (por grupo): o conhecimento de tabelas/colunas/fluxo, visivel ANTES de chamar.
 const GRUPOS = [
   {
     titulo: "Pessoas (o cadastro do paciente)",
     desc: "Tudo começa aqui: descobrir se o paciente existe e, se não existir, criar o cadastro.",
+    aula: {
+      resumo: "A API olha o cadastro central de pacientes do hospital. É o passo 1 do fluxo: sem paciente confirmado, nada pode ser marcado em nome dele. No MV, esse cadastro é UMA tabela: PACIENTE (157 colunas; abaixo, as que importam).",
+      precisa: "nada: é o ponto de partida (só o CPF ou o telefone que o paciente informou)",
+      produz: "cadastro confirmado; o <code>cpf</code> identifica o paciente em todos os passos seguintes",
+      tabelas: [
+        { nome: "DBAMV.PACIENTE", papel: "o cadastro central de pacientes (2.499 linhas na Base TST)", colunas: [
+          ["CD_PACIENTE", "a chave interna do MV (o 'id 1681' da sonda provavelmente espelha isto)"],
+          ["NR_CPF", "CPF como TEXTO de 11: zeros à esquerda contam"],
+          ["NM_PACIENTE", "nome completo"],
+          ["DT_NASCIMENTO", "data de nascimento"],
+          ["NR_DDD_CELULAR + NR_CELULAR", "telefone separado em duas colunas (DDD à parte)"],
+          ["DT_CADASTRO + NM_USUARIO", "quando e por quem o cadastro foi criado: ótimo para auditar a integração"]
+        ]}
+      ]
+    },
     cards: [
       {
         titulo: "Buscar paciente por CPF", method: "GET", path: "/pessoas",
@@ -407,6 +620,27 @@ WHERE  NR_CPF = '${sv(v.cpf, "<cpf usado>")}';` }],
   {
     titulo: "Catálogo (o que dá para agendar)",
     desc: "Especialidades de consulta e exames disponíveis para o canal.",
+    aula: {
+      resumo: "Aqui você NÃO cria nada: escolhe do catálogo do hospital. Consultas e exames vivem juntos numa tabela só, ITEM_AGENDAMENTO; o campo TP_ITEM diz se o item é ambulatório (consulta), imagem ou laboratório. O 'id' que a API devolve é o idItemAgendamento: o número mais importante do fluxo, pedido por quase todos os passos seguintes.",
+      precisa: "nada (só o texto de busca)",
+      produz: "<code>idItemAgendamento</code> (o campo id da resposta)",
+      tabelas: [
+        { nome: "DBAMV.ITEM_AGENDAMENTO", papel: "o catálogo do que se agenda (2.057 itens na Base TST)", colunas: [
+          ["CD_ITEM_AGENDAMENTO", "a PK: é o idItemAgendamento da API"],
+          ["DS_ITEM_AGENDAMENTO", "o nome do item (ex.: Cardiologia - Consulta)"],
+          ["TP_ITEM", "A ambulatório (consulta) / I imagem / L laboratório"],
+          ["HR_REALIZACAO", "duração prevista do atendimento"],
+          ["QT_DIAS_PREPARO", "antecedência de preparo exigida"],
+          ["SN_ATIVO", "se o item está ativo no catálogo"]
+        ]},
+        { nome: "DBAMV.EXA_RX", papel: "o cadastro dos exames de imagem (TP_ITEM = I aponta para cá)", colunas: [
+          ["CD_EXA_RX", "PK do exame de imagem"],
+          ["DS_EXA_RX", "nome do exame"],
+          ["DS_ORIENTACAO", "o TEXTO DE PREPARO (jejum etc.): fonte provável das instruções da API"],
+          ["NR_DIAS_ENTREGA", "prazo de entrega do laudo"]
+        ]}
+      ]
+    },
     cards: [
       {
         titulo: "Buscar consultas (especialidades)", method: "GET", path: "/consultas",
@@ -462,6 +696,21 @@ WHERE  UPPER(DS_EXA_RX) LIKE UPPER('${likeTermo(v.pesquisa, "%<pesquisa>%")}');`
   {
     titulo: "Convênio e plano",
     desc: "Quem paga: até o atendimento particular é um convênio, com id próprio e flag particular: true.",
+    aula: {
+      resumo: "Todo agendamento tem um pagador, e o MV modela isso em dois níveis: o CONVÊNIO (Unimed, Cassi... e também o 'Particular', que é uma linha como as outras) e o PLANO dentro dele (Familiar, Empresarial...). Na marcação final, os dois ids viajam juntos. Filtrar por idItemAgendamento mostra só os convênios aceitos naquele item.",
+      precisa: "<code>idItemAgendamento</code> (do tema 02) para filtrar; sem ele, lista geral",
+      produz: "<code>idConvenio</code> e <code>idPlano</code>",
+      tabelas: [
+        { nome: "DBAMV.CONVENIO", papel: "o cadastro de convênios (o particular é uma linha dela)", colunas: [
+          ["CD_CONVENIO", "a PK do convênio"],
+          ["NM_CONVENIO", "o nome (ex.: Cassi, Particular)"]
+        ]},
+        { nome: "DBAMV.CON_PLA", papel: "os planos de cada convênio", colunas: [
+          ["CD_CON_PLA", "a PK do plano: é o que aparece na marcação como pagador detalhado"],
+          ["CD_CONVENIO", "de qual convênio este plano é"]
+        ]}
+      ]
+    },
     cards: [
       {
         titulo: "Buscar convênios", method: "GET", path: "/convenios",
@@ -508,6 +757,30 @@ WHERE  CD_CONVENIO = ${sv(v.idConvenio, "<idConvenio>")};` }],
   {
     titulo: "Prestadores e horários",
     desc: "Quem atende e quando: médicos/recursos e a busca de horários livres.",
+    aula: {
+      resumo: "O coração do sistema. O modelo do MV tem 3 camadas: a ESCALA é o molde semanal do médico ('Dr. Fulano atende quarta de manhã'); a geração materializa o molde em AGENDAS datadas (AGENDA_CENTRAL = um dia de um médico); e cada agenda nasce cheia de SLOTS (IT_AGENDA_CENTRAL = uma hora exata). Slot livre = sem paciente. O que /agendas/v2 devolve numerado são esses slots livres.",
+      precisa: "<code>idItemAgendamento</code> + <code>idConvenio</code> + <code>idPlano</code> (temas 02 e 03)",
+      produz: "<code>idHorario</code> (o slot) e <code>idAgenda</code> (a agenda do dia); depois <code>idTipoMarcacao</code> (consulta) ou respostas de triagem (exame)",
+      tabelas: [
+        { nome: "DBAMV.AGENDA_CENTRAL", papel: "a agenda de UM dia de UM médico (425 na Base TST)", colunas: [
+          ["CD_AGENDA_CENTRAL", "a PK: o idAgenda da API deve espelhar isto"],
+          ["DT_AGENDA", "o dia da agenda"],
+          ["CD_PRESTADOR", "o médico/recurso"],
+          ["QT_ATENDIMENTO vs QT_MARCADOS", "capacidade total vs quantos já marcaram"],
+          ["DT_LIBERACAO", "quando a agenda fica visível para marcação"]
+        ]},
+        { nome: "DBAMV.IT_AGENDA_CENTRAL", papel: "o SLOT: uma hora exata dentro da agenda (13.125 na Base TST)", colunas: [
+          ["CD_IT_AGENDA_CENTRAL", "a PK do slot: o idHorario da API deve espelhar isto"],
+          ["HR_AGENDA", "a hora exata"],
+          ["CD_PACIENTE", "NULO = horário livre; preenchido = marcado"],
+          ["SN_BLOQUEADO", "slot bloqueado não aparece para marcar"]
+        ]},
+        { nome: "DBAMV.PRESTADOR", papel: "o cadastro de médicos e recursos", colunas: [
+          ["CD_PRESTADOR", "a PK do prestador"],
+          ["NM_PRESTADOR", "o nome que aparece na lista de horários"]
+        ]}
+      ]
+    },
     cards: [
       {
         titulo: "Buscar prestadores (médicos)", method: "GET", path: "/prestadores",
@@ -594,6 +867,27 @@ WHERE  CD_ITEM_AGENDAMENTO = ${sv(v.idItemAgendamento, "<idItemAgendamento>")};`
   {
     titulo: "Agendar e gerir (escrita!)",
     desc: "As chamadas que criam, remarcam e cancelam agendamento de verdade na homologação.",
+    aula: {
+      resumo: "A única família que ESCREVE. Agendar não cria linha nova: PREENCHE um slot que já existia na IT_AGENDA_CENTRAL (o CD_PACIENTE deixa de ser nulo e o slot ganha item, convênio, plano e situação M de marcado). Cancelar deve virar situação C. Por isso as queries de verificação olham sempre a mesma tabela, filtrando pelo que gravou nas últimas 24h (DT_GRAVACAO).",
+      precisa: "TUDO dos temas anteriores: <code>cpf</code> + <code>idItemAgendamento</code> + <code>idConvenio</code> + <code>idPlano</code> + <code>idHorario</code> (+ <code>idTipoMarcacao</code> se consulta, respostas de triagem se exame)",
+      produz: "o agendamento criado: <code>id</code> + <code>protocolo</code> (com ele você lista, remarca e cancela)",
+      tabelas: [
+        { nome: "DBAMV.IT_AGENDA_CENTRAL", papel: "o slot, agora visto pela escrita: estas colunas são preenchidas ao marcar", colunas: [
+          ["CD_PACIENTE", "deixa de ser nulo: é o ato de agendar"],
+          ["CD_ITEM_AGENDAMENTO", "o que foi marcado (vem do seu idItemAgendamento)"],
+          ["CD_CONVENIO + CD_CON_PLA", "o pagador (convênio + plano)"],
+          ["NR_CARTEIRA", "carteirinha informada na marcação"],
+          ["TP_SITUACAO", "M marcado / A aguardando / E atendido / C cancelado"],
+          ["TP_FORMA_AGENDAMENTO", "origem da marcação: candidata a 'assinatura' da integração GH/Ana"],
+          ["DT_GRAVACAO", "quando a marcação foi gravada: o melhor filtro para achar o que VOCÊ fez"]
+        ]},
+        { nome: "DBAMV.ATENDIME_GLOBAL_HEALTH", papel: "tabela de interface (staging) da GH: 0 linhas até hoje; se ganhar linha, é a trilha da integração", colunas: [
+          ["NR_CPF", "ARMADILHA: é NUMBER e perde zeros à esquerda; sempre compare com LPAD(NR_CPF, 11, '0')"],
+          ["DH_ATENDIMENTO / DT_ALTA", "datas do atendimento integrado"],
+          ["DS_PRESTADOR / DS_ESPECIALIDADE", "texto desnormalizado (sem FK)"]
+        ]}
+      ]
+    },
     cards: [
       {
         titulo: "Agendar horário", method: "POST", path: "/horarios/agendar", write: true,
@@ -700,9 +994,23 @@ WHERE  CD_IT_AGENDA_CENTRAL = ${sv(v.id, "<id>")};` }
     ]
   },
   {
-    titulo: "Anexos, carteiras e instruções (avançado)",
+    titulo: "Anexos, carteiras e instruções (apoio)",
     desc: "Endpoints de apoio: documentos exigidos, upload, carteirinhas, sub-planos e textos de preparo.",
     colapsado: true,
+    aula: {
+      resumo: "Família de apoio, com uma particularidade: boa parte dela NÃO vive no Oracle do MV. Os arquivos anexados vão para o storage da própria GH (um S3), e o cadastro de carteirinhas também parece ser do lado GH; no MV, a carteira só aparece carimbada na marcação (coluna NR_CARTEIRA do slot). Já os textos de preparo têm fonte provável no MV: a coluna DS_ORIENTACAO do cadastro de exames de imagem.",
+      precisa: "os ids dos temas anteriores, conforme o card (item, convênio, plano, horário)",
+      produz: "URLs de anexo para o agendar; instruções de preparo para repassar ao paciente",
+      tabelas: [
+        { nome: "DBAMV.IT_AGENDA_CENTRAL", papel: "onde a carteirinha aparece no MV (na marcação)", colunas: [
+          ["NR_CARTEIRA", "o número informado ao agendar"],
+          ["DT_VALIDADE_CARTEIRA", "validade registrada"]
+        ]},
+        { nome: "DBAMV.EXA_RX", papel: "fonte provável dos textos de preparo", colunas: [
+          ["DS_ORIENTACAO", "o texto de preparo do exame (jejum, líquidos etc.)"]
+        ]}
+      ]
+    },
     cards: [
       {
         titulo: "Anexos exigidos para o agendamento", method: "POST", path: "/anexos/agendamento",
@@ -908,26 +1216,51 @@ function renderCard(card, cardId) {
   return html;
 }
 
+function renderAula(aula) {
+  if (!aula) return "";
+  let html = `<div class="aula"><div class="aula-titulo">A aula do tema · antes de chamar</div>`;
+  html += `<p>${aula.resumo}</p>`;
+  html += `<div class="aula-io">`;
+  html += `<div><span class="rotulo">Precisa de</span><span class="valor">${aula.precisa}</span></div>`;
+  html += `<div><span class="rotulo">Produz</span><span class="valor">${aula.produz}</span></div>`;
+  html += `</div>`;
+  if (aula.tabelas && aula.tabelas.length) {
+    html += `<div class="aula-tabelas">`;
+    aula.tabelas.forEach(t => {
+      html += `<div class="aula-tabela"><div class="aula-tabela-nome">${esc(t.nome)}</div><div class="aula-tabela-papel">${esc(t.papel)}</div>`;
+      html += `<table class="colunas">${t.colunas.map(([c, p]) => `<tr><td>${esc(c)}</td><td>${esc(p)}</td></tr>`).join("")}</table></div>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
 const registroCards = {};
 (function montar() {
   const raiz = document.getElementById("grupos");
   let html = "";
   GRUPOS.forEach((g, gi) => {
     const num = String(gi + 1).padStart(2, "0");
+    const chips = g.cards.map(c => `<span class="chip-api ${c.method}"><b>${c.method}</b> ${esc(c.path)}</span>`).join("");
     const corpo = g.cards.map((c, ci) => {
       const cardId = `card-${gi}-${ci}`;
       registroCards[cardId] = c;
       return renderCard(c, cardId);
     }).join("");
-    const cabeca = `<div class="grupo-cabeca"><span class="grupo-num">${num}</span><h2>${esc(g.titulo)}</h2></div>`;
-    if (g.colapsado) {
-      html += `<section class="grupo"><details class="grupo-avancado"><summary>${cabeca}</summary><p class="grupo-desc">${esc(g.desc)}</p>${corpo}</details></section>`;
-    } else {
-      html += `<section class="grupo">${cabeca}<p class="grupo-desc">${esc(g.desc)}</p>${corpo}</section>`;
-    }
+    html += `<section class="grupo"><details class="tema">`;
+    html += `<summary><div class="grupo-cabeca"><span class="grupo-num">${num}</span><h2>${esc(g.titulo)}</h2><span class="abrir-indicador"></span></div><div class="sumario-apis">${chips}</div></summary>`;
+    html += `<p class="grupo-desc">${esc(g.desc)}</p>`;
+    html += renderAula(g.aula);
+    html += corpo;
+    html += `</details></section>`;
   });
   raiz.innerHTML = html;
 })();
+
+function abrirTodos(abrir) {
+  document.querySelectorAll("#grupos details.tema").forEach(d => { d.open = abrir; });
+}
 
 // ---------- chamadas ----------
 
