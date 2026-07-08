@@ -72,6 +72,11 @@ def main():
     except ImportError:
         sys.exit("ERRO: driver ausente. Instale com: python3 -m pip install --user oracledb")
 
+    # senha do dbamv usa verifier 10g (DPY-3015): modo thin nao suporta,
+    # entao usamos modo thick com o Instant Client apontado no .env
+    if env.get("ORACLE_CLIENT_DIR"):
+        oracledb.init_oracle_client(lib_dir=env["ORACLE_CLIENT_DIR"])
+
     host = env["ORACLE_HOST"]
     port = int(env.get("ORACLE_PORT", "1521"))
     if env.get("ORACLE_SERVICE"):

@@ -83,6 +83,10 @@ _Avoid_: "modo pesquisa da Ana" (é agente separado); review gating; publicar re
 O cadastro de teste TESTE INTEGRACAO ANA VITTA (CPF 66301102770, id 1681) criado de propósito na homologação da Global Health (07/jul/2026). É a referência fixa dos testes de leitura da API e da investigação sobre qual banco MV a homolog enxerga.
 _Avoid_: apagar o registro; usar CPF de paciente real em teste.
 
+**Base TST (Oracle do MV)**:
+O banco Oracle de teste do MV que o DBeaver e a sessão Claude leem diretamente (prefixo `tst`, ~2,5 mil pacientes, base viva). Regra de acesso (07/jul/2026): homolog = leitura direta pela sessão; produção = só o Pedro, manualmente, no DBeaver. Não está confirmado que é o mesmo banco que a homologação da Global Health enxerga; até prova em contrário (pergunta GH-18), tratar como ambientes distintos.
+_Avoid_: chamar de "produção"; assumir que escrita via API GH aparece nela sem verificar.
+
 **Playground GH**:
 Ferramenta local de estudo da API de agendamento da Global Health: permite chamar cada endpoint da homologação, ver a resposta crua e conferir no Oracle onde a API grava. Fala somente com a homologação; produção é proibida nele.
 

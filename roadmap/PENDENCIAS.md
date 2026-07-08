@@ -108,17 +108,17 @@ Ele imprime, linha por linha, OK / VAZIO / FALHOU e um veredito no final, em por
 
 ---
 
-## 4. Conectar o banco Oracle ao Claude (quando você quiser; ~15 min)
+## 4. Conectar o banco Oracle ao Claude — FEITO em 07/jul (tarde)
 
-**Por que importa:** hoje, para eu ler o banco, você exporta CSV no DBeaver e me traz. Com a conexão direta, você pede ("consulta X no banco") e eu mesmo consulto, na hora.
-
-**Decisão sua de 07/jul:** fica para depois, sem pressa. O passo a passo completo está em **`ana/api-mv/conexao-oracle.md`** (com checklist do que falta). Resumo: (1) copiar host/porta/service/usuário/senha da tela de conexão do DBeaver; (2) colar no `.env` da raiz nos campos `ORACLE_...`; (3) rodar `python3 -m pip install --user oracledb`. Feito isso, me avise que eu testo e assumo as consultas dali em diante (só leitura; o script recusa qualquer escrita). Produção continua fora: lá é você, manualmente, no DBeaver.
+**Concluído na sessão de 07/jul:** você trouxe o print da conexão do DBeaver, e a sessão conectou e consultou sozinha (Oracle 19c, base TST, sem VPN). Detalhes e a solução do modo thick (senha antiga do `dbamv`) estão em **`ana/api-mv/conexao-oracle.md`**. Daqui em diante é só pedir ("consulta X no banco") que eu consulto na hora (só leitura; o script recusa qualquer escrita). Produção continua fora: lá é você, manualmente, no DBeaver.
 
 ---
 
 ## 5. Trocar o token do Chatwoot (A5): fazer JUNTO comigo (~30 min de sessão)
 
-**Por que importa:** o token atual do Chatwoot está escrito às claras dentro dos fluxos do n8n e no histórico do git local. Enquanto não trocar: o repositório não pode ir para nenhum servidor remoto (GitHub), e o re-export dos fluxos (A4) fica travado.
+**Isto NÃO é sair do Chatwoot.** O Chatwoot fica igual. Muda só onde a senha de acesso dele (o token) fica guardada dentro do n8n: hoje está colada em texto puro em cada fluxo; passa a viver num cofre (Credential) que os fluxos consultam.
+
+**Por que importa:** o token atual do Chatwoot está escrito às claras dentro dos fluxos do n8n e no histórico do git local. Enquanto não trocar: o repositório não pode ir para nenhum servidor remoto (GitHub) sem vazar o token, e o re-export dos fluxos (A4) fica travado.
 
 **O que você faz sozinho:** nada, só reservar ~30 min comigo numa sessão. **O que faremos juntos:** criar a credencial no n8n, apontar os 7 fluxos para ela, gerar token novo no Chatwoot, revogar o antigo e testar. Mexe em produção, então é a quatro mãos.
 

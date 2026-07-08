@@ -1,17 +1,30 @@
 # Conectar o Claude Code / VS Code direto no Oracle do MV (homologação)
 
-> Objetivo: a sessão Claude Code (e você, no terminal do VS Code) consultar o banco de HOMOLOGAÇÃO diretamente, sem o ciclo exportar-CSV-colar. Caminho: `python-oracledb` em **modo thin** (driver puro Python, sem instalar Oracle Client). Política combinada em 07/jul/2026: **homolog = acesso total da sessão; produção = só o Pedro, manualmente, no DBeaver.**
+> Objetivo: a sessão Claude Code (e você, no terminal do VS Code) consultar o banco de HOMOLOGAÇÃO diretamente, sem o ciclo exportar-CSV-colar. Caminho: `python-oracledb` em **modo thick** (com Oracle Instant Client; ver por quê abaixo). Política combinada em 07/jul/2026: **homolog = acesso total da sessão; produção = só o Pedro, manualmente, no DBeaver.**
 
-## Estado atual: ADIADO por decisão do Pedro (07/jul/2026)
+## Estado atual: FUNCIONANDO (07/jul/2026, tarde)
 
-Nada disto está feito ainda, de propósito: fica para quando você quiser. O que falta, na ordem:
+Conexão feita da sessão Claude, ponta a ponta, sem VPN. Todos os passos abaixo concluídos:
 
-- [ ] Passo 1: copiar os dados da conexão do DBeaver (host, porta, service/SID, usuário, senha)
-- [ ] Passo 2: colar no `.env` da raiz (campos `ORACLE_...` abaixo)
-- [ ] Passo 3: instalar o driver: `python3 -m pip install --user oracledb`
-- [ ] Avisar a sessão Claude: eu testo a conexão e assumo as consultas dali em diante
+- [x] Passo 1: dados da conexão copiados da tela do DBeaver (print de 07/jul)
+- [x] Passo 2: `.env` da raiz preenchido (campos `ORACLE_...`)
+- [x] Passo 3: driver instalado (`oracledb` 4.0.1) + Instant Client 23.26 (modo thick)
+- [x] Testado: `v$version` responde (Oracle 19c SE2) e `SELECT` em `DBAMV.PACIENTE` funciona (2.518 pacientes na base TST em 07/jul)
 
-Dado já conhecido para o Passo 1: o host da conexão atual é `tst19044.db9044.mv9044vcn.oraclevcn.com` (visto no DBeaver em 07/jul; repare no prefixo `tst`, mais um indício de ambiente de teste). Porta, service/SID, usuário e senha estão na tela Edit Connection do DBeaver.
+Dados da conexão (TST - MV, do DBeaver): **host** `dbtst1.9044.cloudmv.com.br`, porta `1521`, **Service Name** `tst19044.db9044.mv9044vcn.oraclevcn.com`, usuário `dbamv`. Atenção: uma anotação anterior deste doc chamava o `tst19044...oraclevcn.com` de "host"; ele é o **service name**, o host é o `dbtst1...cloudmv.com.br`.
+
+### Por que modo thick (e não thin)
+
+A senha do usuário `dbamv` está gravada no Oracle com o verifier antigo do 10g. O modo thin do `python-oracledb` recusa esse formato com o erro `DPY-3015: password verifier type 0x939 is not supported`. Solução adotada: modo thick, com o **Oracle Instant Client Basic Lite 23.26 (ARM64)** instalado em `~/oracle/instantclient_23_26` e apontado pelo `.env` (`ORACLE_CLIENT_DIR`). O script ativa o thick sozinho quando essa variável existe. (Alternativa futura: pedir ao analista um `ALTER USER ... IDENTIFIED BY ...` num banco com `SQLNET.ALLOWED_LOGON_VERSION` moderno regeneraria o verifier e liberaria o thin; não vale o incômodo agora.)
+
+Instalação do Instant Client (feita via download direto da Oracle; o Homebrew travou em Command Line Tools desatualizados):
+
+```bash
+curl -sSLO https://download.oracle.com/otn_software/mac/instantclient/2326100/instantclient-basiclite-macos.arm64-23.26.1.0.0.dmg
+hdiutil attach instantclient-basiclite-macos.arm64-23.26.1.0.0.dmg
+mkdir -p ~/oracle && cp -R /Volumes/instantclient-basiclite-macos.arm64-23.26.1.0.0/ ~/oracle/instantclient_23_26
+hdiutil detach /Volumes/instantclient-basiclite-macos.arm64-23.26.1.0.0
+```
 
 ## Passo 1: copiar os dados da conexão do DBeaver
 
@@ -34,6 +47,7 @@ ORACLE_SERVICE=<service name>   # OU, se o DBeaver usa SID:
 # ORACLE_SID=<sid>
 ORACLE_USER=<usuário read-only>
 ORACLE_PASSWORD=<senha>
+ORACLE_CLIENT_DIR=<pasta do Instant Client, p.ex. /Users/você/oracle/instantclient_23_26>
 ```
 
 ## Passo 3: instalar o driver (uma vez)
@@ -41,6 +55,8 @@ ORACLE_PASSWORD=<senha>
 ```bash
 python3 -m pip install --user oracledb
 ```
+
+Mais o Instant Client (ver bloco de instalação na seção "Por que modo thick").
 
 Se o macOS reclamar de ambiente gerenciado (PEP 668), usar um venv local (já ignorado pelo git):
 
