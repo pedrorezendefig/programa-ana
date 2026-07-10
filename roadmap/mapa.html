@@ -181,10 +181,8 @@ h1 em{font-style:italic;color:var(--ink-soft);font-weight:400}
 .legend span{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-soft)}
 .legend .sw{width:13px;height:13px;border-radius:4px;flex:none}
 
-.mapscroll{overflow-x:auto;border:1px solid var(--line-soft);border-radius:18px;background:
-  linear-gradient(var(--card),var(--card)) padding-box,
-  repeating-linear-gradient(0deg,transparent,transparent 95px,var(--line-soft) 95px,var(--line-soft) 96px);
-  box-shadow:var(--shadow);padding-bottom:4px}
+.mapviewport{height:min(64vh,640px);overflow:auto;border:1px solid var(--line-soft);
+  border-radius:18px;background:var(--card);box-shadow:var(--shadow)}
 svg.map{display:block}
 .edge{fill:none;stroke:var(--line);stroke-width:1.5}
 .edge.hot{stroke:var(--dispare);stroke-width:2;stroke-dasharray:5 6;animation:flow 1s linear infinite}
@@ -198,9 +196,9 @@ svg.map{display:block}
 
 /* painel de detalhe do mapa */
 .detail{
-  position:sticky;bottom:16px;margin-top:16px;background:var(--card);
-  border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow-hi);
-  min-height:64px;transition:.2s;
+  margin-top:14px;background:var(--card);
+  border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);
+  min-height:70px;transition:.2s;
 }
 .detail .ph{color:var(--ink-faint);font-size:.9rem;font-style:italic}
 .detail .dhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -298,7 +296,7 @@ svg.map{display:block}
   <section class="view" id="view-mapa">
     <p class="mapinfo">Cada bloco é uma tarefa; a seta vai da tarefa que <b>destrava</b> para a que <b>é destravada</b>. As setas laranja piscando apontam para o que já está pronto para começar. Passe o mouse num bloco para ver a ficha.</p>
     <div class="legend" id="legend"></div>
-    <div class="mapscroll"><svg class="map" id="svg"></svg></div>
+    <div class="mapviewport"><svg class="map" id="svg"></svg></div>
     <div class="detail" id="detail"><span class="ph">Passe o mouse sobre uma tarefa no mapa para ver os detalhes aqui.</span></div>
   </section>
 
@@ -540,28 +538,38 @@ function depth(id){
 }
 TAREFAS.forEach(t=>depth(t.id));
 
-const COLW=142, LANEH=96, NODEW=120, NODEH=50, PADX=64, PADTOP=34;
+const COLW=172, NODEW=134, NODEH=52, VGAP=18, LABELH=30, LANEGAP=18, PADX=22, PADTOP=14;
 const maxDepth = Math.max(...TAREFAS.map(t=>depthCache[t.id]));
-const W = PADX*2 + (maxDepth+1)*COLW;
-const H = PADTOP + laneOrder.length*LANEH + 20;
+const W = PADX + (maxDepth+1)*COLW + 20;
 
-// posição, tratando colisões (mesma trilha + profundidade)
-const cell = {};
-TAREFAS.forEach(t=>{
-  const key = t.trilha+"|"+depthCache[t.id];
-  (cell[key] = cell[key]||[]).push(t);
-});
+// Layout por trilha: cada nó ganha uma sub-linha dentro da sua trilha,
+// de modo que dois nós NUNCA se sobreponham. A altura de cada trilha
+// se ajusta ao maior empilhamento (quantos nós dividem a mesma profundidade).
+const laneNodes = Object.fromEntries(laneOrder.map(k=>[k,[]]));
+TAREFAS.forEach(t=>laneNodes[t.trilha].push(t));
+
 const pos = {};
-Object.values(cell).forEach(group=>{
-  group.forEach((t,k)=>{
-    const laneCenter = PADTOP + laneIndex[t.trilha]*LANEH + LANEH/2;
-    const spread = (k-(group.length-1)/2)*26;
-    pos[t.id] = {
-      x: PADX + depthCache[t.id]*COLW,
-      y: laneCenter + spread - NODEH/2
-    };
+const laneMeta = {};
+let cursorY = PADTOP;
+laneOrder.forEach(k=>{
+  const groups = {};
+  laneNodes[k].forEach(t=>{
+    const d = depthCache[t.id];
+    (groups[d] = groups[d] || []).push(t);
   });
+  let maxStack = 1;
+  Object.values(groups).forEach(gp=>{ if(gp.length>maxStack) maxStack=gp.length; });
+  const nodesTop = cursorY + LABELH;
+  Object.values(groups).forEach(gp=>{
+    gp.forEach((t,i)=>{
+      pos[t.id] = { x: PADX + depthCache[t.id]*COLW, y: nodesTop + i*(NODEH+VGAP) };
+    });
+  });
+  const laneHeight = LABELH + maxStack*NODEH + (maxStack-1)*VGAP + 10;
+  laneMeta[k] = { top: cursorY, height: laneHeight };
+  cursorY += laneHeight + LANEGAP;
 });
+const H = cursorY + 6;
 
 function corNode(t){
   if(t.status==="feito") return {fill:"var(--feito-bg)",stroke:"var(--feito)"};
@@ -578,10 +586,11 @@ svg.setAttribute("width",W);
 svg.setAttribute("height",H);
 
 let g = "";
-// rótulos de trilha
-laneOrder.forEach(k=>{
-  const y = PADTOP + laneIndex[k]*LANEH + 16;
-  g += '<text class="lanelabel" x="10" y="'+y+'">'+k+' · '+TRILHAS[k].toUpperCase()+'</text>';
+// faixas (swimlanes) e rótulos de trilha, desenhados atrás dos nós
+laneOrder.forEach((k,i)=>{
+  const m = laneMeta[k];
+  g += '<rect x="6" y="'+m.top+'" width="'+(W-12)+'" height="'+m.height+'" rx="14" fill="'+(i%2?"rgba(217,207,189,.16)":"rgba(217,207,189,.34)")+'"/>';
+  g += '<text class="lanelabel" x="20" y="'+(m.top+19)+'">'+k+' · '+TRILHAS[k].toUpperCase()+'</text>';
 });
 // arestas
 TAREFAS.forEach(t=>{
@@ -598,7 +607,7 @@ TAREFAS.forEach(t=>{
 TAREFAS.forEach(t=>{
   const p=pos[t.id], c=corNode(t);
   const act = actionable(t) ? " act":"";
-  const tt = t.titulo.length>20 ? t.titulo.slice(0,19)+"…" : t.titulo;
+  const tt = t.titulo.length>18 ? t.titulo.slice(0,17)+"…" : t.titulo;
   g += '<g class="node'+act+'" data-id="'+t.id+'">';
   g += '<rect x="'+p.x+'" y="'+p.y+'" width="'+NODEW+'" height="'+NODEH+'" rx="11" fill="'+c.fill+'" stroke="'+c.stroke+'" stroke-width="1.6"/>';
   g += '<text class="nid" x="'+(p.x+11)+'" y="'+(p.y+18)+'" fill="'+c.stroke+'">'+t.id+'</text>';
