@@ -49,7 +49,7 @@ body{
     radial-gradient(900px 500px at 100% 0%, #efe8da 0%, rgba(239,232,218,0) 55%),
     var(--paper);
   line-height:1.5;-webkit-font-smoothing:antialiased;
-  min-height:100vh;
+  min-height:100vh;overflow-x:hidden;
 }
 .wrap{max-width:1120px;margin:0 auto;padding:clamp(20px,4vw,52px) clamp(16px,4vw,40px) 80px}
 
@@ -181,9 +181,12 @@ h1 em{font-style:italic;color:var(--ink-soft);font-weight:400}
 .legend span{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-soft)}
 .legend .sw{width:13px;height:13px;border-radius:4px;flex:none}
 
-.mapviewport{height:min(64vh,640px);overflow:auto;border:1px solid var(--line-soft);
-  border-radius:18px;background:var(--card);box-shadow:var(--shadow)}
-svg.map{display:block}
+/* mapa em largura total: sai da coluna estreita e escala para caber tudo na tela */
+.mapfull{position:relative;left:50%;transform:translateX(-50%);
+  width:96vw;max-width:1840px;padding:10px;
+  border:1px solid var(--line-soft);border-radius:18px;background:var(--card);
+  box-shadow:var(--shadow);overflow:hidden}
+svg.map{display:block;width:100%;height:auto;max-height:82vh;margin:0 auto}
 .edge{fill:none;stroke:var(--line);stroke-width:1.5}
 .edge.hot{stroke:var(--dispare);stroke-width:2;stroke-dasharray:5 6;animation:flow 1s linear infinite}
 .node{cursor:pointer}
@@ -296,7 +299,7 @@ svg.map{display:block}
   <section class="view" id="view-mapa">
     <p class="mapinfo">Cada bloco é uma tarefa; a seta vai da tarefa que <b>destrava</b> para a que <b>é destravada</b>. As setas laranja piscando apontam para o que já está pronto para começar. Passe o mouse num bloco para ver a ficha.</p>
     <div class="legend" id="legend"></div>
-    <div class="mapviewport"><svg class="map" id="svg"></svg></div>
+    <div class="mapfull"><svg class="map" id="svg"></svg></div>
     <div class="detail" id="detail"><span class="ph">Passe o mouse sobre uma tarefa no mapa para ver os detalhes aqui.</span></div>
   </section>
 
@@ -538,7 +541,7 @@ function depth(id){
 }
 TAREFAS.forEach(t=>depth(t.id));
 
-const COLW=172, NODEW=134, NODEH=52, VGAP=18, LABELH=30, LANEGAP=18, PADX=22, PADTOP=14;
+const COLW=150, NODEW=122, NODEH=46, VGAP=12, LABELH=24, LANEGAP=12, PADX=20, PADTOP=12;
 const maxDepth = Math.max(...TAREFAS.map(t=>depthCache[t.id]));
 const W = PADX + (maxDepth+1)*COLW + 20;
 
@@ -582,8 +585,7 @@ function corNode(t){
 
 const svg = document.getElementById("svg");
 svg.setAttribute("viewBox","0 0 "+W+" "+H);
-svg.setAttribute("width",W);
-svg.setAttribute("height",H);
+svg.setAttribute("preserveAspectRatio","xMidYMid meet");
 
 let g = "";
 // faixas (swimlanes) e rótulos de trilha, desenhados atrás dos nós
@@ -607,11 +609,11 @@ TAREFAS.forEach(t=>{
 TAREFAS.forEach(t=>{
   const p=pos[t.id], c=corNode(t);
   const act = actionable(t) ? " act":"";
-  const tt = t.titulo.length>18 ? t.titulo.slice(0,17)+"…" : t.titulo;
+  const tt = t.titulo.length>16 ? t.titulo.slice(0,15)+"…" : t.titulo;
   g += '<g class="node'+act+'" data-id="'+t.id+'">';
-  g += '<rect x="'+p.x+'" y="'+p.y+'" width="'+NODEW+'" height="'+NODEH+'" rx="11" fill="'+c.fill+'" stroke="'+c.stroke+'" stroke-width="1.6"/>';
-  g += '<text class="nid" x="'+(p.x+11)+'" y="'+(p.y+18)+'" fill="'+c.stroke+'">'+t.id+'</text>';
-  g += '<text class="ntt" x="'+(p.x+11)+'" y="'+(p.y+36)+'" fill="var(--ink)">'+tt+'</text>';
+  g += '<rect x="'+p.x+'" y="'+p.y+'" width="'+NODEW+'" height="'+NODEH+'" rx="10" fill="'+c.fill+'" stroke="'+c.stroke+'" stroke-width="1.6"/>';
+  g += '<text class="nid" x="'+(p.x+10)+'" y="'+(p.y+16)+'" fill="'+c.stroke+'">'+t.id+'</text>';
+  g += '<text class="ntt" x="'+(p.x+10)+'" y="'+(p.y+32)+'" fill="var(--ink)">'+tt+'</text>';
   g += '</g>';
 });
 svg.innerHTML = g;
