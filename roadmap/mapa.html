@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programa Ana · Mapa de execução</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   PALETA E TIPOGRAFIA
+   ============================================================ */
+:root{
+  --paper:#f4efe6;
+  --paper-2:#ece5d8;
+  --card:#fbf8f2;
+  --ink:#211d18;
+  --ink-soft:#5c5346;
+  --ink-faint:#8a7f6d;
+  --line:#d9cfbd;
+  --line-soft:#e5ddcd;
+
+  --dispare:#c8642b;      /* laranja queimado: sua vez, aja hoje */
+  --dispare-bg:#f7e6d5;
+  --comigo:#3f6f66;       /* pinho: sessão comigo */
+  --comigo-bg:#dfe9e4;
+  --aguarda:#9a7b3f;      /* ocre apagado: esperando terceiros */
+  --aguarda-bg:#efe6d2;
+  --andando:#2f6690;      /* azul sinal: em curso */
+  --andando-bg:#dde7ef;
+  --feito:#5f7a4f;        /* verde musgo: entregue */
+  --feito-bg:#e2e8d8;
+  --trancado:#b0a693;     /* cinza morno: represado */
+
+  --shadow:0 1px 2px rgba(33,29,24,.04), 0 8px 24px -12px rgba(33,29,24,.18);
+  --shadow-hi:0 2px 4px rgba(33,29,24,.06), 0 18px 40px -16px rgba(33,29,24,.28);
+
+  --font-display:"Fraunces",Georgia,serif;
+  --font-body:"Hanken Grotesk",system-ui,sans-serif;
+  --font-mono:"Spline Sans Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;font-family:var(--font-body);color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 12% -8%, #fbf7ee 0%, rgba(251,247,238,0) 60%),
+    radial-gradient(900px 500px at 100% 0%, #efe8da 0%, rgba(239,232,218,0) 55%),
+    var(--paper);
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:clamp(20px,4vw,52px) clamp(16px,4vw,40px) 80px}
+
+/* ============================================================
+   CABEÇALHO
+   ============================================================ */
+.masthead{
+  display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
+  gap:20px;border-bottom:1.5px solid var(--line);padding-bottom:22px;
+  animation:rise .7s cubic-bezier(.2,.7,.2,1) both;
+}
+.brand{max-width:640px}
+.kicker{
+  font-family:var(--font-mono);font-size:.72rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--dispare);font-weight:600;margin:0 0 8px;
+}
+h1{
+  font-family:var(--font-display);font-weight:600;font-size:clamp(2.1rem,5.4vw,3.4rem);
+  line-height:1.02;margin:0;letter-spacing:-.015em;
+}
+h1 em{font-style:italic;color:var(--ink-soft);font-weight:400}
+.frase{font-size:1.02rem;color:var(--ink-soft);margin:14px 0 0;max-width:56ch}
+.meta{
+  text-align:right;font-family:var(--font-mono);font-size:.78rem;
+  color:var(--ink-faint);min-width:150px;line-height:1.7;
+}
+.meta .data{color:var(--ink);font-weight:600;font-size:.92rem}
+
+/* barra de progresso */
+.progresso{margin:26px 0 6px;animation:rise .7s .08s cubic-bezier(.2,.7,.2,1) both}
+.progresso .rot{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.progresso .rot b{font-family:var(--font-mono);font-weight:600;font-size:.82rem;color:var(--ink-soft)}
+.progresso .rot span{font-size:.8rem;color:var(--ink-faint)}
+.bar{height:9px;border-radius:20px;background:var(--paper-2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(33,29,24,.08)}
+.bar>i{display:block;height:100%;border-radius:20px;
+  background:linear-gradient(90deg,var(--feito),#7a9265);
+  width:0;transition:width 1.1s .3s cubic-bezier(.2,.7,.2,1)}
+
+/* ============================================================
+   ABAS
+   ============================================================ */
+.tabs{display:flex;gap:6px;margin:30px 0 24px;animation:rise .7s .14s cubic-bezier(.2,.7,.2,1) both}
+.tab{
+  font-family:var(--font-body);font-size:.92rem;font-weight:600;color:var(--ink-soft);
+  background:transparent;border:1.5px solid transparent;border-radius:12px;
+  padding:9px 18px;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:8px;
+}
+.tab:hover{color:var(--ink);background:var(--card)}
+.tab.on{background:var(--ink);color:var(--paper);box-shadow:var(--shadow)}
+.tab .n{font-family:var(--font-mono);font-size:.72rem;opacity:.6}
+.tab.on .n{opacity:.8}
+
+.view{display:none;animation:fade .5s ease both}
+.view.on{display:block}
+
+/* ============================================================
+   VISTA FOCO
+   ============================================================ */
+.hint{
+  font-size:.9rem;color:var(--ink-soft);background:var(--dispare-bg);
+  border:1px solid #e6cdb2;border-left:3px solid var(--dispare);
+  padding:12px 16px;border-radius:12px;margin:0 0 26px;
+}
+.hint b{color:var(--dispare)}
+
+.colgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:860px){.colgrid{grid-template-columns:1fr}}
+
+.col{background:var(--card);border:1px solid var(--line-soft);border-radius:18px;padding:16px 16px 8px;box-shadow:var(--shadow)}
+.col>h2{
+  font-family:var(--font-body);font-size:.78rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;margin:2px 0 4px;display:flex;align-items:center;gap:9px;
+}
+.col>.sub{font-size:.82rem;color:var(--ink-faint);margin:0 0 14px}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.col.c-dispare>h2 .dot{background:var(--dispare);box-shadow:0 0 0 0 var(--dispare);animation:pulse 2.4s infinite}
+.col.c-comigo>h2 .dot{background:var(--comigo)}
+.col.c-aguarda>h2 .dot{background:var(--aguarda)}
+
+.card{
+  position:relative;border:1px solid var(--line-soft);border-radius:13px;
+  background:#fff;padding:13px 14px 13px 16px;margin-bottom:10px;cursor:default;
+  transition:transform .18s cubic-bezier(.2,.7,.2,1),box-shadow .18s,border-color .18s;
+  overflow:hidden;
+}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--trancado);transition:width .18s}
+.card.k-dispare::before{background:var(--dispare)}
+.card.k-comigo::before{background:var(--comigo)}
+.card.k-aguarda::before{background:var(--aguarda)}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hi);border-color:var(--line)}
+.card:hover::before{width:5px}
+.card .top{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.chip{
+  font-family:var(--font-mono);font-size:.66rem;font-weight:600;letter-spacing:.02em;
+  padding:2px 6px;border-radius:6px;background:var(--paper-2);color:var(--ink-soft);flex:none;
+}
+.card .titulo{font-weight:600;font-size:.98rem;line-height:1.25}
+.card .resumo{font-size:.86rem;color:var(--ink-soft);margin:5px 0 0}
+.card .porque{font-size:.82rem;color:var(--dispare);margin:8px 0 0;display:flex;gap:6px;align-items:flex-start}
+.card .porque svg{flex:none;margin-top:3px}
+.card.k-comigo .porque{color:var(--comigo)}
+.card .tempo{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-faint);margin-top:8px}
+.col .vazio{font-size:.85rem;color:var(--ink-faint);font-style:italic;padding:4px 2px 14px}
+
+/* faixas secundárias */
+.faixa{margin-top:26px}
+.faixa h3{
+  font-family:var(--font-body);font-size:.76rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 12px;display:flex;align-items:center;gap:9px;
+}
+.mini{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.minicard{
+  border:1px solid var(--line-soft);border-radius:11px;background:var(--card);
+  padding:10px 12px;display:flex;gap:9px;align-items:flex-start;transition:.18s;
+}
+.minicard:hover{border-color:var(--line);box-shadow:var(--shadow)}
+.minicard .chip{margin-top:1px}
+.minicard .t{font-size:.86rem;font-weight:500;line-height:1.25}
+.minicard .u{font-size:.76rem;color:var(--ink-faint);margin-top:2px}
+.minicard.andando{background:var(--andando-bg);border-color:#c6d6e2}
+.minicard.feito{opacity:.72}
+.minicard.trancado .destrava{font-size:.74rem;color:var(--ink-faint);margin-top:3px;font-family:var(--font-mono)}
+
+/* ============================================================
+   VISTA MAPA (SVG)
+   ============================================================ */
+.mapinfo{font-size:.9rem;color:var(--ink-soft);margin:0 0 16px;max-width:70ch}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 18px}
+.legend span{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-soft)}
+.legend .sw{width:13px;height:13px;border-radius:4px;flex:none}
+
+.mapscroll{overflow-x:auto;border:1px solid var(--line-soft);border-radius:18px;background:
+  linear-gradient(var(--card),var(--card)) padding-box,
+  repeating-linear-gradient(0deg,transparent,transparent 95px,var(--line-soft) 95px,var(--line-soft) 96px);
+  box-shadow:var(--shadow);padding-bottom:4px}
+svg.map{display:block}
+.edge{fill:none;stroke:var(--line);stroke-width:1.5}
+.edge.hot{stroke:var(--dispare);stroke-width:2;stroke-dasharray:5 6;animation:flow 1s linear infinite}
+.node{cursor:pointer}
+.node rect{transition:transform .15s,filter .15s}
+.node:hover rect{filter:brightness(1.04)}
+.node .nid{font-family:var(--font-mono);font-size:11px;font-weight:600}
+.node .ntt{font-family:var(--font-body);font-size:11.5px;font-weight:600}
+.node.act rect{animation:glow 2.6s ease-in-out infinite}
+.lanelabel{font-family:var(--font-mono);font-size:11px;font-weight:600;fill:var(--ink-faint);letter-spacing:.06em}
+
+/* painel de detalhe do mapa */
+.detail{
+  position:sticky;bottom:16px;margin-top:16px;background:var(--card);
+  border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow-hi);
+  min-height:64px;transition:.2s;
+}
+.detail .ph{color:var(--ink-faint);font-size:.9rem;font-style:italic}
+.detail .dhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.detail .dhead .titulo{font-family:var(--font-display);font-size:1.25rem;font-weight:600}
+.detail .badge{font-family:var(--font-mono);font-size:.68rem;font-weight:600;padding:3px 8px;border-radius:7px}
+.detail .dbody{font-size:.92rem;color:var(--ink-soft);margin:9px 0 0;max-width:70ch}
+.detail .drow{display:flex;flex-wrap:wrap;gap:22px;margin-top:12px;font-size:.84rem}
+.detail .drow div{color:var(--ink-faint)}
+.detail .drow b{color:var(--ink);font-weight:600;display:block;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px;font-family:var(--font-mono)}
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+.foot{margin-top:44px;border-top:1.5px solid var(--line);padding-top:18px;
+  font-size:.8rem;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+.foot code{font-family:var(--font-mono);background:var(--paper-2);padding:1px 6px;border-radius:5px;color:var(--ink-soft)}
+
+/* ============================================================
+   ANIMAÇÕES
+   ============================================================ */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(200,100,43,.5)}70%{box-shadow:0 0 0 7px rgba(200,100,43,0)}100%{box-shadow:0 0 0 0 rgba(200,100,43,0)}}
+@keyframes flow{to{stroke-dashoffset:-22}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 0 rgba(200,100,43,0))}50%{filter:drop-shadow(0 0 6px rgba(200,100,43,.55))}}
+.stagger{opacity:0;animation:rise .5s cubic-bezier(.2,.7,.2,1) forwards}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="brand">
+      <p class="kicker">Programa Ana · Hospital São Matheus</p>
+      <h1>Mapa de <em>execução</em></h1>
+      <p class="frase" id="frase"></p>
+    </div>
+    <div class="meta">
+      <div class="data" id="data"></div>
+      <div id="contagem"></div>
+      <div style="margin-top:6px">só leitura · abre com 2 cliques</div>
+    </div>
+  </header>
+
+  <div class="progresso">
+    <div class="rot"><b id="progtxt"></b><span>entregas concluídas</span></div>
+    <div class="bar"><i id="progbar"></i></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab on" data-view="foco">Foco <span class="n" id="tab-foco-n"></span></button>
+    <button class="tab" data-view="mapa">Mapa das dependências</button>
+  </nav>
+
+  <!-- ===================== FOCO ===================== -->
+  <section class="view on" id="view-foco">
+    <p class="hint" id="alavanca"></p>
+
+    <div class="colgrid">
+      <div class="col c-dispare">
+        <h2><span class="dot"></span>Dispare hoje</h2>
+        <p class="sub">Depende só de você. 5 a 15 min cada. Toque todos em paralelo.</p>
+        <div id="col-dispare"></div>
+      </div>
+      <div class="col c-comigo">
+        <h2><span class="dot"></span>Sente comigo</h2>
+        <p class="sub">Uma sessão Claude Code resolve. Marque quando tiver o tempo.</p>
+        <div id="col-comigo"></div>
+      </div>
+      <div class="col c-aguarda">
+        <h2><span class="dot"></span>Aguardando terceiros</h2>
+        <p class="sub">Já pedido, esperando resposta. Cobre se envelhecer.</p>
+        <div id="col-aguarda"></div>
+      </div>
+    </div>
+
+    <div class="faixa" id="faixa-andando">
+      <h3><span class="dot" style="background:var(--andando)"></span>Em curso</h3>
+      <div class="mini" id="row-andando"></div>
+    </div>
+
+    <div class="faixa" id="faixa-trancado">
+      <h3><span class="dot" style="background:var(--trancado)"></span>Represado · destrava quando o de cima andar</h3>
+      <div class="mini" id="row-trancado"></div>
+    </div>
+
+    <div class="faixa" id="faixa-feito">
+      <h3><span class="dot" style="background:var(--feito)"></span>Entregue</h3>
+      <div class="mini" id="row-feito"></div>
+    </div>
+  </section>
+
+  <!-- ===================== MAPA ===================== -->
+  <section class="view" id="view-mapa">
+    <p class="mapinfo">Cada bloco é uma tarefa; a seta vai da tarefa que <b>destrava</b> para a que <b>é destravada</b>. As setas laranja piscando apontam para o que já está pronto para começar. Passe o mouse num bloco para ver a ficha.</p>
+    <div class="legend" id="legend"></div>
+    <div class="mapscroll"><svg class="map" id="svg"></svg></div>
+    <div class="detail" id="detail"><span class="ph">Passe o mouse sobre uma tarefa no mapa para ver os detalhes aqui.</span></div>
+  </section>
+
+  <footer class="foot">
+    <span>Fonte narrativa: <code>roadmap/TODO.md</code> · este mapa é o espelho visual do estado.</span>
+    <span>Atualizado pelo <code>/check</code> e por qualquer sessão que avance uma tarefa.</span>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   DADOS DO ROADMAP  —  ESPELHO ESTRUTURADO DE roadmap/TODO.md
+   ------------------------------------------------------------
+   Esta é a ÚNICA fonte de dados deste mapa. Ao mudar um status
+   aqui, mude também no TODO.md (e vice-versa). O /check
+   reconcilia os dois toda vez que roda.
+
+   Edite SÓ este bloco. Daqui para baixo é renderização.
+
+   status : "feito" | "andando" | "afazer"
+   canal  : "dispare" (você sozinho) | "comigo" (sessão) | "terceiro"
+   dono   : rótulo livre (P / C / E / P+C ...), só informativo
+   depende: lista de ids que precisam estar "feito" para liberar
+   esperando: {quem, desde} quando já foi pedido e aguarda resposta
+   ============================================================ */
+const ESTADO = {
+  data: "10/jul/2026",
+  frase: "Ferramentas todas de pé; o projeto agora espera três disparos seus: validar o hotfix, perguntar ao analista e pedir à Global Health."
+};
+
+const TRILHAS = {
+  A:"Hotfix", B:"Pesquisa", C:"Banco MV", D:"Integração",
+  E:"Pós-atendimento", G:"Canal principal", F:"Contínuo"
+};
+
+const TAREFAS = [
+  // ---- A · Hotfix ----
+  {id:"A1",trilha:"A",titulo:"Redigir o prompt v1.1",dono:"C",status:"feito",canal:"comigo",depende:[],
+   resumo:"Regra de urgência, Regra 6 (assistente virtual) e guardrails jurídicos da ouvidoria."},
+  {id:"A2",trilha:"A",titulo:"Aplicar o hotfix no n8n",dono:"P",status:"feito",canal:"dispare",depende:["A1"],
+   resumo:"Hotfix aplicado em produção via API; versão ativa confirmada."},
+  {id:"A3",trilha:"A",titulo:"Validar o hotfix em sombra",dono:"P+C",status:"afazer",canal:"comigo",depende:["A2"],
+   resumo:"Rodar a bateria de 15 mensagens e o teste da 'dor no peito' num contato de teste.",
+   porque:"No ar desde 06/jul sem validação. É barato e não depende de ninguém de fora.",
+   prontoQuando:"15 cenários corretos e nenhum incidente na janela de conversas reais."},
+  {id:"A5",trilha:"A",titulo:"Guardar o token do Chatwoot num cofre",dono:"P",status:"afazer",canal:"comigo",depende:[],
+   resumo:"Tirar o token de dentro dos fluxos e pô-lo numa Credential do n8n; gerar token novo. NÃO é sair do Chatwoot.",
+   porque:"Enquanto o token estiver em texto puro, o repo não pode ter backup remoto sem vazar.",
+   prontoQuando:"Nenhum token em texto puro nos exports e token antigo revogado."},
+  {id:"A4",trilha:"A",titulo:"Re-exportar os fluxos para o repo",dono:"C",status:"afazer",canal:"comigo",depende:["A3","A5"],
+   resumo:"Exportar os workflows limpos (sem token) e commitar."},
+
+  // ---- B · Pesquisa ----
+  {id:"B1",trilha:"B",titulo:"Sessão ultracode",dono:"E",status:"feito",canal:"terceiro",depende:[],
+   resumo:"8 documentos de pesquisa e specs entregues (prompt v2, templates, classificador, analítica)."},
+  {id:"B2",trilha:"B",titulo:"Revisar os 8 documentos da pesquisa",dono:"P+C",status:"afazer",canal:"comigo",depende:["B1"],
+   resumo:"Decidir o que entra, documento a documento. Começa pela síntese em relatorio-pesquisa.md.",
+   porque:"Pivô: sem esta revisão, a construção da integração (D2, D3) e o template (E3) não começam.",
+   prontoQuando:"Cada artefato marcado como aceito, aceito-com-ajuste ou rejeitado; decisões registradas."},
+  {id:"B3",trilha:"B",titulo:"Consolidar o SOP v2",dono:"C",status:"afazer",canal:"comigo",depende:["A1","B2"],
+   resumo:"Juntar hotfix + agendamento + pesquisa num único prompt que sobe na homologação."},
+
+  // ---- C · Banco MV ----
+  {id:"C1",trilha:"C",titulo:"Conexão Oracle",dono:"P+E",status:"feito",canal:"terceiro",depende:[],
+   resumo:"Credencial read-only e conexão confirmadas."},
+  {id:"C2",trilha:"C",titulo:"Explorar a estrutura da base",dono:"C",status:"feito",canal:"comigo",depende:["C1"],
+   resumo:"Pacotes de query rodados; base TST mapeada; conexão direta funcionando da sessão."},
+  {id:"C3",trilha:"C",titulo:"Dicionário de colunas + diagrama",dono:"C",status:"andando",canal:"comigo",depende:["C2"],
+   resumo:"Dicionário das 13 tabelas e diagrama do fluxo entregues. Falta o carimbo do analista (C6)."},
+  {id:"C4",trilha:"C",titulo:"Mapear o desfecho (alta/óbito)",dono:"C",status:"andando",canal:"comigo",depende:["C3"],
+   resumo:"Onde vive o desfecho no banco, para filtrar disparo com segurança. Query candidata pronta.",
+   prontoQuando:"Query roda e o analista confirma a semântica dos motivos de alta."},
+  {id:"C6",trilha:"C",titulo:"Perguntar ao analista de TI",dono:"P",status:"afazer",canal:"dispare",depende:["C3"],
+   resumo:"Enviar as perguntas (texto pronto em PENDENCIAS §1). O carimbo de quem conhece a operação.",
+   porque:"Lead time longo e a base de produção é pré-condição do pós-atendimento (Fase 3)."},
+  {id:"C5",trilha:"C",titulo:"Varrer o Power BI (SCMA)",dono:"C+P",status:"afazer",canal:"comigo",depende:[],
+   resumo:"Opcional. Ver os indicadores que a gestão já acompanha, para desenhar o relatório na mesma língua."},
+
+  // ---- D · Integração MV ----
+  {id:"D1",trilha:"D",titulo:"Pedir à Global Health",dono:"P",status:"afazer",canal:"dispare",depende:[],
+   resumo:"Massa de homolog, qual MV a API enxerga, token de produção e rate limit (texto pronto em PENDENCIAS §2).",
+   porque:"Sem massa não dá para exercitar o agendamento. É externo e demora."},
+  {id:"D2",trilha:"D",titulo:"Construir os subfluxos de agendamento",dono:"C",status:"afazer",canal:"comigo",depende:["D1","B2"],
+   resumo:"Identificar paciente, buscar horário, efetivar, remarcar e cancelar, com confirmação em 3 camadas."},
+  {id:"D3",trilha:"D",titulo:"Classificador de urgência",dono:"C",status:"afazer",canal:"comigo",depende:["B2"],
+   resumo:"Segunda camada de defesa: filtro binário antes do agente, com zero falso-negativo."},
+  {id:"D4",trilha:"D",titulo:"Etapa e tags novas no Kanban",dono:"P",status:"afazer",canal:"dispare",depende:[],
+   resumo:"Criar a etapa 'FALHA AGENDAMENTO' e as tags que os subfluxos exigem. Aditivo mínimo, sem reforma."},
+  {id:"D5",trilha:"D",titulo:"Homologar a integração",dono:"P+C",status:"afazer",canal:"comigo",depende:["D2","D3","D4"],
+   resumo:"Checklist completo: 6 jornadas, 7 fallbacks e os guardrails."},
+  {id:"D6",trilha:"D",titulo:"Canário por inbox",dono:"P+C",status:"afazer",canal:"comigo",depende:["D5"],
+   resumo:"Ligar para um subconjunto e acompanhar taxa de sucesso vs falha por uma semana."},
+  {id:"D7",trilha:"D",titulo:"Produção",dono:"P",status:"afazer",canal:"dispare",depende:["D6"],
+   resumo:"Trocar para produção, smoke test e monitorar a primeira semana."},
+  {id:"D8",trilha:"D",titulo:"Termo de Entregável (+R$ 2.000/mês)",dono:"P",status:"afazer",canal:"dispare",depende:["D7"],
+   resumo:"Emitir o Termo. A mensalidade da Ana passa de R$ 6.000 para R$ 8.000."},
+
+  // ---- E · Pós-atendimento ----
+  {id:"E1",trilha:"E",titulo:"Fonte MV com desfecho",dono:"E",status:"afazer",canal:"terceiro",depende:["C4"],
+   resumo:"Extração diária: só eletivo, só alta benigna, com campos para personalizar o template."},
+  {id:"E2",trilha:"E",titulo:"Base legal LGPD",dono:"P",status:"afazer",canal:"dispare",depende:[],
+   resumo:"Adiada por decisão da direção, mas o jurídico tem lead time longo. Consentimento específico no termo.",
+   porque:"Pré-condição dura do disparo em massa (POC). Reabrir antes do template."},
+  {id:"E3",trilha:"E",titulo:"Template utility de abertura",dono:"C+P",status:"afazer",canal:"comigo",depende:["B2"],
+   resumo:"Escolher e registrar o template na Meta; provar que é cobrado como utility (9x mais barato)."},
+  {id:"E4",trilha:"E",titulo:"POC do pós-atendimento eletivo",dono:"P+C",status:"afazer",canal:"comigo",depende:["E1","E2","E3"],
+   resumo:"250 a 1.000/dia, opt-out, ramificação por sentimento, métricas de resposta e custo."},
+  {id:"E5",trilha:"E",titulo:"Camada analítica",dono:"C",status:"afazer",canal:"comigo",depende:["E4"],
+   resumo:"Armazenar cada resposta classificada e agregar por setor, profissional e tema ao longo do tempo."},
+  {id:"E6",trilha:"E",titulo:"Categorias e ritual semanal",dono:"P+E",status:"afazer",canal:"terceiro",depende:["E5"],
+   resumo:"Co-desenhar as categorias com os coordenadores; ritual semanal com dono para cada ação."},
+  {id:"E7",trilha:"E",titulo:"Respostas ao Google Meu Negócio",dono:"C+P",status:"afazer",canal:"comigo",depende:["E4"],
+   resumo:"Backlog. Rascunhos de resposta a avaliações por IA, publicação só com aprovação humana."},
+
+  // ---- G · Canal principal ----
+  {id:"G1",trilha:"G",titulo:"Descobrir a conexão do número",dono:"P",status:"afazer",canal:"dispare",depende:[],
+   resumo:"Como o WhatsApp real está conectado hoje? WABA oficial? Qual BSP? Perguntar num papo natural.",
+   porque:"Lead time longo e destrava tanto a migração quanto o registro do template na Meta."},
+  {id:"G2",trilha:"G",titulo:"Migrar o número para o Chatwoot",dono:"E+P",status:"afazer",canal:"terceiro",depende:["D7","G1"],
+   resumo:"Levar o número para a API oficial plugada no Chatwoot; histórico fica no Kommo."},
+  {id:"G3",trilha:"G",titulo:"Treinar os atendentes",dono:"E",status:"afazer",canal:"terceiro",depende:["G2"],
+   resumo:"Time treinado no Chatwoot antes do cutover; eles são o transbordo."},
+  {id:"G4",trilha:"G",titulo:"Sombra com casos reais",dono:"P+C",status:"afazer",canal:"comigo",depende:["G3"],
+   resumo:"Ana rascunha em nota privada, atendente revisa e envia; calibra o tom com a população real."},
+  {id:"G5",trilha:"G",titulo:"Ana autônoma + canário real",dono:"P+C",status:"afazer",canal:"comigo",depende:["G4"],
+   resumo:"Ana na entrada com transbordo; sucesso = a fila de não respondidas para de crescer."},
+  {id:"G6",trilha:"G",titulo:"Reforma do Chatwoot + KPIs",dono:"P+C+E",status:"afazer",canal:"comigo",depende:["G5"],
+   resumo:"Funil de 7 etapas, famílias de tags, SLA e a camada de KPIs, com o time já operando."},
+
+  // ---- F · Contínuo ----
+  {id:"F1",trilha:"F",titulo:"Pauta com o Felipe",dono:"P",status:"afazer",canal:"dispare",depende:["A2","B2"],
+   resumo:"Regra 6, veredito do web-chat e a meta de desempenho da Ana no contrato."},
+  {id:"F2",trilha:"F",titulo:"Manter tudo sincronizado",dono:"C",status:"andando",canal:"comigo",depende:[],
+   resumo:"TODO, este mapa e a memória sempre alinhados, via /check."},
+  {id:"F3",trilha:"F",titulo:"Dimensionar a manutenção recorrente",dono:"P",status:"afazer",canal:"dispare",depende:[],
+   resumo:"Estimar horas/mês de manutenção e refletir no contrato antes de assinar o Termo (D8)."},
+];
+
+/* ============================================================
+   FIM DOS DADOS — daqui para baixo é renderização.
+   ============================================================ */
+const byId = Object.fromEntries(TAREFAS.map(t=>[t.id,t]));
+const isFeito = id => byId[id] && byId[id].status==="feito";
+const depsProntas = t => t.depende.every(isFeito);
+const actionable = t => t.status!=="feito" && depsProntas(t);
+
+const CANAL_LABEL = {dispare:"Dispare",comigo:"Comigo",terceiro:"Terceiros"};
+const STATUS_COR = {feito:"var(--feito)",andando:"var(--andando)",afazer:"var(--trancado)"};
+
+document.getElementById("frase").textContent = ESTADO.frase;
+document.getElementById("data").textContent = ESTADO.data;
+
+/* ---- progresso ---- */
+const contaveis = TAREFAS.filter(t=>t.id!=="F2");
+const feitos = contaveis.filter(t=>t.status==="feito").length;
+const total = contaveis.length;
+const pct = Math.round(feitos/total*100);
+document.getElementById("contagem").textContent = feitos+" de "+total+" tarefas";
+document.getElementById("progtxt").textContent = pct+"%";
+requestAnimationFrame(()=>document.getElementById("progbar").style.width = pct+"%");
+
+/* ---- FOCO ---- */
+const acion = TAREFAS.filter(actionable);
+const disp = acion.filter(t=>t.canal==="dispare");
+const com = acion.filter(t=>t.canal==="comigo");
+const agu = TAREFAS.filter(t=>t.esperando);
+
+document.getElementById("tab-foco-n").textContent = (disp.length+com.length);
+
+// alavanca do dia: a tarefa "dispare" mais barata que destrava mais coisas
+function quantasDestrava(id){
+  return TAREFAS.filter(t=>t.depende.includes(id)).length;
+}
+let alavanca = disp.slice().sort((a,b)=>quantasDestrava(b.id)-quantasDestrava(a.id))[0] || com[0];
+const alvEl = document.getElementById("alavanca");
+if(alavanca){
+  const paralelo = disp.length+com.length;
+  alvEl.innerHTML = "Se você só tiver 15 minutos hoje, faça <b>"+alavanca.titulo+"</b>. "+
+    "E lembre: há <b>"+paralelo+"</b> frentes que você pode empurrar em paralelo agora, sem esperar uma pela outra.";
+} else { alvEl.style.display="none"; }
+
+function cardHTML(t){
+  let h = '<div class="card k-'+t.canal+' stagger">';
+  h += '<div class="top"><span class="chip">'+t.id+'</span><span class="titulo">'+t.titulo+'</span></div>';
+  h += '<div class="resumo">'+t.resumo+'</div>';
+  if(t.porque) h += '<div class="porque"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v7M6 10.5v.5M3 4l3-3 3 3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>'+t.porque+'</span></div>';
+  h += '</div>';
+  return h;
+}
+function fill(elId, arr, vazio){
+  const el = document.getElementById(elId);
+  if(!arr.length){ el.innerHTML = '<p class="vazio">'+vazio+'</p>'; return; }
+  el.innerHTML = arr.map(cardHTML).join("");
+}
+fill("col-dispare", disp, "Nada aberto agora.");
+fill("col-comigo", com, "Nada aberto agora.");
+fill("col-aguarda", agu, "Nada pedido ainda. Dispare os itens da esquerda para encher esta coluna.");
+
+// faixas
+const andando = TAREFAS.filter(t=>t.status==="andando" && t.id!=="F2");
+const trancado = TAREFAS.filter(t=>t.status==="afazer" && !depsProntas(t));
+const feitosList = TAREFAS.filter(t=>t.status==="feito");
+
+function miniHTML(t, extraClass, extraLine){
+  let h = '<div class="minicard '+(extraClass||"")+'">';
+  h += '<span class="chip">'+t.id+'</span><div><div class="t">'+t.titulo+'</div>';
+  if(extraLine) h += extraLine;
+  else h += '<div class="u">'+t.dono+'</div>';
+  h += '</div></div>';
+  return h;
+}
+function fillMini(elId, faixaId, arr, fn){
+  const arrHTML = arr.map(fn).join("");
+  if(!arr.length){ document.getElementById(faixaId).style.display="none"; return; }
+  document.getElementById(elId).innerHTML = arrHTML;
+}
+fillMini("row-andando","faixa-andando",andando, t=>miniHTML(t,"andando"));
+fillMini("row-trancado","faixa-trancado",trancado, t=>{
+  const falta = t.depende.filter(d=>!isFeito(d));
+  return miniHTML(t,"trancado", '<div class="destrava">destrava com: '+falta.join(", ")+'</div>');
+});
+fillMini("row-feito","faixa-feito",feitosList, t=>miniHTML(t,"feito"));
+
+// stagger delay
+document.querySelectorAll(".stagger").forEach((el,i)=>el.style.animationDelay=(i*45)+"ms");
+
+/* ---- MAPA (SVG) ---- */
+const laneOrder = ["A","B","C","D","E","G","F"];
+const laneIndex = Object.fromEntries(laneOrder.map((k,i)=>[k,i]));
+
+// profundidade = maior cadeia de dependências
+const depthCache = {};
+function depth(id){
+  if(id in depthCache) return depthCache[id];
+  const t = byId[id];
+  const d = t.depende.length ? 1+Math.max(...t.depende.map(depth)) : 0;
+  return depthCache[id]=d;
+}
+TAREFAS.forEach(t=>depth(t.id));
+
+const COLW=142, LANEH=96, NODEW=120, NODEH=50, PADX=64, PADTOP=34;
+const maxDepth = Math.max(...TAREFAS.map(t=>depthCache[t.id]));
+const W = PADX*2 + (maxDepth+1)*COLW;
+const H = PADTOP + laneOrder.length*LANEH + 20;
+
+// posição, tratando colisões (mesma trilha + profundidade)
+const cell = {};
+TAREFAS.forEach(t=>{
+  const key = t.trilha+"|"+depthCache[t.id];
+  (cell[key] = cell[key]||[]).push(t);
+});
+const pos = {};
+Object.values(cell).forEach(group=>{
+  group.forEach((t,k)=>{
+    const laneCenter = PADTOP + laneIndex[t.trilha]*LANEH + LANEH/2;
+    const spread = (k-(group.length-1)/2)*26;
+    pos[t.id] = {
+      x: PADX + depthCache[t.id]*COLW,
+      y: laneCenter + spread - NODEH/2
+    };
+  });
+});
+
+function corNode(t){
+  if(t.status==="feito") return {fill:"var(--feito-bg)",stroke:"var(--feito)"};
+  if(t.status==="andando") return {fill:"var(--andando-bg)",stroke:"var(--andando)"};
+  if(actionable(t)) return t.canal==="comigo"
+      ? {fill:"var(--comigo-bg)",stroke:"var(--comigo)"}
+      : {fill:"var(--dispare-bg)",stroke:"var(--dispare)"};
+  return {fill:"#efe9dd",stroke:"var(--trancado)"};
+}
+
+const svg = document.getElementById("svg");
+svg.setAttribute("viewBox","0 0 "+W+" "+H);
+svg.setAttribute("width",W);
+svg.setAttribute("height",H);
+
+let g = "";
+// rótulos de trilha
+laneOrder.forEach(k=>{
+  const y = PADTOP + laneIndex[k]*LANEH + 16;
+  g += '<text class="lanelabel" x="10" y="'+y+'">'+k+' · '+TRILHAS[k].toUpperCase()+'</text>';
+});
+// arestas
+TAREFAS.forEach(t=>{
+  const hot = actionable(t);
+  t.depende.forEach(d=>{
+    const a = pos[d], b = pos[t.id];
+    if(!a||!b) return;
+    const x1=a.x+NODEW, y1=a.y+NODEH/2, x2=b.x, y2=b.y+NODEH/2;
+    const mx=(x1+x2)/2;
+    g += '<path class="edge'+(hot?' hot':'')+'" d="M'+x1+' '+y1+' C '+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2+'"/>';
+  });
+});
+// nós
+TAREFAS.forEach(t=>{
+  const p=pos[t.id], c=corNode(t);
+  const act = actionable(t) ? " act":"";
+  const tt = t.titulo.length>20 ? t.titulo.slice(0,19)+"…" : t.titulo;
+  g += '<g class="node'+act+'" data-id="'+t.id+'">';
+  g += '<rect x="'+p.x+'" y="'+p.y+'" width="'+NODEW+'" height="'+NODEH+'" rx="11" fill="'+c.fill+'" stroke="'+c.stroke+'" stroke-width="1.6"/>';
+  g += '<text class="nid" x="'+(p.x+11)+'" y="'+(p.y+18)+'" fill="'+c.stroke+'">'+t.id+'</text>';
+  g += '<text class="ntt" x="'+(p.x+11)+'" y="'+(p.y+36)+'" fill="var(--ink)">'+tt+'</text>';
+  g += '</g>';
+});
+svg.innerHTML = g;
+
+// legenda
+const LEG = [
+  ["var(--dispare)","Pronto: dispare você"],
+  ["var(--comigo)","Pronto: sessão comigo"],
+  ["var(--andando)","Em curso"],
+  ["var(--feito)","Entregue"],
+  ["var(--trancado)","Represado"],
+];
+document.getElementById("legend").innerHTML = LEG.map(l=>
+  '<span><span class="sw" style="background:'+l[0]+'"></span>'+l[1]+'</span>').join("");
+
+// detalhe on hover
+const detail = document.getElementById("detail");
+const DEFAULT = '<span class="ph">Passe o mouse sobre uma tarefa no mapa para ver os detalhes aqui.</span>';
+function statusLabel(t){
+  if(t.status==="feito") return ["Entregue","var(--feito)","var(--feito-bg)"];
+  if(t.status==="andando") return ["Em curso","var(--andando)","var(--andando-bg)"];
+  if(actionable(t)) return ["Pronto para começar","var(--dispare)","var(--dispare-bg)"];
+  return ["Represado","var(--trancado)","#efe9dd"];
+}
+function showDetail(id){
+  const t=byId[id]; const [sl,sc,sbg]=statusLabel(t);
+  const falta = t.depende.filter(d=>!isFeito(d));
+  let h = '<div class="dhead"><span class="badge" style="color:'+sc+';background:'+sbg+'">'+t.id+'</span>';
+  h += '<span class="titulo">'+t.titulo+'</span>';
+  h += '<span class="badge" style="color:'+sc+';background:'+sbg+'">'+sl+'</span></div>';
+  h += '<div class="dbody">'+t.resumo+'</div>';
+  h += '<div class="drow">';
+  h += '<div><b>Trilha</b>'+t.trilha+' · '+TRILHAS[t.trilha]+'</div>';
+  h += '<div><b>Canal</b>'+CANAL_LABEL[t.canal]+'</div>';
+  h += '<div><b>Dono</b>'+t.dono+'</div>';
+  if(falta.length) h += '<div><b>Destrava com</b>'+falta.join(", ")+'</div>';
+  if(t.porque) h += '<div style="flex-basis:100%"><b>Por que agora</b><span style="color:'+sc+'">'+t.porque+'</span></div>';
+  if(t.prontoQuando) h += '<div style="flex-basis:100%"><b>Pronto quando</b>'+t.prontoQuando+'</div>';
+  h += '</div>';
+  detail.innerHTML = h;
+}
+svg.querySelectorAll(".node").forEach(n=>{
+  n.addEventListener("mouseenter",()=>showDetail(n.dataset.id));
+  n.addEventListener("click",()=>showDetail(n.dataset.id));
+});
+
+/* ---- abas ---- */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+    document.querySelectorAll(".view").forEach(x=>x.classList.remove("on"));
+    tab.classList.add("on");
+    document.getElementById("view-"+tab.dataset.view).classList.add("on");
+  });
+});
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # TODO — Programa Ana: guia de execução até o final
 
-> Fonte de verdade operacional do projeto. O `roadmap/index.html` conta a história para gestão; este arquivo guia o trabalho dia a dia. Cada tarefa tem **ID estável**, **dono**, **dependências**, e uma ficha de detalhe com contexto, passos e critério de pronto. A seção "Fronteira de agora" diz o que está desbloqueado neste momento e é reescrita a cada avanço. O passo a passo leigo do que depende só do Pedro vive em `PENDENCIAS.md` (mesma pasta).
+> Fonte de verdade **narrativa** do projeto. O `roadmap/index.html` conta a história para gestão; o `roadmap/mapa.html` é o cockpit visual do dia a dia (abre com duplo clique: tarefas por canal de ação, hover com detalhe, grafo de dependências); este arquivo guia o trabalho e detalha cada ficha. Cada tarefa tem **ID estável**, **dono**, **dependências**, e uma ficha com contexto, passos e critério de pronto. A seção "Fronteira de agora" diz o que está desbloqueado neste momento e é reescrita a cada avanço. **TODO.md e mapa.html precisam concordar sempre**: ao mudar um status aqui, mude no bloco `TAREFAS` do mapa (e vice-versa); o `/check` reconcilia. O passo a passo leigo do que depende só do Pedro vive em `PENDENCIAS.md` (mesma pasta).
 >
 > **Para atualizar este arquivo e receber orientação: digite `/check` numa sessão Claude Code aberta neste diretório.** A skill local lê o TODO, o git, o diretório e o n8n, reescreve a fronteira e devolve os próximos passos com sugestões.
 
@@ -9,7 +9,7 @@
 
 ---
 
-## Fronteira de agora (08/jul/2026: ferramentas prontas, tudo espera 3 ações do Pedro)
+## Fronteira de agora (10/jul/2026: ferramentas prontas, tudo espera 3 ações do Pedro)
 
 Nada externo se moveu desde 07/jul. As ferramentas de investigação estão todas de pé (Oracle TST conectado da sessão, smoke test GH rodando, playground pronto para montar), mas as três alavancas do momento são ações do Pedro que ainda não saíram: (A3) validar o hotfix, (C6) mandar as perguntas ao analista de TI, (D1) fazer os pedidos à Global Health. Todas com texto pronto para copiar em `PENDENCIAS.md`. Confirmado nesta sessão pelo Pedro: A3 sem começar, C6 sem enviar, D1 sem enviar. A5 (token Chatwoot) gerou dúvida: esclarecido que NÃO é sair do Chatwoot, é só tirar o token de texto puro dos fluxos e pô-lo num cofre (Credential) do n8n; PENDENCIAS §5 reforçado.
 
@@ -441,3 +441,4 @@ Três assuntos prontos para pauta: (1) Regra 6: recomendação dele acatada e im
 - `[x]` 07/jul: Prompt do Playground da API escrito (`ana/api-mv/prompt-playground-api.md`): app local didático (HTML vanilla + backend Python stdlib como proxy do token) para o Pedro estudar e testar cada endpoint da GH com explicação, parâmetros, status de conexão/autenticação e queries de verificação no banco nos cards de escrita; hipóteses em aberto registradas (GH grava pessoas em registro próprio? agendamento materializa no MV?). Pedro cola numa nova sessão para construir
 - `[x]` 07-08/jul: Playground da API construído e commitado (`ana/api-mv/playground/`): front didático + proxy local (token fora do navegador), temas colapsáveis com índice de APIs, painel "No banco" com queries dinâmicas, aulas por endpoint com "você envia" / "recebe e guarda" por passo do fluxo
 - `[x]` 08/jul: Doc da conexão Oracle e `query-mv.py` commitados (modo thick com Instant Client, base TST); glossário "Base TST" no CONTEXT.md; PENDENCIAS §4 fechada e §5 (A5) reforçado com "isto NÃO é sair do Chatwoot"; `CLAUDE.md` do projeto versionado
+- `[x]` 10/jul: Cockpit visual `roadmap/mapa.html` criado (arquivo único, abre com duplo clique): vista Foco (tarefas por canal de ação, com a alavanca do dia e incentivo ao paralelo) + vista Mapa (grafo de dependências por trilha, hover com ficha). Bloco de dados `TAREFAS` espelha o status do TODO. Skill `/check` reescrita para falar por canal de ação (dispare/comigo/terceiros) em vez de IDs crus, reconciliar mapa vs TODO e sempre empurrar o paralelo; regra de sync do roadmap adicionada ao `CLAUDE.md` do projeto (vale para toda sessão)
