@@ -109,6 +109,25 @@ As quatro frentes do programa: 1 atendimento e agendamento autônomo no WhatsApp
 Fase 1: Ana no WhatsApp (frentes 1 a 4 conforme maturidade). Fase 2: agente de voz no telefone. "Fase" sem qualificador refere-se a estas; as etapas internas de execução são as trilhas do TODO.
 _Avoid_: numerar entregas internas como "Fase N" solta (colide com as fases do programa)
 
+### Roadmap e cockpit
+
+**Mapa (mesa de trabalho)**:
+O `roadmap/mapa.html` é a única mesa de trabalho visual do Pedro: o grafo de dependências com todas as tarefas, inteiro na tela, sem outra vista concorrente. A antiga "vista Foco" (3 colunas por canal) foi eliminada (jul/2026); a informação dela vive integrada ao próprio grafo.
+_Avoid_: "vista Foco", "aba Foco" (não existem mais); criar segunda vista/aba no mapa.
+
+**Esforço (P/M/G)**:
+Tamanho de cada tarefa do roadmap, atribuído manualmente: P = disparo de 5 a 15 minutos, M = uma sessão de trabalho (1 a 3h), G = várias sessões ou dias. Mede o esforço do dono para concluir, não o lead time de terceiros.
+
+**Crítica (tarefa)**:
+Qualidade **derivada do grafo**, nunca campo manual: tarefa acionável agora (dependências prontas, não feita) que está no trilho da receita, ou destrava 2+ tarefas, ou é disparo para terceiro. Tarefa represada nunca é crítica.
+_Avoid_: campo manual de criticidade; chamar de crítica tarefa ainda travada.
+
+**Trilho da receita**:
+O caminho crítico D1→D2→D5→D6→D7→D8, que termina no Termo de Entregável da Ana (+R$ 2.000/mês).
+
+**Alavanca do dia**:
+A tarefa acionável mais barata que mais destrava: recomendação de "se você só tiver 15 minutos, faça isto", exibida acima do mapa.
+
 ### Pessoas e partes
 
 **VITTA TECH**:

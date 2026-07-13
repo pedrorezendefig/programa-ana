@@ -1,6 +1,6 @@
 # TODO — Programa Ana: guia de execução até o final
 
-> Fonte de verdade **narrativa** do projeto. O `roadmap/index.html` conta a história para gestão; o `roadmap/mapa.html` é o cockpit visual do dia a dia (abre com duplo clique: tarefas por canal de ação, hover com detalhe, grafo de dependências); este arquivo guia o trabalho e detalha cada ficha. Cada tarefa tem **ID estável**, **dono**, **dependências**, e uma ficha com contexto, passos e critério de pronto. A seção "Fronteira de agora" diz o que está desbloqueado neste momento e é reescrita a cada avanço. **TODO.md e mapa.html precisam concordar sempre**: ao mudar um status aqui, mude no bloco `TAREFAS` do mapa (e vice-versa); o `/check` reconcilia. O passo a passo leigo do que depende só do Pedro vive em `PENDENCIAS.md` (mesma pasta).
+> Fonte de verdade **narrativa** do projeto. O `roadmap/index.html` conta a história para gestão; o `roadmap/mapa.html` é a mesa de trabalho visual do dia a dia (abre com duplo clique: grafo único de dependências, inteiro na tela, com criticidade derivada, esforço P/M/G no tamanho do bloco, trilho da receita e ficha no hover); este arquivo guia o trabalho e detalha cada ficha. Cada tarefa tem **ID estável**, **dono**, **dependências**, e uma ficha com contexto, passos e critério de pronto. A seção "Fronteira de agora" diz o que está desbloqueado neste momento e é reescrita a cada avanço. **TODO.md e mapa.html precisam concordar sempre**: ao mudar um status aqui, mude no bloco `TAREFAS` do mapa (e vice-versa); o `/check` reconcilia. O passo a passo leigo do que depende só do Pedro vive em `PENDENCIAS.md` (mesma pasta).
 >
 > **Para atualizar este arquivo e receber orientação: digite `/check` numa sessão Claude Code aberta neste diretório.** A skill local lê o TODO, o git, o diretório e o n8n, reescreve a fronteira e devolve os próximos passos com sugestões.
 
@@ -46,7 +46,7 @@ flowchart TD
         C1["C1 (E) Credencial read-only + conexão"] --> C2["C2 (C) Explorar: VPN direta ou pacotes de query"]
         C2 --> C3["C3 (C) Dicionário de colunas + diagrama do fluxo"]
         C3 --> C4["C4 (C) Mapear DESFECHO (ATENDIME/MOTIVO_ALTA)"]
-        C3 --> C6["C6 (P) Validar leitura com o analista"]
+        C6["C6 (P) Perguntar ao analista (texto pronto)"]
         C5["C5 (C+P) Power BI SCMA (opcional)"]
     end
 
@@ -98,7 +98,7 @@ Leituras da árvore:
 |---|---|---|---|---|
 | A1 | `[x]` | Redigir `Ana_System_Prompt.md` v1.1 (bloco crítico completo) | C | nada |
 | A2 | `[x]` | Aplicar no nó `Agente IA Hospital` do n8n | P | A1 |
-| A3 | `[~]` | Validação em sombra por período curto | P+C | A2 |
+| A3 | `[ ]` | Validação em sombra por período curto | P+C | A2 |
 | A4 | `[ ]` | Re-exportar workflows para `ana/workflows/` e commitar | C | A3, A5 |
 | A5 | `[ ]` | Migrar token Chatwoot para Credential + rotacionar | P | nada |
 
@@ -192,7 +192,7 @@ Leituras da árvore:
 | C3 | `[~]` | Dicionário de colunas + diagrama do fluxo de agendamento | C | C2 |
 | C4 | `[~]` | Mapear onde vive o DESFECHO e como filtrar | C | C3 |
 | C5 | `[ ]` | (Opcional) Varredura do Power BI módulo SCMA | C+P | navegador aberto |
-| C6 | `[ ]` | Validar leitura do modelo com o analista de TI | P | C3 |
+| C6 | `[ ]` | Validar leitura do modelo com o analista de TI | P | nada (texto pronto; o carimbo fecha C3) |
 
 ### C1 · Credencial e conexão
 

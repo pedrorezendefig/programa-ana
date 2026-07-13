@@ -6,7 +6,7 @@ Programa Ana (Hospital São Matheus): agente de IA de atendimento/agendamento vi
 
 O estado do programa mora em dois lugares que precisam concordar sempre:
 - `roadmap/TODO.md`: a verdade **narrativa** (fichas das tarefas, "pronto quando", contexto, log). IDs estáveis A1..G6, donos P/C/E.
-- `roadmap/mapa.html`: o espelho **visual** que o Pedro abre para ver as tarefas (arquivo único, autossuficiente, abre com duplo clique). Os dados vivem num bloco `TAREFAS` no topo do arquivo, cercado por comentários; o resto é renderização.
+- `roadmap/mapa.html`: o espelho **visual** que o Pedro abre para ver as tarefas (arquivo único, autossuficiente, abre com duplo clique). É a mesa de trabalho única: um só grafo, sem abas nem vista paralela. Os dados vivem num bloco `TAREFAS` no topo do arquivo, cercado por comentários (campos incluem `esforco` P/M/G e `ref` opcional); a criticidade NÃO é campo, é derivada do grafo. O resto é renderização.
 
 Regra: **se você avançar, concluir ou criar uma tarefa do roadmap em qualquer sessão, atualize os DOIS** (o status/log no TODO.md e o campo `status` da tarefa no bloco `TAREFAS` do mapa.html), mantendo o mesmo ID. Nunca edite o código de renderização do mapa, só o bloco de dados. O `/check` reconcilia os dois toda vez que roda, então ele é a rede de segurança, mas não conte com ele: deixe sincronizado ao mexer.
 
