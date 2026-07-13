@@ -88,7 +88,11 @@ O banco Oracle de teste do MV que o DBeaver e a sessão Claude leem diretamente 
 _Avoid_: chamar de "produção"; assumir que escrita via API GH aparece nela sem verificar.
 
 **Playground GH**:
-Ferramenta local de estudo da API de agendamento da Global Health: permite chamar cada endpoint da homologação, ver a resposta crua e conferir no Oracle onde a API grava. Fala somente com a homologação; produção é proibida nele.
+Ferramenta local de estudo da API de agendamento da Global Health: permite chamar cada endpoint da homologação, ver a resposta crua e conferir no Oracle onde a API grava. Fala somente com a homologação; produção é proibida nele. As queries do painel "No banco" são executáveis contra a Base TST (somente leitura); nas escritas, o veredito vem da [[prova-no-banco]].
+
+**Prova no banco**:
+O veredito automático do Playground GH para chamadas de escrita: fotografa o resultado da query de verificação na Base TST antes da chamada, roda de novo depois, e mostra a diferença (a linha que apareceu ou mudou). Três desfechos: criou (diff visível), nada mudou (falhou OU a homolog GH grava em outra base, pergunta GH-18 em aberto), ou API recusou (sucesso: false). É o mecanismo que responde o GH-18 na prática.
+_Avoid_: tratar "resposta 200 da API" como prova de escrita; tratar "nada mudou na TST" como prova de falha enquanto GH-18 estiver aberto.
 
 **Hotfix do prompt**:
 Primeira fase de execução (decisão desta sessão): corrigir o prompt em produção antes da integração MV. Escopo: triagem de urgência como nova Regra Global 1, Regra 6 reescrita (Ana assume "assistente virtual"), exclusão comercial↔ouvidoria, guardrails jurídicos da ouvidoria e ajustes menores.

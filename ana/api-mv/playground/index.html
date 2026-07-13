@@ -333,6 +333,36 @@
   .banco-alerta { font-size: 12px; color: #d9b06c; border-top: 1px dashed #3a5548; padding-top: 8px; margin-top: 4px; }
   .banco-prova { font-size: 12.5px; font-weight: 600; color: #8fd4b8; border-top: 1px dashed #3a5548; padding-top: 8px; margin-top: 4px; }
 
+  /* ---------- rodar query + prova no banco ---------- */
+  .rodar-sql {
+    background: rgba(143, 212, 184, 0.12); border: 1px solid #8fd4b8; border-radius: 3px;
+    color: #8fd4b8; font-family: var(--mono); font-size: 10.5px; letter-spacing: 1px;
+    text-transform: uppercase; padding: 2px 9px; transition: all .15s; white-space: nowrap;
+  }
+  .rodar-sql:hover { background: rgba(143, 212, 184, 0.22); }
+  .rodar-sql:disabled { opacity: .55; cursor: wait; }
+  .sql-res { margin-top: 6px; }
+  .sql-res .res-meta, .prova .res-meta { font-family: var(--mono); font-size: 11px; color: #9aa89e; margin: 4px 0 2px; }
+  .sql-res .res-meta b, .prova .res-meta b { color: #cfe3d4; font-weight: 600; }
+  .sql-res .res-erro, .prova .res-erro { font-size: 12px; color: #e8a696; }
+  .sql-res-wrap { overflow-x: auto; }
+  .sql-res table, .prova table { border-collapse: collapse; font-family: var(--mono); font-size: 11px; color: #cfe3d4; }
+  .sql-res th, .prova th { text-align: left; color: #7fc7a4; border-bottom: 1px solid #3a5548; padding: 2px 10px 2px 0; font-weight: 600; white-space: nowrap; }
+  .sql-res td, .prova td { border-bottom: 1px dotted #2b4237; padding: 2px 10px 2px 0; white-space: nowrap; }
+  tr.linha-nova td { background: rgba(143, 212, 184, 0.14); color: #eafaf0; font-weight: 600; }
+  .prova { border: 1.5px solid #3a5548; border-radius: 5px; padding: 10px 12px; margin: 0 0 12px; font-size: 12.5px; color: #9fbfa8; }
+  .prova-titulo {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 5px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline;
+  }
+  .prova-veredito { font-family: var(--serif); font-size: 14.5px; font-weight: 700; margin: 0 0 6px; }
+  .prova.criou { border-color: #2e9e6b; background: rgba(46, 158, 107, 0.10); color: #bfe8d2; }
+  .prova.criou .prova-titulo { color: #7fe0ae; }
+  .prova.nada { border-color: #d99114; background: rgba(217, 145, 20, 0.08); color: #e8cf9a; }
+  .prova.nada .prova-titulo { color: #f0c060; }
+  .prova.recusou { border-color: #cf4631; background: rgba(207, 70, 49, 0.08); color: #eec0b5; }
+  .prova.recusou .prova-titulo { color: #f0907c; }
+
   .corpo-vazio {
     font-family: var(--mono); font-size: 13px; color: var(--tinta-suave);
     background: rgba(34,41,31,.05); border: 1px dashed var(--linha); border-radius: 4px;
@@ -368,7 +398,7 @@
   <header class="topo">
     <div class="selo">Homologação · dem.agenda</div>
     <h1>Playground <span class="fino">API Global Health</span></h1>
-    <p class="subtitulo">Aperte os botões, leia a resposta crua e entenda cada chamada do fluxo de agendamento da Ana. Ao lado de cada resposta, o playground mostra onde procurar o efeito na Base TST (o Oracle do MV que você acessa pelo DBeaver), com a query pronta para copiar.</p>
+    <p class="subtitulo">Aperte os botões, leia a resposta crua e entenda cada chamada do fluxo de agendamento da Ana. Ao lado de cada resposta, o playground mostra onde procurar o efeito na Base TST (o Oracle do MV) e roda a query ali mesmo, somente leitura. Nas chamadas de escrita, ele fotografa o banco antes e depois e dá o veredito: a Prova no banco.</p>
   </header>
 
   <div id="barra-status">
@@ -376,6 +406,7 @@
       <span class="luz"><span class="bolinha testando" id="luz-backend"></span> Backend local: <b id="txt-backend">testando...</b></span>
       <span class="luz"><span class="bolinha testando" id="luz-gh"></span> API GH: <b id="txt-gh">testando...</b></span>
       <span class="luz"><span class="bolinha testando" id="luz-token"></span> Token: <b id="txt-token">testando...</b></span>
+      <span class="luz"><span class="bolinha testando" id="luz-oracle"></span> Oracle TST: <b id="txt-oracle">testando...</b></span>
       <button class="mini" onclick="atualizarStatus()">re-testar</button>
     </div>
     <div id="veredito">Verificando as conexões...</div>
@@ -541,7 +572,7 @@
 
 <footer>
   <span class="selo-rodape">Só homolog</span>
-  <span>Este playground fala SOMENTE com a homologação da Global Health. A URL de produção existe, mas é proibida aqui: não há seletor de ambiente de propósito. O token nunca chega ao navegador (fica no backend local, lido do .env). Latência típica da API: 500 a 800ms; timeout de 30s.</span>
+  <span>Este playground fala SOMENTE com a homologação da Global Health. A URL de produção existe, mas é proibida aqui: não há seletor de ambiente de propósito. O token nunca chega ao navegador (fica no backend local, lido do .env). As queries de verificação rodam direto no Oracle TST em modo somente leitura (SELECT). Latência típica da API: 500 a 800ms; timeout de 30s.</span>
 </footer>
 
 <script>
@@ -1376,19 +1407,112 @@ function renderBanco(card, cardId, valores) {
   if (!card.db) { alvo.style.display = "none"; out.classList.remove("com-banco"); return; }
   const d = card.db(valores);
   let html = `<div class="banco-titulo">No banco · Base TST (Oracle MV)</div>`;
+  if (card.write && (d.queries || []).length) {
+    html += `<div class="prova" id="${cardId}-prova"><div class="prova-titulo"><span>Prova no banco (antes/depois)</span><button class="copiar-sql" data-reverificar="${cardId}">verificar de novo</button></div><div id="${cardId}-prova-corpo">Comparando o banco de antes com o de agora...</div></div>`;
+  }
   html += `<p class="banco-intro">${esc(d.intro)}</p>`;
   if (d.tabelas && d.tabelas.length) {
     html += `<div class="banco-tabelas">${d.tabelas.map(t => `<span class="chip-tabela">${esc(t)}</span>`).join("")}</div>`;
   }
   (d.queries || []).forEach((q, i) => {
     const sqlId = `${cardId}-sql-${i}`;
-    html += `<div class="banco-query"><div class="banco-query-cabeca"><span class="banco-query-titulo">${esc(q.t)}</span><button class="copiar-sql" data-copiar="${sqlId}">copiar</button></div><pre class="sql" id="${sqlId}">${escTexto(q.sql)}</pre></div>`;
+    html += `<div class="banco-query"><div class="banco-query-cabeca"><span class="banco-query-titulo">${esc(q.t)}</span><span style="display:flex;gap:6px"><button class="rodar-sql" data-rodar="${sqlId}">rodar no TST</button><button class="copiar-sql" data-copiar="${sqlId}">copiar</button></span></div><pre class="sql" id="${sqlId}">${escTexto(q.sql)}</pre><div class="sql-res" id="${sqlId}-res"></div></div>`;
   });
   if (d.prova) html += `<div class="banco-prova">${esc(d.prova)}</div>`;
   if (d.alerta) html += `<div class="banco-alerta">${esc(d.alerta)}</div>`;
   alvo.innerHTML = html;
   alvo.style.display = "block";
   out.classList.add("com-banco");
+}
+
+// ---------- queries no Oracle TST + Prova no banco ----------
+
+const provaEstado = {};
+
+// placeholder tipo <cpf>, <id>: a query ainda depende de campo nao preenchido
+function sqlExecutavel(sql) { return !/<[a-zA-Z]/.test(sql); }
+
+async function rodarSQL(sql) {
+  try {
+    const resp = await fetch("/api/sql", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sql }) });
+    return await resp.json();
+  } catch (e) {
+    return { ok: false, erro: "backend local fora do ar" };
+  }
+}
+
+function chaveLinha(l) { return JSON.stringify(l); }
+
+async function fotografar(queries) {
+  return Promise.all(queries.map(async q => {
+    if (!sqlExecutavel(q.sql)) return { skip: true };
+    const r = await rodarSQL(q.sql);
+    return { r, chaves: r.ok ? new Set(r.linhas.map(chaveLinha)) : null };
+  }));
+}
+
+function tabelaSQL(r, chavesDestaque) {
+  if (!r.ok) return `<div class="res-erro">${esc(r.erro || "erro na query")}</div>`;
+  const meta = `<div class="res-meta">${r.linhas.length}${r.truncado ? "+" : ""} linha(s) · ${r.latencia_ms} ms</div>`;
+  if (!r.linhas.length) return meta;
+  const MAX = 12;
+  const mostra = r.linhas.slice(0, MAX);
+  let html = meta + `<div class="sql-res-wrap"><table><thead><tr>${r.colunas.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>`;
+  mostra.forEach(l => {
+    const destaque = chavesDestaque && chavesDestaque.has(chaveLinha(l));
+    html += `<tr${destaque ? ' class="linha-nova"' : ""}>${l.map(v => `<td>${v === null || v === "" ? "·" : esc(v)}</td>`).join("")}</tr>`;
+  });
+  html += `</tbody></table></div>`;
+  if (r.linhas.length > MAX) html += `<div class="res-meta">mostrando as primeiras ${MAX} de ${r.linhas.length}</div>`;
+  return html;
+}
+
+async function verificarProva(cardId, card) {
+  const est = provaEstado[cardId];
+  const caixa = document.getElementById(cardId + "-prova");
+  const corpo = document.getElementById(cardId + "-prova-corpo");
+  if (!est || !caixa || !corpo) return;
+  caixa.className = "prova";
+  corpo.textContent = "Rodando as queries de verificação no Oracle TST...";
+  const queries = card.db(est.valores).queries || [];
+  const depois = await fotografar(queries);
+  let totalNovas = 0, comparaveis = 0, html = "";
+  depois.forEach((dp, i) => {
+    const an = est.antes[i];
+    const titulo = esc(queries[i].t);
+    if (dp.skip) { html += `<div class="res-meta"><b>${titulo}</b> pulada: a query ainda tem placeholder &lt;...&gt;.</div>`; return; }
+    if (!dp.r.ok) { html += `<div class="res-meta"><b>${titulo}</b> <span class="res-erro">${esc(dp.r.erro)}</span></div>`; return; }
+    if (!an || an.skip || !an.r || !an.r.ok) {
+      html += `<div class="res-meta"><b>${titulo}</b> sem fotografia de antes; estado atual: ${dp.r.linhas.length} linha(s).</div>`;
+      return;
+    }
+    comparaveis++;
+    const novas = new Set(dp.r.linhas.map(chaveLinha).filter(k => !an.chaves.has(k)));
+    totalNovas += novas.size;
+    html += `<div class="res-meta"><b>${titulo}</b> antes ${an.r.linhas.length} → depois ${dp.r.linhas.length} linha(s)${novas.size ? ` · ${novas.size} apareceu/mudou:` : ""}</div>`;
+    if (novas.size) {
+      const soNovas = { ok: true, colunas: dp.r.colunas, linhas: dp.r.linhas.filter(l => novas.has(chaveLinha(l))), truncado: false, latencia_ms: dp.r.latencia_ms };
+      html += tabelaSQL(soNovas, novas);
+    }
+  });
+  const r = est.resposta;
+  const apiOk = r.status >= 200 && r.status < 300 && !(r.json && r.json.sucesso === false);
+  let classe = "", veredito = "";
+  if (!comparaveis) {
+    veredito = "Não deu para comparar antes/depois: nenhuma query rodou nas duas pontas.";
+  } else if (totalNovas > 0) {
+    classe = "criou";
+    veredito = apiOk ? "Criou no banco: SIM. A Base TST mudou por causa desta chamada." : "A API recusou, mas a Base TST MUDOU: investigue.";
+  } else if (!apiOk) {
+    classe = "recusou";
+    veredito = "A API recusou e nada mudou na Base TST (coerente).";
+  } else {
+    classe = "nada";
+    veredito = "A API disse sucesso, mas NADA mudou na Base TST.";
+    html += `<div class="res-meta">Isso não prova falha enquanto a GH-18 estiver aberta: a homolog da GH pode gravar em outro banco. Se a gravação for assíncrona, espere um pouco e use "verificar de novo" (a foto de antes é preservada).</div>`;
+  }
+  caixa.className = "prova" + (classe ? " " + classe : "");
+  corpo.innerHTML = `<div class="prova-veredito">${esc(veredito)}</div>` + html;
 }
 
 const historico = [];
@@ -1420,6 +1544,13 @@ async function chamar(cardId, botao) {
     return;
   }
   botao.disabled = true;
+  const dBanco = card.db ? card.db(coletado.valores) : null;
+  const temProva = !!(card.write && dBanco && (dBanco.queries || []).length);
+  let antes = null;
+  if (temProva) {
+    botao.textContent = "Fotografando o banco...";
+    antes = await fotografar(dBanco.queries);
+  }
   botao.textContent = "Chamando...";
   try {
     const resp = await fetch("/api/gh", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(coletado.pedido) });
@@ -1432,6 +1563,11 @@ async function chamar(cardId, botao) {
       renderResposta(card, cardId, r);
       renderBanco(card, cardId, coletado.valores);
       registrarHistorico(card.method, coletado.pedido.path, r.status, r.latencia_ms);
+      if (temProva) {
+        provaEstado[cardId] = { antes, valores: coletado.valores, resposta: r };
+        out.classList.add("aberta");
+        await verificarProva(cardId, card);
+      }
     }
   } catch (e) {
     respAlvo.innerHTML = `<div class="nota vermelha">Backend local fora do ar (a chamada nem saiu). Rode: python3 ana/api-mv/playground/server.py</div>`;
@@ -1452,6 +1588,28 @@ document.addEventListener("click", ev => {
     navigator.clipboard.writeText(document.getElementById(copiar.dataset.copiar).textContent);
     copiar.textContent = "copiado!";
     setTimeout(() => { copiar.textContent = "copiar"; }, 1500);
+    return;
+  }
+  const rodar = ev.target.closest("[data-rodar]");
+  if (rodar) {
+    const sql = document.getElementById(rodar.dataset.rodar).textContent;
+    const res = document.getElementById(rodar.dataset.rodar + "-res");
+    if (!sqlExecutavel(sql)) {
+      res.innerHTML = `<div class="res-erro">A query ainda tem placeholder &lt;...&gt;: preencha o campo correspondente e chame de novo.</div>`;
+      return;
+    }
+    rodar.disabled = true;
+    rodar.textContent = "rodando...";
+    rodarSQL(sql).then(r => {
+      res.innerHTML = tabelaSQL(r);
+      rodar.disabled = false;
+      rodar.textContent = "rodar no TST";
+    });
+    return;
+  }
+  const reverificar = ev.target.closest("[data-reverificar]");
+  if (reverificar) {
+    verificarProva(reverificar.dataset.reverificar, registroCards[reverificar.dataset.reverificar]);
     return;
   }
   const botao = ev.target.closest(".chamar");
@@ -1484,7 +1642,7 @@ function setLuz(id, cor, texto) {
 }
 
 async function atualizarStatus() {
-  ["backend", "gh", "token"].forEach(id => { document.getElementById("luz-" + id).className = "bolinha testando"; });
+  ["backend", "gh", "token", "oracle"].forEach(id => { document.getElementById("luz-" + id).className = "bolinha testando"; });
   document.getElementById("veredito").textContent = "Verificando as conexões...";
   try {
     const r = await (await fetch("/api/status")).json();
@@ -1502,10 +1660,17 @@ async function atualizarStatus() {
       setLuz("token", "verde", "válido");
       document.getElementById("veredito").textContent = "Conectado e autenticado: pode chamar as APIs.";
     }
+    if (r.oracle_ok) {
+      setLuz("oracle", "verde", "ok (" + r.oracle_latencia_ms + " ms)");
+    } else {
+      setLuz("oracle", "ambar", "sem conexão");
+      document.getElementById("veredito").textContent += " Oracle TST sem conexão: a Prova no banco fica indisponível (queries só para copiar).";
+    }
   } catch (e) {
     setLuz("backend", "vermelha", "fora");
     setLuz("gh", "vermelha", "?");
     setLuz("token", "vermelha", "?");
+    setLuz("oracle", "vermelha", "?");
     document.getElementById("veredito").textContent = "Backend local fora do ar. Rode: python3 ana/api-mv/playground/server.py e recarregue.";
   }
 }

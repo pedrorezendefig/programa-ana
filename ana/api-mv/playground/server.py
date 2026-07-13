@@ -2,7 +2,10 @@
 """Playground da API Global Health (homologacao): backend local minimo.
 
 Serve o index.html e faz proxy das chamadas para a API GH injetando o token,
-que nunca chega ao navegador. So biblioteca padrao do Python.
+que nunca chega ao navegador. So biblioteca padrao do Python, exceto o driver
+oracledb (opcional): com ele, /api/sql executa as queries de verificacao do
+painel "No banco" direto no Oracle TST, somente SELECT/WITH (mesma config e
+mesma politica do scripts/query-mv.py).
 
 Uso:
   python3 ana/api-mv/playground/server.py
@@ -25,6 +28,7 @@ PORTA = 8777
 TIMEOUT_S = 30
 CPF_SONDA = "66301102770"
 METODOS_PERMITIDOS = {"GET", "POST", "DELETE"}
+SQL_MAX_LINHAS = 200
 AQUI = Path(__file__).resolve().parent
 
 
@@ -89,6 +93,79 @@ def call_gh(method, path, query=None, body=None):
     return {"status": status, "latencia_ms": latencia, "corpo_cru": corpo, "json": parsed}
 
 
+_oracle_iniciado = False
+
+
+def conectar_oracle():
+    """Abre conexao com o Oracle TST (mesma config e .env do scripts/query-mv.py)."""
+    global _oracle_iniciado
+    faltando = [k for k in ("ORACLE_HOST", "ORACLE_USER", "ORACLE_PASSWORD") if not ENV.get(k)]
+    if faltando or not (ENV.get("ORACLE_SERVICE") or ENV.get("ORACLE_SID")):
+        raise RuntimeError("preencha no .env: " + ", ".join(faltando + ["ORACLE_SERVICE ou ORACLE_SID"]))
+    try:
+        import oracledb
+    except ImportError:
+        raise RuntimeError("driver ausente: python3 -m pip install --user oracledb")
+    if not _oracle_iniciado:
+        # senha do dbamv usa verifier 10g (DPY-3015): modo thick com o Instant Client do .env
+        if ENV.get("ORACLE_CLIENT_DIR"):
+            oracledb.init_oracle_client(lib_dir=ENV["ORACLE_CLIENT_DIR"])
+        _oracle_iniciado = True
+    host = ENV["ORACLE_HOST"]
+    port = int(ENV.get("ORACLE_PORT", "1521"))
+    if ENV.get("ORACLE_SERVICE"):
+        # timeout curto de conexao: sem rede/VPN o erro volta em ~5s, nao nos 20s default
+        dsn = "%s:%d/%s?transport_connect_timeout=5" % (host, port, ENV["ORACLE_SERVICE"])
+    else:
+        dsn = oracledb.makedsn(host, port, sid=ENV["ORACLE_SID"])
+    return oracledb.connect(user=ENV["ORACLE_USER"], password=ENV["ORACLE_PASSWORD"], dsn=dsn)
+
+
+def rodar_sql(sql):
+    """Executa um SELECT/WITH no Oracle TST e devolve {ok, colunas, linhas, truncado, latencia_ms}.
+
+    Qualquer outra coisa (escrita, DDL) e recusada: a politica e a mesma do query-mv.py.
+    """
+    sql = (sql or "").strip().rstrip(";")
+    primeiro = ""
+    for linha in sql.splitlines():
+        linha = linha.strip()
+        if linha and not linha.startswith("--"):
+            primeiro = linha.split()[0].upper()
+            break
+    if primeiro not in ("SELECT", "WITH"):
+        return {"ok": False, "erro": "apenas SELECT/WITH: escrita no banco e sempre deliberada, nunca pelo playground"}
+    inicio = time.monotonic()
+    try:
+        with conectar_oracle() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql)
+                colunas = [d[0] for d in cur.description]
+                linhas = cur.fetchmany(SQL_MAX_LINHAS + 1)
+    except Exception as e:
+        msg = str(e).splitlines()[0] if str(e) else repr(e)
+        return {"ok": False, "erro": msg, "latencia_ms": int((time.monotonic() - inicio) * 1000)}
+    latencia = int((time.monotonic() - inicio) * 1000)
+    truncado = len(linhas) > SQL_MAX_LINHAS
+    linhas = linhas[:SQL_MAX_LINHAS]
+
+    def celula(v):
+        if v is None or isinstance(v, (int, float, str)):
+            return v
+        return str(v)
+
+    return {"ok": True, "colunas": colunas,
+            "linhas": [[celula(v) for v in linha] for linha in linhas],
+            "truncado": truncado, "latencia_ms": latencia}
+
+
+def teste_oracle():
+    r = rodar_sql("SELECT 1 FROM DUAL")
+    return {"oracle_ok": r["ok"],
+            "oracle_msg": None if r["ok"] else r.get("erro"),
+            "oracle_latencia_ms": r.get("latencia_ms")}
+
+
 def teste_token():
     """Testa o token com GET /pessoas?cpf=<sonda>. Retorna o dict de status da API local."""
     r = call_gh("GET", "/pessoas", {"cpf": CPF_SONDA})
@@ -118,12 +195,14 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(html)
         elif self.path == "/api/status":
-            self._json(teste_token())
+            st = teste_token()
+            st.update(teste_oracle())
+            self._json(st)
         else:
             self._json({"erro": "rota desconhecida"}, 404)
 
     def do_POST(self):
-        if self.path != "/api/gh":
+        if self.path not in ("/api/gh", "/api/sql"):
             self._json({"erro": "rota desconhecida"}, 404)
             return
         try:
@@ -131,6 +210,9 @@ class Handler(BaseHTTPRequestHandler):
             pedido = json.loads(self.rfile.read(tamanho).decode("utf-8"))
         except (ValueError, TypeError):
             self._json({"erro": "body invalido: esperava JSON"}, 400)
+            return
+        if self.path == "/api/sql":
+            self._json(rodar_sql(str(pedido.get("sql", ""))))
             return
         metodo = str(pedido.get("method", "")).upper()
         path = str(pedido.get("path", ""))
@@ -157,6 +239,12 @@ def main():
         print("  API GH: alcancavel. Token: VALIDO (HTTP 200 em %dms)." % st["latencia_ms"], flush=True)
     else:
         print("  API GH: alcancavel, mas o token NAO validou (nao veio HTTP 200).", flush=True)
+    print("Testando a conexao com o Oracle TST...", flush=True)
+    ora = teste_oracle()
+    if ora["oracle_ok"]:
+        print("  Oracle TST: conectado (%dms). Prova no banco ativa." % ora["oracle_latencia_ms"], flush=True)
+    else:
+        print("  Oracle TST: SEM conexao (%s). As queries do painel 'No banco' ficam so para copiar." % ora["oracle_msg"], flush=True)
     servidor = ThreadingHTTPServer(("127.0.0.1", PORTA), Handler)
     try:
         servidor.serve_forever()
