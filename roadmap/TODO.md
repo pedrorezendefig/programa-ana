@@ -9,7 +9,7 @@
 
 ---
 
-## Estado (30/jul/2026)
+## Estado (31/jul/2026)
 
 A Ana foi migrada do n8n para a plataforma **fazer.ai agents** (onboarding 29/jul, E2E aprovado): agente id 1 no tenant `vitta-tech`, modo teste, prompt completo do SOP, ferramentas nativas (kanban, tags, handoff, notas), KB "Base Hospital São Matheus". As inboxes do Chatwoot vinculadas são o **bot do Telegram (SaoMatheusBot)** e a inbox de API "Ana E2E". Observabilidade: conversas no Chatwoot, raciocínio e custo por resposta no Langfuse.
 
@@ -40,7 +40,7 @@ O segundo grilling de 30/jul (noite) abriu a frente **Ana OS** (ADR-0007): o por
 Feitas em 30/jul/2026, na mesma sessão do grilling (ADR-0007). O cockpit vive em `os/` (`python3 os/server.py`, `localhost:8777`): home com roadmap (estágio + Pendente + Ideias editáveis pela UI, única rota de escrita do server, restrita a `os/dados/roadmap.json`), painel de aplicações, Mapa das APIs com selos de testabilidade (leitura de catálogo / escrita no SaaS GH / finalização com prova no banco), diagrama de arquitetura, bancada e roteiro (homolog), Atlas e Absorção (retrato da produção), Conexão TST e Biblioteca (allowlist de .md; `dados-locais/` e `amostras/` bloqueados). Visual: `os/DESIGN.md` (Aaply), fontes locais, tema claro. Fumaça: 10 páginas 200, allowlist bloqueando `.env` e traversal, escrita validada com backup, conferência visual no Chrome. Pendência menor: a prova viva no Oracle TST aguarda a VPN voltar (sem conexão desde 13/jul); as queries ficam em modo copiar. Arquivados sem perda: `roadmap/arquivo/mapa-mesa-30jul2026.html` e `ana/api-mv/arquivo/` (playground-pre-os/, prompt-playground-api, smoke-test-gh, queries-exploracao).
 
 ### V1 · Desativar o n8n `[x]`
-Feito em 30/jul/2026 via API. O fazer.ai agents é o único cérebro respondendo o bot do Telegram. Os 5 subworkflows que seguiam ativos (Aplicar_tag, Escalar_humano, Registrar_reclamacao, Atualizar_lead, Agendamento_convenio) são filhos do fluxo principal e ficam inertes sem ele. Export preservado em `ana/workflows/`; religar é questão de minutos se preciso.
+Feito em 30/jul/2026 via API. O fazer.ai agents é o único cérebro respondendo o bot do Telegram. Os 5 subworkflows que seguiam ativos (Aplicar_tag, Escalar_humano, Registrar_reclamacao, Atualizar_lead, Agendamento_convenio) são filhos do fluxo principal e ficam inertes sem ele. Export preservado em `ana/workflows/`; religar é questão de minutos se preciso. Em 31/jul o serviço n8n inteiro foi **parado no Coolify** a pedido do Pedro (uuid `s14ks3o3u65xafg114cwimnq`; a URL pública devolve 503, e isso é esperado): liberou RAM na KVM4; religar = `start` no mesmo serviço.
 
 ### V2 · Modelo `gpt-5-mini` `[x]`
 Feito em 30/jul/2026 (antes: `gpt-5.2`). Preços por 1M tokens: $0.25 input / $2.00 output, contra $1.75 / $14.00 do gpt-5.2. Decisão e pesquisa citada no grilling de 30/jul (não existe "gpt-5.2-mini"; a geração 5.6 usa sol/terra/luna e o tier mini dela custa mais que o gpt-5.2). Se o mini degradar no roteiro, voltar é uma linha.
@@ -77,6 +77,7 @@ A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da 
 
 ## Log
 
+- **31/jul/2026:** serviço n8n parado no Coolify (a pedido do Pedro, via MCP): 503 na URL pública é proposital; religar é um `start`. Instância fazer.ai conferida no check (gpt-5-mini, modo teste, inboxes Telegram + API vinculadas). Fronteira do estágio: rodar a V6.
 - **30/jul/2026 (5):** frente Ana OS executada inteira (OS1..OS5): cockpit no ar em `localhost:8777` com redesign Aaply completo, Mapa das APIs, Arquitetura, Biblioteca e Ideias editáveis. mapa.html aposentado para `roadmap/arquivo/`; playground antigo em `ana/api-mv/arquivo/playground-pre-os/`; CLAUDE.md e /check atualizados para o espelho `os/dados/roadmap.json`.
 - **30/jul/2026 (4):** segundo grilling do dia abre a frente Ana OS (ADR-0007, decisões no CONTEXT.md): o portal absorve o roadmap, redesign completo no DESIGN.md (Aaply), faixa de Ideias editável pela UI, Mapa das APIs, Arquitetura e Biblioteca. Nascem OS1..OS5; GH1 reformulada (metade puxada).
 - **30/jul/2026 (3):** V3 e V4 concluídas pelo caminho NocoDB (ADR-0006): Google Sheets abandonado como fonte, NocoDB no Coolify com HTTPS, 4 tools de tabela criadas e provadas no playground com `gpt-5-mini` (temperature ajustada para 1, exigência do modelo). Nasce a V9 (acesso de edição do negócio). V6 totalmente destravada: falta só rodar o roteiro no Telegram.
