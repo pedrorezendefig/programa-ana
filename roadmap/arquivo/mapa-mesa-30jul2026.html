@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programa Ana · Mesa de trabalho</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --ink: #1c2330; --muted: #5c6675;
+    --line: #e3e7ee; --accent: #0e7c5a; --accent-soft: #e3f3ed;
+    --warn: #a15c00; --warn-soft: #fdf1dd; --block: #8a93a3; --block-soft: #eef0f4;
+    --pend: #6b4fa0; --pend-soft: #efe9f8; --local: #33556e; --local-soft: #e6eef5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12161d; --card: #1a212b; --ink: #e8ecf2; --muted: #97a1af;
+      --line: #2a3341; --accent: #4cc39a; --accent-soft: #17362c;
+      --warn: #e0a458; --warn-soft: #362a17; --block: #7c8697; --block-soft: #232a35;
+      --pend: #b39ddb; --pend-soft: #2a2338; --local: #8fb4d1; --local-soft: #1d2b37;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px;
+  }
+  header h1 { font-size: 22px; letter-spacing: -0.01em; }
+  header p { color: var(--muted); margin-top: 4px; max-width: 70ch; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 36px 0 14px; }
+  .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  a.app {
+    display: block; background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; text-decoration: none; color: inherit; transition: border-color .15s, transform .15s;
+  }
+  a.app:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .app .nome { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .app .desc { color: var(--muted); font-size: 13.5px; margin-top: 3px; }
+  .app .url { color: var(--accent); font-size: 12.5px; margin-top: 8px; word-break: break-all; }
+  .selo { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 99px; }
+  .selo.local { background: var(--local-soft); color: var(--local); }
+  .tarefas { display: flex; flex-direction: column; gap: 8px; }
+  .tarefa {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 16px; display: flex; align-items: baseline; gap: 12px;
+  }
+  .tarefa .id { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--muted); min-width: 30px; }
+  .tarefa .titulo { flex: 1; }
+  .tarefa.feito .titulo { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+  .tarefa .dono { font-size: 12px; color: var(--muted); }
+  .chip { font-size: 11.5px; font-weight: 600; padding: 2px 10px; border-radius: 99px; white-space: nowrap; }
+  .chip.feito { background: var(--accent-soft); color: var(--accent); }
+  .chip.fazer { background: var(--warn-soft); color: var(--warn); }
+  .chip.bloqueada { background: var(--block-soft); color: var(--block); }
+  .chip.pendente { background: var(--pend-soft); color: var(--pend); }
+  .nota { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
+  footer code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ================= DADOS: INICIO =================
+     Este bloco e a unica parte do arquivo que as sessoes editam.
+     status: 'feito' | 'fazer' (bloqueio e derivado de deps) | pendentes usam status 'pendente'. -->
+<script>
+const ESTAGIO = "Testes de viabilidade no fazer.ai agents (sem Global Health)";
+const ATUALIZADO = "30/jul/2026";
+
+const APPS = [
+  { nome: "fazer.ai agents", url: "https://agents.hospitalsaomatheus.cloud",
+    desc: "O cérebro da Ana: prompt, ferramentas, base de conhecimento e playground do agente." },
+  { nome: "Chatwoot", url: "https://chatwoot.mala-ia.cloud",
+    desc: "As conversas dos testes: etapas do funil, tags e handoff. Sua visão principal." },
+  { nome: "Langfuse", url: "https://langfuse.hospitalsaomatheus.cloud",
+    desc: "O raio-X de cada resposta: ferramentas chamadas, tokens e custo." },
+  { nome: "Coolify", url: "https://coolify.hospitalsaomatheus.cloud",
+    desc: "A infra na VPS: deploys e saúde dos serviços." },
+  { nome: "Bot do Telegram (SaoMatheusBot)", url: "https://t.me/SaoMatheusBot",
+    desc: "O canal de teste onde o roteiro de cenários roda." },
+  { nome: "NocoDB (Base Ana)", url: "https://nocodb-ucc0hkwgqdsa38p5xrwa1x0h.31.97.29.32.sslip.io",
+    desc: "As tabelas oficiais que a Ana lê (consultas, exames, cirurgias, convênios). É aqui que o negócio edita valores." },
+  { nome: "Playground GH", url: "http://localhost:8777", selo: "local · mundo MV pendente",
+    desc: "Bancada local da API Global Health e do banco MV. Adormecida até a sessão GH1." },
+];
+
+const TAREFAS = [
+  { id: "V1", titulo: "Desativar os workflows \"Ana\" e \"Desliga Ana\" no n8n", dono: "C", status: "feito", deps: [] },
+  { id: "V2", titulo: "Trocar o modelo do agente para gpt-5-mini", dono: "C", status: "feito", deps: [] },
+  { id: "V3", titulo: "Subir o NocoDB (base editável do negócio) com as 4 tabelas", dono: "C", status: "feito", deps: [],
+    nota: "Substituiu o Google Sheets (ADR-0006). HTTPS no Coolify, dados importados." },
+  { id: "V4", titulo: "Criar as tools HTTP das tabelas e provar no playground", dono: "C", status: "feito", deps: ["V3"],
+    nota: "4 tools + prompt com Tabelas Oficiais. Prova: cardiologia R$ 380 com diferenciais." },
+  { id: "V5", titulo: "Escrever o Roteiro de cenários (~10 cenários)", dono: "C+P", status: "feito", deps: [],
+    nota: "Pronto em roadmap/roteiro-cenarios.md: 10 principais + 2 condicionais." },
+  { id: "V6", titulo: "Rodar o roteiro no Telegram, conferindo Chatwoot e Langfuse", dono: "P+C", status: "fazer", deps: ["V4", "V5"],
+    nota: "Critério de pronto do estágio: tudo passando com gpt-5-mini." },
+  { id: "V7", titulo: "Revogar o token Cloudflare usado no onboarding", dono: "P", status: "fazer", deps: [] },
+  { id: "V8", titulo: "Resolver o hotfix temporário do Chatwoot (upstream ou reaplicar)", dono: "P+C", status: "fazer", deps: [] },
+  { id: "V9", titulo: "Dar acesso de edição do NocoDB ao usuário de negócio", dono: "P", status: "fazer", deps: ["V3"] },
+  { id: "OS1", titulo: "Ana OS: fundação (os/, server estendido, design system, dados em JSON)", dono: "C", status: "fazer", deps: [] },
+  { id: "OS2", titulo: "Ana OS: páginas novas (home, Mapa das APIs, Arquitetura, Biblioteca)", dono: "C", status: "fazer", deps: ["OS1"] },
+  { id: "OS3", titulo: "Ana OS: redesign das 6 páginas do playground", dono: "C", status: "fazer", deps: ["OS1"] },
+  { id: "OS4", titulo: "Ana OS: fumaça por página", dono: "C+P", status: "fazer", deps: ["OS2", "OS3"] },
+  { id: "OS5", titulo: "Ana OS: arquivamento e limpeza (este mapa aposenta)", dono: "C", status: "fazer", deps: ["OS4"] },
+];
+
+const PENDENTES = [
+  { id: "GH1", titulo: "Desenhar onde as APIs Global Health entram no fluxo da Ana (metade restante; catálogo virou o Mapa das APIs)" },
+  { id: "OV1", titulo: "Sistema de protocolo da ouvidoria" },
+];
+</script>
+<!-- ================= DADOS: FIM ================= -->
+
+<header>
+  <h1>Programa Ana · Mesa de trabalho</h1>
+  <p id="sub"></p>
+</header>
+
+<h2>Aplicações</h2>
+<div class="apps" id="apps"></div>
+
+<h2>Estágio atual</h2>
+<div class="tarefas" id="tarefas"></div>
+
+<h2>Pendente</h2>
+<div class="tarefas" id="pendentes"></div>
+
+<footer>
+  O roadmap anterior (trilhas A a G, textos prontos para a Global Health e o analista de TI) está intacto em
+  <code>roadmap/arquivo/</code>. A ficha completa de cada tarefa vive em <code>roadmap/TODO.md</code>.
+</footer>
+
+<script>
+  document.getElementById("sub").textContent = ESTAGIO + " · atualizado em " + ATUALIZADO;
+
+  document.getElementById("apps").innerHTML = APPS.map(a => `
+    <a class="app" href="${a.url}" target="_blank" rel="noopener">
+      <div class="nome">${a.nome}${a.selo ? ` <span class="selo local">${a.selo}</span>` : ""}</div>
+      <div class="desc">${a.desc}</div>
+      <div class="url">${a.url}</div>
+    </a>`).join("");
+
+  const feitas = new Set(TAREFAS.filter(t => t.status === "feito").map(t => t.id));
+  document.getElementById("tarefas").innerHTML = TAREFAS.map(t => {
+    const travas = (t.deps || []).filter(d => !feitas.has(d));
+    const estado = t.status === "feito" ? "feito" : (travas.length ? "bloqueada" : "fazer");
+    const rotulo = estado === "feito" ? "feito" : estado === "bloqueada" ? "aguarda " + travas.join(", ") : "a fazer";
+    return `
+    <div class="tarefa ${estado}">
+      <span class="id">${t.id}</span>
+      <span class="titulo">${t.titulo}${t.nota ? `<div class="nota">${t.nota}</div>` : ""}</span>
+      <span class="dono">${t.dono}</span>
+      <span class="chip ${estado}">${rotulo}</span>
+    </div>`;
+  }).join("");
+
+  document.getElementById("pendentes").innerHTML = PENDENTES.map(p => `
+    <div class="tarefa">
+      <span class="id">${p.id}</span>
+      <span class="titulo">${p.titulo}</span>
+      <span class="chip pendente">pendente</span>
+    </div>`).join("");
+</script>
+
+</body>
+</html>

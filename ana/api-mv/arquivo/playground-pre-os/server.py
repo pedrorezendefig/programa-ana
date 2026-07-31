@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Playground da API Global Health (homologacao): backend local minimo.
 
-Serve o index.html e faz proxy das chamadas para a API GH injetando o token,
-que nunca chega ao navegador. So biblioteca padrao do Python, exceto o driver
+Serve as paginas do portal (arquivos .html deste diretorio), os resultados
+depositados da absorcao da producao (rotas /api/absorcao e /absorcao/, somente
+leitura, nunca a subpasta amostras/) e faz proxy das chamadas para a API GH
+injetando o token, que nunca chega ao navegador. So biblioteca padrao do Python, exceto o driver
 oracledb (opcional): com ele, /api/sql executa as queries de verificacao do
 painel "No banco" direto no Oracle TST, somente SELECT/WITH (mesma config e
 mesma politica do scripts/query-mv.py).
@@ -15,6 +17,7 @@ Token: variavel GH_TOKEN_HOMOLOG do .env na raiz do repo (fora do git).
 Ambiente: SOMENTE homologacao. Producao e proibida neste app.
 """
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -29,7 +32,10 @@ TIMEOUT_S = 30
 CPF_SONDA = "66301102770"
 METODOS_PERMITIDOS = {"GET", "POST", "DELETE"}
 SQL_MAX_LINHAS = 200
-AQUI = Path(__file__).resolve().parent
+PLAYGROUND_DIR = os.path.dirname(os.path.abspath(__file__))
+ABSORCAO_DIR = os.path.abspath(os.path.join(PLAYGROUND_DIR, "..", "absorcao-producao", "resultados"))
+PAGINAS_EXTENSOES = {".html"}
+ABSORCAO_EXTENSOES = {".csv", ".md"}
 
 
 def find_env():
@@ -166,6 +172,24 @@ def teste_oracle():
             "oracle_latencia_ms": r.get("latencia_ms")}
 
 
+def listar_absorcao():
+    """Lista os arquivos depositados na RAIZ de ABSORCAO_DIR (subpastas nunca aparecem)."""
+    arquivos = []
+    if os.path.isdir(ABSORCAO_DIR):
+        for nome in sorted(os.listdir(ABSORCAO_DIR)):
+            if nome.startswith("."):
+                continue
+            if os.path.splitext(nome)[1].lower() not in ABSORCAO_EXTENSOES:
+                continue
+            caminho = os.path.join(ABSORCAO_DIR, nome)
+            if not os.path.isfile(caminho):
+                continue
+            info = os.stat(caminho)
+            arquivos.append({"nome": nome, "bytes": info.st_size,
+                             "modificado_epoch": int(info.st_mtime)})
+    return {"ok": True, "arquivos": arquivos}
+
+
 def teste_token():
     """Testa o token com GET /pessoas?cpf=<sonda>. Retorna o dict de status da API local."""
     r = call_gh("GET", "/pessoas", {"cpf": CPF_SONDA})
@@ -186,20 +210,59 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(corpo)
 
+    def _arquivo(self, caminho, content_type):
+        with open(caminho, "rb") as f:
+            corpo = f.read()
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(corpo)))
+        self.end_headers()
+        self.wfile.write(corpo)
+
+    def _servir_absorcao(self, nome):
+        """Serve UM arquivo da raiz de ABSORCAO_DIR. Sanitizacao em camadas, todas obrigatorias."""
+        nome = urllib.parse.unquote(nome)
+        if "/" in nome or "\\" in nome or ".." in nome or nome.startswith("."):
+            self._json({"erro": "arquivo desconhecido"}, 404)
+            return
+        ext = os.path.splitext(nome)[1].lower()
+        if ext not in ABSORCAO_EXTENSOES:
+            self._json({"erro": "arquivo desconhecido"}, 404)
+            return
+        caminho = os.path.join(ABSORCAO_DIR, nome)
+        raiz = os.path.realpath(ABSORCAO_DIR)
+        if not os.path.realpath(caminho).startswith(raiz + os.sep) or not os.path.isfile(caminho):
+            self._json({"erro": "arquivo desconhecido"}, 404)
+            return
+        tipo = "text/csv; charset=utf-8" if ext == ".csv" else "text/markdown; charset=utf-8"
+        self._arquivo(caminho, tipo)
+
+    def _servir_pagina(self, path):
+        """Serve uma pagina .html da raiz do playground (nenhum subdiretorio)."""
+        if path == "/":
+            path = "/index.html"
+        nome = path.lstrip("/")
+        if os.path.basename(path) != nome or os.path.splitext(nome)[1].lower() not in PAGINAS_EXTENSOES:
+            self._json({"erro": "rota desconhecida"}, 404)
+            return
+        caminho = os.path.join(PLAYGROUND_DIR, nome)
+        raiz = os.path.realpath(PLAYGROUND_DIR)
+        if not os.path.realpath(caminho).startswith(raiz + os.sep) or not os.path.isfile(caminho):
+            self._json({"erro": "rota desconhecida"}, 404)
+            return
+        self._arquivo(caminho, "text/html; charset=utf-8")
+
     def do_GET(self):
-        if self.path in ("/", "/index.html"):
-            html = (AQUI / "index.html").read_bytes()
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Content-Length", str(len(html)))
-            self.end_headers()
-            self.wfile.write(html)
-        elif self.path == "/api/status":
+        if self.path == "/api/status":
             st = teste_token()
             st.update(teste_oracle())
             self._json(st)
+        elif self.path == "/api/absorcao":
+            self._json(listar_absorcao())
+        elif self.path.startswith("/absorcao/"):
+            self._servir_absorcao(self.path[len("/absorcao/"):])
         else:
-            self._json({"erro": "rota desconhecida"}, 404)
+            self._servir_pagina(self.path)
 
     def do_POST(self):
         if self.path not in ("/api/gh", "/api/sql"):

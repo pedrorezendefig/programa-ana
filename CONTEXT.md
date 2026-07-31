@@ -37,7 +37,7 @@ Site institucional do cliente mais a Central de Comando a ele integrada. O aceit
 Painel administrativo que centraliza a gestão dos ativos digitais do hospital: consome as métricas do site, traz um CMS para editar o conteúdo do site direto por lá, tem recursos de IA e integra APIs externas (entre elas a da Meta/Instagram). Integrada ao Site e entregue/evoluída na mesma esteira contínua, dentro do mesmo +R$ 1.000.
 
 **Ana**:
-Agente de IA de atendimento e agendamento de pacientes via WhatsApp (n8n + Chatwoot), integrado ao sistema hospitalar MV via API Global Health. Entregável do Contrato de Serviços Contínuos: a **entrega funcional** (integração com o MV operante, fluxos testados, em produção) destrava +R$ 2.000 (total R$ 8.000); a **meta de desempenho (KPI)** destrava +R$ 1.000 (total R$ 9.000).
+Agente de IA de atendimento e agendamento de pacientes via WhatsApp (fazer.ai agents + Chatwoot), com integração ao sistema hospitalar MV via API Global Health pendente. Entregável do Contrato de Serviços Contínuos: a **entrega funcional** (integração com o MV operante, fluxos testados, em produção) destrava +R$ 2.000 (total R$ 8.000); a **meta de desempenho (KPI)** destrava +R$ 1.000 (total R$ 9.000).
 
 **Meta da Ana**:
 Indicador de desempenho/maturidade da Ana, ainda **não definido**, que ao ser atingido destrava +R$ 1.000/mês. Marco pactuado por escrito no Termo de Entregável correspondente.
@@ -49,6 +49,22 @@ _Avoid_: Retail
 
 ### Ana: linguagem do domínio
 
+**fazer.ai agents (plataforma da Ana)**:
+A plataforma que executa a Ana desde 29/jul/2026 (tenant `vitta-tech`): prompt, ferramentas nativas, base de conhecimento e vínculo com as inboxes do Chatwoot. Observabilidade das conversas no Chatwoot e do raciocínio/custos no Langfuse. O n8n está aposentado (decisão de 30/jul/2026; workflows a desativar, export preservado em `ana/workflows/`).
+_Avoid_: "LangChain" como nome da plataforma (é o motor interno dela); tratar o n8n como cérebro vivo da Ana.
+
+**Testes de viabilidade (sem GH)**:
+O estágio atual do programa: provar que a Ana no fazer.ai agents segura o SOP no canal de teste, rodando gpt-5-mini e lendo as tabelas oficiais da [[base-ana-nocodb]] ao vivo, sem nenhuma chamada à Global Health. Concluído quando o Roteiro de cenários passa.
+_Avoid_: misturar integração MV/GH neste estágio (é pendente, discutida em sessão própria).
+
+**Base Ana (NocoDB)**:
+A base editável que alimenta a Ana (decisão de 30/jul/2026, ADR-0006): serviço NocoDB no Coolify da VPS, com as 4 tabelas oficiais (consultas particulares, exames, estimativas de cirurgias, convênios por especialidade). O usuário de negócio edita numa tela de planilha na web; a Ana lê por tools HTTP sobre shared views públicas somente leitura; a mudança vale na resposta seguinte. Substituiu o Google Sheets como fonte (as planilhas viraram legado; xlsx brutos com dado pessoal ficam em `dados-locais/`, fora do git).
+_Avoid_: voltar a ler valores do Google Sheets; expor tabela com dado pessoal em shared view; tratar a KB (`search_knowledge`) como fonte de valores (a precedência é das tabelas).
+
+**Roteiro de cenários**:
+O critério de pronto dos testes de viabilidade: cerca de 10 cenários (urgência, particular com valor vindo do Sheets, convênio, ouvidoria, fora de escopo) rodados no bot do Telegram, conferindo no Chatwoot a etapa/tag correta e no Langfuse as ferramentas chamadas.
+_Avoid_: declarar teste concluído por conversa livre sem roteiro.
+
 **Modos da Ana**:
 A Ana é um único agente com três modos de comportamento (atendimento, comercial, ouvidoria), não subagentes. Decisão fechada no briefing do diretor (jun/2026). Quando a tag `ouvidoria` é aplicada, o modo comercial morre para aquela thread (regra de exclusão).
 _Avoid_: subagentes, agentes especializados
@@ -57,8 +73,8 @@ _Avoid_: subagentes, agentes especializados
 O número de WhatsApp do hospital que concentra o volume real de pacientes (~20 mil mensagens/mês e a fila de não respondidas do baseline). Hoje está conectado ao Kommo e é atendido só por humanos; a Ana ainda não passa por ele. Levar a Ana para este canal é a entrega que ataca a fila e realiza o valor do programa.
 
 **Canal de teste (Telegram)**:
-Canal Telegram plugado no Chatwoot onde a Ana opera hoje, usado para testes e validação (hotfix, integração MV), sem o volume real do hospital.
-_Avoid_: dizer "Ana em produção" sem qualificar o canal; enquanto a migração não acontece, "produção" significa o ambiente vivo do n8n respondendo o canal de teste.
+Canal Telegram (bot SaoMatheusBot) plugado no Chatwoot onde a Ana opera hoje, respondida pelo fazer.ai agents. É o palco do Roteiro de cenários; sem o volume real do hospital.
+_Avoid_: dizer "Ana em produção" sem qualificar o canal; "ligar o bot na plataforma nova" (a inbox do Telegram já está vinculada à Ana; o que faltava era aposentar o n8n).
 
 **Kommo**:
 CRM legado do hospital, onde o canal principal está plugado hoje e onde os atendentes trabalham; fonte do baseline congelado do documento-mestre. Sai de cena quando o canal principal migrar para o Chatwoot.
@@ -72,7 +88,7 @@ _Avoid_: "Ana aquece e o humano fecha" como regra geral (modelo anterior à deci
 Decisão de 06/jul/2026: enquanto a fase de testes da integração MV não termina, a configuração atual do Chatwoot (etapas, tags, estados, nomes) não muda. A estrutura da seção 4 do documento-mestre (funil de 7 etapas, famílias de tags, estados, SLA) é a espec-alvo para depois, discutida e configurada junto com a entrada no canal principal.
 
 **Diferenciais**:
-Coluna da base de conhecimento (hoje Google Sheets, aba de consultas particulares) que traz o destaque do hospital por especialidade. É o insumo da ancoragem de valor no modo comercial (os `[Diferencial_1]`/`[Diferencial_2]` do SOP). Já funcional em produção via `Get_Consultas`.
+Colunas da tabela de consultas particulares da [[base-ana-nocodb]] que trazem o destaque do hospital por especialidade. São o insumo da ancoragem de valor no modo comercial (os `[Diferencial_1]`/`[Diferencial_2]` do SOP), lidos pela tool `consultar_precos_consultas` (sucessora da `Get_Consultas` do n8n).
 _Avoid_: "justificativa de especialidade" (termo usado na conversa com o diretor; o mecanismo é este)
 
 **Pós-atendimento**:
@@ -87,12 +103,25 @@ _Avoid_: apagar o registro; usar CPF de paciente real em teste.
 O banco Oracle de teste do MV que o DBeaver e a sessão Claude leem diretamente (prefixo `tst`, ~2,5 mil pacientes, base viva). Regra de acesso (07/jul/2026): homolog = leitura direta pela sessão; produção = só o Pedro, manualmente, no DBeaver. Não está confirmado que é o mesmo banco que a homologação da Global Health enxerga; até prova em contrário (pergunta GH-18), tratar como ambientes distintos.
 _Avoid_: chamar de "produção"; assumir que escrita via API GH aparece nela sem verificar.
 
-**Playground GH**:
-Ferramenta local de estudo da API de agendamento da Global Health: permite chamar cada endpoint da homologação, ver a resposta crua e conferir no Oracle onde a API grava. Fala somente com a homologação; produção é proibida nele. As queries do painel "No banco" são executáveis contra a Base TST (somente leitura); nas escritas, o veredito vem da [[prova-no-banco]].
+**Playground GH (bancada e roteiro)**:
+A seção do [[ana-os]] dedicada ao ensaio da API GH de homologação (desde o ADR-0007 é seção, não mais o portal inteiro): a **bancada da API** (chamar cada endpoint da homologação, ver a resposta crua, painel "No banco" executável contra a Base TST e a [[prova-no-banco]] nas escritas) e o **roteiro por endpoint** (passo a passo com os dados mocados + query de conferência para colar no DBeaver: nas escritas, prova de inserção antes/depois; nos GETs, query espelho para bater com a resposta da API). Chamada ao vivo, só homologação/TST; produção jamais é chamada.
+_Avoid_: apontar qualquer rota para produção; usar "playground" para o portal inteiro (o portal é o Ana OS).
+
+**Atlas do banco (produção)**:
+As páginas do portal que retratam o banco DBAMV de PRODUÇÃO: modelo real, relações, domínios, volumes, cruzamento com os endpoints da GH e a seção de insights para diretoria e novos fluxos. Nunca chama banco nenhum ao vivo: é alimentado pelos CSVs do [[pacote-de-absorcao]] depositados em `absorcao-producao/resultados/` (o servidor os expõe em leitura; `amostras/` nunca é servida). Nasce com hipóteses e ganha evidência conforme os CSVs chegam (C9).
+_Avoid_: dado pessoal de paciente no atlas; confundir retrato da produção com a bancada homolog (cada página declara seu ambiente).
+
+**Pacote de absorção (produção)**:
+`ana/api-mv/absorcao-producao/`: queries prontas que o Pedro roda manualmente no DBeaver da PRODUÇÃO (única via permitida para produção), com instrução passo a passo e nome de arquivo de resultado pré-definido por query. Duas camadas de resultado: catálogo, contagens e domínios (commitáveis, sem dado pessoal) e amostras completas (pasta `resultados/amostras/`, ignorada pelo git). A pasta de resultados é a base de conhecimento que as sessões futuras leem para raciocinar sobre o banco real; parte das perguntas do C6 e o GH-18 se respondem empiricamente por ela. Ciclo: C7 (montar, Claude) → C8 (rodar, Pedro) → C9 (absorver, Claude).
+_Avoid_: rodar o pacote pela sessão (produção é sempre manual, no DBeaver); credencial de produção no `.env`; dado pessoal em resultado commitável.
 
 **Prova no banco**:
-O veredito automático do Playground GH para chamadas de escrita: fotografa o resultado da query de verificação na Base TST antes da chamada, roda de novo depois, e mostra a diferença (a linha que apareceu ou mudou). Três desfechos: criou (diff visível), nada mudou (falhou OU a homolog GH grava em outra base, pergunta GH-18 em aberto), ou API recusou (sucesso: false). É o mecanismo que responde o GH-18 na prática.
-_Avoid_: tratar "resposta 200 da API" como prova de escrita; tratar "nada mudou na TST" como prova de falha enquanto GH-18 estiver aberto.
+O veredito automático do Playground GH para chamadas de escrita: fotografa o resultado da query de verificação na Base TST antes da chamada, roda de novo depois, e mostra a diferença (a linha que apareceu ou mudou). Três desfechos: criou (diff visível), nada mudou, ou API recusou (sucesso: false). Desde a resposta da Dácilla (MV, 24/jul/2026), a prova só é decisiva na [[finalizacao-do-agendamento]]: nos passos intermediários (pessoas, anexos etc.) "nada mudou" é o comportamento esperado, porque esses dados moram no banco SaaS da GH, não no Soul.
+_Avoid_: tratar "resposta 200 da API" como prova de escrita; esperar que POST /pessoas apareça na PACIENTE (não aparece por arquitetura, não por falha).
+
+**Finalização do agendamento**:
+O ato que efetiva a marcação: o `POST /horarios/agendar` (e seus derivados `reagendar` e o DELETE de cancelar). Fato oficial da MV (Dácilla, suporte MV, 24/jul/2026): a API de agendamento WhatsApp roda sobre o banco SaaS da Global Health (inacessível aos hospitais) e os dados do paciente só são gravados no Soul (banco MV) no momento da finalização. É o único ponto do fluxo onde faz sentido procurar o agendamento no Oracle. Na homolog, a hipótese é que o Soul correspondente seja a Base TST; provar isso é a forma atual da pergunta GH-18.
+_Avoid_: procurar no Oracle efeitos de passos intermediários do fluxo; tratar GH-18 como respondida antes de uma finalização bem-sucedida aparecer na TST.
 
 **Hotfix do prompt**:
 Primeira fase de execução (decisão desta sessão): corrigir o prompt em produção antes da integração MV. Escopo: triagem de urgência como nova Regra Global 1, Regra 6 reescrita (Ana assume "assistente virtual"), exclusão comercial↔ouvidoria, guardrails jurídicos da ouvidoria e ajustes menores.
@@ -111,22 +140,32 @@ _Avoid_: numerar entregas internas como "Fase N" solta (colide com as fases do p
 
 ### Roadmap e cockpit
 
-**Mapa (mesa de trabalho)**:
-O `roadmap/mapa.html` é a única mesa de trabalho visual do Pedro: o grafo de dependências com todas as tarefas, inteiro na tela, sem outra vista concorrente. A antiga "vista Foco" (3 colunas por canal) foi eliminada (jul/2026); a informação dela vive integrada ao próprio grafo.
-_Avoid_: "vista Foco", "aba Foco" (não existem mais); criar segunda vista/aba no mapa.
+**Ana OS**:
+O cockpit único do programa (decisão de 30/jul/2026, ADR-0007): o portal local em `localhost:8777` evolui, muda para a pasta `os/` na raiz e passa a reunir tudo numa navegação comum, no visual do `DESIGN.md` (estilo Aaply, tema claro): home com o roadmap e o painel de aplicações, diagrama de arquitetura dos canais, [[mapa-das-apis]], a bancada e o roteiro (o antigo Playground GH, agora seção), o [[atlas-do-banco]], insights de diretoria e a [[biblioteca]]. Substituiu o `roadmap/mapa.html` (aposentado em `roadmap/arquivo/` em 30/jul/2026). As regras de ambiente do ADR-0004 continuam valendo página a página.
+_Avoid_: "playground" como nome do portal inteiro (virou seção do OS); manter mapa.html e OS vivos ao mesmo tempo; terceira "central" paralela.
 
-**Esforço (P/M/G)**:
-Tamanho de cada tarefa do roadmap, atribuído manualmente: P = disparo de 5 a 15 minutos, M = uma sessão de trabalho (1 a 3h), G = várias sessões ou dias. Mede o esforço do dono para concluir, não o lead time de terceiros.
+**Roadmap do OS**:
+A estrutura do roadmap dentro do Ana OS: **Estágio atual** (tarefas Vn, disciplinadas, espelho do TODO.md), **Pendente** (dívidas conscientes, uma linha cada) e a faixa de **Ideias**. Continua sem grafo de dependências, sem trilho da receita, sem criticidade derivada. Os dados vivem em arquivo JSON versionado (não em HTML); o `/check` reconcilia TODO.md com esse arquivo.
+_Avoid_: "vista Foco"; trilho da receita, alavanca do dia, esforço P/M/G e criticidade (conceitos do mapa arquivado); reintroduzir mensalidade/KPI; card do n8n no painel; kanban de colunas.
 
-**Crítica (tarefa)**:
-Qualidade **derivada do grafo**, nunca campo manual: tarefa acionável agora (dependências prontas, não feita) que está no trilho da receita, ou destrava 2+ tarefas, ou é disparo para terceiro. Tarefa represada nunca é crítica.
-_Avoid_: campo manual de criticidade; chamar de crítica tarefa ainda travada.
+**Ideias (faixa do roadmap)**:
+Cards livres do Roadmap do OS: título + poucas linhas + link opcional para doc. Ideia não tem ID, dono nem dependência até ser puxada para o estágio (aí vira tarefa no TODO.md, com ficha e "pronto quando"). Únicos dados do OS editáveis pela interface: o server grava num único arquivo de dados do roadmap, por rota de escrita restrita (ADR-0007).
+_Avoid_: promover ideia a tarefa sem passar pelo TODO.md; dar status/dono a card de ideia.
 
-**Trilho da receita**:
-O caminho crítico D1→D2→D5→D6→D7→D8, que termina no Termo de Entregável da Ana (+R$ 2.000/mês).
+**Mapa das APIs**:
+Página do Ana OS que organiza os endpoints da API GH de WhatsApp por tema (identificação, catálogo, disponibilidade, agendamento, anexos), cada um com **selo de testabilidade** derivado da dinâmica dos bancos ([[finalizacao-do-agendamento]]): *leitura de catálogo* (resposta da API é a prova), *escrita no SaaS GH* (testável só pela resposta; invisível no Oracle por arquitetura) e *finalização* (o único ponto com [[prova-no-banco]] na TST). Nasceu puxando a metade "catálogo e viabilidade" da GH1; a metade "onde encaixar no fluxo da Ana" segue Pendente.
+_Avoid_: tratar a API GH como janela de leitura do banco MV (ela é puramente de agendamento; quem lê o MV é o Oracle TST direto, e o Atlas para produção).
 
-**Alavanca do dia**:
-A tarefa acionável mais barata que mais destrava: recomendação de "se você só tiver 15 minutos, faça isto", exibida acima do mapa.
+**Biblioteca**:
+Seção do Ana OS que exibe a documentação do repositório renderizada no navegador, a partir de uma **allowlist explícita** servida pelo server (CONTEXT.md, `docs/adr/`, `roadmap/`, os `.md` de `ana/api-mv/`, documento-mestre). A doc continua morando no git como fonte única; o OS só exibe. `dados-locais/` e `resultados/amostras/` são proibidos por regra no servidor.
+_Avoid_: wiki externa ou cópia da doc; servir qualquer pasta fora da allowlist.
+
+**Acervo do roadmap**:
+`roadmap/arquivo/`: o roadmap anterior completo (TODO com as trilhas A-G, PENDENCIAS.md, mapas antigos), arquivado intacto. Os textos prontos para a Global Health e para o analista de TI moram lá, além do histórico das trilhas de banco MV, pós-atendimento e canal principal. O `mapa.html` de 30/jul/2026 (aposentado no mesmo dia pelo Ana OS) e o playground pré-OS (`ana/api-mv/arquivo/playground-pre-os/`) moram no acervo também.
+_Avoid_: apagar; tratar o acervo como fonte do estado atual (é história, não fronteira).
+
+**Pendente (bloco do roadmap)**:
+A faixa do Roadmap do OS com as dívidas conscientes, uma linha cada: a metade restante da GH1 (desenhar onde as APIs Global Health entram no fluxo da Ana) e o sistema de protocolo da ouvidoria. Sem tarefas detalhadas até cada uma ser puxada para o estágio ativo.
 
 ### Pessoas e partes
 

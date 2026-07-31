@@ -1,0 +1,58 @@
+/* Ana OS: tokens do design system (fonte: os/DESIGN.md, referência Aaply).
+   Tema claro apenas (ADR-0007). Nenhuma cor fora da paleta. */
+
+@import url("fonts/fonts.css");
+
+:root {
+  /* Cores */
+  --color-highlighter-yellow: #e6e51e;
+  --color-annotation-red: #f34646;
+  --color-signal-blue: #466cf3;
+  --color-peach-wash: #ff8562;
+  --color-carbon: #000000;
+  --color-paper-white: #ffffff;
+  --color-graphite-mist: #f2f2f2;
+  --color-hairline-gray: #e6e6e6;
+  --color-shadow-gray: #cccccc;
+  --color-sunbeam: #fff705;
+
+  /* Famílias */
+  --font-poppins: 'Poppins', 'DM Sans', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-inter: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Escala tipográfica */
+  --text-caption: 14px;   --leading-caption: 1.57;
+  --text-body: 16px;      --leading-body: 1.53;
+  --text-subheading: 18px; --leading-subheading: 1.4;  --tracking-subheading: -0.5px;
+  --text-heading-sm: 27px; --leading-heading-sm: 1.33; --tracking-heading-sm: -0.49px;
+  --text-heading: 34px;    --leading-heading: 1.05;    --tracking-heading: -0.65px;
+  --text-heading-lg: 52px; --leading-heading-lg: 1;    --tracking-heading-lg: -3.85px;
+  --text-display: 57px;    --leading-display: 1.05;    --tracking-display: -4.22px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Layout */
+  --page-max-width: 1200px;
+  --section-gap: 96px;
+  --card-padding: 32px;
+  --element-gap: 20px;
+
+  /* Raios */
+  --radius-nav: 30px;
+  --radius-cards: 32px;
+  --radius-inputs: 16px;
+  --radius-pill: 3000px;
+  --radius-productframe: 16px;
+
+  /* Sombra (única do sistema, só na nav) */
+  --shadow-md: rgba(0, 0, 0, 0.2) 0px 10px 10px -5px;
+
+  /* Superfícies */
+  --surface-canvas: #f2f2f2;
+  --surface-card: #ffffff;
+  --surface-tinted-accent: #ff8562;
+  --surface-highlight-frame: #fff705;
+}

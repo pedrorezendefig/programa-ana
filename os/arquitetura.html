@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana OS · Arquitetura</title>
+<link rel="stylesheet" href="assets/os.css">
+<style>
+  .hero { text-align: center; padding: 40px 0 8px; }
+  .hero .lead { margin: 18px auto 0; }
+
+  .diagrama { margin-top: 36px; }
+  .diagrama .frame-corpo {
+    background-image: radial-gradient(var(--color-hairline-gray) 1.2px, transparent 1.2px);
+    background-size: 20px 20px;
+    padding: 36px 28px;
+  }
+  .trilho { display: flex; align-items: stretch; justify-content: center; gap: 0; flex-wrap: wrap; }
+  .trilho .fluxo-no { width: 200px; }
+  .conector {
+    display: flex; align-items: center; padding: 0 10px;
+    font-size: 22px; color: var(--color-carbon);
+  }
+  .conector .rotulo-conector {
+    font: var(--font-weight-medium) 11px/1.3 var(--font-inter);
+    color: #555; text-align: center; margin-right: 6px; max-width: 90px;
+  }
+  .desce { text-align: center; font-size: 22px; margin: 10px 0; }
+  .ramo { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 6px; }
+  .ramo .fluxo-no { width: 220px; }
+  .futuro { border: 3px solid var(--surface-highlight-frame); border-radius: var(--radius-cards); padding: 22px; margin-top: 40px; }
+  .futuro .cabecalho { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .obs { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 40px; }
+  .obs .card { flex: 1; min-width: 280px; padding: 22px; }
+  .obs .card h4 { font-family: var(--font-poppins); font-weight: var(--font-weight-bold); margin-bottom: 6px; }
+  .obs .card p { font-size: 14px; color: #555; }
+  .chip-futuro { background: var(--surface-highlight-frame); color: var(--color-carbon); }
+  @media (max-width: 720px) { .conector { transform: rotate(90deg); padding: 6px 0; } }
+</style>
+</head>
+<body>
+
+<main>
+  <section class="hero compacta">
+    <h1>Como as peças se <span class="destaque">conectam</span> 🔌</h1>
+    <p class="lead">O caminho de uma mensagem do paciente até a resposta da Ana, e onde cada aplicação entra.
+      Para plugar um canal novo (o WhatsApp oficial, outro bot), o desenho é o mesmo: o canal vira uma
+      <strong>inbox do Chatwoot</strong> e a inbox é vinculada à Ana no fazer.ai agents.</p>
+  </section>
+
+  <section class="compacta">
+    <div class="frame diagrama">
+      <div class="frame-topo"><span></span><span></span><span></span></div>
+      <div class="frame-corpo">
+
+        <div class="trilho">
+          <div class="fluxo-no">
+            <div class="zig">◈</div>
+            <div class="rotulo">Paciente</div>
+            <div class="sub">hoje: bot do Telegram (SaoMatheusBot) · amanhã: WhatsApp oficial</div>
+          </div>
+          <div class="conector"><span class="rotulo-conector">mensagem entra na inbox</span>→</div>
+          <div class="fluxo-no">
+            <div class="zig">◈</div>
+            <div class="rotulo">Chatwoot</div>
+            <div class="sub">inboxes, funil de etapas, tags, handoff para humanos</div>
+          </div>
+          <div class="conector"><span class="rotulo-conector">agent bot responde</span>→</div>
+          <div class="fluxo-no">
+            <div class="zig">◈</div>
+            <div class="rotulo">fazer.ai agents (Ana)</div>
+            <div class="sub">prompt do SOP, 3 modos, ferramentas nativas + tools HTTP</div>
+          </div>
+        </div>
+
+        <div class="desce">↓</div>
+        <div class="caption" style="text-align: center; margin-bottom: 6px;">a cada resposta, a Ana consulta</div>
+        <div class="ramo">
+          <div class="fluxo-no">
+            <div class="zig">▦</div>
+            <div class="rotulo">NocoDB · Base Ana</div>
+            <div class="sub">as 4 tabelas oficiais (consultas, exames, cirurgias, convênios), editadas pelo negócio</div>
+          </div>
+          <div class="fluxo-no">
+            <div class="zig">▤</div>
+            <div class="rotulo">Base de conhecimento</div>
+            <div class="sub">search_knowledge: institucional, sem precedência sobre as tabelas</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="compacta">
+    <div class="futuro">
+      <div class="cabecalho">
+        <h3 style="margin: 0;">O trecho futuro: agendamento no MV</h3>
+        <span class="chip chip-futuro">pendente · GH1</span>
+      </div>
+      <div class="trilho">
+        <div class="fluxo-no">
+          <div class="zig">◈</div>
+          <div class="rotulo">Ana</div>
+          <div class="sub">tool de agendamento</div>
+        </div>
+        <div class="conector">→</div>
+        <div class="fluxo-no">
+          <div class="zig">◈</div>
+          <div class="rotulo">API GH (WhatsApp)</div>
+          <div class="sub">catálogo, horários, agendar</div>
+        </div>
+        <div class="conector">→</div>
+        <div class="fluxo-no">
+          <div class="zig">◈</div>
+          <div class="rotulo">Banco SaaS GH</div>
+          <div class="sub">passos intermediários (invisíveis ao hospital)</div>
+        </div>
+        <div class="conector"><span class="rotulo-conector">só na finalização</span>→</div>
+        <div class="fluxo-no">
+          <div class="zig">◈</div>
+          <div class="rotulo">Soul · Oracle MV</div>
+          <div class="sub">o agendamento aparece no sistema do hospital</div>
+        </div>
+      </div>
+      <p class="caption" style="margin-top: 14px;">O detalhe endpoint a endpoint está no <a href="apis.html">Mapa das APIs</a>;
+        o ensaio ao vivo, na <a href="bancada.html">bancada</a> (homologação, jamais produção).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ao redor do fluxo</h2>
+    <div class="obs">
+      <div class="card">
+        <h4>Langfuse</h4>
+        <p>O raio-X de cada resposta: ferramentas chamadas, tokens, custo. É onde o roteiro de cenários confere o comportamento.</p>
+      </div>
+      <div class="card">
+        <h4>Coolify (VPS)</h4>
+        <p>Onde tudo isso roda: Chatwoot, fazer.ai agents, Langfuse e o NocoDB, com deploy e saúde num painel só.</p>
+      </div>
+      <div class="card">
+        <h4>Kommo (legado)</h4>
+        <p>Onde o canal principal (WhatsApp oficial) está plugado hoje, só com humanos. Sai de cena quando o canal migrar para o Chatwoot.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="os-rodape">
+  O vocabulário deste desenho segue o <code>CONTEXT.md</code> (canal de teste, canal principal, transbordo seletivo).
+</footer>
+
+<script src="assets/nav.js" data-ambiente="local"></script>
+
+</body>
+</html>

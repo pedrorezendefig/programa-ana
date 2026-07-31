@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ana OS · Roteiro</title>
+<link rel="stylesheet" href="assets/os.css">
+<style>
+  /* Exclusivo do Roteiro: grupos colapsáveis, passos numerados e blocos de query. */
+
+  header.topo { margin-bottom: 32px; }
+  header.topo h1 { margin: 14px 0 12px; }
+
+  section.grupo { margin-bottom: 40px; }
+
+  details.tema > summary { list-style: none; cursor: pointer; outline: none; }
+  details.tema > summary::-webkit-details-marker { display: none; }
+  .grupo-cabeca {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    border-bottom: 2px solid var(--color-carbon); padding-bottom: 10px;
+  }
+  details.tema > summary:hover .grupo-cabeca { border-color: var(--color-signal-blue); }
+  .grupo-num {
+    font: var(--font-weight-bold) 13px/1 var(--font-mono);
+    letter-spacing: 1px; color: var(--color-carbon);
+    background: var(--color-highlighter-yellow);
+    border-radius: var(--radius-pill); padding: 6px 12px;
+  }
+  .grupo-cabeca h2 { font-size: var(--text-heading-sm); line-height: 1.2; letter-spacing: var(--tracking-heading-sm); margin: 0; }
+  .abrir-indicador {
+    margin-left: auto; font: var(--font-weight-medium) 11px/1 var(--font-inter);
+    letter-spacing: 1.5px; text-transform: uppercase; color: #555; white-space: nowrap;
+  }
+  details.tema > summary .abrir-indicador::after { content: "abrir +"; }
+  details.tema[open] > summary .abrir-indicador::after { content: "fechar -"; }
+  .grupo-desc { color: #444; margin: 14px 0 18px; font-size: var(--text-body); max-width: 76ch; }
+
+  article.card { margin-bottom: var(--element-gap); }
+  article.card h3 {
+    font-size: 20px; line-height: 1.3; letter-spacing: -0.2px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 8px;
+  }
+  /* marcador do passo: círculo amarelo com o número em preto */
+  .num {
+    font: var(--font-weight-bold) 13px/1 var(--font-poppins);
+    color: var(--color-carbon); background: var(--color-highlighter-yellow);
+    border-radius: var(--radius-pill); min-width: 30px; height: 30px; padding: 0 9px;
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  }
+  .path { font: var(--font-weight-regular) 12.5px/1.4 var(--font-mono); color: #666; }
+
+  .objetivo { margin: 8px 0 12px; font-size: 15px; color: #444; max-width: 78ch; }
+  .objetivo b { color: var(--color-carbon); }
+
+  ol.passos { margin: 0 0 14px; padding-left: 22px; font-size: 15px; }
+  ol.passos li { margin-bottom: 6px; max-width: 78ch; }
+  ol.passos .atencao { color: var(--color-annotation-red); font-weight: var(--font-weight-medium); }
+
+  .query-bloco { margin: 14px 0; }
+  .query-bloco .frame-topo { align-items: center; gap: 8px; }
+  .query-bloco .frame-topo .ponto { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+  .query-titulo {
+    font: var(--font-weight-medium) 11.5px/1.3 var(--font-inter);
+    letter-spacing: .06em; text-transform: uppercase; margin-left: 4px;
+  }
+  .query-bloco .frame-corpo { padding: 0; }
+  .query-bloco pre { border-radius: 0; margin: 0; }
+  .copiar { margin-left: auto; }
+
+  .nota {
+    background: var(--surface-card); border: 1px solid var(--color-hairline-gray);
+    border-left: 6px solid var(--color-highlighter-yellow);
+    border-radius: var(--radius-productframe); padding: 16px 20px;
+    font-size: 15px; margin-bottom: var(--element-gap); max-width: 88ch;
+  }
+  .nota.vermelha { border-left-color: var(--color-annotation-red); }
+
+  .veredito, .sem-trilha {
+    border: 1px solid var(--color-hairline-gray);
+    border-radius: var(--radius-productframe);
+    background: var(--color-graphite-mist);
+    padding: 14px 18px; margin: 14px 0; font-size: 14.5px; max-width: 82ch;
+  }
+  .veredito { border-left: 6px solid var(--color-highlighter-yellow); }
+  .sem-trilha { border-left: 6px solid var(--color-annotation-red); }
+  .veredito .titulo, .sem-trilha .titulo {
+    font: var(--font-weight-medium) 11px/1 var(--font-inter);
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .veredito ul { margin: 0; padding-left: 18px; }
+  .veredito li { margin-bottom: 6px; max-width: 80ch; }
+  .veredito b.ok { color: #0a7a43; }
+  .veredito b.meio { color: var(--color-signal-blue); }
+  .veredito b.ruim { color: var(--color-annotation-red); }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="topo">
+    <span class="chip contorno">Homologação · dem.agenda</span>
+    <h1>Roteiro <span class="destaque">por zona de banco</span></h1>
+    <p class="lead">Os endpoints da API separados por onde o dado vive, segundo o fato oficial da MV (Dácilla, suporte, 24/jul/2026): a API de agendamento por WhatsApp roda sobre o banco SaaS da Global Health (inacessível ao hospital) e o banco Soul (o Oracle do MV) só é tocado na finalização do agendamento. Zona Soul: dá para conferir no DBeaver, com a query pronta em cada card. Zona GH: não há o que procurar no banco; a conferência é a resposta da API. Toda conferência no banco é manual (o firewall bloqueia consulta automática).</p>
+  </header>
+
+  <div class="nota">
+    <b>Paciente-sonda:</b> todos os testes usam o cadastro fictício <code>TESTE INTEGRACAO ANA VITTA</code> (CPF <code>66301102770</code>, id <code>1681</code>), criado via API na homologação. É o único dado pessoal permitido neste roteiro e nas queries de conferência. Nunca use CPF, nome ou telefone de paciente real.
+  </div>
+
+  <div class="card">
+    <h3><span class="metodo">MÉTODO</span> Antes de começar</h3>
+    <ol class="passos">
+      <li>Suba o servidor local (<code>python3 ana/api-mv/playground/server.py</code>) e abra a Bancada em <code>localhost:8777</code>: é ela que dispara as chamadas de API.</li>
+      <li>Para as conferências no banco, conecte a <b>VPN HSM</b> e abra o DBeaver na sua conexão do banco Soul (owner <code>DBAMV</code>). <b>Sempre manual:</b> copie a query do card e cole no DBeaver. Nenhuma query roda sozinha a partir daqui.</li>
+      <li>Trabalhe pelas zonas: o grupo 01 (catálogo) alimenta os ids que o grupo 02 (finalização) pede. O grupo 03 é a zona GH: dispare quando o fluxo exigir, mas não procure efeito no banco.</li>
+      <li>Anote cada resultado dos dois lados (resposta da API e linhas do banco). As divergências alimentam as perguntas abertas GH-18, GH-19 e C6-6.</li>
+    </ol>
+    <p class="caption">Esta página não chama API nem banco: quem dispara a API é a Bancada, e quem roda SQL é você, no DBeaver.</p>
+  </div>
+
+  <div class="nota vermelha">
+    <b>O mapa das zonas em uma frase:</b> pessoas, carteiras, anexos e respostas de triagem ficam no banco da GH e <b>nunca</b> aparecem no Soul (arquitetura, não falha); o catálogo (itens, convênios, prestadores, agendas) nasce no Soul e a GH espelha; a escrita no Soul acontece <b>só</b> no agendar/reagendar/cancelar. Na <code>IT_AGENDA_CENTRAL</code> existem as colunas <code>CD_IT_AGENDA_CENTRAL_INTEGRA</code>, <code>CD_SEQ_INTEGRA</code> e <code>DT_INTEGRA</code>, hoje 100% vazias: qualquer linha com elas preenchidas é o detector de que a escrita externa chegou neste banco (GH-18).
+  </div>
+
+  <!-- ============ GRUPO 01 · ZONA SOUL · LEITURA ============ -->
+  <section class="grupo">
+    <details class="tema" open>
+      <summary><div class="grupo-cabeca"><span class="grupo-num">01</span><h2>Zona Soul · Catálogo (leitura espelho)</h2><span class="chip azul">confere no DBeaver</span><span class="abrir-indicador"></span></div></summary>
+      <p class="grupo-desc">O que a API oferta nasce nas tabelas do Soul: itens de agendamento, convênios e planos, prestadores, agendas e horários. Cada card tem a query espelho para comparar a resposta da API com a fonte. Aviso GH-19: enquanto a massa da homolog não for publicada, resposta com <code>conteudo: []</code> é o esperado e deve ser registrada como tal.</p>
+
+      <article class="card" id="e04">
+        <h3><span class="num">4</span><span class="metodo">GET</span> Buscar consultas (especialidades) <span class="path">/consultas?pesquisa=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> conferir o que o canal enxerga do catálogo de consultas e comparar com o que existe no MV. Obs.: <code>bloqueado</code>, <code>mensagemBloqueio</code> e <code>ordem</code> são camada da GH (configuração do canal), não do Soul.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>pesquisa</code> com <code>CARDIOLOGIA</code>. Dispare.</li>
+          <li>Rode a query espelho no DBeaver.</li>
+          <li><span class="atencao">Interpretação:</span> se a query traz itens e a API vem vazia, o catálogo existe no MV mas não foi publicado para o canal (GH-19): registre a evidência.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · itens de agendamento parecidos com a pesquisa</div><button class="btn ghost mini copiar" data-copiar="sql-04">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-04">SELECT CD_ITEM_AGENDAMENTO, DS_ITEM_AGENDAMENTO,
+       TP_ITEM, SN_ATIVO
+FROM   DBAMV.ITEM_AGENDAMENTO
+WHERE  UPPER(DS_ITEM_AGENDAMENTO) LIKE UPPER('%CARDIOLOGIA%')
+ORDER  BY DS_ITEM_AGENDAMENTO;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e05">
+        <h3><span class="num">5</span><span class="metodo">GET</span> Buscar exames <span class="path">/exames?pesquisa=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> mesmo teste do card 4, agora para exames; no MV, exame também é ITEM_AGENDAMENTO (TP_ITEM = I aponta para EXA_RX).</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>pesquisa</code> com <code>ULTRA</code>. Dispare.</li>
+          <li>Rode os dois espelhos: o catálogo geral e o cadastro de exames de imagem.</li>
+          <li><span class="atencao">Interpretação:</span> catálogo no MV + API vazia = massa não publicada para o canal (GH-19), mesmo aviso do card 4.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · itens de agendamento parecidos com a pesquisa</div><button class="btn ghost mini copiar" data-copiar="sql-05-a">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-05-a">SELECT CD_ITEM_AGENDAMENTO, DS_ITEM_AGENDAMENTO,
+       TP_ITEM, SN_ATIVO
+FROM   DBAMV.ITEM_AGENDAMENTO
+WHERE  UPPER(DS_ITEM_AGENDAMENTO) LIKE UPPER('%ULTRA%')
+ORDER  BY DS_ITEM_AGENDAMENTO;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · e no cadastro de exames de imagem</div><button class="btn ghost mini copiar" data-copiar="sql-05-b">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-05-b">SELECT CD_EXA_RX, DS_EXA_RX, NR_DIAS_ENTREGA, SN_ATIVO
+FROM   DBAMV.EXA_RX
+WHERE  UPPER(DS_EXA_RX) LIKE UPPER('%ULTRA%');</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e06">
+        <h3><span class="num">6</span><span class="metodo">GET</span> Buscar convênios <span class="path">/convenios?pesquisa=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> comparar a lista de convênios da API com a tabela CONVENIO do MV e anotar um id para o card 7.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>pesquisa</code> com <code>UNIMED</code> (ou deixe vazio para listar todos). Dispare.</li>
+          <li>Rode a query espelho (se pesquisou outro termo, troque <code>UNIMED</code> por ele).</li>
+          <li><span class="atencao">Atenção:</span> o id que a API devolve não é garantido ser o CD_CONVENIO do MV; confirme comparando os nomes. Anote um <code>CD_CONVENIO</code> real para usar no card 7.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · convênios parecidos com a pesquisa</div><button class="btn ghost mini copiar" data-copiar="sql-06">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-06">SELECT CD_CONVENIO, NM_CONVENIO
+FROM   DBAMV.CONVENIO
+WHERE  UPPER(NM_CONVENIO) LIKE UPPER('%UNIMED%')
+ORDER  BY NM_CONVENIO;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e07">
+        <h3><span class="num">7</span><span class="metodo">GET</span> Planos de um convênio <span class="path">/convenios/{idConvenio}/planos</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> listar os planos de um convênio e comparar com a tabela CON_PLA.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>idConvenio</code> com um <code>CD_CONVENIO</code> real anotado no espelho do card 6. Dispare.</li>
+          <li>Na query abaixo, troque <code>&lt;idConvenio&gt;</code> pelo mesmo número e rode no DBeaver.</li>
+          <li>Mesma ressalva do card 6: o id da API pode não ser o CD do MV; o <code>SELECT *</code> serve para conhecer as colunas na primeira rodada.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · planos do convênio no banco Soul</div><button class="btn ghost mini copiar" data-copiar="sql-07">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-07">SELECT *
+FROM   DBAMV.CON_PLA
+WHERE  CD_CONVENIO = &lt;idConvenio&gt;;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e22">
+        <h3><span class="num">22</span><span class="metodo">GET</span> Sub-planos de um plano <span class="path">/convenios/{idConvenio}/planos/{idPlano}/subPlanos</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> verificar se o hospital usa sub-planos; a própria doc avisa que a grande maioria não usa, então vazio é normal.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>idConvenio</code> (card 6) e <code>idPlano</code> (card 7) na URL. Dispare.</li>
+          <li>Rode a query espelho: alguma marcação já usou sub-plano neste banco?</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · marcações com sub-plano no banco Soul</div><button class="btn ghost mini copiar" data-copiar="sql-22">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-22">SELECT CD_IT_AGENDA_CENTRAL, CD_CONVENIO, CD_CON_PLA, CD_SUB_PLANO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  CD_SUB_PLANO IS NOT NULL
+AND    ROWNUM <= 50;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e08">
+        <h3><span class="num">8</span><span class="metodo">GET</span> Buscar prestadores (médicos) <span class="path">/prestadores?pesquisa=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> conferir a lista de médicos/recursos que a API expõe contra a tabela PRESTADOR.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>pesquisa</code> com um trecho de nome, por exemplo <code>SILVA</code> (ou deixe vazio para listar todos). Dispare.</li>
+          <li>Rode a query espelho (troque <code>SILVA</code> pelo termo que usou).</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · prestadores parecidos com a pesquisa</div><button class="btn ghost mini copiar" data-copiar="sql-08">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-08">SELECT CD_PRESTADOR, NM_PRESTADOR
+FROM   DBAMV.PRESTADOR
+WHERE  UPPER(NM_PRESTADOR) LIKE UPPER('%SILVA%')
+ORDER  BY NM_PRESTADOR;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e09">
+        <h3><span class="num">9</span><span class="metodo">GET</span> Horários livres <span class="path">/agendas/v2</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> o coração do fluxo: comparar os horários que a API devolve com os slots livres do MV (pergunta C6-6: como se lê um slot livre).</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>idItemAgendamento</code> (card 4 ou 5), <code>idConvenio</code> (card 6) e <code>idPlano</code> (card 7). Dispare.</li>
+          <li>Rode a query espelho: slot livre no MV é IT_AGENDA_CENTRAL sem paciente (CD_PACIENTE nulo), não bloqueado, em agenda de hoje em diante.</li>
+          <li><span class="atencao">Interpretação:</span> se a query traz slots e a API responde sem horários, faltou publicar a agenda para o canal (GH-19). Anote toda divergência entre os dois lados: ela alimenta a C6-6.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · slots livres de hoje em diante no banco Soul</div><button class="btn ghost mini copiar" data-copiar="sql-09">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-09">SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA,
+       ac.DT_AGENDA, ac.CD_PRESTADOR, ac.QT_MARCADOS, ac.QT_ATENDIMENTO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+JOIN   DBAMV.AGENDA_CENTRAL ac
+       ON ac.CD_AGENDA_CENTRAL = ic.CD_AGENDA_CENTRAL
+WHERE  ic.CD_PACIENTE IS NULL
+AND    ic.SN_BLOQUEADO = 'N'
+AND    ac.DT_AGENDA >= TRUNC(SYSDATE)
+ORDER  BY ac.DT_AGENDA, ic.HR_AGENDA;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e10">
+        <h3><span class="num">10</span><span class="metodo">GET</span> Tipos de consulta <span class="path">/consultas/tipos?idAgenda=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> descobrir os tipos de marcação (primeira consulta, retorno...) da agenda escolhida; o id vira o idTipoMarcacao do agendar.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>idAgenda</code> com o campo <code>idAgenda</code> devolvido em <code>/agendas/v2</code> (card 9). Dispare.</li>
+          <li>Rode as duas queries: o catálogo completo de tipos de marcação (TIP_MAR, 16 linhas) e a amostra da tabela que liga agenda a tipo.</li>
+          <li><span class="atencao">Atenção:</span> o idAgenda da API pode não ser o CD_AGENDA_CENTRAL do MV; use a amostra para mapear.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · catálogo de tipos de marcação</div><button class="btn ghost mini copiar" data-copiar="sql-10-a">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-10-a">SELECT *
+FROM   DBAMV.TIP_MAR
+ORDER  BY CD_TIP_MAR;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · tipos de marcação permitidos nas agendas (amostra)</div><button class="btn ghost mini copiar" data-copiar="sql-10-b">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-10-b">SELECT *
+FROM   DBAMV.AGENDA_CENTRAL_SER_TIPO
+WHERE  ROWNUM <= 50;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e23">
+        <h3><span class="num">23</span><span class="metodo">GET</span> Instruções do horário <span class="path">/horarios/{id}/instrucoes</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> pegar o texto de preparo do horário e comparar com a fonte provável no MV (EXA_RX.DS_ORIENTACAO).</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>id</code> (o idHorario de <code>/agendas/v2</code>, card 9), <code>idItemAgendamento</code> e <code>idConvenio</code>. Dispare.</li>
+          <li>Na query abaixo, troque <code>&lt;idItemAgendamento&gt;</code> pelo id usado e rode.</li>
+          <li><span class="atencao">Interpretação:</span> compare o texto da API com DS_ORIENTACAO: se baterem, achamos a fonte.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · o preparo do item, direto na fonte</div><button class="btn ghost mini copiar" data-copiar="sql-23">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-23">SELECT ia.CD_ITEM_AGENDAMENTO, ia.DS_ITEM_AGENDAMENTO,
+       ex.DS_EXA_RX, ex.DS_ORIENTACAO
+FROM   DBAMV.ITEM_AGENDAMENTO ia
+LEFT JOIN DBAMV.EXA_RX ex ON ex.CD_EXA_RX = ia.CD_EXA_RX
+WHERE  ia.CD_ITEM_AGENDAMENTO = &lt;idItemAgendamento&gt;;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e24">
+        <h3><span class="num">24</span><span class="metodo">GET</span> Instrução geral do exame <span class="path">/exames/instrucaoGeral</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> pegar as instruções do exame sem depender de horário; mesma fonte provável do card 23.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>idItemAgendamento</code> (um exame do card 5). Dispare.</li>
+          <li>Rode o mesmo espelho do card 23 (troque <code>&lt;idItemAgendamento&gt;</code> pelo id usado) e compare os textos.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · o preparo do item, direto na fonte</div><button class="btn ghost mini copiar" data-copiar="sql-24">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-24">SELECT ia.CD_ITEM_AGENDAMENTO, ia.DS_ITEM_AGENDAMENTO,
+       ex.DS_EXA_RX, ex.DS_ORIENTACAO
+FROM   DBAMV.ITEM_AGENDAMENTO ia
+LEFT JOIN DBAMV.EXA_RX ex ON ex.CD_EXA_RX = ia.CD_EXA_RX
+WHERE  ia.CD_ITEM_AGENDAMENTO = &lt;idItemAgendamento&gt;;</pre>
+          </div>
+        </div>
+      </article>
+    </details>
+  </section>
+
+  <!-- ============ GRUPO 02 · ZONA SOUL · ESCRITA ============ -->
+  <section class="grupo">
+    <details class="tema" open>
+      <summary><div class="grupo-cabeca"><span class="grupo-num">02</span><h2>Zona Soul · Finalização (a escrita que conta)</h2><span class="chip azul">confere no DBeaver</span><span class="abrir-indicador"></span></div></summary>
+      <p class="grupo-desc">O único ponto do fluxo onde a GH grava no banco Soul: agendar, remarcar e cancelar. Toda escrita segue a sequência da prova: query ANTES, disparo, MESMA query DEPOIS, veredito. O detector definitivo são as colunas de integração da IT_AGENDA_CENTRAL, hoje 100% vazias.</p>
+
+      <article class="card moldura" id="e12">
+        <h3><span class="num">12</span><span class="metodo post">POST</span> Agendar horário <span class="path">/horarios/agendar</span> <span class="chip selo-finalizacao">escrita</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> efetivar uma marcação de verdade e verificar se ela materializa slot preenchido na IT_AGENDA_CENTRAL deste banco. É a prova decisiva da GH-18: pelo fato da MV, é AQUI (e só aqui) que o Soul deve ser tocado.</p>
+        <ol class="passos">
+          <li><b>Prova ANTES:</b> rode as queries abaixo no DBeaver e guarde os resultados (o detector de integração deve vir vazio).</li>
+          <li>Na Bancada, preencha <code>cpf</code> com a sonda <code>66301102770</code> e os ids colhidos nos cards anteriores: <code>idItemAgendamento</code> (4 ou 5), <code>idConvenio</code> (6), <code>idPlano</code> (7), <code>idHorario</code> (9) e, se consulta, <code>idTipoMarcacao</code> (10); se exame, as respostas de triagem (card 11, zona GH). Dispare.</li>
+          <li><b>Prova DEPOIS:</b> rode as MESMAS queries. Rode também a query-janela de 15 minutos.</li>
+          <li><span class="atencao">Cenário de hoje:</span> sem massa publicada (GH-19), o esperado é recusa coerente (<code>sucesso: false</code> com <code>mensagemErro</code>). Registre a mensagem exata.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Prova 1 · detector de integração (hoje: zero linhas)</div><button class="btn ghost mini copiar" data-copiar="sql-12-a">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-12-a">SELECT CD_IT_AGENDA_CENTRAL, CD_IT_AGENDA_CENTRAL_INTEGRA,
+       CD_SEQ_INTEGRA, DT_INTEGRA, CD_PACIENTE, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  DT_INTEGRA IS NOT NULL
+   OR  CD_SEQ_INTEGRA IS NOT NULL
+   OR  CD_IT_AGENDA_CENTRAL_INTEGRA IS NOT NULL;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Prova 2 · marcações gravadas nas últimas 24h</div><button class="btn ghost mini copiar" data-copiar="sql-12-b">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-12-b">SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA, ic.CD_PACIENTE,
+       ic.NM_PACIENTE, ic.TP_SITUACAO, ic.TP_FORMA_AGENDAMENTO,
+       ic.CD_USUARIO, ic.DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+WHERE  ic.DT_GRAVACAO >= SYSDATE - 1
+ORDER  BY ic.DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Prova 3 · agendamentos do paciente-sonda (via CPF)</div><button class="btn ghost mini copiar" data-copiar="sql-12-c">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-12-c">SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA, ic.TP_SITUACAO,
+       ic.CD_ITEM_AGENDAMENTO, ic.CD_CONVENIO, ic.DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+JOIN   DBAMV.PACIENTE p ON p.CD_PACIENTE = ic.CD_PACIENTE
+WHERE  p.NR_CPF = '66301102770'
+ORDER  BY ic.DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query-janela · o que entrou em IT_AGENDA_CENTRAL nos últimos 15 minutos?</div><button class="btn ghost mini copiar" data-copiar="sql-12-d">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-12-d">SELECT CD_IT_AGENDA_CENTRAL, HR_AGENDA, CD_PACIENTE, NM_PACIENTE, TP_SITUACAO, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  DT_GRAVACAO >= SYSDATE - INTERVAL '15' MINUTE
+ORDER  BY DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+        <div class="veredito">
+          <div class="titulo">Como ler o resultado</div>
+          <ul>
+            <li><b class="ok">Linha nova apareceu (melhor ainda: com DT_INTEGRA preenchida):</b> a homolog GH grava NESTE banco. É a resposta da GH-18: avise imediatamente.</li>
+            <li><b class="meio">Nada mudou e a API respondeu sucesso:</b> a homolog finaliza em outro Soul (não neste banco). Evidência forte da GH-18: registre e leve para a MV.</li>
+            <li><b class="ruim">A API recusou:</b> sem massa publicada (GH-19), a recusa coerente é o esperado hoje; anote a mensagem.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card" id="e13">
+        <h3><span class="num">13</span><span class="metodo">GET</span> Listar agendamentos do paciente <span class="path">/agendamentos?cpf=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> listar as marcações ativas da sonda. Atenção à zona: a lista, o <code>protocolo</code> e o <code>status</code> vêm do banco da GH; o que se confere no Soul é o reflexo da marcação finalizada.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>cpf</code> com a sonda <code>66301102770</code>.</li>
+          <li><span class="atencao">GH-20:</span> o filtro <code>tipoAgendamento</code> só aceita <code>CONSULTA</code> ou <code>EXAME</code> em CAIXA ALTA: minúsculo derruba a API com HTTP 500 (testado em 07/jul/2026). Use sempre os valores do seletor da Bancada.</li>
+          <li>Dispare e compare com a query espelho.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · marcações do paciente-sonda no banco Soul</div><button class="btn ghost mini copiar" data-copiar="sql-13">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-13">SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA, ic.TP_SITUACAO,
+       ic.CD_ITEM_AGENDAMENTO, ic.CD_CONVENIO, ic.DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+JOIN   DBAMV.PACIENTE p ON p.CD_PACIENTE = ic.CD_PACIENTE
+WHERE  p.NR_CPF = '66301102770'
+ORDER  BY ic.DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="e14">
+        <h3><span class="num">14</span><span class="metodo">GET</span> Consultar um agendamento <span class="path">/agendamentos/{id}</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> buscar um agendamento pelo id da GH e testar se esse id (ou o protocolo) fica gravado na marcação do Soul, provavelmente em CD_IT_AGENDA_CENTRAL_INTEGRA.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>id</code> com o campo <code>id</code> devolvido em <code>/agendamentos</code> (card 13). Dispare.</li>
+          <li>Na primeira query, troque <code>&lt;id&gt;</code> pelo mesmo número e rode (procura o id da GH na coluna de integração).</li>
+          <li>Se vier vazia, rode o plano B: as gravações recentes mostram a linha certa mesmo com outra chave.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query espelho · o id da GH ficou na coluna de integração?</div><button class="btn ghost mini copiar" data-copiar="sql-14-a">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-14-a">SELECT CD_IT_AGENDA_CENTRAL, CD_IT_AGENDA_CENTRAL_INTEGRA,
+       CD_SEQ_INTEGRA, DT_INTEGRA, HR_AGENDA, CD_PACIENTE, TP_SITUACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  CD_IT_AGENDA_CENTRAL_INTEGRA = '&lt;id&gt;'
+   OR  CD_IT_AGENDA_CENTRAL = &lt;id&gt;;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Plano B · gravações recentes</div><button class="btn ghost mini copiar" data-copiar="sql-14-b">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-14-b">SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA, ic.CD_PACIENTE,
+       ic.NM_PACIENTE, ic.TP_SITUACAO, ic.TP_FORMA_AGENDAMENTO,
+       ic.CD_USUARIO, ic.DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+WHERE  ic.DT_GRAVACAO >= SYSDATE - 1
+ORDER  BY ic.DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card moldura" id="e15">
+        <h3><span class="num">15</span><span class="metodo post">POST</span> Remarcar (reagendar) <span class="path">/horarios/reagendar</span> <span class="chip selo-finalizacao">escrita</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> trocar um agendamento por um novo horário e observar no banco o par: slot antigo liberado (ou cancelado) e slot novo preenchido.</p>
+        <ol class="passos">
+          <li><b>Prova ANTES:</b> rode a query de gravações recentes abaixo e guarde o resultado.</li>
+          <li>Na Bancada, preencha <code>idHorario</code> (um horário novo, escolhido em <code>/agendas/v2</code>, card 9) e <code>idAgendamentoAnterior</code> (o agendamento a trocar, card 13). Dispare.</li>
+          <li><b>Prova DEPOIS:</b> rode a MESMA query: o antigo e o novo devem aparecer. Rode também a query-janela de 15 minutos.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Prova · gravações das últimas 24h (antigo e novo devem aparecer)</div><button class="btn ghost mini copiar" data-copiar="sql-15-a">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-15-a">SELECT ic.CD_IT_AGENDA_CENTRAL, ic.HR_AGENDA, ic.CD_PACIENTE,
+       ic.NM_PACIENTE, ic.TP_SITUACAO, ic.TP_FORMA_AGENDAMENTO,
+       ic.CD_USUARIO, ic.DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL ic
+WHERE  ic.DT_GRAVACAO >= SYSDATE - 1
+ORDER  BY ic.DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query-janela · o que entrou em IT_AGENDA_CENTRAL nos últimos 15 minutos?</div><button class="btn ghost mini copiar" data-copiar="sql-15-b">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-15-b">SELECT CD_IT_AGENDA_CENTRAL, HR_AGENDA, CD_PACIENTE, NM_PACIENTE, TP_SITUACAO, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  DT_GRAVACAO >= SYSDATE - INTERVAL '15' MINUTE
+ORDER  BY DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+        <div class="veredito">
+          <div class="titulo">Como ler o resultado</div>
+          <ul>
+            <li><b class="ok">Duas linhas novas (antigo e novo):</b> a remarcação aconteceu NESTE banco; anote como o slot antigo ficou (liberado ou situação C).</li>
+            <li><b class="meio">Nada mudou e a API respondeu sucesso:</b> a homolog finaliza em outro Soul; evidência da GH-18.</li>
+            <li><b class="ruim">A API recusou:</b> anote a mensagem; sem agendamento prévio (cards 12 e 13 vazios), a recusa é o esperado.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card moldura" id="e16">
+        <h3><span class="num">16</span><span class="metodo delete">DELETE</span> Cancelar agendamento <span class="path">/agendamentos/{id}</span> <span class="chip selo-finalizacao">escrita</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> cancelar uma marcação e descobrir o comportamento no MV: o slot vira TP_SITUACAO = 'C' ou é liberado (CD_PACIENTE volta a nulo)? É pergunta aberta do mapa (T7).</p>
+        <ol class="passos">
+          <li><b>Prova ANTES:</b> rode as duas primeiras queries (cancelados das últimas 24h e a direta pelo id, trocando <code>&lt;id&gt;</code>) e guarde os resultados.</li>
+          <li>Na Bancada, preencha <code>id</code> com o agendamento a cancelar (campo <code>id</code> do card 13). Dispare. A doc diz que a resposta é vazia com status 200: corpo vazio é sucesso.</li>
+          <li><b>Prova DEPOIS:</b> rode as MESMAS queries e a query-janela de 15 minutos.</li>
+          <li><span class="atencao">Anote o achado:</span> se a linha aparece com situação C, cancelar marca o slot; se o CD_PACIENTE voltou a nulo, cancelar libera o slot. Registre qual dos dois aconteceu.</li>
+        </ol>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Prova 1 · slots cancelados nas últimas 24h</div><button class="btn ghost mini copiar" data-copiar="sql-16-a">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-16-a">SELECT CD_IT_AGENDA_CENTRAL, HR_AGENDA, CD_PACIENTE,
+       TP_SITUACAO, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  TP_SITUACAO = 'C'
+AND    DT_GRAVACAO >= SYSDATE - 1
+ORDER  BY DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Prova 2 · tentativa direta pelo id da API</div><button class="btn ghost mini copiar" data-copiar="sql-16-b">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-16-b">SELECT CD_IT_AGENDA_CENTRAL, TP_SITUACAO, CD_PACIENTE, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  CD_IT_AGENDA_CENTRAL = &lt;id&gt;;</pre>
+          </div>
+        </div>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Query-janela · o que entrou em IT_AGENDA_CENTRAL nos últimos 15 minutos?</div><button class="btn ghost mini copiar" data-copiar="sql-16-c">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-16-c">SELECT CD_IT_AGENDA_CENTRAL, HR_AGENDA, CD_PACIENTE, NM_PACIENTE, TP_SITUACAO, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  DT_GRAVACAO >= SYSDATE - INTERVAL '15' MINUTE
+ORDER  BY DT_GRAVACAO DESC;</pre>
+          </div>
+        </div>
+        <div class="veredito">
+          <div class="titulo">Como ler o resultado</div>
+          <ul>
+            <li><b class="ok">O slot mudou (situação C ou paciente removido):</b> o cancelamento aconteceu NESTE banco; anote o comportamento exato (pergunta T7).</li>
+            <li><b class="meio">Nada mudou e a API respondeu 200 vazio:</b> a homolog finaliza em outro Soul; evidência da GH-18.</li>
+            <li><b class="ruim">A API recusou:</b> anote a mensagem; sem agendamento prévio, a recusa é o esperado.</li>
+          </ul>
+        </div>
+      </article>
+    </details>
+  </section>
+
+  <!-- ============ GRUPO 03 · ZONA GH ============ -->
+  <section class="grupo">
+    <details class="tema">
+      <summary><div class="grupo-cabeca"><span class="grupo-num">03</span><h2>Zona GH · Sem trilha no banco Soul</h2><span class="chip tag">confere só pela API</span><span class="abrir-indicador"></span></div></summary>
+      <p class="grupo-desc">Pessoas, carteiras, anexos e triagem vivem no banco SaaS da Global Health, que o hospital não acessa (fato da MV, 24/jul/2026). Estes passos continuam necessários no fluxo (a GH exige pessoa cadastrada antes de agendar), mas <b>não procure efeito no Oracle</b>: "nada mudou no banco" é o comportamento correto, por arquitetura. A conferência aqui é a própria resposta da API.</p>
+
+      <article class="card" id="e01">
+        <h3><span class="num">1</span><span class="metodo">GET</span> Buscar paciente por CPF <span class="path">/pessoas?cpf=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> provar que a API localiza o paciente-sonda pelo CPF no cadastro da GH.</p>
+        <ol class="passos">
+          <li>Na Bancada, grupo 01, card <code>Buscar paciente por CPF</code>: o campo <code>cpf</code> já vem preenchido com a sonda <code>66301102770</code>. Dispare.</li>
+          <li>Leia a resposta: a API deve <b>achar</b> a sonda. Anote o <code>id</code> devolvido (id da GH, sem relação com CD_PACIENTE).</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Sem query no banco</div>
+          O cadastro consultado é o da GH. A tabela PACIENTE do Soul é outro universo: ela só ganha (ou vincula) o paciente na finalização do agendamento (grupo 02).
+        </div>
+      </article>
+
+      <article class="card" id="e02">
+        <h3><span class="num">2</span><span class="metodo">GET</span> Buscar paciente por telefone <span class="path">/pessoas?telefone=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> validar o atalho do WhatsApp: localizar o paciente pelo telefone, sem pedir CPF.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>telefone</code> com <code>21999990000</code> (o telefone com que a sonda foi criada). Dispare.</li>
+          <li>Confira na resposta se a sonda volta. Este lookup é o atalho de UX da Ana (o telefone do WhatsApp chega de graça); o CPF continua sendo a confirmação de identidade.</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Sem query no banco</div>
+          Mesmo caso do card 1: o telefone pesquisado é o do cadastro GH.
+        </div>
+      </article>
+
+      <article class="card" id="e03">
+        <h3><span class="num">3</span><span class="metodo post">POST</span> Criar ou atualizar paciente <span class="path">/pessoas</span> <span class="chip tag">escrita no banco GH</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> cadastrar uma pessoa de teste no registro da GH, pré-requisito para o agendar.</p>
+        <ol class="passos">
+          <li>Na Bancada, use o botão <code>Gerar dados de teste</code>: ele preenche um CPF sintético com dígito verificador válido e nome com prefixo <code>TESTE ANA</code>.</li>
+          <li>Dispare o POST e guarde o <code>id</code> devolvido.</li>
+          <li>Confirme pelo GET (card 1) com o mesmo CPF: a pessoa deve voltar.</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Não procure na PACIENTE</div>
+          Este POST grava no banco da GH e <b>não aparece</b> na PACIENTE do Soul: é arquitetura, não falha (foi exatamente o observado com a sonda em 07/jul/2026, antes de a MV explicar). A antiga "prova antes/depois" deste card foi aposentada.
+        </div>
+      </article>
+
+      <article class="card" id="e11">
+        <h3><span class="num">11</span><span class="metodo">GET</span> Perguntas de triagem do exame <span class="path">/exames/perguntas</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> ver as perguntas obrigatórias de triagem do exame (grávida? marca-passo?...). As respostas viajam no corpo do agendar (card 12).</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>idItemAgendamento</code> (um exame do card 5) e <code>cpf</code> com a sonda <code>66301102770</code>. Dispare.</li>
+          <li>Guarde os pares pergunta/alternativa: o agendar exige todos. Alternativa com <code>impedeRealizacao = S</code> bloqueia o agendamento; com <code>N</code> e mensagem, a mensagem deve ser exibida mesmo assim.</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Sem query no banco</div>
+          A configuração das perguntas e as respostas dadas vivem do lado GH. No Soul, a candidata ITEM_AGENDAMENTO_PRE_REQ estava vazia para os itens testados; se um dia quiser reabrir essa hipótese, compare os textos.
+        </div>
+      </article>
+
+      <article class="card" id="e17">
+        <h3><span class="num">17</span><span class="metodo post">POST</span> Anexos exigidos para o agendamento <span class="path">/anexos/agendamento</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> apesar do POST, é uma consulta (não escreve): listar os documentos exigidos (pedido médico, carteirinha...) para o agendamento pretendido.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>idItemAgendamento</code>, <code>idConvenio</code>, <code>idPlano</code> e <code>idHorario</code> com os ids dos cards 4 a 9. Dispare.</li>
+          <li>Guarde os <code>idTipoAnexo</code> devolvidos: o agendar (card 12) espera um anexo para cada obrigatório.</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Sem query no banco</div>
+          A exigência de anexos é configuração do lado GH. A candidata no Soul (ORIENTACAO_CONVENIO_ITEM_AGE) segue como hipótese de origem dos textos; sem prioridade enquanto você atua só na zona Soul.
+        </div>
+      </article>
+
+      <article class="card" id="e18">
+        <h3><span class="num">18</span><span class="metodo post">POST</span> Enviar anexo (upload por URL) <span class="path">/anexos/upload</span> <span class="chip tag">escrita no banco GH</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> subir um arquivo de teste para a GH e guardar a URL devolvida para o campo anexos do agendar.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>url</code> com uma URL pública de um PDF ou imagem de teste (ex.: <code>https://exemplo.com/pedido.pdf</code>) e escolha o <code>tipo</code> (MIME). Dispare.</li>
+          <li>Guarde a URL devolvida (S3 da GH): ela vai no campo <code>anexos</code> do agendar.</li>
+          <li><span class="atencao">Registre as perguntas abertas:</span> GH-14 e GH-15 (ciclo de vida e limites dos anexos no lado GH).</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Sem query no banco</div>
+          O arquivo vai para o storage da própria GH (um S3, como a URL da resposta mostra). Nada toca o Oracle.
+        </div>
+      </article>
+
+      <article class="card" id="e19">
+        <h3><span class="num">19</span><span class="metodo">GET</span> Carteiras do paciente <span class="path">/carteiras?cpf=</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> listar as carteirinhas cadastradas para a sonda no registro da GH (atalho para paciente recorrente não redigitar convênio/plano).</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>cpf</code> com a sonda <code>66301102770</code>. Dispare.</li>
+          <li>Anote o <code>id</code> de cada carteira (usado no DELETE, card 21).</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Sem query no banco</div>
+          O cadastro de carteiras é da GH. No Soul, a carteira só aparece carimbada na marcação (coluna NR_CARTEIRA da IT_AGENDA_CENTRAL) depois de uma finalização que a use; confira isso no grupo 02, não aqui.
+        </div>
+      </article>
+
+      <article class="card" id="e20">
+        <h3><span class="num">20</span><span class="metodo post">POST</span> Cadastrar ou atualizar carteira <span class="path">/carteiras</span> <span class="chip tag">escrita no banco GH</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> cadastrar uma carteirinha de teste no registro da GH.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>cpf</code> com a sonda <code>66301102770</code>, <code>nrCarteira</code> com um número de teste (ex.: <code>999000111</code>), e <code>idConvenio</code>/<code>nomeConvenio</code>/<code>idPlano</code>/<code>nomePlano</code> com os valores dos cards 6 e 7 (a doc pede ids E nomes juntos). Dispare.</li>
+          <li>Confirme pelo GET /carteiras (card 19): a carteira deve aparecer na lista.</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Sem query no banco</div>
+          Registro só do lado GH. A carteira só chega ao Soul carimbada numa marcação finalizada (NR_CARTEIRA no slot), e isso se confere no grupo 02.
+        </div>
+      </article>
+
+      <article class="card" id="e21">
+        <h3><span class="num">21</span><span class="metodo delete">DELETE</span> Excluir carteira <span class="path">/carteiras/{id}</span> <span class="chip tag">escrita no banco GH</span></h3>
+        <p class="objetivo"><b>Objetivo:</b> apagar a carteirinha de teste criada no card 20.</p>
+        <ol class="passos">
+          <li>Na Bancada, preencha <code>id</code> com o id da carteira (campo <code>id</code> em GET /carteiras, card 19). Dispare.</li>
+          <li>A doc diz que não há retorno (corpo vazio é sucesso). Confira o efeito pelo próprio GET /carteiras (card 19): a carteira deve sumir da lista.</li>
+        </ol>
+        <div class="sem-trilha">
+          <div class="titulo">Sem query no banco</div>
+          Mesmo caso dos cards 19 e 20: tudo do lado GH.
+        </div>
+      </article>
+    </details>
+  </section>
+
+  <!-- ============ GRUPO 04 · COLHEITA DE METADADOS ============ -->
+  <section class="grupo">
+    <details class="tema">
+      <summary><div class="grupo-cabeca"><span class="grupo-num">04</span><h2>Colheita de metadados do DBAMV</h2><span class="chip selo-saas">roda uma vez no DBeaver</span><span class="abrir-indicador"></span></div></summary>
+      <p class="grupo-desc">O pacote que dá à sessão Claude o conhecimento completo do esquema: todas as tabelas, colunas, tipagens, comentários, chaves e domínios do owner DBAMV. São só metadados e catálogos, sem dado pessoal: os CSVs podem ser commitados. Rode cada query no DBeaver, exporte o resultado como CSV (UTF-8, separador vírgula) e salve com o nome exato indicado em <code>ana/api-mv/resultados/metadados/</code>. Em 27/jul/2026 a sessão colheu os 8 arquivos pela conexão direta (enquanto ela funcionou); se o banco que você acessa no DBeaver for outro, rode de novo e substitua os arquivos.</p>
+
+      <article class="card" id="m01">
+        <h3><span class="num">M1</span> Catálogo de tabelas <span class="path">meta-1-tabelas.csv</span></h3>
+        <p class="objetivo"><b>O que entrega:</b> as ~5.8 mil tabelas do DBAMV com volumetria (num_rows) e o comentário oficial de cada uma.</p>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Salvar como meta-1-tabelas.csv</div><button class="btn ghost mini copiar" data-copiar="sql-m1">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-m1">SELECT t.TABLE_NAME, t.NUM_ROWS,
+       TO_CHAR(t.LAST_ANALYZED, 'YYYY-MM-DD') AS LAST_ANALYZED,
+       c.COMMENTS
+FROM   ALL_TABLES t
+LEFT JOIN ALL_TAB_COMMENTS c
+       ON c.OWNER = t.OWNER AND c.TABLE_NAME = t.TABLE_NAME
+WHERE  t.OWNER = 'DBAMV'
+ORDER  BY t.TABLE_NAME;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="m02">
+        <h3><span class="num">M2</span> Todas as colunas e tipagens <span class="path">meta-2-colunas.csv</span></h3>
+        <p class="objetivo"><b>O que entrega:</b> as ~77 mil colunas do esquema, com tipo, tamanho, precisão e obrigatoriedade. É o arquivo que responde "essa coluna existe? qual o tipo?" para qualquer tabela.</p>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Salvar como meta-2-colunas.csv</div><button class="btn ghost mini copiar" data-copiar="sql-m2">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-m2">SELECT TABLE_NAME, COLUMN_ID, COLUMN_NAME, DATA_TYPE,
+       DATA_LENGTH, DATA_PRECISION, DATA_SCALE, NULLABLE
+FROM   ALL_TAB_COLUMNS
+WHERE  OWNER = 'DBAMV'
+ORDER  BY TABLE_NAME, COLUMN_ID;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="m03">
+        <h3><span class="num">M3</span> Comentários de colunas <span class="path">meta-3-comentarios-colunas.csv</span></h3>
+        <p class="objetivo"><b>O que entrega:</b> os ~47 mil comentários oficiais do MV coluna a coluna: o dicionário semântico do sistema, direto da fonte.</p>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Salvar como meta-3-comentarios-colunas.csv</div><button class="btn ghost mini copiar" data-copiar="sql-m3">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-m3">SELECT TABLE_NAME, COLUMN_NAME, COMMENTS
+FROM   ALL_COL_COMMENTS
+WHERE  OWNER = 'DBAMV'
+AND    COMMENTS IS NOT NULL
+ORDER  BY TABLE_NAME, COLUMN_NAME;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="m04">
+        <h3><span class="num">M4</span> Chaves primárias <span class="path">meta-4-pks.csv</span></h3>
+        <p class="objetivo"><b>O que entrega:</b> a PK de cada tabela (coluna a coluna, com posição): quem identifica cada linha.</p>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Salvar como meta-4-pks.csv</div><button class="btn ghost mini copiar" data-copiar="sql-m4">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-m4">SELECT c.TABLE_NAME, cc.COLUMN_NAME, cc.POSITION, c.CONSTRAINT_NAME
+FROM   ALL_CONSTRAINTS c
+JOIN   ALL_CONS_COLUMNS cc
+       ON cc.OWNER = c.OWNER AND cc.CONSTRAINT_NAME = c.CONSTRAINT_NAME
+WHERE  c.OWNER = 'DBAMV'
+AND    c.CONSTRAINT_TYPE = 'P'
+ORDER  BY c.TABLE_NAME, cc.POSITION;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="m05">
+        <h3><span class="num">M5</span> Chaves estrangeiras (o grafo do banco) <span class="path">meta-5-fks.csv</span></h3>
+        <p class="objetivo"><b>O que entrega:</b> as ~11 mil FKs com tabela e coluna de origem e destino: o mapa de relacionamentos inteiro, que permite montar qualquer JOIN com segurança.</p>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Salvar como meta-5-fks.csv</div><button class="btn ghost mini copiar" data-copiar="sql-m5">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-m5">SELECT c.TABLE_NAME  AS TABELA_FILHA,
+       cc.COLUMN_NAME AS COLUNA_FILHA,
+       cc.POSITION,
+       rc.TABLE_NAME  AS TABELA_PAI,
+       rcc.COLUMN_NAME AS COLUNA_PAI,
+       c.CONSTRAINT_NAME
+FROM   ALL_CONSTRAINTS c
+JOIN   ALL_CONS_COLUMNS cc
+       ON cc.OWNER = c.OWNER AND cc.CONSTRAINT_NAME = c.CONSTRAINT_NAME
+JOIN   ALL_CONSTRAINTS rc
+       ON rc.OWNER = c.R_OWNER AND rc.CONSTRAINT_NAME = c.R_CONSTRAINT_NAME
+JOIN   ALL_CONS_COLUMNS rcc
+       ON rcc.OWNER = rc.OWNER AND rcc.CONSTRAINT_NAME = rc.CONSTRAINT_NAME
+      AND rcc.POSITION = cc.POSITION
+WHERE  c.OWNER = 'DBAMV'
+AND    c.CONSTRAINT_TYPE = 'R'
+ORDER  BY c.TABLE_NAME, c.CONSTRAINT_NAME, cc.POSITION;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="m06">
+        <h3><span class="num">M6</span> Domínios das colunas-chave de agendamento <span class="path">meta-6-dominios.csv</span></h3>
+        <p class="objetivo"><b>O que entrega:</b> os valores reais em uso (com contagem) de TP_SITUACAO, TP_FORMA_AGENDAMENTO, TP_ITEM e TP_ATENDIMENTO: o que os códigos significam na prática desta base.</p>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Salvar como meta-6-dominios.csv</div><button class="btn ghost mini copiar" data-copiar="sql-m6">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-m6">SELECT 'IT_AGENDA_CENTRAL.TP_SITUACAO' AS DOMINIO,
+       NVL(TO_CHAR(TP_SITUACAO), '(nulo)') AS VALOR, COUNT(*) AS QTD
+FROM   DBAMV.IT_AGENDA_CENTRAL GROUP BY TP_SITUACAO
+UNION ALL
+SELECT 'IT_AGENDA_CENTRAL.TP_FORMA_AGENDAMENTO',
+       NVL(TO_CHAR(TP_FORMA_AGENDAMENTO), '(nulo)'), COUNT(*)
+FROM   DBAMV.IT_AGENDA_CENTRAL GROUP BY TP_FORMA_AGENDAMENTO
+UNION ALL
+SELECT 'ITEM_AGENDAMENTO.TP_ITEM',
+       NVL(TO_CHAR(TP_ITEM), '(nulo)'), COUNT(*)
+FROM   DBAMV.ITEM_AGENDAMENTO GROUP BY TP_ITEM
+UNION ALL
+SELECT 'ATENDIME.TP_ATENDIMENTO',
+       NVL(TO_CHAR(TP_ATENDIMENTO), '(nulo)'), COUNT(*)
+FROM   DBAMV.ATENDIME GROUP BY TP_ATENDIMENTO
+ORDER  BY 1, 2;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="m07">
+        <h3><span class="num">M7</span> Catálogo de tipos de marcação <span class="path">meta-7-tip-mar.csv</span></h3>
+        <p class="objetivo"><b>O que entrega:</b> a TIP_MAR completa (16 linhas): os candidatos a idTipoMarcacao do agendar.</p>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Salvar como meta-7-tip-mar.csv</div><button class="btn ghost mini copiar" data-copiar="sql-m7">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-m7">SELECT *
+FROM   DBAMV.TIP_MAR
+ORDER  BY CD_TIP_MAR;</pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="m08">
+        <h3><span class="num">M8</span> Catálogo de convênios <span class="path">meta-8-convenios.csv</span></h3>
+        <p class="objetivo"><b>O que entrega:</b> a CONVENIO completa (45 linhas): os candidatos a idConvenio, incluindo o particular (pergunta GH-17).</p>
+        <div class="query-bloco frame">
+          <div class="frame-topo"><span class="ponto"></span><span class="ponto"></span><span class="ponto"></span><div class="query-titulo">Salvar como meta-8-convenios.csv</div><button class="btn ghost mini copiar" data-copiar="sql-m8">copiar</button></div>
+          <div class="frame-corpo">
+          <pre id="sql-m8">SELECT CD_CONVENIO, NM_CONVENIO
+FROM   DBAMV.CONVENIO
+ORDER  BY CD_CONVENIO;</pre>
+          </div>
+        </div>
+      </article>
+    </details>
+  </section>
+
+</main>
+
+<footer class="os-rodape">
+  Roteiro do Ana OS (27/jul/2026). Esta página não chama API nem banco: as queries são para colar no DBeaver do banco Soul (owner DBAMV), sempre manualmente e somente leitura. Produção nunca é chamada daqui.
+</footer>
+
+<script>
+"use strict";
+
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+document.addEventListener("click", function (ev) {
+  var b = ev.target.closest("[data-copiar]");
+  if (!b) return;
+  var alvo = document.getElementById(b.getAttribute("data-copiar"));
+  if (!alvo) return;
+  navigator.clipboard.writeText(alvo.textContent).then(function () {
+    var t = b.textContent; b.textContent = "copiado!";
+    setTimeout(function () { b.textContent = t; }, 1200);
+  });
+});
+</script>
+<script src="assets/nav.js" data-ambiente="homolog"></script>
+</body>
+</html>

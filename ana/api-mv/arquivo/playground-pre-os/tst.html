@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conexão TST · Portal Ana</title>
+<style>
+  :root {
+    --papel: #f4eee1; --papel-card: #fdfaf2; --papel-aula: #f0e9d8;
+    --tinta: #22291f; --tinta-suave: #5b6357; --tinta-apagada: #8a9184;
+    --verde: #17695a; --verde-escuro: #0e4c41;
+    --ambar: #9a5b0f; --ambar-papel: #f7ecd7;
+    --vermelho: #a63325; --vermelho-papel: #f8e6e0;
+    --console: #14231e; --console-borda: #24382f; --console-texto: #cfe3d4;
+    --linha: rgba(34, 41, 31, 0.16);
+    --serif: "New York", "Iowan Old Style", "Palatino", "Charter", Georgia, serif;
+    --sans: "Avenir Next", "Avenir", "Seravek", "Gill Sans", -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; font-style: normal; }
+  em, i, u { font-style: normal; text-decoration: none; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; padding: 34px 20px 80px; background: var(--papel); color: var(--tinta);
+         font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+  main { max-width: 980px; margin: 0 auto; }
+  h1, h2, h3 { font-family: var(--serif); }
+  .selo { font-family: var(--mono); font-size: 11px; color: var(--tinta-apagada); text-transform: uppercase; letter-spacing: 0.1em; }
+  .card { background: var(--papel-card); border: 1px solid var(--linha); border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+  pre.sql { background: var(--console); color: var(--console-texto); border: 1px solid var(--console-borda);
+            border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; }
+  .copiar { font-family: var(--mono); font-size: 11.5px; color: var(--verde); background: none;
+            border: 1px solid var(--linha); border-radius: 5px; padding: 3px 9px; cursor: pointer;
+            transition: background 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out; }
+  .copiar:hover { color: var(--verde-escuro); background: var(--papel-aula); }
+  .copiar:active { transform: translateY(1px); }
+  .copiar.feito { color: var(--papel-card); background: var(--verde); border-color: var(--verde); }
+  .mini-nota { font-size: 12px; color: var(--tinta-apagada); font-family: var(--mono); }
+  code { font-family: var(--mono); font-size: 12px; background: var(--papel-aula);
+         border: 1px solid var(--linha); border-radius: 4px; padding: 0 4px; }
+
+  /* entrada da pagina: reveals escalonados */
+  @keyframes surgir { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .reveal { opacity: 0; animation: surgir 0.5s ease-out forwards; animation-delay: calc(var(--d, 0) * 90ms); }
+
+  /* cabecalho */
+  h1 { font-weight: 700; font-size: clamp(28px, 5vw, 42px); line-height: 1.08; margin: 6px 0 10px; letter-spacing: -0.5px; }
+  h1 .fino { color: var(--verde); }
+  .subtitulo { color: var(--tinta-suave); max-width: 66ch; margin: 0 0 14px; font-size: 15.5px; }
+  .card h2 { margin: 0 0 2px; font-size: 21px; }
+  .card h3 { font-size: 15px; margin: 18px 0 4px; }
+  .col-titulo { margin: 0 0 4px; }
+
+  /* pipeline do hero */
+  .fluxo-pipeline { display: flex; align-items: stretch; gap: 4px; margin: 12px 0 10px; }
+  .no { flex: 1 1 0; min-width: 0; background: var(--papel-aula); border: 1px solid var(--linha); border-radius: 9px;
+        padding: 10px 11px; transition: transform 0.18s ease-out, box-shadow 0.18s ease-out; }
+  .no:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(34, 41, 31, 0.12); }
+  .no-topo { display: flex; align-items: center; gap: 7px; }
+  .led { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+  .led.verde { background: var(--verde); box-shadow: 0 0 0 3px rgba(23, 105, 90, 0.15); }
+  .led.vermelho { background: var(--vermelho); box-shadow: 0 0 0 3px rgba(166, 51, 37, 0.18); }
+  .led.ambar { background: var(--ambar); box-shadow: 0 0 0 3px rgba(154, 91, 15, 0.16); }
+  .no-nome { font-family: var(--serif); font-weight: 700; font-size: 14.5px; line-height: 1.15; }
+  .no-sub { font-family: var(--mono); font-size: 10.5px; color: var(--tinta-suave); margin-top: 4px; overflow-wrap: break-word; }
+  @keyframes pulsar { 0%, 100% { box-shadow: 0 0 0 0 rgba(166, 51, 37, 0.30); } 50% { box-shadow: 0 0 0 9px rgba(166, 51, 37, 0); } }
+  /* nota: .no.falha tambem e .reveal; a lista repete a animacao de entrada para nao anular o surgir */
+  .no.falha { background: var(--vermelho-papel); border-color: var(--vermelho);
+              animation: surgir 0.5s ease-out forwards, pulsar 2.2s ease-out infinite;
+              animation-delay: calc(var(--d, 0) * 90ms), calc(var(--d, 0) * 90ms + 0.6s); }
+  .no.falha .no-nome { color: var(--vermelho); }
+  .no.aguarda { border-style: dashed; }
+
+  /* conectores animados (desenham na entrada, dash continuo indica fluxo) */
+  .conector { flex: 0 0 46px; display: flex; align-items: center; justify-content: center; }
+  .conector svg { width: 46px; height: 24px; display: block; overflow: visible; }
+  @keyframes desenhar { to { stroke-dashoffset: 0; } }
+  @keyframes fluir { to { stroke-dashoffset: -24; } }
+  .fio { fill: none; stroke: var(--verde); stroke-width: 1.6; stroke-linecap: round; }
+  .c-vivo .fio { stroke-dasharray: 40; stroke-dashoffset: 40; animation: desenhar 0.55s ease-out forwards; animation-delay: calc(var(--d, 0) * 90ms); }
+  .fluxo-dash { fill: none; stroke: var(--verde); stroke-width: 2.6; stroke-linecap: round;
+                stroke-dasharray: 3 9; opacity: 0.85; animation: fluir 1.1s linear infinite; }
+  .ponta { fill: none; stroke: var(--verde); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .c-morto .fio { stroke: var(--vermelho); stroke-dasharray: 3 5; stroke-dashoffset: 0; opacity: 0.5; animation: none; }
+  .c-morto .ponta { stroke: var(--vermelho); opacity: 0.5; }
+  .c-morto .corte { fill: none; stroke: var(--vermelho); stroke-width: 1.8; stroke-linecap: round; }
+
+  /* religar: duas colunas */
+  .duascol { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 10px; }
+  ul.checklist { list-style: none; margin: 8px 0 0; padding: 0; }
+  .checklist li { display: flex; gap: 8px; align-items: baseline; padding: 7px 9px; border: 1px solid transparent;
+                  border-radius: 7px; font-size: 13.5px; transition: background 0.15s ease-out, border-color 0.15s ease-out, transform 0.15s ease-out; }
+  .checklist li:hover { background: var(--papel-aula); border-color: var(--linha); transform: translateX(2px); }
+  .ok-check { color: var(--verde); font-weight: 700; font-family: var(--mono); }
+  ol.passos { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+  .passos li { display: flex; gap: 9px; align-items: flex-start; }
+  .passo-num { flex: 0 0 22px; height: 22px; border-radius: 50%; background: var(--verde); color: var(--papel-card);
+               font-family: var(--mono); font-size: 11.5px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .passos pre.sql { flex: 1; min-width: 0; margin: 0; padding: 8px 10px; }
+  .passos .copiar { align-self: center; flex: 0 0 auto; }
+  .passo-acao { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .passo-acao .resultado-live { flex-basis: 100%; }
+
+  /* botoes e resultados vivos */
+  .botao { font-family: var(--mono); font-size: 12.5px; color: var(--papel-card); background: var(--verde);
+           border: 1px solid var(--verde-escuro); border-radius: 6px; padding: 7px 14px; cursor: pointer;
+           transition: background 0.15s ease-out, transform 0.15s ease-out, box-shadow 0.15s ease-out; }
+  .botao:hover { background: var(--verde-escuro); box-shadow: 0 4px 12px rgba(23, 105, 90, 0.25); }
+  .botao:active { transform: translateY(1px); box-shadow: none; }
+  @keyframes piscar { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+  .resultado-live { margin-top: 2px; font-family: var(--mono); font-size: 12.5px; border-radius: 6px;
+                    padding: 8px 10px; border: 1px solid var(--linha); animation: surgir 0.25s ease-out; }
+  .resultado-live.carregando { color: var(--tinta-suave); animation: piscar 1s ease-in-out infinite; }
+  .resultado-live.ok { color: var(--verde-escuro); background: rgba(23, 105, 90, 0.08); border-color: var(--verde); }
+  .resultado-live.erro { color: var(--vermelho); background: var(--vermelho-papel); border-color: var(--vermelho); }
+  .resultado-live.degradado { color: var(--ambar); background: var(--ambar-papel); }
+  .latencia { color: var(--tinta-apagada); font-size: 11px; }
+
+  /* chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 2px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11.5px;
+          color: var(--tinta); background: var(--papel-aula); border: 1px solid var(--linha); border-radius: 999px;
+          padding: 5px 11px; transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background 0.15s ease-out; }
+  .chip:hover { transform: translateY(-2px); box-shadow: 0 5px 14px rgba(34, 41, 31, 0.12); background: var(--papel-card); }
+  .chip-icone { color: var(--verde); }
+  .chip-icone.alerta { color: var(--ambar); }
+
+  /* o que e a base TST: os dois mundos do MV */
+  .expl { margin: 6px 0 0; font-size: 13.5px; color: var(--tinta-suave); max-width: 72ch; }
+  .compara { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 10px; }
+  .mundo { border: 1px solid var(--linha); border-radius: 9px; padding: 12px 14px; background: var(--papel-aula);
+           transition: transform 0.18s ease-out, box-shadow 0.18s ease-out; }
+  .mundo:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(34, 41, 31, 0.10); }
+  .mundo h3 { margin: 0 0 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .mundo p { margin: 0; font-size: 13.5px; color: var(--tinta-suave); }
+  .mundo.ensaio { border-color: var(--verde); background: rgba(23, 105, 90, 0.06); }
+  .selo-mundo { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+                border: 1px solid var(--linha); border-radius: 999px; padding: 1px 8px; }
+  .mundo.real .selo-mundo { color: var(--vermelho); background: var(--vermelho-papel); }
+  .mundo.ensaio .selo-mundo { color: var(--verde-escuro); background: var(--papel-card); }
+
+  /* religar: passo a passo em palavras simples */
+  .passo-conteudo { flex: 1; min-width: 0; }
+  .passo-linha { display: flex; gap: 8px; align-items: center; }
+  .passo-linha pre.sql { flex: 1; min-width: 0; margin: 0; padding: 8px 10px; }
+  .leigo { margin: 6px 0 0; font-size: 12.5px; color: var(--tinta-suave); max-width: 60ch; line-height: 1.5; }
+  .leigo b { color: var(--tinta); }
+  .sinal { font-family: var(--mono); font-size: 11px; border: 1px solid var(--linha); border-radius: 4px;
+           padding: 0 5px; white-space: nowrap; }
+  .sinal.ok { color: var(--verde-escuro); background: rgba(23, 105, 90, 0.08); border-color: var(--verde); }
+  .sinal.ruim { color: var(--vermelho); background: var(--vermelho-papel); border-color: var(--vermelho); }
+
+  /* firewall explicado em bom portugues */
+  .funcional { display: grid; gap: 8px; margin: 8px 0 4px; }
+  .func-item { display: flex; gap: 12px; align-items: baseline; padding: 9px 12px; border: 1px solid var(--linha);
+               border-radius: 8px; background: var(--papel-aula); font-size: 13.5px;
+               transition: transform 0.15s ease-out, box-shadow 0.15s ease-out; }
+  .func-item:hover { transform: translateX(3px); box-shadow: 0 5px 14px rgba(34, 41, 31, 0.10); }
+  .func-rotulo { flex: 0 0 96px; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
+                 letter-spacing: 0.05em; color: var(--verde-escuro); }
+  .func-item p { margin: 0; flex: 1; min-width: 0; }
+
+  /* mensagem pronta para o MV */
+  .mensagem-wrap { margin: 10px 0 4px; }
+  .mensagem { white-space: pre-line; background: var(--papel-aula); border: 1px solid var(--linha);
+              border-left: 3px solid var(--verde); border-radius: 8px; padding: 12px 14px; font-size: 13px; }
+  .mensagem-wrap .copiar { margin-top: 8px; }
+
+  /* cards de ganho, comparativo antes/depois */
+  .cartoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
+  .cartao { background: var(--papel-aula); border: 1px solid var(--linha); border-radius: 8px; padding: 12px 14px;
+            transition: transform 0.18s ease-out, box-shadow 0.18s ease-out; }
+  .cartao:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(34, 41, 31, 0.10); }
+  .cartao h3 { margin: 0 0 4px; font-size: 15.5px; }
+  .cartao pre.sql { margin: 8px 0 0; padding: 8px 10px; font-size: 11px; }
+  .cartao .copiar { margin-top: 6px; }
+  @keyframes crescer { from { transform: scaleX(0); } }
+  .tempo { display: grid; gap: 5px; margin-top: 9px; }
+  .tempo-linha { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10.5px; color: var(--tinta-suave); }
+  .tempo-rotulo { flex: 0 0 38px; }
+  .barra { display: block; height: 6px; border-radius: 3px; transform-origin: left;
+           animation: crescer 0.7s ease-out both; animation-delay: 0.45s; }
+  .barra.antes { background: var(--ambar); opacity: 0.55; }
+  .barra.depois { background: var(--verde); }
+  .tempo-val { white-space: nowrap; }
+
+  /* plano B: ritmo em loop */
+  .ritmo { display: flex; align-items: stretch; gap: 4px; margin: 12px 0 8px; }
+  .no-mini { flex: 1 1 0; min-width: 0; background: var(--papel-aula); border: 1px solid var(--linha); border-radius: 8px;
+             padding: 9px 10px; transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background 0.15s ease-out; }
+  .no-mini:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(34, 41, 31, 0.12); background: var(--papel-card); }
+  .passo-rotulo { font-family: var(--serif); font-weight: 700; font-size: 14.5px; }
+  .passo-sub { font-family: var(--mono); font-size: 10.5px; color: var(--tinta-suave); margin-top: 2px; overflow-wrap: break-word; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+  .loop-badge { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px; color: var(--tinta-suave); }
+  .loop-giro { width: 18px; height: 18px; animation: girar 6s linear infinite; }
+  .loop-giro circle { fill: none; stroke: var(--verde); stroke-width: 2; stroke-dasharray: 34 12; stroke-linecap: round; }
+
+  /* tooltip rico (hover mostra, clique fixa) */
+  [data-tip] { cursor: help; }
+  [data-tip]:focus-visible { outline: 2px solid var(--verde); outline-offset: 2px; }
+  .tooltip { position: fixed; z-index: 50; max-width: 320px; background: var(--papel-card); border: 1px solid var(--linha);
+             border-radius: 8px; padding: 10px 12px; font-size: 12.5px; line-height: 1.5; color: var(--tinta);
+             box-shadow: 0 6px 24px rgba(34, 41, 31, 0.14); opacity: 0; transform: translateY(4px);
+             transition: opacity 0.12s ease-out, transform 0.12s ease-out; pointer-events: none; }
+  .tooltip.visivel { opacity: 1; transform: none; }
+  .tooltip.fixado { pointer-events: auto; border-color: var(--verde); box-shadow: 0 10px 30px rgba(34, 41, 31, 0.20); }
+  .tooltip-seta { position: absolute; top: -7px; width: 12px; height: 12px; background: var(--papel-card);
+                  border-left: 1px solid var(--linha); border-top: 1px solid var(--linha); transform: rotate(45deg); }
+  .tooltip.fixado .tooltip-seta { border-color: var(--verde); }
+  .tooltip.acima .tooltip-seta { top: auto; bottom: -7px; transform: rotate(225deg); }
+  .tip-titulo { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+                color: var(--verde); margin: 0 0 4px; }
+
+  @media (max-width: 820px) {
+    .fluxo-pipeline, .ritmo { flex-direction: column; align-items: stretch; }
+    .fluxo-pipeline .conector, .ritmo .conector { transform: rotate(90deg); margin: 0 auto; flex-basis: auto; width: 46px; height: 46px; }
+    .duascol { grid-template-columns: 1fr; }
+    .compara { grid-template-columns: 1fr; }
+    .func-item { flex-direction: column; gap: 4px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { animation: none; opacity: 1; }
+    .c-vivo .fio { animation: none; stroke-dashoffset: 0; }
+    .fluxo-dash, .loop-giro, .barra { animation: none; }
+    .no.falha { animation: none; }
+    .resultado-live.carregando { animation: none; }
+  }
+</style>
+</head>
+<body>
+<!-- inicio: barra de navegacao do portal (identica em todas as paginas) -->
+<style>
+  .portal-nav { border-bottom: 1px solid var(--linha); background: var(--papel-card); margin: -34px -20px 26px; }
+  .portal-nav-inner { max-width: 980px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; }
+  .portal-nav-marca { color: var(--tinta-apagada); text-transform: uppercase; letter-spacing: 0.08em; }
+  .portal-nav a { color: var(--verde); text-decoration: none; padding: 3px 8px; border-radius: 5px; }
+  .portal-nav a:hover { color: var(--verde-escuro); background: var(--papel-aula); }
+  .portal-nav a.ativa { background: var(--verde); color: var(--papel-card); }
+  .portal-nav-ambiente { margin-left: auto; color: var(--ambar); border: 1px solid var(--linha); background: var(--ambar-papel); padding: 2px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+</style>
+<nav class="portal-nav">
+  <div class="portal-nav-inner">
+    <span class="portal-nav-marca">Portal Ana</span>
+    <a href="/">Bancada</a>
+    <a href="/roteiro.html">Roteiro</a>
+    <a href="/atlas.html">Atlas</a>
+    <a href="/insights.html">Insights</a>
+    <a href="/absorcao.html">Absorção</a>
+    <a href="/tst.html" class="ativa">Conexão TST</a>
+    <!-- customizacao 1: adicionar class="ativa" ao link da propria pagina -->
+    <span class="portal-nav-ambiente">BASE TST</span>
+    <!-- customizacao 2: rotulo de ambiente, ver tabela da spec -->
+  </div>
+</nav>
+<!-- fim: barra de navegacao do portal -->
+<main>
+
+  <header class="reveal" style="--d:0">
+    <span class="selo">Conexão direta · Oracle TST</span>
+    <h1>Conexão TST: <span class="fino">agilidade na operação</span></h1>
+    <p class="subtitulo">O que é a base de ensaio do MV, onde o caminho quebra hoje, o passo a passo para religar e o plano B enquanto o firewall não cai.</p>
+  </header>
+
+  <!-- 0. o que e a base TST -->
+  <section class="card reveal" style="--d:1">
+    <h2>O que é a Base TST</h2>
+    <p class="expl">TST vem de teste. O MV (o sistema que roda o hospital) existe em dois mundos: o de verdade e uma cópia de ensaio que a própria MV mantém na nuvem dela para testes e homologação. Esta página cuida da conexão a essa cópia.</p>
+    <div class="compara">
+      <div class="mundo real" data-tip="tip-oque-prod" tabindex="0">
+        <h3>Produção <span class="selo-mundo">o hospital de verdade</span></h3>
+        <p>Pacientes, agendas e contas reais. Erro aqui tem consequência: entra só o Pedro, manualmente, no DBeaver, somente leitura.</p>
+      </div>
+      <div class="mundo ensaio" data-tip="tip-oque-tst" tabindex="0">
+        <h3>Base TST <span class="selo-mundo">o hospital de ensaio</span></h3>
+        <p>Mesmo desenho de banco (Oracle, tabelas do owner DBAMV), conteúdo de teste e descartável. É onde o programa Ana estuda o modelo, ensaia queries e erra sem machucar ninguém.</p>
+      </div>
+    </div>
+    <p class="mini-nota">os números com selo TST no Atlas vêm desta base; religar a conexão a ela é o assunto do resto da página.</p>
+  </section>
+
+  <!-- 1. hero: pipeline vivo da conexao -->
+  <section class="card reveal" style="--d:2">
+    <h2>O caminho, hoje</h2>
+    <p class="mini-nota">passe o mouse em cada etapa; clique fixa o detalhe</p>
+    <div class="fluxo-pipeline">
+      <div class="no reveal" style="--d:2" data-tip="tip-sessao" tabindex="0">
+        <div class="no-topo"><span class="led verde"></span><span class="no-nome">Sessão / terminal</span></div>
+        <div class="no-sub">pede, recebe digerido</div>
+      </div>
+      <div class="conector c-vivo reveal" style="--d:3" aria-hidden="true">
+        <svg viewBox="0 0 46 24"><path class="fio" d="M2,12 H38"/><path class="fluxo-dash" d="M2,12 H38"/><path class="ponta" d="M34,6 L42,12 L34,18"/></svg>
+      </div>
+      <div class="no reveal" style="--d:4" data-tip="tip-query" tabindex="0">
+        <div class="no-topo"><span class="led verde"></span><span class="no-nome">query-mv.py</span></div>
+        <div class="no-sub">thick + IC 23.26 · OK</div>
+      </div>
+      <div class="conector c-vivo reveal" style="--d:5" aria-hidden="true">
+        <svg viewBox="0 0 46 24"><path class="fio" d="M2,12 H38"/><path class="fluxo-dash" d="M2,12 H38"/><path class="ponta" d="M34,6 L42,12 L34,18"/></svg>
+      </div>
+      <div class="no reveal" style="--d:6" data-tip="tip-vpn" tabindex="0">
+        <div class="no-topo"><span class="led verde"></span><span class="no-nome">VPN HSM</span></div>
+        <div class="no-sub">túnel utun7 de pé · OK</div>
+      </div>
+      <div class="conector c-vivo reveal" style="--d:7" aria-hidden="true">
+        <svg viewBox="0 0 46 24"><path class="fio" d="M2,12 H38"/><path class="fluxo-dash" d="M2,12 H38"/><path class="ponta" d="M34,6 L42,12 L34,18"/></svg>
+      </div>
+      <div class="no falha reveal" style="--d:8" data-tip="tip-bloqueio" tabindex="0">
+        <div class="no-topo"><span class="led vermelho"></span><span class="no-nome">Rede interna MV</span></div>
+        <div class="no-sub">bloqueio desde 13/jul</div>
+      </div>
+      <div class="conector c-morto reveal" style="--d:9" aria-hidden="true">
+        <svg viewBox="0 0 46 24"><path class="fio" d="M2,12 H38"/><path class="corte" d="M18,7 L26,17 M26,7 L18,17"/><path class="ponta" d="M34,6 L42,12 L34,18"/></svg>
+      </div>
+      <div class="no aguarda reveal" style="--d:10" data-tip="tip-oracle" tabindex="0">
+        <div class="no-topo"><span class="led ambar"></span><span class="no-nome">Oracle TST</span></div>
+        <div class="no-sub">dbtst1...cloudmv:1521</div>
+      </div>
+    </div>
+    <p class="mini-nota">o DNS público devolve o IP privado 10.100.66.170: a conexão sempre exigiu VPN; nada local mudou.</p>
+  </section>
+
+  <!-- 2. religar -->
+  <section class="card reveal" style="--d:3">
+    <h2>Religar</h2>
+    <p class="expl">Em palavras simples: você vai ligar este computador ao banco de ensaio. São 5 verificações, na ordem; pare na primeira que falhar, porque ela aponta exatamente onde o caminho quebrou.</p>
+    <div class="duascol">
+      <div>
+        <h3 class="col-titulo">Já pronto nesta máquina</h3>
+        <ul class="checklist">
+          <li data-tip="tip-env" tabindex="0"><span class="ok-check">✓</span><span><code>.env</code> com <code>ORACLE_*</code> preenchido</span></li>
+          <li data-tip="tip-driver" tabindex="0"><span class="ok-check">✓</span><span>driver <code>oracledb 4.0.1</code></span></li>
+          <li data-tip="tip-ic" tabindex="0"><span class="ok-check">✓</span><span>Instant Client 23.26 ARM64 (modo thick)</span></li>
+          <li data-tip="tip-testado" tabindex="0"><span class="ok-check">✓</span><span><code>query-mv.py</code> testado em 07/jul</span></li>
+        </ul>
+        <p class="leigo">Tradução: tudo o que depende deste computador (endereço do banco, senha, driver) já está instalado e testado. Não há nada para reinstalar aqui: o que falta é a rede do MV deixar o pedido passar.</p>
+      </div>
+      <div>
+        <h3 class="col-titulo">Validar a volta, nesta ordem</h3>
+        <ol class="passos">
+          <li>
+            <span class="passo-num">1</span>
+            <div class="passo-conteudo">
+              <span class="chip" data-tip="tip-vpncheck" tabindex="0"><span class="chip-icone">●</span>VPN ligada</span>
+              <p class="leigo">Conecte o cliente HSM-VPN e aguarde o túnel fechar. É ele que coloca este computador dentro da rede do MV: sem VPN, o banco nem enxerga você.</p>
+            </div>
+          </li>
+          <li>
+            <span class="passo-num">2</span>
+            <div class="passo-conteudo">
+              <div class="passo-linha">
+                <pre class="sql" id="cmd-nc" data-tip="tip-nc" tabindex="0">nc -vz dbtst1.9044.cloudmv.com.br 1521</pre>
+                <button class="copiar" data-copia="cmd-nc">copiar</button>
+              </div>
+              <p class="leigo">Cole no Terminal e dê Enter: isto só toca a campainha da porta 1521, a porta do Oracle. <span class="sinal ok">succeeded</span> = o firewall liberou, siga adiante. <span class="sinal ruim">timed out</span> = segue bloqueado: pare aqui e cobre o MV (seção abaixo).</p>
+            </div>
+          </li>
+          <li>
+            <span class="passo-num">3</span>
+            <div class="passo-conteudo">
+              <div class="passo-linha">
+                <pre class="sql" id="cmd-smoke" data-tip="tip-smoke" tabindex="0">python3 ana/api-mv/scripts/query-mv.py "SELECT banner FROM v\$version"</pre>
+                <button class="copiar" data-copia="cmd-smoke">copiar</button>
+              </div>
+              <p class="leigo">A primeira pergunta de verdade: pede ao banco a versão dele. Voltou <span class="sinal ok">Oracle Database 19c...</span>? A conexão está viva de ponta a ponta (túnel, senha, driver e banco).</p>
+            </div>
+          </li>
+          <li>
+            <span class="passo-num">4</span>
+            <div class="passo-conteudo">
+              <div class="passo-acao">
+                <button class="botao" id="btn-status">Testar daqui</button>
+                <span class="mini-nota">GET /api/status</span>
+                <div class="resultado-live" id="resultado-status" hidden></div>
+              </div>
+              <p class="leigo">O portal repete o mesmo teste por você, pelo backend local, e mostra o resultado aqui na página.</p>
+            </div>
+          </li>
+          <li>
+            <span class="passo-num">5</span>
+            <div class="passo-conteudo">
+              <div class="passo-acao">
+                <button class="botao" id="btn-prova">Prova final: SELECT banner FROM v$version</button>
+                <span class="mini-nota">POST /api/sql</span>
+                <div class="resultado-live" id="resultado-prova" hidden></div>
+              </div>
+              <p class="leigo">Um SELECT de verdade disparado daqui. Respondeu? Está religado: a sessão volta a consultar o banco direto e o <code>--csv</code> volta a depositar resultado no repositório.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. destravar o firewall -->
+  <section class="card reveal" style="--d:4">
+    <h2>Destravar o firewall</h2>
+    <h3>O que está acontecendo, em bom português</h3>
+    <p class="mini-nota">passe o mouse em cada item para ver o mesmo fato em linguagem técnica</p>
+    <div class="funcional">
+      <div class="func-item" data-tip="tip-f1" tabindex="0"><span class="func-rotulo">o porteiro</span><p>O firewall é o porteiro da rede do MV: uma lista de regras que diz quem pode bater em qual porta. Quem não está na lista não recebe um "não": é simplesmente ignorado, e o pedido morre no silêncio. Esse é exatamente o sintoma dos nossos testes.</p></div>
+      <div class="func-item" data-tip="tip-f2" tabindex="0"><span class="func-rotulo">sua entrada</span><p>A VPN é a recepção do prédio: você entra, ganha um crachá (um endereço da faixa reservada aos visitantes) e a recepção responde na hora. Essa parte funciona: tudo verde até aqui.</p></div>
+      <div class="func-item" data-tip="tip-f3" tabindex="0"><span class="func-rotulo">o corredor</span><p>Da recepção até a sala do banco (a porta 1521 do Oracle) o corredor está fechado: falta a regra que libera quem entra com crachá de VPN. Funcionava até 13/jul e nada mudou neste computador; o pedido morre sempre no mesmo ponto. Conclusão: o problema está do lado do MV, ou o servidor de teste está desligado.</p></div>
+      <div class="func-item" data-tip="tip-f4" tabindex="0"><span class="func-rotulo">o conserto</span><p>Alguém da rede do MV recria ou reativa a regra que libera a faixa da VPN até a porta do banco. É configuração, não obra: minutos de trabalho, sem risco, que só reabrem um caminho interno que já existia.</p></div>
+    </div>
+    <h3>O pedido pronto para enviar ao MV</h3>
+    <div class="mensagem-wrap">
+      <div class="mensagem" id="msg-mv">Assunto: Acesso ao Oracle TST via HSM-VPN (porta 1521) parou em 13/jul
+
+Prezados,
+
+nosso acesso ao Oracle TST via HSM-VPN parou de funcionar em 13/jul, sem qualquer mudança do nosso lado. Detalhes:
+
+Origem: pool da HSM-VPN 10.100.64.0/22
+Destino: Oracle TST 10.100.66.170 (dbtst1.9044.cloudmv.com.br), porta TCP 1521
+Listener do service: tst19044.db9044.mv9044vcn.oraclevcn.com
+
+Sintoma: o túnel sobe normalmente e o gateway responde, mas a 1521 não responde a TCP nem a ICMP e o traceroute morre logo após o concentrador da VPN.
+
+Pedimos, por gentileza:
+a) verificar (ou recriar) a regra de firewall/ACL que libera o pool da VPN (10.100.64.0/22) até a subnet do banco na porta 1521;
+b) confirmar que o servidor e o listener do TST estão no ar;
+c) validar com um teste de telnet/nc a partir do segmento da VPN (não da LAN interna);
+d) se houve mudança de firewall ou rota por volta de 13/jul, conferir o changelog.
+
+Obrigado!</div>
+      <button class="copiar" data-copia="msg-mv">copiar mensagem</button>
+    </div>
+    <h3>Se responderem...</h3>
+    <div class="chips">
+      <span class="chip" data-tip="tip-r-porta" tabindex="0"><span class="chip-icone alerta">▸</span>"a porta está aberta"</span>
+      <span class="chip" data-tip="tip-r-nadamudou" tabindex="0"><span class="chip-icone alerta">▸</span>"nada mudou aqui"</span>
+      <span class="chip" data-tip="tip-r-cliente" tabindex="0"><span class="chip-icone alerta">▸</span>"é o seu cliente"</span>
+    </div>
+    <h3>Evidências para anexar</h3>
+    <pre class="sql" id="cmds-diagnostico" data-tip="tip-evid" tabindex="0">ping -c 3 10.11.12.1
+nc -vz -w 5 dbtst1.9044.cloudmv.com.br 1521
+nc -vz -w 5 10.100.66.170 1521
+traceroute -n -q 1 -w 2 10.100.66.170</pre>
+    <button class="copiar" data-copia="cmds-diagnostico">copiar comandos</button>
+  </section>
+
+  <!-- 4. o ganho com a TST viva -->
+  <section class="card reveal" style="--d:5">
+    <h2>O ganho com a TST viva</h2>
+    <div class="cartoes">
+      <div class="cartao" data-tip="tip-g1" tabindex="0">
+        <h3>Pergunta vira SELECT</h3>
+        <p class="mini-nota">a sessão consulta e devolve digerido</p>
+        <div class="tempo">
+          <div class="tempo-linha"><span class="tempo-rotulo">antes</span><span class="barra antes" style="width:74%"></span><span class="tempo-val">~10 min</span></div>
+          <div class="tempo-linha"><span class="tempo-rotulo">agora</span><span class="barra depois" style="width:8%"></span><span class="tempo-val">~30 s</span></div>
+        </div>
+      </div>
+      <div class="cartao" data-tip="tip-g2" tabindex="0">
+        <h3>CSV direto no repositório</h3>
+        <p class="mini-nota">o portal hidrata sozinho no reload</p>
+        <div class="tempo">
+          <div class="tempo-linha"><span class="tempo-rotulo">antes</span><span class="barra antes" style="width:52%"></span><span class="tempo-val">~5 min</span></div>
+          <div class="tempo-linha"><span class="tempo-rotulo">agora</span><span class="barra depois" style="width:7%"></span><span class="tempo-val">1 comando</span></div>
+        </div>
+        <pre class="sql" id="cmd-csv">python3 ana/api-mv/scripts/query-mv.py -f consulta.sql --csv ana/api-mv/absorcao-producao/resultados/nome.csv</pre>
+        <button class="copiar" data-copia="cmd-csv">copiar</button>
+      </div>
+      <div class="cartao" data-tip="tip-g3" tabindex="0">
+        <h3>Ensaio geral do pacote</h3>
+        <p class="mini-nota">21 .sql do C8 validados antes da produção</p>
+        <div class="tempo">
+          <div class="tempo-linha"><span class="tempo-rotulo">antes</span><span class="barra antes" style="width:88%"></span><span class="tempo-val">erro na rodada única</span></div>
+          <div class="tempo-linha"><span class="tempo-rotulo">agora</span><span class="barra depois" style="width:14%"></span><span class="tempo-val">erro no ensaio, em minutos</span></div>
+        </div>
+      </div>
+      <div class="cartao" data-tip="tip-g4" tabindex="0">
+        <h3>Curva de aprendizado</h3>
+        <p class="mini-nota">exploração livre com o atlas de mapa</p>
+        <div class="tempo">
+          <div class="tempo-linha"><span class="tempo-rotulo">antes</span><span class="barra antes" style="width:66%"></span><span class="tempo-val">1 pergunta por sentada</span></div>
+          <div class="tempo-linha"><span class="tempo-rotulo">agora</span><span class="barra depois" style="width:22%"></span><span class="tempo-val">fluxo contínuo</span></div>
+        </div>
+      </div>
+    </div>
+    <h3>Máximo ganho</h3>
+    <div class="chips">
+      <span class="chip" data-tip="tip-m1" tabindex="0"><span class="chip-icone">◆</span>blocos temáticos</span>
+      <span class="chip" data-tip="tip-m2" tabindex="0"><span class="chip-icone">◆</span>amostra só em amostras/</span>
+      <span class="chip" data-tip="tip-m3" tabindex="0"><span class="chip-icone">◆</span>digestão a cada resultado</span>
+      <span class="chip" data-tip="tip-m4" tabindex="0"><span class="chip-icone">◆</span>descoberta vira dicionário</span>
+    </div>
+  </section>
+
+  <!-- 5. plano B sem TST -->
+  <section class="card reveal" style="--d:6">
+    <h2>Plano B sem TST: produção no DBeaver</h2>
+    <p class="mini-nota">enquanto o firewall não cai; é também o ritmo da rodada oficial C8</p>
+    <div class="ritmo">
+      <div class="no-mini" data-tip="tip-p-copiar" tabindex="0">
+        <div class="passo-rotulo">copiar</div>
+        <div class="passo-sub">absorcao.html, fila ordenada</div>
+      </div>
+      <div class="conector c-vivo" aria-hidden="true">
+        <svg viewBox="0 0 46 24"><path class="fio" d="M2,12 H38"/><path class="fluxo-dash" d="M2,12 H38"/><path class="ponta" d="M34,6 L42,12 L34,18"/></svg>
+      </div>
+      <div class="no-mini" data-tip="tip-p-rodar" tabindex="0">
+        <div class="passo-rotulo">rodar</div>
+        <div class="passo-sub">1 editor SQL, Ctrl+Enter</div>
+      </div>
+      <div class="conector c-vivo" aria-hidden="true">
+        <svg viewBox="0 0 46 24"><path class="fio" d="M2,12 H38"/><path class="fluxo-dash" d="M2,12 H38"/><path class="ponta" d="M34,6 L42,12 L34,18"/></svg>
+      </div>
+      <div class="no-mini" data-tip="tip-p-exportar" tabindex="0">
+        <div class="passo-rotulo">exportar</div>
+        <div class="passo-sub">preset CSV UTF-8, vírgula</div>
+      </div>
+      <div class="conector c-vivo" aria-hidden="true">
+        <svg viewBox="0 0 46 24"><path class="fio" d="M2,12 H38"/><path class="fluxo-dash" d="M2,12 H38"/><path class="ponta" d="M34,6 L42,12 L34,18"/></svg>
+      </div>
+      <div class="no-mini" data-tip="tip-p-depositar" tabindex="0">
+        <div class="passo-rotulo">depositar</div>
+        <div class="passo-sub">nome da linha Saida: do .sql</div>
+      </div>
+      <div class="conector c-vivo" aria-hidden="true">
+        <svg viewBox="0 0 46 24"><path class="fio" d="M2,12 H38"/><path class="fluxo-dash" d="M2,12 H38"/><path class="ponta" d="M34,6 L42,12 L34,18"/></svg>
+      </div>
+      <div class="no-mini" data-tip="tip-p-recarregar" tabindex="0">
+        <div class="passo-rotulo">recarregar</div>
+        <div class="passo-sub">atlas e insights acendem</div>
+      </div>
+    </div>
+    <span class="loop-badge"><svg class="loop-giro" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/></svg>e de novo, até a fila zerar</span>
+    <h3>Boas práticas</h3>
+    <div class="chips">
+      <span class="chip" data-tip="tip-b1" tabindex="0"><span class="chip-icone">◆</span>Production + Read-only</span>
+      <span class="chip" data-tip="tip-b2" tabindex="0"><span class="chip-icone">◆</span>ordem 00 → 10 → 20 → 30 → 40 → 99</span>
+      <span class="chip" data-tip="tip-b3" tabindex="0"><span class="chip-icone">◆</span>falhou? anota e pula</span>
+      <span class="chip" data-tip="tip-b4" tabindex="0"><span class="chip-icone">◆</span>99 só em amostras/</span>
+      <span class="chip" data-tip="tip-b5" tabindex="0"><span class="chip-icone">◆</span>grade na sessão</span>
+      <span class="chip" data-tip="tip-b6" tabindex="0"><span class="chip-icone">◆</span>fechar a conexão no fim</span>
+    </div>
+  </section>
+
+</main>
+
+<!-- catalogo dos tooltips (conteudo injetado no tooltip flutuante) -->
+<div id="catalogo-tips" hidden>
+  <div id="tip-sessao"><p class="tip-titulo">Sessão / terminal</p>Você pergunta, a sessão Claude consulta o banco e devolve digerido. Sem exportar, sem colar.</div>
+  <div id="tip-query"><p class="tip-titulo">query-mv.py</p>Driver <code>oracledb 4.0.1</code> em modo thick (Instant Client 23.26). Só <code>SELECT/WITH</code>. Flags: <code>-f arquivo.sql</code>, <code>--csv saida.csv</code>, <code>--max-rows N</code>.</div>
+  <div id="tip-vpn"><p class="tip-titulo">VPN HSM: de pé</p>Túnel <code>utun7</code> ativo. Gateway <code>10.11.12.1</code> responde em 13ms. Rota <code>10.100.64/22</code> correta.</div>
+  <div id="tip-bloqueio"><p class="tip-titulo">Bloqueio desde 13/jul</p><code>10.100.66.170:1521</code> não responde ICMP nem TCP. O traceroute morre depois do concentrador. Nada local mudou: falta regra de firewall/ACL do lado do MV, ou o servidor TST está parado.</div>
+  <div id="tip-oracle"><p class="tip-titulo">Oracle TST</p><code>dbtst1.9044.cloudmv.com.br:1521</code><br>service <code>tst19044.db9044.mv9044vcn.oraclevcn.com</code><br>Oracle 19c SE2, usuário <code>dbamv</code>. Senha com verifier 10g: por isso o modo thick (o thin recusa com DPY-3015).</div>
+
+  <div id="tip-oque-prod"><p class="tip-titulo">Em técnico</p>Banco Oracle de produção do MV. Acesso: conexão do DBeaver marcada <code>Production</code> + <code>Somente leitura</code>; credencial vive só no DBeaver, nunca no repositório. Nenhum código do projeto toca a produção.</div>
+  <div id="tip-oque-tst"><p class="tip-titulo">Em técnico</p>Oracle 19c SE2 na nuvem da MV: host <code>dbtst1.9044.cloudmv.com.br</code>, service <code>tst19044.db9044.mv9044vcn.oraclevcn.com</code>, usuário <code>dbamv</code>. Mesmas tabelas <code>DBAMV</code>; em 07/jul, <code>PACIENTE</code> tinha 2.518 linhas de teste. Se a homolog da API GH grava aqui é a pergunta GH-18, ainda aberta.</div>
+
+  <div id="tip-f1"><p class="tip-titulo">Em técnico</p>Firewall/ACL entre o concentrador da VPN e a subnet do banco. Pacote sem regra é descartado (drop) sem resposta: por isso o timeout silencioso em TCP e ICMP, em vez de uma recusa (reset).</div>
+  <div id="tip-f2"><p class="tip-titulo">Em técnico</p>Túnel HSM-VPN de pé (<code>utun7</code>); o crachá é um endereço do pool <code>10.100.64.0/22</code>; gateway <code>10.11.12.1</code> responde em 13ms; rota correta na tabela.</div>
+  <div id="tip-f3"><p class="tip-titulo">Em técnico</p><code>10.100.66.170:1521</code> sem resposta a TCP e ICMP; o traceroute morre logo após o concentrador; configuração local íntegra e testada em 07/jul. Hipótese alternativa: listener/servidor TST parado.</div>
+  <div id="tip-f4"><p class="tip-titulo">Em técnico</p>Recriar a regra liberando <code>10.100.64.0/22</code> até a subnet do banco na porta TCP 1521, confirmar o listener no ar e validar com <code>nc</code> a partir do segmento da VPN.</div>
+
+  <div id="tip-env"><p class="tip-titulo">.env da raiz (fora do git)</p><code>ORACLE_HOST</code>, <code>ORACLE_PORT</code>, <code>ORACLE_SERVICE</code>, <code>ORACLE_USER</code>, <code>ORACLE_PASSWORD</code> e <code>ORACLE_CLIENT_DIR</code> apontando o Instant Client.</div>
+  <div id="tip-driver"><p class="tip-titulo">oracledb 4.0.1</p>Instalado com <code>pip install --user oracledb</code>. O script ativa o modo thick sozinho quando <code>ORACLE_CLIENT_DIR</code> existe no .env.</div>
+  <div id="tip-ic"><p class="tip-titulo">Instant Client 23.26</p>Basic Lite ARM64 em <code>~/oracle/instantclient_23_26</code>, baixado direto da Oracle (o Homebrew travou em Command Line Tools desatualizados).</div>
+  <div id="tip-testado"><p class="tip-titulo">Testado em 07/jul</p><code>v$version</code> respondeu (Oracle 19c SE2) e <code>SELECT</code> em <code>DBAMV.PACIENTE</code> funcionou: 2.518 pacientes na TST.</div>
+
+  <div id="tip-vpncheck"><p class="tip-titulo">VPN ligada</p>Cliente HSM-VPN conectado: interface <code>utun7</code> de pé, rota <code>10.100.64/22</code> na tabela. Conferência rápida: <code>ping 10.11.12.1</code>.</div>
+  <div id="tip-nc"><p class="tip-titulo">O sinal da volta</p>Sucesso aqui = porta aberta: o bloqueio caiu. Siga para o passo 3.</div>
+  <div id="tip-smoke"><p class="tip-titulo">Fumaça fim a fim</p>Valida driver, modo thick, credencial e listener de uma vez. Resposta esperada: o banner do Oracle 19c SE2.</div>
+
+  <div id="tip-r-porta"><p class="tip-titulo">Réplica</p>Aberta a partir de onde? Pedir o teste com origem no segmento da VPN (pool <code>10.100.64.0/22</code>). Da LAN interna deles a 1521 pode responder com o firewall da VPN ainda fechado.</div>
+  <div id="tip-r-nadamudou"><p class="tip-titulo">Réplica</p>A data é objetiva: funcionou até 13/jul e parou sem mudança local. Pedir o changelog de firewall/rota em torno dessa data.</div>
+  <div id="tip-r-cliente"><p class="tip-titulo">Réplica</p>Gateway responde (13ms), rota na tabela, config local testada em 07/jul e íntegra. O <code>nc</code> com e sem VPN muda de comportamento: o túnel entrega; só a 1521 não responde.</div>
+  <div id="tip-evid"><p class="tip-titulo">Como usar</p>Rodar com a VPN ligada e colar a saída inteira na resposta ao MV. O contraste esperado: gateway responde, 1521 não.</div>
+
+  <div id="tip-g1"><p class="tip-titulo">Sem ciclo manual</p>A pergunta na sessão vira <code>SELECT</code> executado na hora, resposta já digerida. O ciclo copiar, exportar e colar some.</div>
+  <div id="tip-g2"><p class="tip-titulo">Direto no conhecimento</p>O CSV cai em <code>absorcao-producao/resultados/</code> com o nome do contrato. O portal hidrata sozinho no reload.</div>
+  <div id="tip-g3"><p class="tip-titulo">Ensaio antes da estreia</p>Os 21 .sql do pacote C8 rodam contra a TST em minutos: sintaxe e colunas validadas ANTES da rodada única na produção.</div>
+  <div id="tip-g4"><p class="tip-titulo">Exploração livre</p>Domínios, FKs e amostras (em <code>resultados/amostras/</code>, fora do git), com o atlas como mapa do modelo.</div>
+
+  <div id="tip-m1"><p class="tip-titulo">Blocos temáticos</p>Agenda, atendimento, faturamento: cada bloco fecha um capítulo do dicionário de uma vez.</div>
+  <div id="tip-m2"><p class="tip-titulo">Amostras fora do git</p>Toda amostra com dado pessoal vai para <code>resultados/amostras/</code>: o git ignora e o portal jamais serve.</div>
+  <div id="tip-m3"><p class="tip-titulo">Digestão imediata</p>Pedir a digestão de cada resultado à sessão: o achado vira contexto acumulado na hora.</div>
+  <div id="tip-m4"><p class="tip-titulo">Nota no dicionário</p>Cada descoberta vira nota em <code>dicionario-colunas.md</code>: o conhecimento não evapora no fim da sessão.</div>
+
+  <div id="tip-p-copiar"><p class="tip-titulo">Copiar</p><code>absorcao.html</code> lista a fila na ordem certa, cada query com botão copiar. Um statement por arquivo.</div>
+  <div id="tip-p-rodar"><p class="tip-titulo">Rodar</p>Um único editor SQL na conexão de produção, Ctrl+Enter. Sem abas de outras conexões abertas.</div>
+  <div id="tip-p-exportar"><p class="tip-titulo">Exportar</p>Export resultset: CSV, UTF-8, vírgula, aspas quando preciso, com cabeçalho. Salvar o preset UMA vez no DBeaver e reusar.</div>
+  <div id="tip-p-depositar"><p class="tip-titulo">Depositar</p>Nome EXATO da linha <code>Saida:</code> do .sql: o nome é contrato com o portal. Blocos 00 a 90 em <code>resultados/</code>, bloco 99 em <code>resultados/amostras/</code>.</div>
+  <div id="tip-p-recarregar"><p class="tip-titulo">Recarregar</p>No reload do portal, <code>absorcao</code> marca o depósito e <code>atlas</code> e <code>insights</code> acendem com os números reais.</div>
+
+  <div id="tip-b1"><p class="tip-titulo">Proteção dupla</p>Na conexão do DBeaver: tipo <code>Production</code> e <code>Somente leitura</code> marcados. O próprio DBeaver bloqueia escrita acidental.</div>
+  <div id="tip-b2"><p class="tip-titulo">Numa sentada</p>Blocos na ordem 00, 10, 20, 30, 40, 99. O 90 é bônus opcional: pule sem culpa.</div>
+  <div id="tip-b3"><p class="tip-titulo">Sem improviso</p>Query falhou? Anote a mensagem de erro e pule para a próxima. Nunca improvisar SQL novo na produção.</div>
+  <div id="tip-b4"><p class="tip-titulo">Bloco 99</p>Amostras com dado de paciente: SEMPRE em <code>resultados/amostras/</code>, que o git ignora e o portal jamais serve.</div>
+  <div id="tip-b5"><p class="tip-titulo">Digestão imediata</p>Colar a grade de resultado na sessão Claude: o achado entra no contexto na hora.</div>
+  <div id="tip-b6"><p class="tip-titulo">Encerramento</p>Fechar a conexão de produção ao terminar. Nenhuma credencial sai do DBeaver.</div>
+</div>
+
+<!-- tooltip flutuante unico -->
+<div id="tooltip" class="tooltip" role="tooltip" aria-hidden="true"><div class="tooltip-seta"></div><div class="tooltip-corpo"></div></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var temHttp = location.protocol === 'http:' || location.protocol === 'https:';
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* ---- tooltip: hover mostra, clique fixa, Esc/clique fora solta ---- */
+  var tooltip = document.getElementById('tooltip');
+  var corpo = tooltip.querySelector('.tooltip-corpo');
+  var seta = tooltip.querySelector('.tooltip-seta');
+  var atual = null;
+  var fixado = false;
+
+  function posicionar(el) {
+    var r = el.getBoundingClientRect();
+    var tw = tooltip.offsetWidth;
+    var th = tooltip.offsetHeight;
+    var acima = (r.bottom + th + 14 > window.innerHeight) && (r.top - th - 14 > 0);
+    var top = acima ? r.top - th - 10 : r.bottom + 10;
+    var left = r.left + r.width / 2 - tw / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+    tooltip.classList.toggle('acima', acima);
+    var setaX = r.left + r.width / 2 - left - 6;
+    setaX = Math.max(10, Math.min(setaX, tw - 22));
+    seta.style.left = setaX + 'px';
+  }
+
+  function mostrar(el) {
+    var fonte = document.getElementById(el.getAttribute('data-tip'));
+    if (!fonte) { return; }
+    corpo.innerHTML = fonte.innerHTML;
+    tooltip.classList.add('visivel');
+    tooltip.setAttribute('aria-hidden', 'false');
+    atual = el;
+    posicionar(el);
+  }
+
+  function esconder() {
+    if (fixado) { return; }
+    tooltip.classList.remove('visivel');
+    tooltip.setAttribute('aria-hidden', 'true');
+    atual = null;
+  }
+
+  function soltar() {
+    fixado = false;
+    tooltip.classList.remove('visivel', 'fixado');
+    tooltip.setAttribute('aria-hidden', 'true');
+    atual = null;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-tip]'), function (el) {
+    el.addEventListener('mouseenter', function () { if (!fixado) { mostrar(el); } });
+    el.addEventListener('mouseleave', esconder);
+    el.addEventListener('focus', function () { if (!fixado) { mostrar(el); } });
+    el.addEventListener('blur', esconder);
+    el.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      if (fixado && atual === el) { soltar(); return; }
+      fixado = false;
+      mostrar(el);
+      fixado = true;
+      tooltip.classList.add('fixado');
+    });
+  });
+  document.addEventListener('click', function (ev) {
+    if (fixado && !tooltip.contains(ev.target)) { soltar(); }
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') { soltar(); }
+  });
+  window.addEventListener('scroll', function () { if (atual) { posicionar(atual); } }, true);
+  window.addEventListener('resize', function () { if (atual) { posicionar(atual); } });
+
+  /* ---- botoes de copiar ---- */
+  function copiarTexto(texto, btn) {
+    function feito() {
+      var original = btn.textContent;
+      btn.textContent = 'copiado';
+      btn.classList.add('feito');
+      setTimeout(function () { btn.textContent = original; btn.classList.remove('feito'); }, 1400);
+    }
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = texto;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); feito(); } catch (e) { /* sem clipboard disponivel */ }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(texto).then(feito, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-copia]'), function (btn) {
+    btn.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      var alvo = document.getElementById(btn.getAttribute('data-copia'));
+      if (alvo) { copiarTexto(alvo.textContent.trim(), btn); }
+    });
+  });
+
+  /* ---- passo 4: testar daqui (GET /api/status) ---- */
+  function estado(el, classe, html) {
+    el.hidden = false;
+    el.className = 'resultado-live ' + classe;
+    el.innerHTML = html;
+  }
+
+  var degradado = 'sem backend aqui. Suba o portal com <code>python3 ana/api-mv/playground/server.py</code> e abra <code>http://localhost:8777/tst.html</code>.';
+
+  var btnStatus = document.getElementById('btn-status');
+  var outStatus = document.getElementById('resultado-status');
+  btnStatus.addEventListener('click', function () {
+    if (!temHttp) { estado(outStatus, 'degradado', degradado); return; }
+    estado(outStatus, 'carregando', 'testando o Oracle TST...');
+    fetch('/api/status').then(function (r) { return r.json(); }).then(function (st) {
+      if (st.oracle_ok) {
+        estado(outStatus, 'ok', 'Oracle TST no ar: respondeu em ' + st.oracle_latencia_ms + 'ms. A conexão voltou.');
+      } else {
+        estado(outStatus, 'erro', 'sem conexão: ' + escapeHtml(st.oracle_msg || 'erro desconhecido'));
+      }
+    }).catch(function () {
+      estado(outStatus, 'degradado', degradado);
+    });
+  });
+
+  /* ---- passo 5: prova final (POST /api/sql) ---- */
+  var btnProva = document.getElementById('btn-prova');
+  var outProva = document.getElementById('resultado-prova');
+  btnProva.addEventListener('click', function () {
+    if (!temHttp) {
+      estado(outProva, 'degradado', degradado + '<br>Equivalente no terminal: <code>python3 ana/api-mv/scripts/query-mv.py "SELECT banner FROM v\\$version"</code>');
+      return;
+    }
+    estado(outProva, 'carregando', 'rodando SELECT banner FROM v$version...');
+    fetch('/api/sql', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sql: 'SELECT banner FROM v$version' })
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (res.ok) {
+        var banner = (res.linhas && res.linhas[0] && res.linhas[0][0]) || '(sem linhas)';
+        estado(outProva, 'ok', escapeHtml(String(banner)) + ' <span class="latencia">' + res.latencia_ms + 'ms · prova no banco OK</span>');
+      } else {
+        estado(outProva, 'erro', 'falhou: ' + escapeHtml(res.erro || 'erro desconhecido'));
+      }
+    }).catch(function () {
+      estado(outProva, 'degradado', degradado);
+    });
+  });
+})();
+</script>
+</body>
+</html>

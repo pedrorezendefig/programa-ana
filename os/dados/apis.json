@@ -1,0 +1,76 @@
+{
+  "nota": "Catálogo temático da API GH de agendamento WhatsApp (homologação). Fato de arquitetura (Dácilla, suporte MV, 24/jul/2026): a API roda sobre o banco SaaS da Global Health, inacessível ao hospital; os dados só chegam ao Soul (Oracle MV) na finalização do agendamento. A API NÃO é janela de leitura do banco MV: quem lê o MV é o Oracle TST direto (bancada/roteiro) e o Atlas para produção.",
+  "selos": {
+    "catalogo": { "rotulo": "leitura · a resposta é a prova", "explica": "Endpoint de consulta: dá para testar e demonstrar hoje, o retorno da API é o resultado. Nada a procurar no Oracle." },
+    "saas": { "rotulo": "escrita no SaaS GH · invisível no Oracle", "explica": "Funciona e devolve sucesso, mas o dado mora no banco SaaS da Global Health: não aparece na Base TST por arquitetura, não por falha. Testável só pela resposta (e por um GET de conferência na própria API)." },
+    "finalizacao": { "rotulo": "finalização · prova no banco (TST)", "explica": "O único ponto do fluxo onde o dado é gravado no Soul/Oracle. É aqui que a Prova no banco da bancada vale, e onde vive a pergunta GH-18 (a homolog grava na Base TST?)." }
+  },
+  "temas": [
+    {
+      "id": "identificacao",
+      "titulo": "Identificação do paciente",
+      "resumo": "Encontrar ou registrar quem está conversando. A busca funciona já; a criação grava no SaaS GH (o clássico \"criei e não achei no banco\" é o esperado).",
+      "endpoints": [
+        { "titulo": "Buscar paciente por CPF", "method": "GET", "path": "/pessoas", "selo": "catalogo", "resumo": "Busca cadastro pelo CPF. Referência de teste: o paciente-sonda (CPF 66301102770, id 1681)." },
+        { "titulo": "Buscar paciente por telefone", "method": "GET", "path": "/pessoas", "selo": "catalogo", "resumo": "Mesma busca, pelo telefone: o caminho natural da Ana no WhatsApp." },
+        { "titulo": "Criar ou atualizar paciente", "method": "POST", "path": "/pessoas", "selo": "saas", "resumo": "Grava o cadastro no banco SaaS da GH. Não procure na PACIENTE da TST: só a finalização leva o paciente ao Soul." }
+      ]
+    },
+    {
+      "id": "catalogo",
+      "titulo": "Catálogo: o que dá para agendar",
+      "resumo": "Especialidades, exames e regras de triagem. Tudo leitura: dá para montar demonstração ao diretor hoje, sem tocar em banco.",
+      "endpoints": [
+        { "titulo": "Buscar consultas (especialidades)", "method": "GET", "path": "/consultas", "selo": "catalogo", "resumo": "As especialidades agendáveis pela API." },
+        { "titulo": "Tipos de consulta", "method": "GET", "path": "/consultas/tipos", "selo": "catalogo", "resumo": "Primeira consulta, retorno etc." },
+        { "titulo": "Buscar exames", "method": "GET", "path": "/exames", "selo": "catalogo", "resumo": "Os exames agendáveis pela API." },
+        { "titulo": "Perguntas de triagem do exame", "method": "GET", "path": "/exames/perguntas", "selo": "catalogo", "resumo": "O questionário que o exame exige antes de agendar." },
+        { "titulo": "Instrução geral do exame", "method": "GET", "path": "/exames/instrucaoGeral", "selo": "catalogo", "resumo": "Preparo e orientações gerais do exame." }
+      ]
+    },
+    {
+      "id": "convenio",
+      "titulo": "Convênio, plano e carteiras",
+      "resumo": "A árvore convênio → plano → sub-plano é leitura de catálogo. As carteiras do paciente moram no SaaS GH: gravar funciona, mas a prova é um GET na própria API.",
+      "endpoints": [
+        { "titulo": "Buscar convênios", "method": "GET", "path": "/convenios", "selo": "catalogo", "resumo": "Convênios aceitos no agendamento." },
+        { "titulo": "Planos de um convênio", "method": "GET", "path": "/convenios/{idConvenio}/planos", "selo": "catalogo", "resumo": "Planos do convênio escolhido." },
+        { "titulo": "Sub-planos de um plano", "method": "GET", "path": "/convenios/{idConvenio}/planos/{idPlano}/subPlanos", "selo": "catalogo", "resumo": "O último nível da árvore de convênio." },
+        { "titulo": "Carteiras do paciente", "method": "GET", "path": "/carteiras", "selo": "catalogo", "resumo": "As carteiras de convênio guardadas para o paciente." },
+        { "titulo": "Cadastrar ou atualizar carteira", "method": "POST", "path": "/carteiras", "selo": "saas", "resumo": "Grava a carteira no SaaS GH; conferência é pelo GET /carteiras." },
+        { "titulo": "Excluir carteira", "method": "DELETE", "path": "/carteiras/{id}", "selo": "saas", "resumo": "Remove a carteira no SaaS GH." }
+      ]
+    },
+    {
+      "id": "disponibilidade",
+      "titulo": "Prestadores e horários livres",
+      "resumo": "Quem atende e quando. É a vitrine da demonstração: perguntar horário de cardiologia e ver a agenda real da homolog voltar.",
+      "endpoints": [
+        { "titulo": "Buscar prestadores (médicos)", "method": "GET", "path": "/prestadores", "selo": "catalogo", "resumo": "Os profissionais que atendem a especialidade/exame." },
+        { "titulo": "Horários livres", "method": "GET", "path": "/agendas/v2", "selo": "catalogo", "resumo": "Os slots livres de agenda para especialidade, prestador e período." },
+        { "titulo": "Instruções do horário", "method": "GET", "path": "/horarios/{id}/instrucoes", "selo": "catalogo", "resumo": "Orientações específicas do slot escolhido." }
+      ]
+    },
+    {
+      "id": "agendamento",
+      "titulo": "Agendar e gerir (a finalização)",
+      "resumo": "O coração do fluxo e o único lugar onde o Oracle entra: agendar/reagendar/cancelar gravam no Soul. É aqui que a Prova no banco decide, e onde a GH-18 se responde.",
+      "endpoints": [
+        { "titulo": "Agendar horário", "method": "POST", "path": "/horarios/agendar", "selo": "finalizacao", "resumo": "Efetiva a marcação. Depois dela, procurar o agendamento na Base TST é legítimo (GH-18)." },
+        { "titulo": "Remarcar (reagendar)", "method": "POST", "path": "/horarios/reagendar", "selo": "finalizacao", "resumo": "Troca o horário de um agendamento existente." },
+        { "titulo": "Cancelar agendamento", "method": "DELETE", "path": "/agendamentos/{id}", "selo": "finalizacao", "resumo": "Cancela a marcação efetivada." },
+        { "titulo": "Listar agendamentos do paciente", "method": "GET", "path": "/agendamentos", "selo": "catalogo", "resumo": "Os agendamentos do paciente na visão da API." },
+        { "titulo": "Consultar um agendamento", "method": "GET", "path": "/agendamentos/{id}", "selo": "catalogo", "resumo": "O detalhe de uma marcação específica." }
+      ]
+    },
+    {
+      "id": "apoio",
+      "titulo": "Anexos (apoio ao agendamento)",
+      "resumo": "Pedido médico, autorização de convênio: a lista de exigências é consulta; o upload grava no SaaS GH.",
+      "endpoints": [
+        { "titulo": "Anexos exigidos para o agendamento", "method": "POST", "path": "/anexos/agendamento", "selo": "catalogo", "resumo": "Consulta (via POST) quais documentos aquele agendamento exige." },
+        { "titulo": "Enviar anexo (upload por URL)", "method": "POST", "path": "/anexos/upload", "selo": "saas", "resumo": "Sobe o documento para o SaaS GH." }
+      ]
+    }
+  ]
+}

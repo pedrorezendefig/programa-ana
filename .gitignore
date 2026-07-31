@@ -3,3 +3,11 @@
 tokens/
 ana/api-mv/resultados/amostras/
 .venv-mv/
+ana/api-mv/absorcao-producao/resultados/amostras/
+
+# Planilhas brutas com dado pessoal (nunca commitar)
+/dados-locais/
+
+# Backups de runtime do Ana OS (a rota de escrita gera .bak/.tmp)
+os/dados/*.bak
+os/dados/*.tmp

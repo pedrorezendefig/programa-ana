@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absorção · Portal Ana</title>
+<style>
+  :root {
+    --papel: #f4eee1; --papel-card: #fdfaf2; --papel-aula: #f0e9d8;
+    --tinta: #22291f; --tinta-suave: #5b6357; --tinta-apagada: #8a9184;
+    --verde: #17695a; --verde-escuro: #0e4c41;
+    --ambar: #9a5b0f; --ambar-papel: #f7ecd7;
+    --vermelho: #a63325; --vermelho-papel: #f8e6e0;
+    --console: #14231e; --console-borda: #24382f; --console-texto: #cfe3d4;
+    --linha: rgba(34, 41, 31, 0.16);
+    --serif: "New York", "Iowan Old Style", "Palatino", "Charter", Georgia, serif;
+    --sans: "Avenir Next", "Avenir", "Seravek", "Gill Sans", -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; font-style: normal; }
+  em, i, u { font-style: normal; text-decoration: none; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; padding: 34px 20px 80px; background: var(--papel); color: var(--tinta);
+         font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+  main { max-width: 980px; margin: 0 auto; }
+  h1, h2, h3 { font-family: var(--serif); }
+  .selo { font-family: var(--mono); font-size: 11px; color: var(--tinta-apagada); text-transform: uppercase; letter-spacing: 0.1em; }
+  .card { background: var(--papel-card); border: 1px solid var(--linha); border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+  .nota { background: var(--ambar-papel); border: 1px solid var(--linha); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; }
+  pre.sql { background: var(--console); color: var(--console-texto); border: 1px solid var(--console-borda);
+            border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; }
+  .copiar { font-family: var(--mono); font-size: 11.5px; color: var(--verde); background: none;
+            border: 1px solid var(--linha); border-radius: 5px; padding: 3px 9px; cursor: pointer; }
+  .copiar:hover { color: var(--verde-escuro); background: var(--papel-aula); }
+  table.dados { border-collapse: collapse; font-family: var(--mono); font-size: 12px; width: 100%; }
+  table.dados th, table.dados td { border: 1px solid var(--linha); padding: 4px 8px; text-align: left; }
+  table.dados th { background: var(--papel-aula); }
+  .tabela-scroll { overflow-x: auto; }
+  .aguardando { font-family: var(--mono); font-size: 12.5px; color: var(--ambar); background: var(--ambar-papel);
+                border: 1px dashed var(--linha); border-radius: 6px; padding: 8px 10px; display: inline-block; }
+  .evidencia { font-family: var(--mono); font-size: 11.5px; color: var(--verde); }
+  .mini-nota { font-size: 12px; color: var(--tinta-apagada); font-family: var(--mono); }
+
+  /* estilos proprios desta pagina */
+  header.topo { margin-bottom: 22px; }
+  h1 { font-weight: 700; font-size: clamp(30px, 5vw, 44px); line-height: 1.08; margin: 8px 0 10px; letter-spacing: -0.5px; }
+  h1 .fino { color: var(--verde); }
+  .subtitulo { color: var(--tinta-suave); max-width: 66ch; margin: 0; font-size: 15.5px; }
+  h2 { font-size: 24px; margin: 34px 0 10px; }
+  h3 { font-size: 18px; margin: 26px 0 8px; }
+  h4 { font-family: var(--serif); font-size: 16.5px; margin: 0; }
+  a { color: var(--verde); }
+  .aviso-producao { background: var(--vermelho-papel); border: 1.5px solid var(--vermelho); border-radius: 8px;
+                    padding: 12px 14px; margin: 18px 0; color: var(--vermelho); font-size: 14px; }
+  .aviso-producao strong { text-transform: uppercase; letter-spacing: 0.04em; }
+  code.arquivo { font-family: var(--mono); font-size: 12px; background: var(--papel-aula);
+                 border: 1px solid var(--linha); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+  .selo-estado { font-family: var(--mono); font-size: 11px; border-radius: 999px; padding: 2px 10px;
+                 border: 1px solid var(--linha); white-space: nowrap; }
+  .estado-ok { color: var(--verde-escuro); background: #e4efe4; border-color: var(--verde); }
+  .estado-falta { color: var(--ambar); background: var(--ambar-papel); }
+  .estado-fora { color: var(--tinta-apagada); background: var(--papel-aula); }
+  .card-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .meta { font-size: 13px; color: var(--tinta-suave); margin: 4px 0; }
+  .sql-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0 4px; }
+  #aviso-api { color: var(--vermelho); font-size: 13px; font-family: var(--mono); margin: 8px 0; }
+  ol.passos { margin: 8px 0 0; padding-left: 22px; }
+  ol.passos li { margin: 6px 0; }
+  ul.regras { margin: 8px 0 0; padding-left: 20px; }
+  ul.regras li { margin: 5px 0; }
+</style>
+</head>
+<body>
+<!-- inicio: barra de navegacao do portal (identica em todas as paginas) -->
+<style>
+  .portal-nav { border-bottom: 1px solid var(--linha); background: var(--papel-card); margin: -34px -20px 26px; }
+  .portal-nav-inner { max-width: 980px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; }
+  .portal-nav-marca { color: var(--tinta-apagada); text-transform: uppercase; letter-spacing: 0.08em; }
+  .portal-nav a { color: var(--verde); text-decoration: none; padding: 3px 8px; border-radius: 5px; }
+  .portal-nav a:hover { color: var(--verde-escuro); background: var(--papel-aula); }
+  .portal-nav a.ativa { background: var(--verde); color: var(--papel-card); }
+  .portal-nav-ambiente { margin-left: auto; color: var(--ambar); border: 1px solid var(--linha); background: var(--ambar-papel); padding: 2px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+</style>
+<nav class="portal-nav">
+  <div class="portal-nav-inner">
+    <span class="portal-nav-marca">Portal Ana</span>
+    <a href="/">Bancada</a>
+    <a href="/roteiro.html">Roteiro</a>
+    <a href="/atlas.html">Atlas</a>
+    <a href="/insights.html">Insights</a>
+    <a href="/absorcao.html" class="ativa">Absorção</a>
+    <a href="/tst.html">Conexão TST</a>
+    <!-- customizacao 1: adicionar class="ativa" ao link da propria pagina -->
+    <span class="portal-nav-ambiente">RETRATO DA PRODUÇÃO</span>
+    <!-- customizacao 2: rotulo de ambiente, ver tabela da spec -->
+  </div>
+</nav>
+<!-- fim: barra de navegacao do portal -->
+<main>
+
+  <header class="topo">
+    <div class="selo">Retrato da produção · pacote C8</div>
+    <h1>Absorção <span class="fino">da produção</span></h1>
+    <p class="subtitulo">Passo a passo operacional para colher o retrato da produção: cada query abaixo é colada
+      manualmente no DBeaver da produção, o resultado é exportado em CSV com o nome exato indicado e depositado
+      na pasta certa. Esta página confere o depósito ao vivo.</p>
+  </header>
+
+  <div class="aviso-producao">
+    <strong>Atenção:</strong> estas queries rodam na PRODUÇÃO, no DBeaver, fora deste portal, manualmente.
+    Nenhum botão desta página executa SQL em lugar nenhum: o botão só copia o texto. O servidor local fala
+    apenas com a homolog GH e o Oracle TST, nunca com a produção.
+  </div>
+
+  <h2 id="antes">Antes de começar</h2>
+  <div class="nota">
+    <ul class="regras">
+      <li>Produção é somente leitura manual no DBeaver. Nunca colocar credencial de produção no <code class="arquivo">.env</code> desta máquina.</li>
+      <li>Todas as queries são <code class="arquivo">SELECT</code>/<code class="arquivo">WITH</code>. Ordem de execução recomendada: bloco 00, depois 10, 20, 30, 40, por fim 99 (o 90 é opcional, a qualquer momento).</li>
+      <li>Export sempre em CSV UTF-8, separador vírgula, valores com aspas duplas quando necessário, com linha de cabeçalho (mesmo formato dos CSVs já commitados do C2).</li>
+      <li>O nome do arquivo é contrato: <a href="/atlas.html">atlas.html</a>, <a href="/insights.html">insights.html</a> e esta página referenciam os nomes literalmente. Mudar um nome quebra a hidratação das páginas.</li>
+      <li>Duas camadas de destino: <code class="arquivo">ana/api-mv/absorcao-producao/resultados/</code> é a camada commitável (entra no git); <code class="arquivo">resultados/amostras/</code> fica fora do git. Qualquer resultado com dado de paciente vai para <code class="arquivo">amostras/</code>. Em dúvida, amostras.</li>
+      <li>Exceção única de dado pessoal: o paciente-sonda TESTE INTEGRACAO ANA VITTA (CPF 66301102770, id 1681), cadastro fictício de teste. Só ele pode aparecer em query e CSV commitável (query 10-5, que ainda protege com guarda qualquer colisão com paciente real).</li>
+      <li>Clone novo desta máquina: a pasta <code class="arquivo">amostras/</code> é ignorada por inteiro pelo git, então crie-a localmente antes do primeiro export.</li>
+    </ul>
+  </div>
+
+  <h2 id="checklist">Checklist do depósito</h2>
+  <p class="meta">A página consulta <code class="arquivo">GET /api/absorcao</code>: arquivo presente na raiz de
+    <code class="arquivo">resultados/</code> vira check verde, com tamanho e data. As amostras nunca são consultadas
+    ao servidor.</p>
+  <p id="contador-deposito" class="mini-nota">conferindo o depósito...</p>
+  <p id="aviso-api"></p>
+  <div class="card">
+    <div class="tabela-scroll">
+      <table class="dados" id="checklist-tabela">
+        <thead>
+          <tr><th>Query</th><th>CSV de saída (nome exato)</th><th>Camada</th><th>Estado</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><a href="#q-00-1">00-1</a></td><td><code class="arquivo">00-1-catalogo-tabelas.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="00-1-catalogo-tabelas.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-00-2">00-2</a></td><td><code class="arquivo">00-2-colunas-nucleo.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="00-2-colunas-nucleo.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-00-3">00-3</a></td><td><code class="arquivo">00-3-colunas-novos-dominios.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="00-3-colunas-novos-dominios.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-1">10-1</a></td><td><code class="arquivo">10-1-funil-ocupacao-mensal.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-1-funil-ocupacao-mensal.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-2">10-2</a></td><td><code class="arquivo">10-2-dominios-agendamento.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-2-dominios-agendamento.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-3">10-3</a></td><td><code class="arquivo">10-3-dominios-atendime.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-3-dominios-atendime.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-4">10-4</a></td><td><code class="arquivo">10-4-motivos-alta.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-4-motivos-alta.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-5">10-5</a></td><td><code class="arquivo">10-5-sonda-gh18.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-5-sonda-gh18.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-6">10-6</a></td><td><code class="arquivo">10-6-atendime-gh.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-6-atendime-gh.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-7">10-7</a></td><td><code class="arquivo">10-7-mix-convenio.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-7-mix-convenio.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-8">10-8</a></td><td><code class="arquivo">10-8-ocupacao-prestador.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-8-ocupacao-prestador.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-10-9">10-9</a></td><td><code class="arquivo">10-9-contactabilidade.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="10-9-contactabilidade.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-20-1">20-1</a></td><td><code class="arquivo">20-1-cirurgia-descoberta.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="20-1-cirurgia-descoberta.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-30-1">30-1</a></td><td><code class="arquivo">30-1-internacao-descoberta.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="30-1-internacao-descoberta.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-30-2">30-2</a></td><td><code class="arquivo">30-2-internacao-urgencia-mensal.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="30-2-internacao-urgencia-mensal.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-40-1">40-1</a></td><td><code class="arquivo">40-1-faturamento-descoberta.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="40-1-faturamento-descoberta.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-40-2">40-2</a></td><td><code class="arquivo">40-2-convenios-catalogo.csv</code></td><td>commitável</td><td><span class="selo-estado estado-falta" data-estado="40-2-convenios-catalogo.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-90-1">90-1</a></td><td><code class="arquivo">90-1-dw-reconhecimento.csv</code></td><td>commitável · bônus opcional</td><td><span class="selo-estado estado-falta" data-estado="90-1-dw-reconhecimento.csv">faltando</span></td></tr>
+          <tr><td><a href="#q-99-1">99-1</a></td><td><code class="arquivo">amostras/99-1-it-agenda-central.csv</code></td><td>amostras (fora do git) · conferência manual, não aparece na listagem</td><td><span class="selo-estado estado-fora">fora do portal, conferir no Finder</span></td></tr>
+          <tr><td><a href="#q-99-2">99-2</a></td><td><code class="arquivo">amostras/99-2-atendime.csv</code></td><td>amostras (fora do git) · conferência manual, não aparece na listagem</td><td><span class="selo-estado estado-fora">fora do portal, conferir no Finder</span></td></tr>
+          <tr><td><a href="#q-99-3">99-3</a></td><td><code class="arquivo">amostras/99-3-atendime-gh.csv</code></td><td>amostras (fora do git) · conferência manual, não aparece na listagem</td><td><span class="selo-estado estado-fora">fora do portal, conferir no Finder</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2 id="queries">As queries, na ordem</h2>
+  <p class="meta">21 queries no total: 18 geram CSV commitável em <code class="arquivo">resultados/</code>
+    (17 obrigatórias + 1 bônus opcional) e 3 geram amostra em <code class="arquivo">resultados/amostras/</code>,
+    fora do git. O SQL abaixo é idêntico ao dos arquivos em
+    <code class="arquivo">ana/api-mv/absorcao-producao/queries/</code>.</p>
+
+  <h3>Bloco 00: catálogo e metadados</h3>
+
+  <div class="card" id="q-00-1">
+    <div class="card-cab">
+      <h4>00-1 · Catálogo de tabelas por domínio</h4>
+      <span class="selo-estado estado-falta" data-estado="00-1-catalogo-tabelas.csv">faltando</span>
+    </div>
+    <p class="meta">Fotografa quais tabelas existem na produção por domínio (agenda, atendimento, cirurgia, leito, urgência, faturamento), com volume estimado. Responde: C6-1 (retrato da produção), GH-19 (contexto de massa), base da descoberta dos blocos 20/30/40, insights 4, 9, 10 e 11.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">00-1-catalogo-tabelas.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/00-1-catalogo-tabelas.sql</span><button class="copiar" data-copiar="sql-00-1">copiar SQL</button></div>
+    <pre class="sql" id="sql-00-1">-- 00-1: catalogo de tabelas por dominio na PRODUCAO
+-- Bloco 00: catalogo e metadados
+-- Saida: 00-1-catalogo-tabelas.csv (camada commitavel, resultados/)
+-- Responde: C6-1 (retrato da producao), GH-19 (contexto de massa),
+--   base da descoberta dos blocos 20/30/40, insights 4, 9, 10, 11
+SELECT t.OWNER,
+       t.TABLE_NAME,
+       t.NUM_ROWS,
+       t.LAST_ANALYZED,
+       c.COMMENTS
+FROM   ALL_TABLES t
+LEFT JOIN ALL_TAB_COMMENTS c
+       ON c.OWNER = t.OWNER
+      AND c.TABLE_NAME = t.TABLE_NAME
+WHERE  t.OWNER IN ('DBAMV', 'DBAPS')
+  AND (   t.TABLE_NAME LIKE '%AGENDA%'
+       OR t.TABLE_NAME LIKE '%ATENDIME%'
+       OR t.TABLE_NAME LIKE '%PACIENTE%'
+       OR t.TABLE_NAME LIKE '%CONVENIO%'
+       OR t.TABLE_NAME LIKE '%CIRUR%'
+       OR t.TABLE_NAME LIKE 'AVISO%'
+       OR t.TABLE_NAME LIKE 'SOS_%'
+       OR t.TABLE_NAME LIKE '%LEITO%'
+       OR t.TABLE_NAME LIKE '%INTERNA%'
+       OR t.TABLE_NAME LIKE '%URGENC%'
+       OR t.TABLE_NAME LIKE '%EMERG%'
+       OR t.TABLE_NAME LIKE '%TRIAGEM%'
+       OR t.TABLE_NAME LIKE '%FATUR%'
+       OR t.TABLE_NAME LIKE 'CONTA%'
+       OR t.TABLE_NAME LIKE '%GUIA%'
+       OR t.TABLE_NAME LIKE '%TISS%'
+       OR t.TABLE_NAME LIKE '%GLOSA%'
+       OR t.TABLE_NAME LIKE 'MOT_ALT%'
+       OR t.TABLE_NAME LIKE 'MOTIVO_ALTA%'
+       OR t.TABLE_NAME LIKE '%OBITO%'
+       OR t.TABLE_NAME LIKE 'ESCALA%'
+       OR t.TABLE_NAME LIKE 'ITEM_AGENDAMENTO%'
+       OR t.TABLE_NAME LIKE 'EXA_RX%'
+       OR t.TABLE_NAME LIKE 'PRESTADOR%')
+ORDER BY t.NUM_ROWS DESC NULLS LAST, t.OWNER, t.TABLE_NAME;
+</pre>
+  </div>
+
+  <div class="card" id="q-00-2">
+    <div class="card-cab">
+      <h4>00-2 · Colunas e comentários do núcleo conhecido</h4>
+      <span class="selo-estado estado-falta" data-estado="00-2-colunas-nucleo.csv">faltando</span>
+    </div>
+    <p class="meta">Confirma que a estrutura das 13 tabelas do núcleo na produção bate com a TST (pré-condição de todo o dicionário C3). Responde: C6-3 (NULLABLE de CD_MOT_ALT).</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">00-2-colunas-nucleo.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/00-2-colunas-nucleo.sql</span><button class="copiar" data-copiar="sql-00-2">copiar SQL</button></div>
+    <pre class="sql" id="sql-00-2">-- 00-2: colunas e comentarios das tabelas do nucleo, na PRODUCAO
+-- Bloco 00: catalogo e metadados
+-- Saida: 00-2-colunas-nucleo.csv (camada commitavel, resultados/)
+-- Responde: confirma que a estrutura da producao bate com a TST (pre-condicao
+--   de todo o dicionario C3), C6-3 (NULLABLE de CD_MOT_ALT), C6-6 (estrutura)
+SELECT c.TABLE_NAME,
+       c.COLUMN_ID,
+       c.COLUMN_NAME,
+       c.DATA_TYPE,
+       c.DATA_LENGTH,
+       c.NULLABLE,
+       cc.COMMENTS
+FROM   ALL_TAB_COLUMNS c
+LEFT JOIN ALL_COL_COMMENTS cc
+       ON cc.OWNER = c.OWNER
+      AND cc.TABLE_NAME = c.TABLE_NAME
+      AND cc.COLUMN_NAME = c.COLUMN_NAME
+WHERE  c.OWNER = 'DBAMV'
+  AND  c.TABLE_NAME IN ('PACIENTE', 'ATENDIME', 'IT_AGENDA_CENTRAL',
+                        'AGENDA_CENTRAL', 'ESCALA_CENTRAL', 'ITEM_AGENDAMENTO',
+                        'EXA_RX', 'ATENDIME_GLOBAL_HEALTH', 'MOT_ALT',
+                        'PACIENTE_OBITO', 'CONVENIO', 'CON_PLA', 'PRESTADOR')
+ORDER BY c.TABLE_NAME, c.COLUMN_ID;
+</pre>
+  </div>
+
+  <div class="card" id="q-00-3">
+    <div class="card-cab">
+      <h4>00-3 · Colunas dos domínios novos (cirurgia, leitos, internação, faturamento)</h4>
+      <span class="selo-estado estado-falta" data-estado="00-3-colunas-novos-dominios.csv">faltando</span>
+    </div>
+    <p class="meta">Lista as colunas das tabelas dos domínios novos, só as com dados. Responde: insumo do ciclo 2 (C9), habilita queries diretas de cirurgia, leito e faturamento.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">00-3-colunas-novos-dominios.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/00-3-colunas-novos-dominios.sql</span><button class="copiar" data-copiar="sql-00-3">copiar SQL</button></div>
+    <pre class="sql" id="sql-00-3">-- 00-3: colunas das tabelas dos dominios novos, so as com dados, na PRODUCAO
+-- Bloco 00: catalogo e metadados
+-- Saida: 00-3-colunas-novos-dominios.csv (camada commitavel, resultados/)
+-- Responde: insumo do ciclo 2 (C9), habilita queries diretas de
+--   cirurgia/leito/faturamento no proximo ciclo
+SELECT c.TABLE_NAME,
+       c.COLUMN_ID,
+       c.COLUMN_NAME,
+       c.DATA_TYPE,
+       cc.COMMENTS
+FROM   ALL_TAB_COLUMNS c
+JOIN   ALL_TABLES t
+       ON t.OWNER = c.OWNER
+      AND t.TABLE_NAME = c.TABLE_NAME
+      AND NVL(t.NUM_ROWS, 0) &gt; 0
+LEFT JOIN ALL_COL_COMMENTS cc
+       ON cc.OWNER = c.OWNER
+      AND cc.TABLE_NAME = c.TABLE_NAME
+      AND cc.COLUMN_NAME = c.COLUMN_NAME
+WHERE  c.OWNER = 'DBAMV'
+  AND (   c.TABLE_NAME LIKE '%CIRUR%'
+       OR c.TABLE_NAME LIKE 'AVISO%'
+       OR c.TABLE_NAME LIKE '%LEITO%'
+       OR c.TABLE_NAME LIKE '%INTERNA%'
+       OR c.TABLE_NAME LIKE '%FATUR%'
+       OR c.TABLE_NAME LIKE 'CONTA%'
+       OR c.TABLE_NAME LIKE '%GUIA%')
+ORDER BY c.TABLE_NAME, c.COLUMN_ID;
+</pre>
+  </div>
+
+  <h3>Bloco 10: núcleo assistencial</h3>
+
+  <div class="card" id="q-10-1">
+    <div class="card-cab">
+      <h4>10-1 · Funil e ocupação mensais (24 meses)</h4>
+      <span class="selo-estado estado-falta" data-estado="10-1-funil-ocupacao-mensal.csv">faltando</span>
+    </div>
+    <p class="meta">Mede o funil mensal (marcado, compareceu, atendido) e a ocupação de agenda em 24 meses. Responde: insights 1, 3, 4 e 5 (no-show, lead time, ocupação, funil); volume mensal real da produção.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">10-1-funil-ocupacao-mensal.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-1-funil-ocupacao-mensal.sql</span><button class="copiar" data-copiar="sql-10-1">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-1">-- 10-1: funil mensal (marcado, compareceu, atendido) e ocupacao de agenda, 24 meses
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-1-funil-ocupacao-mensal.csv (camada commitavel, resultados/)
+-- Responde: insights 1, 3, 4, 5 (no-show, lead time, ocupacao, funil);
+--   volume mensal real da producao; GH-19 (contexto de massa)
+WITH funil AS (
+  SELECT TRUNC(ac.DT_AGENDA, 'MM')                                    AS mes,
+         COUNT(*)                                                     AS slots_com_paciente,
+         SUM(CASE WHEN iac.TP_SITUACAO = 'C' THEN 1 ELSE 0 END)       AS cancelados,
+         SUM(CASE WHEN iac.SN_ATENDIDO = 'S' THEN 1 ELSE 0 END)       AS atendidos,
+         SUM(CASE WHEN iac.TP_PRESENCA_FALTA = 'P' THEN 1 ELSE 0 END) AS presencas,
+         SUM(CASE WHEN iac.TP_PRESENCA_FALTA = 'F' THEN 1 ELSE 0 END) AS faltas,
+         SUM(CASE WHEN iac.CD_ATENDIMENTO IS NOT NULL THEN 1 ELSE 0 END) AS com_atendimento,
+         ROUND(AVG(ac.DT_AGENDA - iac.DT_GRAVACAO), 1)                AS lead_time_medio_dias
+  FROM   DBAMV.IT_AGENDA_CENTRAL iac
+  JOIN   DBAMV.AGENDA_CENTRAL ac
+         ON ac.CD_AGENDA_CENTRAL = iac.CD_AGENDA_CENTRAL
+  WHERE  iac.CD_PACIENTE IS NOT NULL
+    AND  ac.DT_AGENDA &gt;= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -24)
+  GROUP BY TRUNC(ac.DT_AGENDA, 'MM')
+),
+ocupacao AS (
+  SELECT TRUNC(ac.DT_AGENDA, 'MM')       AS mes,
+         SUM(ac.QT_ATENDIMENTO)          AS capacidade,
+         SUM(ac.QT_MARCADOS)             AS marcados,
+         SUM(ac.QT_ENCAIXES_MARCADOS)    AS encaixes_marcados
+  FROM   DBAMV.AGENDA_CENTRAL ac
+  WHERE  ac.DT_AGENDA &gt;= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -24)
+  GROUP BY TRUNC(ac.DT_AGENDA, 'MM')
+)
+SELECT COALESCE(f.mes, o.mes)  AS mes,
+       f.slots_com_paciente,
+       f.cancelados,
+       f.atendidos,
+       f.presencas,
+       f.faltas,
+       f.com_atendimento,
+       f.lead_time_medio_dias,
+       o.capacidade,
+       o.marcados,
+       o.encaixes_marcados
+FROM   funil f
+FULL OUTER JOIN ocupacao o ON o.mes = f.mes
+ORDER BY 1;
+</pre>
+  </div>
+
+  <div class="card" id="q-10-2">
+    <div class="card-cab">
+      <h4>10-2 · Domínios reais do agendamento</h4>
+      <span class="selo-estado estado-falta" data-estado="10-2-dominios-agendamento.csv">faltando</span>
+    </div>
+    <p class="meta">Levanta os domínios reais das colunas de situação e origem em IT_AGENDA_CENTRAL. Responde: C6-5 (TP_FORMA_AGENDAMENTO, assinatura de origem da Ana), armadilhas 3 e 5 do dicionário, insight 7.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">10-2-dominios-agendamento.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-2-dominios-agendamento.sql</span><button class="copiar" data-copiar="sql-10-2">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-2">-- 10-2: dominios reais das colunas de situacao e origem em IT_AGENDA_CENTRAL
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-2-dominios-agendamento.csv (camada commitavel, resultados/)
+-- Responde: C6-5 (TP_FORMA_AGENDAMENTO, assinatura de origem da Ana),
+--   auditoria de canal da Ana, armadilhas 3 e 5 do dicionario, insight 7
+SELECT 'TP_SITUACAO' AS dimensao, TP_SITUACAO AS valor, COUNT(*) AS qtd
+FROM   DBAMV.IT_AGENDA_CENTRAL GROUP BY TP_SITUACAO
+UNION ALL
+SELECT 'TP_FORMA_AGENDAMENTO', TP_FORMA_AGENDAMENTO, COUNT(*)
+FROM   DBAMV.IT_AGENDA_CENTRAL GROUP BY TP_FORMA_AGENDAMENTO
+UNION ALL
+SELECT 'TP_VISUALIZACAO', TP_VISUALIZACAO, COUNT(*)
+FROM   DBAMV.IT_AGENDA_CENTRAL GROUP BY TP_VISUALIZACAO
+UNION ALL
+SELECT 'TP_PRESENCA_FALTA', TP_PRESENCA_FALTA, COUNT(*)
+FROM   DBAMV.IT_AGENDA_CENTRAL GROUP BY TP_PRESENCA_FALTA
+UNION ALL
+SELECT 'SN_ENCAIXE', SN_ENCAIXE, COUNT(*)
+FROM   DBAMV.IT_AGENDA_CENTRAL GROUP BY SN_ENCAIXE
+ORDER BY 1, 3 DESC;
+</pre>
+  </div>
+
+  <div class="card" id="q-10-3">
+    <div class="card-cab">
+      <h4>10-3 · Domínios reais do atendimento</h4>
+      <span class="selo-estado estado-falta" data-estado="10-3-dominios-atendime.csv">faltando</span>
+    </div>
+    <p class="meta">Levanta os domínios reais das colunas de tipo, sistema e sinais em ATENDIME. Responde: C6-2 (TP_ATENDIMENTO, recorte do eletivo), C6-5 (CD_SISTEMA), sinais de óbito e internação, insights 8 e 12.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">10-3-dominios-atendime.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-3-dominios-atendime.sql</span><button class="copiar" data-copiar="sql-10-3">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-3">-- 10-3: dominios reais das colunas de tipo, sistema e sinais em ATENDIME
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-3-dominios-atendime.csv (camada commitavel, resultados/)
+-- Responde: C6-2 (TP_ATENDIMENTO, recorte do eletivo), C6-5 (CD_SISTEMA),
+--   sinais de obito e internacao, insights 8 e 12
+SELECT 'TP_ATENDIMENTO' AS dimensao, TP_ATENDIMENTO AS valor, COUNT(*) AS qtd
+FROM   DBAMV.ATENDIME GROUP BY TP_ATENDIMENTO
+UNION ALL
+SELECT 'CD_SISTEMA', TO_CHAR(CD_SISTEMA), COUNT(*)
+FROM   DBAMV.ATENDIME GROUP BY CD_SISTEMA
+UNION ALL
+SELECT 'SN_OBITO', SN_OBITO, COUNT(*)
+FROM   DBAMV.ATENDIME GROUP BY SN_OBITO
+UNION ALL
+SELECT 'SN_INTERNADO', SN_INTERNADO, COUNT(*)
+FROM   DBAMV.ATENDIME GROUP BY SN_INTERNADO
+UNION ALL
+SELECT 'SN_RETORNO', SN_RETORNO, COUNT(*)
+FROM   DBAMV.ATENDIME GROUP BY SN_RETORNO
+UNION ALL
+SELECT 'CD_TIPO_INTERNACAO', TO_CHAR(CD_TIPO_INTERNACAO), COUNT(*)
+FROM   DBAMV.ATENDIME GROUP BY CD_TIPO_INTERNACAO
+ORDER BY 1, 3 DESC;
+</pre>
+  </div>
+
+  <div class="card" id="q-10-4">
+    <div class="card-cab">
+      <h4>10-4 · Distribuição de motivos de alta</h4>
+      <span class="selo-estado estado-falta" data-estado="10-4-motivos-alta.csv">faltando</span>
+    </div>
+    <p class="meta">Distribui as altas por motivo, com a armadilha 63/64 marcada (luto classificado como alta comum). Responde: C6-3 (catálogo usado e obrigatoriedade), insight 8, base do filtro de desfecho (E1). A linha com CD_MOT_ALT nulo mede alta sem motivo preenchido.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">10-4-motivos-alta.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-4-motivos-alta.sql</span><button class="copiar" data-copiar="sql-10-4">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-4">-- 10-4: distribuicao real de CD_MOT_ALT nas altas, com a armadilha 63/64 marcada
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-4-motivos-alta.csv (camada commitavel, resultados/)
+-- Responde: C6-3 (catalogo usado e obrigatoriedade), armadilha do luto 63/64,
+--   insight 8, base do filtro de desfecho (E1);
+--   a linha com CD_MOT_ALT nulo mede alta sem motivo preenchido
+SELECT a.CD_MOT_ALT,
+       m.DS_MOT_ALT,
+       m.TP_MOT_ALTA,
+       CASE WHEN a.CD_MOT_ALT IN (63, 64) THEN 'S' ELSE 'N' END AS armadilha_luto_63_64,
+       COUNT(*)       AS qtd,
+       MIN(a.DT_ALTA) AS primeira_alta,
+       MAX(a.DT_ALTA) AS ultima_alta
+FROM   DBAMV.ATENDIME a
+LEFT JOIN DBAMV.MOT_ALT m ON m.CD_MOT_ALT = a.CD_MOT_ALT
+WHERE  a.DT_ALTA IS NOT NULL
+GROUP BY a.CD_MOT_ALT, m.DS_MOT_ALT, m.TP_MOT_ALTA,
+         CASE WHEN a.CD_MOT_ALT IN (63, 64) THEN 'S' ELSE 'N' END
+ORDER BY qtd DESC;
+</pre>
+  </div>
+
+  <div class="card" id="q-10-5">
+    <div class="card-cab">
+      <h4>10-5 · Teste barato da GH-18: o CPF-sonda existe na produção?</h4>
+      <span class="selo-estado estado-falta" data-estado="10-5-sonda-gh18.csv">faltando</span>
+    </div>
+    <p class="meta">Testa se o paciente-sonda criado via API homolog (TESTE INTEGRACAO ANA VITTA, CPF 66301102770, id 1681) existe na produção. Responde: GH-18 CRÍTICA (para qual banco MV a homolog GH aponta). Os dois ramos carregam guarda CASE: se o CPF ou o id estiverem ocupados por paciente real, o nome sai omitido e a data sai nula. Nenhuma linha do CSV pode conter nome de paciente real.</p>
+    <p class="meta">Camada: commitável (única exceção de dado pessoal permitida: o cadastro fictício da sonda) · CSV de saída: <code class="arquivo">10-5-sonda-gh18.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-5-sonda-gh18.sql</span><button class="copiar" data-copiar="sql-10-5">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-5">-- 10-5: teste GH-18. O paciente-sonda criado via API homolog existe na PRODUCAO?
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-5-sonda-gh18.csv (camada commitavel, resultados/)
+-- Responde: GH-18 CRITICA (para qual banco MV a homolog GH aponta)
+-- Interpretacao: linha CPF_SONDA com nm_paciente TESTE INTEGRACAO ANA VITTA = a homolog GH
+--   enxerga e grava na producao (grave, avisar imediatamente).
+-- Linha CPF_SONDA com o nome oculto pela guarda = o CPF esta ocupado por OUTRO paciente real (colisao de
+--   CPF valido, nao prova integracao; investigar antes de concluir).
+-- Nenhuma linha CPF_SONDA = ambientes distintos (esperado).
+-- Nenhum ramo expoe nome de paciente real: a guarda CASE omite o nome quando nao for a sonda.
+SELECT 'CPF_SONDA'          AS verificacao,
+       TO_CHAR(CD_PACIENTE) AS cd_paciente,
+       CASE WHEN NM_PACIENTE = 'TESTE INTEGRACAO ANA VITTA'
+            THEN NM_PACIENTE
+            ELSE 'CPF OCUPADO POR OUTRO PACIENTE (nome omitido)' END AS nm_paciente,
+       CASE WHEN NM_PACIENTE = 'TESTE INTEGRACAO ANA VITTA'
+            THEN DT_CADASTRO
+            ELSE CAST(NULL AS DATE) END AS dt_cadastro
+FROM   DBAMV.PACIENTE
+WHERE  NR_CPF = '66301102770'
+UNION ALL
+SELECT 'ID_1681',
+       TO_CHAR(CD_PACIENTE),
+       CASE WHEN NM_PACIENTE = 'TESTE INTEGRACAO ANA VITTA'
+            THEN NM_PACIENTE
+            ELSE 'OCUPADO POR OUTRO PACIENTE (nome omitido)' END,
+       CASE WHEN NM_PACIENTE = 'TESTE INTEGRACAO ANA VITTA'
+            THEN DT_CADASTRO
+            ELSE CAST(NULL AS DATE) END
+FROM   DBAMV.PACIENTE
+WHERE  CD_PACIENTE = 1681;
+</pre>
+  </div>
+
+  <div class="card" id="q-10-6">
+    <div class="card-cab">
+      <h4>10-6 · Retrato da interface ATENDIME_GLOBAL_HEALTH</h4>
+      <span class="selo-estado estado-falta" data-estado="10-6-atendime-gh.csv">faltando</span>
+    </div>
+    <p class="meta">Retrato agregado da interface Global Health na produção. Responde: C6-4 (quem popula e quando), GH-18, insight 13. Demonstra a armadilha do LPAD: NR_CPF aqui é NUMBER, todo cruzamento por CPF exige LPAD(TO_CHAR(NR_CPF), 11, '0').</p>
+    <p class="meta">Camada: commitável (só agregados; a única linha nominal possível é a sonda) · CSV de saída: <code class="arquivo">10-6-atendime-gh.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-6-atendime-gh.sql</span><button class="copiar" data-copiar="sql-10-6">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-6">-- 10-6: retrato agregado de ATENDIME_GLOBAL_HEALTH na PRODUCAO
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-6-atendime-gh.csv (camada commitavel, resultados/; so agregados,
+--   a unica linha nominal possivel e a sonda)
+-- Responde: C6-4 (quem popula e quando), GH-18, insight 13
+-- Armadilha: NR_CPF aqui e NUMBER; todo cruzamento por CPF exige LPAD(TO_CHAR(NR_CPF), 11, '0')
+SELECT 'TOTAL' AS dimensao,
+       CAST(NULL AS VARCHAR2(20)) AS valor,
+       COUNT(*)             AS qtd,
+       MIN(DH_ATENDIMENTO)  AS primeiro,
+       MAX(DH_ATENDIMENTO)  AS ultimo
+FROM   DBAMV.ATENDIME_GLOBAL_HEALTH
+UNION ALL
+SELECT 'TP_ATENDIMENTO', TP_ATENDIMENTO, COUNT(*), MIN(DH_ATENDIMENTO), MAX(DH_ATENDIMENTO)
+FROM   DBAMV.ATENDIME_GLOBAL_HEALTH
+GROUP BY TP_ATENDIMENTO
+UNION ALL
+SELECT 'CPF_SONDA_LPAD', '66301102770', COUNT(*), MIN(DH_ATENDIMENTO), MAX(DH_ATENDIMENTO)
+FROM   DBAMV.ATENDIME_GLOBAL_HEALTH
+WHERE  LPAD(TO_CHAR(NR_CPF), 11, '0') = '66301102770'
+ORDER BY 1, 3 DESC;
+</pre>
+  </div>
+
+  <div class="card" id="q-10-7">
+    <div class="card-cab">
+      <h4>10-7 · Mix convênio vs particular nas marcações (12 meses)</h4>
+      <span class="selo-estado estado-falta" data-estado="10-7-mix-convenio.csv">faltando</span>
+    </div>
+    <p class="meta">Mix de convênios nas marcações dos últimos 12 meses. Responde: GH-12 e GH-17 (id do particular, correção D1), insight 6. Procurar o convênio particular no resultado.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">10-7-mix-convenio.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-7-mix-convenio.sql</span><button class="copiar" data-copiar="sql-10-7">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-7">-- 10-7: mix de convenios nas marcacoes dos ultimos 12 meses
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-7-mix-convenio.csv (camada commitavel, resultados/)
+-- Responde: GH-12, GH-17 e D1 (procurar o convenio particular no resultado),
+--   insight 6
+SELECT iac.CD_CONVENIO,
+       c.NM_CONVENIO,
+       COUNT(*) AS marcacoes_12m
+FROM   DBAMV.IT_AGENDA_CENTRAL iac
+LEFT JOIN DBAMV.CONVENIO c ON c.CD_CONVENIO = iac.CD_CONVENIO
+WHERE  iac.CD_PACIENTE IS NOT NULL
+  AND  iac.DT_GRAVACAO &gt;= ADD_MONTHS(SYSDATE, -12)
+GROUP BY iac.CD_CONVENIO, c.NM_CONVENIO
+ORDER BY marcacoes_12m DESC;
+</pre>
+  </div>
+
+  <div class="card" id="q-10-8">
+    <div class="card-cab">
+      <h4>10-8 · Ocupação por prestador (6 meses)</h4>
+      <span class="selo-estado estado-falta" data-estado="10-8-ocupacao-prestador.csv">faltando</span>
+    </div>
+    <p class="meta">Ocupação de agenda por prestador nos últimos 6 meses. Responde: insights 2 e 4 (janelas ociosas, realocação de oferta).</p>
+    <p class="meta">Camada: commitável (prestador é profissional, não paciente) · CSV de saída: <code class="arquivo">10-8-ocupacao-prestador.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-8-ocupacao-prestador.sql</span><button class="copiar" data-copiar="sql-10-8">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-8">-- 10-8: ocupacao de agenda por prestador nos ultimos 6 meses
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-8-ocupacao-prestador.csv (camada commitavel, resultados/;
+--   prestador e profissional, nao paciente)
+-- Responde: insights 2 e 4 (janelas ociosas, realocacao de oferta)
+SELECT ac.CD_PRESTADOR,
+       p.NM_PRESTADOR,
+       COUNT(*)                AS agendas,
+       SUM(ac.QT_ATENDIMENTO)  AS capacidade,
+       SUM(ac.QT_MARCADOS)     AS marcados,
+       ROUND(100 * SUM(ac.QT_MARCADOS) / NULLIF(SUM(ac.QT_ATENDIMENTO), 0), 1) AS pct_ocupacao
+FROM   DBAMV.AGENDA_CENTRAL ac
+LEFT JOIN DBAMV.PRESTADOR p ON p.CD_PRESTADOR = ac.CD_PRESTADOR
+WHERE  ac.DT_AGENDA &gt;= ADD_MONTHS(TRUNC(SYSDATE), -6)
+  AND  ac.SN_ATIVO = 'S'
+GROUP BY ac.CD_PRESTADOR, p.NM_PRESTADOR
+ORDER BY pct_ocupacao NULLS LAST, capacidade DESC;
+</pre>
+  </div>
+
+  <div class="card" id="q-10-9">
+    <div class="card-cab">
+      <h4>10-9 · Contactabilidade da base de pacientes (só agregados)</h4>
+      <span class="selo-estado estado-falta" data-estado="10-9-contactabilidade.csv">faltando</span>
+    </div>
+    <p class="meta">Contactabilidade da base de pacientes da produção, somente agregados (nenhuma linha individual). Responde: pauta E2 (opt-in), GH-18 do arquivo de perguntas (quantos pacientes sem CPF), insight 12.</p>
+    <p class="meta">Camada: commitável (nenhuma linha individual, só contagens) · CSV de saída: <code class="arquivo">10-9-contactabilidade.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/10-9-contactabilidade.sql</span><button class="copiar" data-copiar="sql-10-9">copiar SQL</button></div>
+    <pre class="sql" id="sql-10-9">-- 10-9: contactabilidade da base de pacientes da PRODUCAO (somente agregados)
+-- Bloco 10: nucleo assistencial
+-- Saida: 10-9-contactabilidade.csv (camada commitavel, resultados/;
+--   nenhuma linha individual, so contagens)
+-- Responde: pauta E2 (opt-in), pergunta GH-18 do arquivo de perguntas
+--   (quantos pacientes sem CPF), insight 12
+SELECT COUNT(*) AS pacientes,
+       SUM(CASE WHEN NR_CELULAR IS NOT NULL THEN 1 ELSE 0 END)       AS com_celular,
+       SUM(CASE WHEN NR_CPF IS NOT NULL THEN 1 ELSE 0 END)           AS com_cpf,
+       SUM(CASE WHEN EMAIL IS NOT NULL THEN 1 ELSE 0 END)            AS com_email,
+       SUM(CASE WHEN SN_RECEBE_CONTATO = 'S' THEN 1 ELSE 0 END)      AS aceita_contato,
+       SUM(CASE WHEN SN_NOTIFICACAO_SMS = 'S' THEN 1 ELSE 0 END)     AS aceita_sms,
+       SUM(CASE WHEN SN_ATIVO = 'S' THEN 1 ELSE 0 END)               AS ativos
+FROM   DBAMV.PACIENTE;
+</pre>
+  </div>
+
+  <h3>Bloco 20: cirurgia e centro cirúrgico</h3>
+
+  <div class="card" id="q-20-1">
+    <div class="card-cab">
+      <h4>20-1 · Descoberta das tabelas de cirurgia</h4>
+      <span class="selo-estado estado-falta" data-estado="20-1-cirurgia-descoberta.csv">faltando</span>
+    </div>
+    <p class="meta">Descobre nomes e volumes reais das tabelas de cirurgia e centro cirúrgico (candidatas conhecidas pela planilha do TI: CIRURGIA_AVISO_AGENDADA, SOS_IT_AGENDA_CIRU). Responde: insight 11; alimenta o ciclo 2 (C9).</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">20-1-cirurgia-descoberta.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/20-1-cirurgia-descoberta.sql</span><button class="copiar" data-copiar="sql-20-1">copiar SQL</button></div>
+    <pre class="sql" id="sql-20-1">-- 20-1: descoberta das tabelas de cirurgia e centro cirurgico na PRODUCAO
+-- Bloco 20: cirurgia e centro cirurgico
+-- Saida: 20-1-cirurgia-descoberta.csv (camada commitavel, resultados/)
+-- Responde: insight 11; alimenta o ciclo 2 (C9) com os nomes e volumes reais
+-- Candidatas conhecidas pela planilha do TI: CIRURGIA_AVISO_AGENDADA, SOS_IT_AGENDA_CIRU
+--   (usadas como PADRAO de descoberta, nunca como FROM direto: um FROM em tabela
+--   inexistente quebraria a sessao)
+SELECT t.OWNER,
+       t.TABLE_NAME,
+       t.NUM_ROWS,
+       t.LAST_ANALYZED,
+       c.COMMENTS
+FROM   ALL_TABLES t
+LEFT JOIN ALL_TAB_COMMENTS c
+       ON c.OWNER = t.OWNER
+      AND c.TABLE_NAME = t.TABLE_NAME
+WHERE  t.OWNER = 'DBAMV'
+  AND (   t.TABLE_NAME LIKE '%CIRUR%'
+       OR t.TABLE_NAME LIKE 'AVISO%'
+       OR t.TABLE_NAME LIKE 'SOS_%')
+ORDER BY t.NUM_ROWS DESC NULLS LAST, t.TABLE_NAME;
+</pre>
+  </div>
+
+  <h3>Bloco 30: internação, leitos e urgência</h3>
+
+  <div class="card" id="q-30-1">
+    <div class="card-cab">
+      <h4>30-1 · Descoberta das tabelas de internação, leitos e urgência</h4>
+      <span class="selo-estado estado-falta" data-estado="30-1-internacao-descoberta.csv">faltando</span>
+    </div>
+    <p class="meta">Descobre as tabelas de internação, leitos e urgência (candidatas conhecidas: ATENDIME_PROGRAMA, VDIC_INTERNAR_PACIENTE, VDIC_MOVIMENTAR_PACIENTE). Responde: insights 9 e 10; alimenta o ciclo 2 (C9).</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">30-1-internacao-descoberta.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/30-1-internacao-descoberta.sql</span><button class="copiar" data-copiar="sql-30-1">copiar SQL</button></div>
+    <pre class="sql" id="sql-30-1">-- 30-1: descoberta das tabelas de internacao, leitos e urgencia na PRODUCAO
+-- Bloco 30: internacao, leitos e urgencia
+-- Saida: 30-1-internacao-descoberta.csv (camada commitavel, resultados/)
+-- Responde: insights 9 e 10; alimenta o ciclo 2 (C9)
+-- Candidatas conhecidas: ATENDIME_PROGRAMA, VDIC_INTERNAR_PACIENTE, VDIC_MOVIMENTAR_PACIENTE
+--   (usadas como PADRAO de descoberta, nunca como FROM direto)
+SELECT t.OWNER,
+       t.TABLE_NAME,
+       t.NUM_ROWS,
+       t.LAST_ANALYZED,
+       c.COMMENTS
+FROM   ALL_TABLES t
+LEFT JOIN ALL_TAB_COMMENTS c
+       ON c.OWNER = t.OWNER
+      AND c.TABLE_NAME = t.TABLE_NAME
+WHERE  t.OWNER = 'DBAMV'
+  AND (   t.TABLE_NAME LIKE '%LEITO%'
+       OR t.TABLE_NAME LIKE '%INTERNA%'
+       OR t.TABLE_NAME LIKE '%URGENC%'
+       OR t.TABLE_NAME LIKE '%EMERG%'
+       OR t.TABLE_NAME LIKE '%TRIAGEM%'
+       OR t.TABLE_NAME LIKE 'MVTO%'
+       OR t.TABLE_NAME LIKE '%MOVIMENT%')
+ORDER BY t.NUM_ROWS DESC NULLS LAST, t.TABLE_NAME;
+</pre>
+  </div>
+
+  <div class="card" id="q-30-2">
+    <div class="card-cab">
+      <h4>30-2 · Internação e urgência mês a mês (24 meses, via ATENDIME)</h4>
+      <span class="selo-estado estado-falta" data-estado="30-2-internacao-urgencia-mensal.csv">faltando</span>
+    </div>
+    <p class="meta">Volume mensal por tipo de atendimento e internação, com tempo médio até a alta. Responde: insights 9 e 10 (tempo até a alta, pressão da urgência); C6-2 (interpretação de TP_ATENDIMENTO com volume real).</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">30-2-internacao-urgencia-mensal.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/30-2-internacao-urgencia-mensal.sql</span><button class="copiar" data-copiar="sql-30-2">copiar SQL</button></div>
+    <pre class="sql" id="sql-30-2">-- 30-2: volume mensal por tipo de atendimento e internacao, com tempo medio ate a alta
+-- Bloco 30: internacao, leitos e urgencia
+-- Saida: 30-2-internacao-urgencia-mensal.csv (camada commitavel, resultados/)
+-- Responde: insights 9 e 10 (tempo ate a alta, pressao da urgencia);
+--   C6-2 (interpretacao de TP_ATENDIMENTO com volume real)
+-- Nota: o significado de cada TP_ATENDIMENTO (U, E, A...) ainda depende da C6-2;
+--   aqui medimos o volume real de cada valor
+SELECT TRUNC(a.DT_ATENDIMENTO, 'MM') AS mes,
+       a.TP_ATENDIMENTO,
+       a.SN_INTERNADO,
+       COUNT(*) AS qtd,
+       ROUND(AVG(a.DT_ALTA - a.DT_ATENDIMENTO), 2) AS dias_ate_alta_medio,
+       SUM(CASE WHEN a.SN_OBITO = 'S' THEN 1 ELSE 0 END) AS obitos
+FROM   DBAMV.ATENDIME a
+WHERE  a.DT_ATENDIMENTO &gt;= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -24)
+GROUP BY TRUNC(a.DT_ATENDIMENTO, 'MM'), a.TP_ATENDIMENTO, a.SN_INTERNADO
+ORDER BY 1, 2, 3;
+</pre>
+  </div>
+
+  <h3>Bloco 40: faturamento e convênios</h3>
+
+  <div class="card" id="q-40-1">
+    <div class="card-cab">
+      <h4>40-1 · Descoberta das tabelas de faturamento</h4>
+      <span class="selo-estado estado-falta" data-estado="40-1-faturamento-descoberta.csv">faltando</span>
+    </div>
+    <p class="meta">Descobre as tabelas de faturamento, contas e TISS (candidatas conhecidas: FFAS_ITENS_ATENDIMENTO, FFIS_ITENS_ATENDIMENTO, VDIC_FATURAR_CONTA_CONVENIO). Responde: alimenta o ciclo 2 (C9) para receita por convênio, glosa e conta.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">40-1-faturamento-descoberta.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/40-1-faturamento-descoberta.sql</span><button class="copiar" data-copiar="sql-40-1">copiar SQL</button></div>
+    <pre class="sql" id="sql-40-1">-- 40-1: descoberta das tabelas de faturamento, contas e TISS na PRODUCAO
+-- Bloco 40: faturamento e convenios
+-- Saida: 40-1-faturamento-descoberta.csv (camada commitavel, resultados/)
+-- Responde: alimenta o ciclo 2 (C9) para receita por convenio, glosa e conta
+-- Candidatas conhecidas: FFAS_ITENS_ATENDIMENTO, FFIS_ITENS_ATENDIMENTO,
+--   VDIC_FATURAR_CONTA_CONVENIO (usadas como PADRAO de descoberta, nunca como FROM direto)
+SELECT t.OWNER,
+       t.TABLE_NAME,
+       t.NUM_ROWS,
+       t.LAST_ANALYZED,
+       c.COMMENTS
+FROM   ALL_TABLES t
+LEFT JOIN ALL_TAB_COMMENTS c
+       ON c.OWNER = t.OWNER
+      AND c.TABLE_NAME = t.TABLE_NAME
+WHERE  t.OWNER = 'DBAMV'
+  AND (   t.TABLE_NAME LIKE 'FFAS%'
+       OR t.TABLE_NAME LIKE 'FFIS%'
+       OR t.TABLE_NAME LIKE '%FATUR%'
+       OR t.TABLE_NAME LIKE 'CONTA%'
+       OR t.TABLE_NAME LIKE '%GLOSA%'
+       OR t.TABLE_NAME LIKE '%TISS%'
+       OR t.TABLE_NAME LIKE 'NOTA_FISCAL%'
+       OR t.TABLE_NAME LIKE '%REPASSE%')
+ORDER BY t.NUM_ROWS DESC NULLS LAST, t.TABLE_NAME;
+</pre>
+  </div>
+
+  <div class="card" id="q-40-2">
+    <div class="card-cab">
+      <h4>40-2 · Catálogo de convênios com uso real</h4>
+      <span class="selo-estado estado-falta" data-estado="40-2-convenios-catalogo.csv">faltando</span>
+    </div>
+    <p class="meta">Catálogo de convênios da produção com uso em marcações e atendimentos (12 meses). Responde: GH-12 (convênios ativos), GH-17 e D1 (achar o particular), insight 6.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">40-2-convenios-catalogo.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/40-2-convenios-catalogo.sql</span><button class="copiar" data-copiar="sql-40-2">copiar SQL</button></div>
+    <pre class="sql" id="sql-40-2">-- 40-2: catalogo de convenios da PRODUCAO com uso em marcacoes e atendimentos (12 meses)
+-- Bloco 40: faturamento e convenios
+-- Saida: 40-2-convenios-catalogo.csv (camada commitavel, resultados/)
+-- Responde: GH-12 (convenios ativos), GH-17 e D1 (achar o particular), insight 6
+SELECT c.CD_CONVENIO,
+       c.NM_CONVENIO,
+       (SELECT COUNT(*)
+        FROM   DBAMV.IT_AGENDA_CENTRAL iac
+        WHERE  iac.CD_CONVENIO = c.CD_CONVENIO
+          AND  iac.CD_PACIENTE IS NOT NULL
+          AND  iac.DT_GRAVACAO &gt;= ADD_MONTHS(SYSDATE, -12)) AS marcacoes_12m,
+       (SELECT COUNT(*)
+        FROM   DBAMV.ATENDIME a
+        WHERE  a.CD_CONVENIO = c.CD_CONVENIO
+          AND  a.DT_ATENDIMENTO &gt;= ADD_MONTHS(SYSDATE, -12)) AS atendimentos_12m
+FROM   DBAMV.CONVENIO c
+ORDER BY marcacoes_12m DESC, atendimentos_12m DESC;
+</pre>
+  </div>
+
+  <h3>Bloco 90: bônus opcional (fora do escopo do ciclo 1)</h3>
+
+  <div class="card" id="q-90-1">
+    <div class="card-cab">
+      <h4>90-1 · Reconhecimento dos owners DBADW e DBACP</h4>
+      <span class="selo-estado estado-falta" data-estado="90-1-dw-reconhecimento.csv">faltando</span>
+    </div>
+    <p class="meta">BÔNUS OPCIONAL, fora do escopo do ciclo 1: reconhecimento dos owners DBADW e DBACP, só metadados, nenhum dado de negócio. Pular sem culpa se o tempo apertar.</p>
+    <p class="meta">Camada: commitável · CSV de saída: <code class="arquivo">90-1-dw-reconhecimento.csv</code> em <code class="arquivo">resultados/</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/90-1-dw-reconhecimento.sql</span><button class="copiar" data-copiar="sql-90-1">copiar SQL</button></div>
+    <pre class="sql" id="sql-90-1">-- 90-1: BONUS OPCIONAL (fora do escopo do ciclo 1). Reconhecimento dos owners DBADW e DBACP
+-- Bloco 90: bonus opcional
+-- Saida: 90-1-dw-reconhecimento.csv (camada commitavel, resultados/)
+-- Responde: so metadados, nenhum dado de negocio. Pular sem culpa se o tempo apertar
+SELECT OWNER,
+       COUNT(*)      AS tabelas,
+       SUM(NUM_ROWS) AS linhas_estimadas
+FROM   ALL_TABLES
+WHERE  OWNER IN ('DBADW', 'DBACP')
+GROUP BY OWNER
+ORDER BY OWNER;
+</pre>
+  </div>
+
+  <h3>Bloco 99: amostras (SEMPRE em resultados/amostras/, fora do git)</h3>
+  <div class="nota">Os três resultados abaixo contêm dado pessoal de paciente real. Destino OBRIGATÓRIO:
+    <code class="arquivo">resultados/amostras/</code>, pasta ignorada pelo git e invisível para o portal.
+    NUNCA commitar, NUNCA servir pelo portal. A conferência é manual, no Finder.</div>
+
+  <div class="card" id="q-99-1">
+    <div class="card-cab">
+      <h4>99-1 · Amostra de IT_AGENDA_CENTRAL</h4>
+      <span class="selo-estado estado-fora">fora do portal, conferir no Finder</span>
+    </div>
+    <p class="meta">Amostra recente de marcações reais, para leitura de valores de slot (alimenta a C6-6). Contém dado pessoal.</p>
+    <p class="meta">Camada: amostras (fora do git) · CSV de saída: <code class="arquivo">amostras/99-1-it-agenda-central.csv</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/99-1-amostra-it-agenda-central.sql</span><button class="copiar" data-copiar="sql-99-1">copiar SQL</button></div>
+    <pre class="sql" id="sql-99-1">-- 99-1: amostra recente de marcacoes reais
+-- Bloco 99: amostras (contem dado pessoal)
+-- Saida: amostras/99-1-it-agenda-central.csv
+-- Camada: amostras. Destino OBRIGATORIO: resultados/amostras/ (fora do git).
+--   NUNCA commitar, NUNCA servir pelo portal
+-- Responde: C6-6 (valores reais de slot livre e marcado), formato real das linhas
+SELECT *
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  CD_PACIENTE IS NOT NULL
+  AND  DT_GRAVACAO &gt;= ADD_MONTHS(SYSDATE, -3)
+  AND  ROWNUM &lt;= 50;
+</pre>
+  </div>
+
+  <div class="card" id="q-99-2">
+    <div class="card-cab">
+      <h4>99-2 · Amostra de ATENDIME</h4>
+      <span class="selo-estado estado-fora">fora do portal, conferir no Finder</span>
+    </div>
+    <p class="meta">Amostra recente de atendimentos reais. Contém dado pessoal.</p>
+    <p class="meta">Camada: amostras (fora do git) · CSV de saída: <code class="arquivo">amostras/99-2-atendime.csv</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/99-2-amostra-atendime.sql</span><button class="copiar" data-copiar="sql-99-2">copiar SQL</button></div>
+    <pre class="sql" id="sql-99-2">-- 99-2: amostra recente de atendimentos reais
+-- Bloco 99: amostras (contem dado pessoal)
+-- Saida: amostras/99-2-atendime.csv
+-- Camada: amostras. Destino OBRIGATORIO: resultados/amostras/ (fora do git).
+--   NUNCA commitar, NUNCA servir pelo portal
+-- Responde: formato real das linhas de atendimento na producao
+SELECT *
+FROM   DBAMV.ATENDIME
+WHERE  DT_ATENDIMENTO &gt;= ADD_MONTHS(SYSDATE, -3)
+  AND  ROWNUM &lt;= 50;
+</pre>
+  </div>
+
+  <div class="card" id="q-99-3">
+    <div class="card-cab">
+      <h4>99-3 · Amostra de ATENDIME_GLOBAL_HEALTH</h4>
+      <span class="selo-estado estado-fora">fora do portal, conferir no Finder</span>
+    </div>
+    <p class="meta">Amostra da interface Global Health, se houver linhas. Responde: C6-4 (formato real das linhas da interface GH). Pode conter dado pessoal.</p>
+    <p class="meta">Camada: amostras (fora do git) · CSV de saída: <code class="arquivo">amostras/99-3-atendime-gh.csv</code></p>
+    <div class="sql-cab"><span class="mini-nota">queries/99-3-amostra-atendime-gh.sql</span><button class="copiar" data-copiar="sql-99-3">copiar SQL</button></div>
+    <pre class="sql" id="sql-99-3">-- 99-3: amostra da interface Global Health
+-- Bloco 99: amostras (contem dado pessoal)
+-- Saida: amostras/99-3-atendime-gh.csv
+-- Camada: amostras. Destino OBRIGATORIO: resultados/amostras/ (fora do git).
+--   NUNCA commitar, NUNCA servir pelo portal
+-- Responde: C6-4 (formato real das linhas da interface GH, se existirem), GH-18
+SELECT *
+FROM   DBAMV.ATENDIME_GLOBAL_HEALTH
+WHERE  ROWNUM &lt;= 50;
+</pre>
+  </div>
+
+  <h2 id="depois">Depois de depositar</h2>
+  <div class="card">
+    <ol class="passos">
+      <li>Recarregue o <a href="/atlas.html">Atlas</a> e os <a href="/insights.html">Insights</a>: cada seção cujo CSV foi depositado troca o aviso "Aguardando C8" pela tabela com os números reais da produção (basta recarregar a página, sem reiniciar o servidor).</li>
+      <li>Confira o checklist desta página: os 17 CSVs obrigatórios em verde fecham o depósito (o bônus 90-1 é opcional).</li>
+      <li>Na próxima sessão, rode <code class="arquivo">/check</code> para a digestão dos resultados: o C8 conclui e o C9 refina os blocos 20/30/40 com os nomes reais descobertos.</li>
+    </ol>
+  </div>
+
+  <p class="mini-nota">Pacote C8 · queries espelhadas de ana/api-mv/absorcao-producao/queries/ · carimbo 2026-07-22</p>
+
+</main>
+<script>
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+function csvParse(texto) {
+  var linhas = [], linha = [], campo = "", dentro = false, i = 0;
+  texto = texto.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  while (i < texto.length) {
+    var ch = texto[i];
+    if (dentro) {
+      if (ch === '"') { if (texto[i + 1] === '"') { campo += '"'; i++; } else { dentro = false; } }
+      else { campo += ch; }
+    } else if (ch === '"') { dentro = true; }
+    else if (ch === ',') { linha.push(campo); campo = ""; }
+    else if (ch === '\n') { linha.push(campo); linhas.push(linha); linha = []; campo = ""; }
+    else { campo += ch; }
+    i++;
+  }
+  if (campo !== "" || linha.length) { linha.push(campo); linhas.push(linha); }
+  if (!linhas.length) return null;
+  return { colunas: linhas[0], linhas: linhas.slice(1) };
+}
+
+async function carregarCSV(nome) {
+  try {
+    var r = await fetch("/absorcao/" + encodeURIComponent(nome));
+    if (!r.ok) return null;
+    return csvParse(await r.text());
+  } catch (e) { return null; }
+}
+
+function tabelaHTML(dados, max) {
+  if (!dados) return "";
+  var corte = dados.linhas.slice(0, max || 12);
+  var html = "<div class='tabela-scroll'><table class='dados'><thead><tr>";
+  dados.colunas.forEach(function (c) { html += "<th>" + esc(c) + "</th>"; });
+  html += "</tr></thead><tbody>";
+  corte.forEach(function (l) {
+    html += "<tr>";
+    l.forEach(function (v) { html += "<td>" + esc(v) + "</td>"; });
+    html += "</tr>";
+  });
+  html += "</tbody></table></div>";
+  if (dados.linhas.length > corte.length) {
+    html += "<p class='mini-nota'>Mostrando " + corte.length + " de " + dados.linhas.length + " linhas.</p>";
+  }
+  return html;
+}
+
+async function hidratarSecoes() {
+  var secoes = document.querySelectorAll("[data-csv]");
+  for (var s of secoes) {
+    var alvo = s.querySelector(".csv-alvo");
+    if (!alvo) continue;
+    var nome = s.getAttribute("data-csv");
+    var dados = await carregarCSV(nome);
+    if (dados) { alvo.innerHTML = tabelaHTML(dados, 15); s.classList.add("com-dados"); }
+    else { alvo.innerHTML = "<span class='aguardando'>Aguardando C8: deposite " + esc(nome) +
+           " em ana/api-mv/absorcao-producao/resultados/</span>"; }
+  }
+}
+document.addEventListener("DOMContentLoaded", hidratarSecoes);
+
+document.addEventListener("click", function (ev) {
+  var b = ev.target.closest("[data-copiar]");
+  if (!b) return;
+  var alvo = document.getElementById(b.getAttribute("data-copiar"));
+  if (!alvo) return;
+  navigator.clipboard.writeText(alvo.textContent).then(function () {
+    var t = b.textContent; b.textContent = "copiado!";
+    setTimeout(function () { b.textContent = t; }, 1200);
+  });
+});
+
+/* logica propria da pagina: checklist vivo via GET /api/absorcao */
+var CSVS_COMMITAVEIS = [
+  "00-1-catalogo-tabelas.csv",
+  "00-2-colunas-nucleo.csv",
+  "00-3-colunas-novos-dominios.csv",
+  "10-1-funil-ocupacao-mensal.csv",
+  "10-2-dominios-agendamento.csv",
+  "10-3-dominios-atendime.csv",
+  "10-4-motivos-alta.csv",
+  "10-5-sonda-gh18.csv",
+  "10-6-atendime-gh.csv",
+  "10-7-mix-convenio.csv",
+  "10-8-ocupacao-prestador.csv",
+  "10-9-contactabilidade.csv",
+  "20-1-cirurgia-descoberta.csv",
+  "30-1-internacao-descoberta.csv",
+  "30-2-internacao-urgencia-mensal.csv",
+  "40-1-faturamento-descoberta.csv",
+  "40-2-convenios-catalogo.csv",
+  "90-1-dw-reconhecimento.csv"
+];
+
+function fmtBytes(n) {
+  if (n >= 1048576) return (n / 1048576).toFixed(1).replace(".", ",") + " MB";
+  if (n >= 1024) return (n / 1024).toFixed(1).replace(".", ",") + " KB";
+  return n + " bytes";
+}
+
+function fmtData(epoch) {
+  var d = new Date(epoch * 1000);
+  return d.toLocaleDateString("pt-BR") + " " +
+         d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
+async function carregarDeposito() {
+  var aviso = document.getElementById("aviso-api");
+  var mapa = {};
+  try {
+    var r = await fetch("/api/absorcao");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    var dados = await r.json();
+    (dados.arquivos || []).forEach(function (a) { mapa[a.nome] = a; });
+    if (aviso) aviso.textContent = "";
+  } catch (e) {
+    if (aviso) aviso.textContent = "Não consegui falar com /api/absorcao. Suba o servidor (python3 server.py) e abra esta página em http://localhost:8777/absorcao.html.";
+  }
+  var presentes = 0;
+  CSVS_COMMITAVEIS.forEach(function (nome) {
+    var info = mapa[nome];
+    var selos = document.querySelectorAll('[data-estado="' + nome + '"]');
+    if (info) {
+      presentes++;
+      selos.forEach(function (s) {
+        s.className = "selo-estado estado-ok";
+        s.textContent = "depositado · " + fmtBytes(info.bytes) + " · " + fmtData(info.modificado_epoch);
+      });
+    } else {
+      selos.forEach(function (s) {
+        s.className = "selo-estado estado-falta";
+        s.textContent = "faltando";
+      });
+    }
+  });
+  var cont = document.getElementById("contador-deposito");
+  if (cont) cont.textContent = presentes + " de " + CSVS_COMMITAVEIS.length +
+    " CSVs commitáveis depositados (17 obrigatórios + 1 bônus opcional). Amostras: conferência manual, fora do portal.";
+}
+document.addEventListener("DOMContentLoaded", carregarDeposito);
+</script>
+</body>
+</html>

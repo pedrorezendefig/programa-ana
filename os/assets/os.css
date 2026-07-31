@@ -1,0 +1,270 @@
+/* Ana OS: componentes compartilhados (referência Aaply, os/DESIGN.md).
+   Toda página importa só este arquivo (ele puxa tokens + fontes). */
+
+@import url("tokens.css");
+
+* { box-sizing: border-box; margin: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--surface-canvas);
+  /* dot-grid: o canvas é uma prancheta de trabalho */
+  background-image: radial-gradient(var(--color-hairline-gray) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+  color: var(--color-carbon);
+  font: var(--font-weight-regular) var(--text-body)/var(--leading-body) var(--font-inter);
+  min-height: 100vh;
+  padding: 24px 24px 120px;
+}
+
+main { max-width: var(--page-max-width); margin: 0 auto; }
+
+/* ---------- Navegação (card flutuante, única sombra do sistema) ---------- */
+
+.os-nav {
+  max-width: var(--page-max-width);
+  margin: 0 auto 48px;
+  background: var(--surface-card);
+  border-radius: var(--radius-nav);
+  box-shadow: var(--shadow-md);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 16px;
+  z-index: 50;
+}
+.os-nav .marca {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--color-carbon);
+  font: var(--font-weight-medium) 18px/1 var(--font-poppins);
+  margin-right: 6px;
+}
+.os-nav .marca .glifo {
+  width: 26px; height: 26px; border-radius: 8px;
+  background: var(--color-highlighter-yellow);
+  display: grid; place-items: center;
+  font: var(--font-weight-bold) 15px/1 var(--font-poppins);
+  color: var(--color-carbon);
+}
+.os-nav .links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; flex: 1; }
+.os-nav .links a {
+  text-decoration: none; color: var(--color-carbon);
+  font: var(--font-weight-medium) 14px/1 var(--font-inter);
+  padding: 8px 13px; border-radius: var(--radius-pill);
+  transition: background-color .15s ease;
+}
+.os-nav .links a:hover { background: var(--color-graphite-mist); }
+.os-nav .links a.ativo { background: var(--color-carbon); color: var(--color-paper-white); }
+
+/* Selo de ambiente da página (regra do ADR-0004: cada página declara o seu) */
+.os-nav .ambiente {
+  font: var(--font-weight-medium) 12px/1 var(--font-inter);
+  padding: 7px 14px; border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.os-nav .ambiente.homolog { background: var(--color-signal-blue); color: var(--color-paper-white); }
+.os-nav .ambiente.producao { background: var(--color-annotation-red); color: var(--color-paper-white); }
+.os-nav .ambiente.local { background: var(--color-graphite-mist); color: var(--color-carbon); }
+
+/* ---------- Tipografia ---------- */
+
+h1 {
+  font: var(--font-weight-bold) var(--text-heading-lg)/var(--leading-heading-lg) var(--font-poppins);
+  letter-spacing: var(--tracking-heading-lg);
+}
+h1 .destaque {
+  background: linear-gradient(transparent 55%, var(--color-highlighter-yellow) 55%);
+  border-radius: 4px; padding: 0 4px;
+}
+h2 {
+  font: var(--font-weight-bold) var(--text-heading)/var(--leading-heading) var(--font-poppins);
+  letter-spacing: var(--tracking-heading);
+  margin: 0 0 18px;
+}
+h3 {
+  font: var(--font-weight-bold) var(--text-heading-sm)/var(--leading-heading-sm) var(--font-poppins);
+  letter-spacing: var(--tracking-heading-sm);
+  margin: 0 0 10px;
+}
+h4 {
+  font: var(--font-weight-medium) var(--text-subheading)/var(--leading-subheading) var(--font-inter);
+  letter-spacing: var(--tracking-subheading);
+}
+.lead { color: #444; max-width: 72ch; font-size: var(--text-body); }
+.caption { font-size: var(--text-caption); line-height: var(--leading-caption); color: #555; }
+section { margin-bottom: var(--section-gap); }
+section.compacta { margin-bottom: 56px; }
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--color-hairline-gray);
+  border-radius: var(--radius-cards);
+  padding: var(--card-padding);
+}
+.card.hover, a.card {
+  display: block; text-decoration: none; color: inherit;
+  transition: transform .18s ease, border-color .18s ease;
+}
+.card.hover:hover, a.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-carbon);
+}
+.grade { display: grid; gap: var(--element-gap); }
+.grade.c2 { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+.grade.c3 { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+/* Moldura amarela: capítulo em destaque (Highlight Feature Container) */
+.moldura {
+  border: 3px solid var(--surface-highlight-frame);
+  border-radius: var(--radius-cards);
+  padding: 20px;
+}
+
+/* Frame estilo navegador (Product Screenshot Frame) */
+.frame {
+  background: var(--surface-card);
+  border: 1px solid var(--color-hairline-gray);
+  border-radius: var(--radius-productframe);
+  overflow: hidden;
+}
+.frame .frame-topo {
+  display: flex; gap: 6px; padding: 10px 12px;
+  border-bottom: 1px solid var(--color-hairline-gray);
+}
+.frame .frame-topo span { width: 10px; height: 10px; border-radius: 50%; }
+.frame .frame-topo span:nth-child(1) { background: var(--color-annotation-red); }
+.frame .frame-topo span:nth-child(2) { background: var(--color-highlighter-yellow); }
+.frame .frame-topo span:nth-child(3) { background: var(--color-signal-blue); }
+.frame .frame-corpo { padding: 18px; }
+
+/* ---------- Botões (par amarelo + preto, sempre pill) ---------- */
+
+.btn {
+  display: inline-block; cursor: pointer; text-decoration: none; text-align: center;
+  border: none; border-radius: var(--radius-pill);
+  font: var(--font-weight-medium) 15px/1 var(--font-inter);
+  padding: 14px 28px;
+  transition: transform .15s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn.amarelo { background: var(--color-highlighter-yellow); color: var(--color-carbon); }
+.btn.preto { background: var(--color-carbon); color: var(--color-paper-white); }
+.btn.ghost { background: transparent; color: var(--color-carbon); border: 1px solid var(--color-carbon); padding: 13px 27px; }
+.btn.mini { padding: 8px 18px; font-size: 13px; }
+
+/* ---------- Chips e selos ---------- */
+
+.chip {
+  display: inline-block;
+  font: var(--font-weight-medium) 12.5px/1 var(--font-inter);
+  padding: 6px 14px; border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.chip.tag { background: var(--color-annotation-red); color: var(--color-paper-white); }
+.chip.feito { background: var(--color-highlighter-yellow); color: var(--color-carbon); }
+.chip.fazer { background: var(--color-carbon); color: var(--color-paper-white); }
+.chip.bloqueada { background: var(--color-graphite-mist); color: #555; }
+.chip.pendente { background: var(--color-hairline-gray); color: var(--color-carbon); }
+.chip.azul { background: var(--color-signal-blue); color: var(--color-paper-white); }
+.chip.contorno { background: transparent; border: 1px solid var(--color-carbon); color: var(--color-carbon); }
+
+/* Selos de testabilidade do Mapa das APIs */
+.chip.selo-catalogo { background: var(--color-signal-blue); color: var(--color-paper-white); }
+.chip.selo-saas { background: var(--color-peach-wash); color: var(--color-carbon); }
+.chip.selo-finalizacao { background: var(--color-highlighter-yellow); color: var(--color-carbon); }
+
+.metodo {
+  font: var(--font-weight-bold) 12px/1 var(--font-mono);
+  padding: 4px 9px; border-radius: 6px;
+  background: var(--color-graphite-mist); color: var(--color-carbon);
+}
+.metodo.post { background: var(--color-carbon); color: var(--color-paper-white); }
+.metodo.delete { background: var(--color-annotation-red); color: var(--color-paper-white); }
+
+/* ---------- Formulários ---------- */
+
+input[type="text"], input[type="search"], input[type="url"], textarea, select {
+  font: var(--font-weight-regular) 15px/1.4 var(--font-inter);
+  color: var(--color-carbon);
+  background: var(--surface-card);
+  border: 1px solid var(--color-hairline-gray);
+  border-radius: var(--radius-inputs);
+  padding: 12px 16px;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--color-carbon); outline-offset: 1px; border-color: var(--color-carbon);
+}
+label { font: var(--font-weight-medium) 13px/1.4 var(--font-inter); display: block; margin-bottom: 6px; }
+
+/* ---------- Tabelas ---------- */
+
+.tabela-wrap { overflow-x: auto; border: 1px solid var(--color-hairline-gray); border-radius: var(--radius-productframe); background: var(--surface-card); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th {
+  text-align: left; font: var(--font-weight-medium) 12px/1.4 var(--font-inter);
+  text-transform: uppercase; letter-spacing: .06em;
+  padding: 12px 16px; border-bottom: 1px solid var(--color-hairline-gray);
+  background: var(--color-graphite-mist);
+}
+td { padding: 11px 16px; border-bottom: 1px solid var(--color-hairline-gray); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+
+/* ---------- Código ---------- */
+
+pre, code { font-family: var(--font-mono); }
+pre {
+  background: var(--color-carbon); color: var(--color-paper-white);
+  border-radius: var(--radius-productframe);
+  padding: 18px 20px; overflow-x: auto; font-size: 13px; line-height: 1.6;
+}
+code { font-size: .92em; }
+:not(pre) > code { background: var(--color-hairline-gray); padding: 2px 7px; border-radius: 6px; }
+
+/* ---------- Diagrama de fluxo (Phone Mockup Card + Flow Connector) ---------- */
+
+.fluxo-no {
+  background: var(--surface-card);
+  border: 1px solid var(--color-hairline-gray);
+  border-radius: var(--radius-productframe);
+  padding: 16px;
+  text-align: center;
+  transition: transform .18s ease, border-color .18s ease;
+}
+.fluxo-no:hover { transform: translateY(-3px); border-color: var(--color-signal-blue); }
+.fluxo-no .zig { color: var(--color-signal-blue); font-weight: var(--font-weight-bold); font-size: 20px; }
+.fluxo-no .rotulo { font: var(--font-weight-medium) 14px/1.35 var(--font-inter); margin-top: 6px; }
+.fluxo-no .sub { font-size: 12px; color: #555; margin-top: 3px; }
+
+/* ---------- Utilitários ---------- */
+
+.linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.direita { margin-left: auto; }
+.sep { border: none; border-top: 1px solid var(--color-hairline-gray); margin: 28px 0; }
+.ok { color: #0a7a43; font-weight: var(--font-weight-medium); }
+.erro { color: var(--color-annotation-red); font-weight: var(--font-weight-medium); }
+.oculto { display: none !important; }
+
+footer.os-rodape {
+  max-width: var(--page-max-width); margin: 80px auto 0;
+  border-top: 1px solid var(--color-hairline-gray);
+  padding-top: 20px; font-size: 13px; color: #555;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+@media (max-width: 720px) {
+  h1 { font-size: var(--text-heading); letter-spacing: var(--tracking-heading); }
+  body { padding: 12px 12px 80px; }
+  .os-nav { position: static; }
+}

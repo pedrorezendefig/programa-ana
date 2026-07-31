@@ -232,8 +232,8 @@ svg.map{display:block;width:100%;height:auto;max-height:84vh;margin:0 auto}
    ou é disparo). Ver CONTEXT.md, seção "Roadmap e cockpit".
    ============================================================ */
 const ESTADO = {
-  data: "10/jul/2026",
-  frase: "Ferramentas todas de pé; o projeto agora espera três disparos seus: validar o hotfix, perguntar ao analista e pedir à Global Health."
+  data: "22/jul/2026",
+  frase: "Portal do playground no ar com o pacote de absorção pronto; quatro disparos seus: validar o hotfix, perguntar ao analista, pedir à Global Health e rodar as queries na produção (C8)."
 };
 
 const TRILHAS = {
@@ -290,6 +290,20 @@ const TAREFAS = [
    ref:{label:"texto pronto · PENDENCIAS §1",href:"PENDENCIAS.md"}},
   {id:"C5",trilha:"C",titulo:"Varrer o Power BI (SCMA)",dono:"C+P",status:"afazer",canal:"comigo",esforco:"M",depende:[],
    resumo:"Opcional. Ver os indicadores que a gestão já acompanha, para desenhar o relatório na mesma língua."},
+  {id:"C7",trilha:"C",titulo:"Portal do playground + pacote de absorção",dono:"C",status:"feito",canal:"comigo",esforco:"G",depende:["C3"],
+   resumo:"Playground vira portal multi-página (localhost:8777): roteiro por endpoint com query de conferência, atlas da produção e insights; pacote de queries prontas para o DBeaver da produção.",
+   prontoQuando:"Portal navegável com as páginas novas e cada query com instrução + nome de CSV pré-definido.",
+   ref:{label:"decisão · ADR-0004",href:"../docs/adr/0004-fronteira-playground-atlas.md"}},
+  {id:"C8",trilha:"C",titulo:"Rodar o pacote na produção (DBeaver)",dono:"P",status:"afazer",canal:"dispare",esforco:"M",depende:["C7"],
+   resumo:"Executar as queries no DBeaver de PRODUÇÃO e depositar os CSVs com os nomes combinados (dado pessoal só em amostras/, fora do git).",
+   porque:"É a única via permitida para produção; destrava o retrato real (C9) e responde parte do C6/GH-18 sem depender do analista.",
+   ref:{label:"instruções · absorcao-producao/README.md",href:"../ana/api-mv/absorcao-producao/README.md"}},
+  {id:"C9",trilha:"C",titulo:"Absorver os resultados no atlas",dono:"C",status:"afazer",canal:"comigo",esforco:"G",depende:["C8"],
+   resumo:"Preencher o atlas do portal com o retrato real (domínios, volumes, relações), gerar os insights de diretoria com evidência e atualizar o dicionário."},
+  {id:"C10",trilha:"C",titulo:"Destravar o firewall da TST (MV)",dono:"P",status:"afazer",canal:"dispare",esforco:"P",depende:[],
+   resumo:"Pedir ao MV a liberação do pool da HSM-VPN (10.100.64.0/22) até a porta 1521 do Oracle TST. Mensagem pronta para copiar na página Conexão TST do portal.",
+   porque:"A TST está inalcançável desde 13/jul; religar devolve a consulta direta da sessão e o CSV automático no repositório.",
+   ref:{label:"mensagem pronta · portal Conexão TST",href:"../ana/api-mv/playground/tst.html"}},
 
   // ---- D · Integração MV ----
   {id:"D1",trilha:"D",titulo:"Pedir à Global Health",dono:"P",status:"afazer",canal:"dispare",esforco:"P",depende:[],

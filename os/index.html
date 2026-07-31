@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana OS · Cockpit</title>
+<link rel="stylesheet" href="assets/os.css">
+<style>
+  /* ---- só o que é exclusivo do cockpit ---- */
+  .hero { text-align: center; padding: 48px 0 40px; }
+  .hero .emoji { font-size: .85em; }
+  .hero .lead { margin: 18px auto 0; }
+  .hero .acoes { margin-top: 28px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .status-strip { display: flex; gap: 10px; justify-content: center; margin-top: 26px; flex-wrap: wrap; }
+
+  .tarefa {
+    background: var(--surface-card); border: 1px solid var(--color-hairline-gray);
+    border-radius: var(--radius-productframe);
+    padding: 14px 18px; display: flex; align-items: baseline; gap: 14px;
+    transition: transform .18s ease, border-color .18s ease;
+  }
+  .tarefa:hover { transform: translateY(-2px); border-color: var(--color-carbon); }
+  .tarefa .id { font: var(--font-weight-bold) 12px/1.6 var(--font-mono); color: #777; min-width: 34px; }
+  .tarefa .titulo { flex: 1; }
+  .tarefa.feito .titulo { color: #999; text-decoration: line-through; text-decoration-color: var(--color-hairline-gray); }
+  .tarefa .dono { font-size: 12px; color: #777; }
+  .tarefa .nota { color: #666; font-size: 13px; margin-top: 2px; }
+  .tarefas { display: flex; flex-direction: column; gap: 10px; }
+
+  .ideia-card { position: relative; }
+  .ideia-card.puxada { opacity: .55; }
+  .ideia-card .acoes-ideia { position: absolute; top: 18px; right: 18px; display: none; gap: 6px; }
+  .ideia-card:hover .acoes-ideia { display: flex; }
+  .ideia-card h4 { font-family: var(--font-poppins); font-weight: var(--font-weight-bold); margin-bottom: 6px; }
+  .ideia-card p { font-size: 14px; color: #555; }
+  .ideia-card a.doc { font-size: 13px; color: var(--color-signal-blue); }
+  #form-ideia { display: none; margin-top: 18px; }
+  #form-ideia.aberto { display: block; }
+  #form-ideia .campos { display: grid; gap: 12px; margin-bottom: 14px; }
+
+  .app-card .nome { font: var(--font-weight-bold) 17px/1.3 var(--font-poppins); }
+  .app-card .desc { color: #555; font-size: 14px; margin-top: 5px; }
+  .app-card .url { color: var(--color-signal-blue); font-size: 12.5px; margin-top: 12px; word-break: break-all; }
+</style>
+</head>
+<body>
+
+<main>
+  <section class="hero compacta">
+    <h1>O cockpit do <span class="destaque">Programa Ana</span> <span class="emoji">🏥</span><span class="emoji">💬</span></h1>
+    <p class="lead" id="hero-sub">Carregando o estágio...</p>
+    <div class="acoes">
+      <a class="btn amarelo" href="#roadmap">O que fazer agora</a>
+      <a class="btn preto" href="apis.html">Mapa das APIs</a>
+    </div>
+    <div class="status-strip" id="status-strip">
+      <span class="chip bloqueada">verificando conexões...</span>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <h2>Estágio atual</h2>
+    <div class="tarefas" id="tarefas"></div>
+  </section>
+
+  <section class="compacta">
+    <h2>Pendente</h2>
+    <p class="lead caption">Dívidas conscientes, uma linha cada. Sem detalhamento até serem puxadas para o estágio.</p>
+    <div class="tarefas" id="pendentes" style="margin-top: 14px;"></div>
+  </section>
+
+  <section>
+    <div class="linha" style="margin-bottom: 18px;">
+      <h2 style="margin: 0;">Ideias</h2>
+      <button class="btn amarelo mini direita" id="btn-nova-ideia">+ Ideia</button>
+    </div>
+    <p class="lead caption">Cards livres: sem ID, dono ou dependência até serem puxados para o estágio (aí viram tarefa no TODO.md).</p>
+    <div class="card" id="form-ideia">
+      <div class="campos">
+        <div><label for="ideia-titulo">Título</label><input type="text" id="ideia-titulo" maxlength="120" placeholder="A ideia em uma frase"></div>
+        <div><label for="ideia-descricao">Descrição (opcional)</label><textarea id="ideia-descricao" rows="2" maxlength="500" placeholder="Duas linhas no máximo: o suficiente para lembrar"></textarea></div>
+        <div><label for="ideia-link">Link para doc (opcional)</label><input type="text" id="ideia-link" maxlength="300" placeholder="docs/adr/0007-ana-os.md, https://..."></div>
+      </div>
+      <div class="linha">
+        <button class="btn preto mini" id="btn-salvar-ideia">Salvar ideia</button>
+        <button class="btn ghost mini" id="btn-cancelar-ideia">Cancelar</button>
+        <span class="caption" id="ideia-msg"></span>
+      </div>
+    </div>
+    <div class="grade c3" id="ideias" style="margin-top: 20px;"></div>
+  </section>
+
+  <section>
+    <h2>Aplicações</h2>
+    <div class="grade c2" id="apps"></div>
+  </section>
+</main>
+
+<footer class="os-rodape">
+  A ficha completa de cada tarefa vive em <code>roadmap/TODO.md</code> (o /check reconcilia com este cockpit).
+  O roadmap anterior está intacto em <code>roadmap/arquivo/</code>.
+</footer>
+
+<script src="assets/nav.js" data-ambiente="local"></script>
+<script>
+"use strict";
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+let ROADMAP = null;
+
+async function carregar() {
+  const [rRoad, rApps] = await Promise.all([
+    fetch("/api/roadmap").then(r => r.json()),
+    fetch("dados/apps.json").then(r => r.json()),
+  ]);
+  ROADMAP = rRoad.roadmap;
+  render();
+  renderApps(rApps.apps);
+  status();
+}
+
+function render() {
+  const d = ROADMAP;
+  document.getElementById("hero-sub").textContent = d.estagio + " · atualizado em " + d.atualizado;
+
+  const feitas = new Set(d.tarefas.filter(t => t.status === "feito").map(t => t.id));
+  document.getElementById("tarefas").innerHTML = d.tarefas.map(t => {
+    const travas = (t.deps || []).filter(dep => !feitas.has(dep));
+    const estado = t.status === "feito" ? "feito" : (travas.length ? "bloqueada" : "fazer");
+    const rotulo = estado === "feito" ? "feito" : estado === "bloqueada" ? "aguarda " + travas.join(", ") : "a fazer";
+    return '<div class="tarefa ' + estado + '">' +
+      '<span class="id">' + esc(t.id) + '</span>' +
+      '<span class="titulo">' + esc(t.titulo) +
+      (t.nota ? '<div class="nota">' + esc(t.nota) + '</div>' : '') + '</span>' +
+      '<span class="dono">' + esc(t.dono) + '</span>' +
+      '<span class="chip ' + estado + '">' + esc(rotulo) + '</span></div>';
+  }).join("");
+
+  document.getElementById("pendentes").innerHTML = d.pendentes.map(p =>
+    '<div class="tarefa"><span class="id">' + esc(p.id) + '</span>' +
+    '<span class="titulo">' + esc(p.titulo) + '</span>' +
+    '<span class="chip pendente">pendente</span></div>').join("");
+
+  document.getElementById("ideias").innerHTML = d.ideias.map((i, idx) => {
+    const link = i.link
+      ? '<a class="doc" href="' + esc(linkDoc(i.link)) + '" target="_blank" rel="noopener">' + esc(i.link) + '</a>'
+      : '';
+    return '<div class="card hover ideia-card' + (i.puxada ? ' puxada' : '') + '">' +
+      '<div class="acoes-ideia">' +
+      '<button class="btn ghost mini" onclick="editarIdeia(' + idx + ')">editar</button>' +
+      '<button class="btn ghost mini" onclick="removerIdeia(' + idx + ')">remover</button></div>' +
+      '<h4>' + esc(i.titulo) + '</h4>' +
+      (i.descricao ? '<p>' + esc(i.descricao) + '</p>' : '') + link +
+      (i.puxada ? '<div style="margin-top:10px;"><span class="chip feito">puxada para o estágio</span></div>' : '') +
+      '</div>';
+  }).join("") || '<p class="caption">Nenhuma ideia ainda. O botão amarelo é o gesto de 5 segundos.</p>';
+}
+
+function linkDoc(l) {
+  if (/^https?:\/\//.test(l)) return l;
+  const m = l.match(/^docs\/adr\/(.+\.md)$/) || l.match(/^roadmap\/(.+\.md)$/) || l.match(/^ana\/api-mv\/(.+\.md)$/);
+  if (m) {
+    const grupo = l.startsWith("docs/adr/") ? "adr" : l.startsWith("roadmap/") ? "roadmap" : "api-mv";
+    return "biblioteca.html#" + grupo + "/" + m[1];
+  }
+  return "biblioteca.html";
+}
+
+function renderApps(apps) {
+  document.getElementById("apps").innerHTML = apps.map(a =>
+    '<a class="card app-card" href="' + esc(a.url) + '" target="_blank" rel="noopener">' +
+    '<div class="nome">' + esc(a.nome) + '</div>' +
+    '<div class="desc">' + esc(a.desc) + '</div>' +
+    '<div class="url">' + esc(a.url) + '</div></a>').join("");
+}
+
+async function status() {
+  const el = document.getElementById("status-strip");
+  try {
+    const s = await fetch("/api/status").then(r => r.json());
+    el.innerHTML =
+      '<span class="chip ' + (s.token_valido ? "selo-finalizacao" : "tag") + '">API GH homolog: ' +
+      (s.token_valido ? "ok · " + s.latencia_ms + "ms" : s.gh_alcancavel ? "token não validou" : "fora de alcance") + '</span>' +
+      '<span class="chip ' + (s.oracle_ok ? "selo-finalizacao" : "bloqueada") + '">Oracle TST: ' +
+      (s.oracle_ok ? "ok · " + s.oracle_latencia_ms + "ms" : "sem conexão") + '</span>';
+  } catch (e) {
+    el.innerHTML = '<span class="chip tag">servidor fora do ar?</span>';
+  }
+}
+
+/* ---- Ideias: a única escrita do OS (rota /api/roadmap, restrita ao JSON) ---- */
+
+let editando = null; /* índice da ideia em edição, ou null */
+
+function abrirForm(ideia) {
+  document.getElementById("form-ideia").classList.add("aberto");
+  document.getElementById("ideia-titulo").value = ideia ? ideia.titulo : "";
+  document.getElementById("ideia-descricao").value = ideia && ideia.descricao ? ideia.descricao : "";
+  document.getElementById("ideia-link").value = ideia && ideia.link ? ideia.link : "";
+  document.getElementById("ideia-msg").textContent = "";
+  document.getElementById("ideia-titulo").focus();
+}
+
+document.getElementById("btn-nova-ideia").onclick = function () { editando = null; abrirForm(null); };
+document.getElementById("btn-cancelar-ideia").onclick = function () {
+  document.getElementById("form-ideia").classList.remove("aberto"); editando = null;
+};
+
+window.editarIdeia = function (idx) { editando = idx; abrirForm(ROADMAP.ideias[idx]); };
+
+window.removerIdeia = async function (idx) {
+  ROADMAP.ideias.splice(idx, 1);
+  await gravar("ideia removida");
+};
+
+document.getElementById("btn-salvar-ideia").onclick = async function () {
+  const titulo = document.getElementById("ideia-titulo").value.trim();
+  if (!titulo) { document.getElementById("ideia-msg").textContent = "título é obrigatório"; return; }
+  const nova = { titulo: titulo };
+  const desc = document.getElementById("ideia-descricao").value.trim();
+  const link = document.getElementById("ideia-link").value.trim();
+  if (desc) nova.descricao = desc;
+  if (link) nova.link = link;
+  if (editando === null) ROADMAP.ideias.unshift(nova);
+  else ROADMAP.ideias[editando] = Object.assign({}, ROADMAP.ideias[editando], nova);
+  const ok = await gravar("ideia salva");
+  if (ok) { document.getElementById("form-ideia").classList.remove("aberto"); editando = null; }
+};
+
+async function gravar(msgOk) {
+  const r = await fetch("/api/roadmap", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(ROADMAP),
+  }).then(x => x.json()).catch(() => ({ ok: false, erro: "servidor fora do ar" }));
+  const msg = document.getElementById("ideia-msg");
+  if (r.ok) { msg.textContent = msgOk; render(); return true; }
+  msg.textContent = "erro: " + (r.erro || "?");
+  const atual = await fetch("/api/roadmap").then(x => x.json()).catch(() => null);
+  if (atual && atual.ok) { ROADMAP = atual.roadmap; render(); }
+  return false;
+}
+
+carregar();
+</script>
+
+</body>
+</html>

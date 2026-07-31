@@ -1,14 +1,18 @@
 # CLAUDE.md
 
-Programa Ana (Hospital São Matheus): agente de IA de atendimento/agendamento via WhatsApp, integrado ao MV via API Global Health. Glossário do domínio em `CONTEXT.md`; estado do programa em `roadmap/TODO.md` (use `/check` para retomar).
+Programa Ana (Hospital São Matheus): agente de IA de atendimento/agendamento via WhatsApp, rodando na plataforma fazer.ai agents (com Chatwoot e Langfuse); a integração ao MV via API Global Health é pendente explícito do roadmap. Glossário do domínio em `CONTEXT.md`; estado do programa em `roadmap/TODO.md` (use `/check` para retomar).
 
-## Manter o roadmap vivo (vale para toda sessão, não só o /check)
+## Ana OS (o cockpit) e o roadmap vivo (vale para toda sessão, não só o /check)
+
+O **Ana OS** (`os/` na raiz, ADR-0007) é o cockpit único do programa: `python3 os/server.py` e abrir `http://localhost:8777`. Home com roadmap e painel de aplicações, Mapa das APIs, diagrama de arquitetura, bancada e roteiro da API GH (homolog), Atlas da produção, Biblioteca de docs. Visual: `os/DESIGN.md` (tema claro, sem travessões). Regras do server: GH só homologação, Oracle TST só SELECT, `dados-locais/` e `amostras/` jamais servidos, produção jamais chamada.
 
 O estado do programa mora em dois lugares que precisam concordar sempre:
-- `roadmap/TODO.md`: a verdade **narrativa** (fichas das tarefas, "pronto quando", contexto, log). IDs estáveis A1..G6, donos P/C/E.
-- `roadmap/mapa.html`: o espelho **visual** que o Pedro abre para ver as tarefas (arquivo único, autossuficiente, abre com duplo clique). É a mesa de trabalho única: um só grafo, sem abas nem vista paralela. Os dados vivem num bloco `TAREFAS` no topo do arquivo, cercado por comentários (campos incluem `esforco` P/M/G e `ref` opcional); a criticidade NÃO é campo, é derivada do grafo. O resto é renderização.
+- `roadmap/TODO.md`: a verdade **narrativa** do estágio atual (estado, fichas curtas com "pronto quando", log). IDs estáveis V1../OS1.. e pendentes GH1/OV1, donos P/C/E.
+- `os/dados/roadmap.json`: o espelho de **dados** que a home do Ana OS renderiza (tarefas, pendentes e a faixa de Ideias). O "bloqueada" é derivado de `deps`, nunca escrito à mão. As Ideias também são editáveis pela própria UI (única rota de escrita do server); ideia nova no JSON é insumo do Pedro a digerir.
 
-Regra: **se você avançar, concluir ou criar uma tarefa do roadmap em qualquer sessão, atualize os DOIS** (o status/log no TODO.md e o campo `status` da tarefa no bloco `TAREFAS` do mapa.html), mantendo o mesmo ID. Nunca edite o código de renderização do mapa, só o bloco de dados. O `/check` reconcilia os dois toda vez que roda, então ele é a rede de segurança, mas não conte com ele: deixe sincronizado ao mexer.
+Regra: **se você avançar, concluir ou criar uma tarefa do roadmap em qualquer sessão, atualize os DOIS** (o status/log no TODO.md e o campo `status` da tarefa no roadmap.json), mantendo o mesmo ID. Nas páginas do OS, só mexa quando a tarefa for evoluir o próprio OS; dados vivem nos JSON de `os/dados/`. O `/check` reconcilia os dois toda vez que roda, então ele é a rede de segurança, mas não conte com ele: deixe sincronizado ao mexer.
+
+O roadmap anterior (trilhas A a G, PENDENCIAS.md, mapas antigos, o mapa.html de 30/jul) está arquivado intacto em `roadmap/arquivo/`: é acervo de consulta (textos prontos para a Global Health e o analista de TI, histórico do banco MV), nunca fonte do estado atual.
 
 Ao falar com o Pedro sobre tarefas, traduza os IDs para linguagem de ação e agrupe por canal (dispare hoje / sente comigo / aguardando terceiros); o ID é etiqueta, não título. Incentive-o a empurrar frentes em paralelo.
 

@@ -22,3 +22,20 @@ Depois de salvar arquivos aqui, rode `/check` (ou só me avise na sessão): eu d
 | `amostras/3-1-paciente.csv` ... `3-5-agenda-central.csv` | 3.1 a 3.5 | amostras dirigidas (fora do git) |
 
 Nota: a query 3.4 (`ATENDIME_GLOBAL_HEALTH`) retornou 0 linhas: a tabela existe e está vazia neste banco (nenhum agendamento via API GH jamais registrado aqui). Digestão completa em `../dicionario-colunas.md`.
+
+## `metadados/` (27/jul/2026)
+
+Colheita COMPLETA dos metadados do owner `DBAMV` (só estrutura e catálogos, sem dado pessoal; tudo commitável). Colhida pela sessão via `query-mv.py` enquanto a conexão direta funcionou; as mesmas queries estão no grupo 04 do `playground/roteiro.html` para regenerar manualmente no DBeaver (e substituir estes arquivos, se o banco acessado for outro).
+
+| Arquivo | Conteúdo |
+|---|---|
+| `metadados/meta-1-tabelas.csv` | 5.838 tabelas: num_rows, last_analyzed, comentário oficial |
+| `metadados/meta-2-colunas.csv` | 77.395 colunas: tipo, tamanho, precisão, nullable |
+| `metadados/meta-3-comentarios-colunas.csv` | 46.986 comentários oficiais de coluna (o dicionário semântico do MV) |
+| `metadados/meta-4-pks.csv` | 5.163 PKs, coluna a coluna |
+| `metadados/meta-5-fks.csv` | 11.303 FKs com tabela/coluna de origem e destino (o grafo de JOINs) |
+| `metadados/meta-6-dominios.csv` | valores reais em uso de TP_SITUACAO, TP_FORMA_AGENDAMENTO, TP_ITEM, TP_ATENDIMENTO |
+| `metadados/meta-7-tip-mar.csv` | catálogo TIP_MAR completo (tipos de marcação) |
+| `metadados/meta-8-convenios.csv` | catálogo CONVENIO completo (45 convênios) |
+
+Sessões futuras: leiam estes CSVs antes de responder qualquer pergunta sobre o esquema DBAMV (existência de coluna, tipagem, FK, domínio).

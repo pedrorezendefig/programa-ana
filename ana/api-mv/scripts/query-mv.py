@@ -100,7 +100,7 @@ def main():
 
     if args.csv:
         with open(args.csv, "w", newline="", encoding="utf-8") as f:
-            w = csv.writer(f, delimiter=";")
+            w = csv.writer(f, delimiter=",")
             w.writerow(colunas)
             w.writerows([[texto(v) for v in linha] for linha in linhas])
         print(f"{len(linhas)} linha(s) salvas em {args.csv}" + (" (TRUNCADO no --max-rows)" if truncado else ""))

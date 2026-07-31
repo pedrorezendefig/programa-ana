@@ -1,0 +1,147 @@
+{
+  "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
+  "atualizado": "30/jul/2026",
+  "tarefas": [
+    {
+      "id": "V1",
+      "titulo": "Desativar os workflows \"Ana\" e \"Desliga Ana\" no n8n",
+      "dono": "C",
+      "status": "feito",
+      "deps": []
+    },
+    {
+      "id": "V2",
+      "titulo": "Trocar o modelo do agente para gpt-5-mini",
+      "dono": "C",
+      "status": "feito",
+      "deps": []
+    },
+    {
+      "id": "V3",
+      "titulo": "Subir o NocoDB (base editável do negócio) com as 4 tabelas",
+      "dono": "C",
+      "status": "feito",
+      "deps": [],
+      "nota": "Substituiu o Google Sheets (ADR-0006). HTTPS no Coolify, dados importados."
+    },
+    {
+      "id": "V4",
+      "titulo": "Criar as tools HTTP das tabelas e provar no playground",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "V3"
+      ],
+      "nota": "4 tools + prompt com Tabelas Oficiais. Prova: cardiologia R$ 380 com diferenciais."
+    },
+    {
+      "id": "V5",
+      "titulo": "Escrever o Roteiro de cenários (~10 cenários)",
+      "dono": "C+P",
+      "status": "feito",
+      "deps": [],
+      "nota": "Pronto em roadmap/roteiro-cenarios.md: 10 principais + 2 condicionais."
+    },
+    {
+      "id": "V6",
+      "titulo": "Rodar o roteiro no Telegram, conferindo Chatwoot e Langfuse",
+      "dono": "P+C",
+      "status": "fazer",
+      "deps": [
+        "V4",
+        "V5"
+      ],
+      "nota": "Critério de pronto do estágio: tudo passando com gpt-5-mini."
+    },
+    {
+      "id": "V7",
+      "titulo": "Revogar o token Cloudflare usado no onboarding",
+      "dono": "P",
+      "status": "fazer",
+      "deps": []
+    },
+    {
+      "id": "V8",
+      "titulo": "Resolver o hotfix temporário do Chatwoot (upstream ou reaplicar)",
+      "dono": "P+C",
+      "status": "fazer",
+      "deps": []
+    },
+    {
+      "id": "V9",
+      "titulo": "Dar acesso de edição do NocoDB ao usuário de negócio",
+      "dono": "P",
+      "status": "fazer",
+      "deps": [
+        "V3"
+      ]
+    },
+    {
+      "id": "OS1",
+      "titulo": "Ana OS: fundação (os/, server estendido, design system, dados em JSON)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [],
+      "nota": "Server estendido (roadmap RW, docs allowlist), tokens/os.css/nav.js, fontes locais."
+    },
+    {
+      "id": "OS2",
+      "titulo": "Ana OS: páginas novas (home, Mapa das APIs, Arquitetura, Biblioteca)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS1"
+      ],
+      "nota": "Cockpit com Ideias editaveis, apis.html com selos, arquitetura.html, biblioteca.html."
+    },
+    {
+      "id": "OS3",
+      "titulo": "Ana OS: redesign das 6 páginas do playground",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS1"
+      ],
+      "nota": "6 paginas portadas por agentes paralelos, catalogos e queries verificados verbatim."
+    },
+    {
+      "id": "OS4",
+      "titulo": "Ana OS: fumaça por página",
+      "dono": "C+P",
+      "status": "feito",
+      "deps": [
+        "OS2",
+        "OS3"
+      ],
+      "nota": "Rotas, allowlist, escrita e visual conferidos; prova viva no Oracle aguarda VPN da TST."
+    },
+    {
+      "id": "OS5",
+      "titulo": "Ana OS: arquivamento e limpeza (mapa.html aposenta)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS4"
+      ],
+      "nota": "mapa.html e playground antigos em arquivo/; CLAUDE.md e /check apontam para o OS."
+    }
+  ],
+  "pendentes": [
+    {
+      "id": "GH1",
+      "titulo": "Desenhar onde as APIs Global Health entram no fluxo da Ana (metade restante; o catálogo virou o Mapa das APIs)"
+    },
+    {
+      "id": "OV1",
+      "titulo": "Sistema de protocolo da ouvidoria"
+    }
+  ],
+  "ideias": [
+    {
+      "titulo": "Central de front-ending (Ana OS)",
+      "descricao": "Puxada em 30/jul/2026: virou a frente OS1..OS5 do estágio.",
+      "link": "docs/adr/0007-ana-os.md",
+      "puxada": true
+    }
+  ]
+}

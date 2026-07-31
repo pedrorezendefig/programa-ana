@@ -2,9 +2,13 @@
 
 > Objetivo: a sessão Claude Code (e você, no terminal do VS Code) consultar o banco de HOMOLOGAÇÃO diretamente, sem o ciclo exportar-CSV-colar. Caminho: `python-oracledb` em **modo thick** (com Oracle Instant Client; ver por quê abaixo). Política combinada em 07/jul/2026: **homolog = acesso total da sessão; produção = só o Pedro, manualmente, no DBeaver.**
 
-## Estado atual: FUNCIONANDO (07/jul/2026, tarde)
+## Estado atual: INALCANÇÁVEL desde 13/jul/2026 (rede, não configuração)
 
-Conexão feita da sessão Claude, ponta a ponta, sem VPN. Todos os passos abaixo concluídos:
+Em 20/jul, com a HSM-VPN conectada: o túnel responde (gateway `10.11.12.1` em 13ms, rota `10.100.64/22` correta por `utun7`), mas `10.100.66.170:1521` não responde a ICMP nem TCP e o traceroute morre logo depois do concentrador. O DNS público (8.8.8.8 e 1.1.1.1) devolve esse mesmo IP privado, ou seja **a conexão sempre exigiu VPN**: a anotação original de 07/jul dizendo "sem VPN" está errada. Nada da configuração local mudou (credencial, driver, Instant Client e script seguem íntegros); falta liberação de rota/firewall do lado do MV para `10.100.64.0/22` na porta 1521, ou o servidor TST está parado. Enquanto isso, as queries são rodadas à mão no DBeaver.
+
+## Configuração local: completa (07/jul/2026, tarde)
+
+Conexão feita da sessão Claude, ponta a ponta. Todos os passos abaixo concluídos:
 
 - [x] Passo 1: dados da conexão copiados da tela do DBeaver (print de 07/jul)
 - [x] Passo 2: `.env` da raiz preenchido (campos `ORACLE_...`)

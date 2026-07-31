@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana OS · Insights</title>
+<link rel="stylesheet" href="assets/os.css">
+<style>
+  .hero { text-align: center; padding: 40px 0 8px; }
+  .hero .lead { margin: 18px auto 0; }
+  .hero .metodo-card { text-align: left; margin: 28px auto 0; max-width: 82ch; }
+
+  /* grade dos insights: duas colunas no desktop, o destaque ocupa a largura toda */
+  .grade.insights { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
+  .insight { display: flex; flex-direction: column; gap: 10px; }
+  .insight h3 { font-size: 21px; line-height: 1.25; letter-spacing: -0.4px; margin: 0; }
+  .insight p { margin: 0; }
+  .insight-topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  .selo-estado { background: var(--color-hairline-gray); color: var(--color-carbon); }
+  .selo-estado.evidencia { background: var(--color-highlighter-yellow); color: var(--color-carbon); }
+
+  .rotulo {
+    font: var(--font-weight-medium) 11px/1.4 var(--font-mono);
+    text-transform: uppercase; letter-spacing: .08em; color: #555;
+    display: block; margin-bottom: 2px;
+  }
+  .csv-nome { font: var(--font-weight-regular) 12px/1.4 var(--font-mono); color: #555; margin: 0 0 8px; }
+  .bloco-csv {
+    border-left: 3px solid var(--color-signal-blue);
+    padding-left: 14px; margin: 4px 0;
+  }
+  .aguardando {
+    display: inline-block;
+    font: var(--font-weight-regular) 12px/1.5 var(--font-mono);
+    color: #555; background: var(--color-graphite-mist);
+    border: 1px dashed var(--color-shadow-gray);
+    border-radius: var(--radius-inputs); padding: 9px 12px;
+  }
+
+  /* o insight mais valioso: moldura amarela e largura cheia */
+  .card.moldura { grid-column: 1 / -1; }
+  .card.moldura.hover:hover { border-color: var(--color-highlighter-yellow); }
+
+  .fechamento { text-align: center; }
+  .fechamento .acoes { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+
+  @media (max-width: 720px) {
+    .grade.insights { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+
+  <section class="hero compacta">
+    <span class="chip contorno">Absorção da produção · ciclo C8</span>
+    <h1 style="margin-top: 16px;">Insights <span class="destaque">para a diretoria</span></h1>
+    <p class="lead">Treze hipóteses de valor para a direção do Hospital São Matheus e para os
+      novos fluxos da Ana. Cada card nasce como hipótese; quando o CSV da produção chega ao
+      depósito, o número real aparece e a hipótese vira evidência.</p>
+    <div class="card metodo-card">
+      <h4 style="margin-bottom: 10px;">Método</h4>
+      <p class="caption">as hipóteses são alimentadas pelos CSVs do pacote de absorção (C8), que o Pedro
+        exporta manualmente do DBeaver da produção e deposita em
+        <code>ana/api-mv/absorcao-producao/resultados/</code>. Nenhum código local consulta a
+        produção. Selo de cada card: "hipótese" (nenhum CSV presente) ou "evidência disponível"
+        (ao menos um CSV presente). Todos os CSVs trazem apenas agregados e metadados, sem dado
+        pessoal de paciente.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="grade c2 insights">
+
+      <section class="card hover insight" data-insight="1">
+        <div class="insight-topo">
+          <h3>1. Taxa de no-show mensal</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> quantos pacientes marcam e não aparecem, mês a mês?</p>
+        <div class="bloco-csv" data-csv="10-1-funil-ocupacao-mensal.csv">
+          <p class="csv-nome">Alimentada por: 10-1-funil-ocupacao-mensal.csv (faltas vs presencas)</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> lembrete ativo da Ana no dia anterior; política de confirmação e overbooking.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="2">
+        <div class="insight-topo">
+          <h3>2. Janelas ociosas por prestador</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> quais médicos têm agenda sobrando e quais têm fila?</p>
+        <div class="bloco-csv" data-csv="10-8-ocupacao-prestador.csv">
+          <p class="csv-nome">Alimentada por: 10-8-ocupacao-prestador.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> realocar oferta de horários; campanha dirigida da Ana para agendas ociosas.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="3">
+        <div class="insight-topo">
+          <h3>3. Lead time de acesso</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> quantos dias separam a marcação do atendimento?</p>
+        <div class="bloco-csv" data-csv="10-1-funil-ocupacao-mensal.csv">
+          <p class="csv-nome">Alimentada por: 10-1-funil-ocupacao-mensal.csv (lead_time_medio_dias)</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> SLA de acesso por especialidade; priorizar abertura de escala nos gargalos.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="4">
+        <div class="insight-topo">
+          <h3>4. Ocupação da capacidade instalada</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> quanto da capacidade publicada é de fato marcada?</p>
+        <div class="bloco-csv" data-csv="10-1-funil-ocupacao-mensal.csv">
+          <p class="csv-nome">Alimentada por: 10-1-funil-ocupacao-mensal.csv (capacidade vs marcados)</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> abrir, fechar ou redistribuir escalas; justificar contratação.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="5">
+        <div class="insight-topo">
+          <h3>5. Funil agendado, compareceu, desfecho</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> onde o hospital perde o paciente no caminho?</p>
+        <div class="bloco-csv" data-csv="10-1-funil-ocupacao-mensal.csv">
+          <p class="csv-nome">Alimentada por: 10-1-funil-ocupacao-mensal.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <div class="bloco-csv" data-csv="10-4-motivos-alta.csv">
+          <p class="csv-nome">Alimentada por: 10-4-motivos-alta.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> fluxo de recuperação da Ana (remarcar faltantes, pós-atendimento).</p>
+      </section>
+
+      <section class="card hover insight" data-insight="6">
+        <div class="insight-topo">
+          <h3>6. Mix convênio vs particular</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> quem paga a conta das marcações e atendimentos?</p>
+        <div class="bloco-csv" data-csv="10-7-mix-convenio.csv">
+          <p class="csv-nome">Alimentada por: 10-7-mix-convenio.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <div class="bloco-csv" data-csv="40-2-convenios-catalogo.csv">
+          <p class="csv-nome">Alimentada por: 40-2-convenios-catalogo.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> negociação com convênios; achar o id do particular destrava D1/GH-17 na Ana.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="7">
+        <div class="insight-topo">
+          <h3>7. Canal de origem da marcação</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> balcão, telefone, internet: por onde entram as marcações hoje?</p>
+        <div class="bloco-csv" data-csv="10-2-dominios-agendamento.csv">
+          <p class="csv-nome">Alimentada por: 10-2-dominios-agendamento.csv (TP_FORMA_AGENDAMENTO, quando C6-5 confirmar a semântica)</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> linha de base para medir o share da Ana; auditoria das marcações do WhatsApp.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="8">
+        <div class="insight-topo">
+          <h3>8. Óbitos e a armadilha 63/64</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> quais altas jamais podem receber contato pós-atendimento?</p>
+        <div class="bloco-csv" data-csv="10-4-motivos-alta.csv">
+          <p class="csv-nome">Alimentada por: 10-4-motivos-alta.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <div class="bloco-csv" data-csv="10-3-dominios-atendime.csv">
+          <p class="csv-nome">Alimentada por: 10-3-dominios-atendime.csv (SN_OBITO)</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> lista de exclusão POR CÓDIGO (inclui 63 e 64, luto materno) no filtro E1 da pesquisa de satisfação.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="9">
+        <div class="insight-topo">
+          <h3>9. Tempo até a alta</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> quantos dias o paciente fica até a alta, por tipo de atendimento?</p>
+        <div class="bloco-csv" data-csv="30-2-internacao-urgencia-mensal.csv">
+          <p class="csv-nome">Alimentada por: 30-2-internacao-urgencia-mensal.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> gestão de giro de leitos; metas por linha de cuidado.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="10">
+        <div class="insight-topo">
+          <h3>10. Pressão da urgência</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> a urgência cresce, cai ou tem sazonalidade?</p>
+        <div class="bloco-csv" data-csv="30-2-internacao-urgencia-mensal.csv">
+          <p class="csv-nome">Alimentada por: 30-2-internacao-urgencia-mensal.csv (recorte por TP_ATENDIMENTO, semântica com C6-2)</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> dimensionamento de plantão; desvio de demanda eletiva para a Ana.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="11">
+        <div class="insight-topo">
+          <h3>11. Cirurgias por período</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> qual o volume real do centro cirúrgico e onde ele vive no banco?</p>
+        <div class="bloco-csv" data-csv="20-1-cirurgia-descoberta.csv">
+          <p class="csv-nome">Alimentada por: 20-1-cirurgia-descoberta.csv (ciclo 1; refinamento no C9)</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> planejamento do centro cirúrgico; futuro fluxo da Ana para pré-operatório.</p>
+      </section>
+
+      <section class="card hover insight" data-insight="12">
+        <div class="insight-topo">
+          <h3>12. Base contactável para a Ana</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> quantos pacientes têm celular válido e aceitam contato? Quantos não têm CPF?</p>
+        <div class="bloco-csv" data-csv="10-9-contactabilidade.csv">
+          <p class="csv-nome">Alimentada por: 10-9-contactabilidade.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> tamanho real do público WhatsApp; campanha de atualização cadastral; caso dos sem CPF (pergunta GH-18 do arquivo de perguntas).</p>
+      </section>
+
+      <section class="card moldura hover insight" data-insight="13">
+        <div class="insight-topo">
+          <h3>13. Adoção da interface Global Health</h3>
+          <span class="chip selo-estado">hipótese</span>
+        </div>
+        <p><span class="rotulo">Pergunta de negócio:</span> a integração GH materializa atendimentos no MV da produção?</p>
+        <div class="bloco-csv" data-csv="10-6-atendime-gh.csv">
+          <p class="csv-nome">Alimentada por: 10-6-atendime-gh.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <div class="bloco-csv" data-csv="10-5-sonda-gh18.csv">
+          <p class="csv-nome">Alimentada por: 10-5-sonda-gh18.csv</p>
+          <div class="csv-alvo"></div>
+        </div>
+        <p><span class="rotulo">Decisão que habilita:</span> resposta à GH-18 crítica (qual banco a homolog enxerga); pré-condição da Fase 3.</p>
+      </section>
+
+    </div>
+  </section>
+
+  <section class="fechamento compacta">
+    <p class="caption">Depósito dos CSVs: ana/api-mv/absorcao-producao/resultados/ (passo a passo na
+      página Absorção). O retrato completo do banco está na página Atlas.</p>
+    <div class="acoes">
+      <a class="btn amarelo" href="absorcao.html">Abrir a Absorção</a>
+      <a class="btn preto" href="atlas.html">Ver o Atlas</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="os-rodape">
+  Treze hipóteses do ciclo C8. Enquanto o CSV não chega ao depósito, o card fica com o selo
+  "hipótese"; nenhum código desta página consulta a produção.
+</footer>
+
+<script src="assets/nav.js" data-ambiente="producao"></script>
+<script>
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+function csvParse(texto) {
+  var linhas = [], linha = [], campo = "", dentro = false, i = 0;
+  texto = texto.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  while (i < texto.length) {
+    var ch = texto[i];
+    if (dentro) {
+      if (ch === '"') { if (texto[i + 1] === '"') { campo += '"'; i++; } else { dentro = false; } }
+      else { campo += ch; }
+    } else if (ch === '"') { dentro = true; }
+    else if (ch === ',') { linha.push(campo); campo = ""; }
+    else if (ch === '\n') { linha.push(campo); linhas.push(linha); linha = []; campo = ""; }
+    else { campo += ch; }
+    i++;
+  }
+  if (campo !== "" || linha.length) { linha.push(campo); linhas.push(linha); }
+  if (!linhas.length) return null;
+  return { colunas: linhas[0], linhas: linhas.slice(1) };
+}
+
+async function carregarCSV(nome) {
+  try {
+    var r = await fetch("/absorcao/" + encodeURIComponent(nome));
+    if (!r.ok) return null;
+    return csvParse(await r.text());
+  } catch (e) { return null; }
+}
+
+function tabelaHTML(dados, max) {
+  if (!dados) return "";
+  var corte = dados.linhas.slice(0, max || 12);
+  var html = "<div class='tabela-wrap'><table><thead><tr>";
+  dados.colunas.forEach(function (c) { html += "<th>" + esc(c) + "</th>"; });
+  html += "</tr></thead><tbody>";
+  corte.forEach(function (l) {
+    html += "<tr>";
+    l.forEach(function (v) { html += "<td>" + esc(v) + "</td>"; });
+    html += "</tr>";
+  });
+  html += "</tbody></table></div>";
+  if (dados.linhas.length > corte.length) {
+    html += "<p class='caption'>Mostrando " + corte.length + " de " + dados.linhas.length + " linhas.</p>";
+  }
+  return html;
+}
+
+async function hidratarSecoes() {
+  var secoes = document.querySelectorAll("[data-csv]");
+  for (var s of secoes) {
+    var alvo = s.querySelector(".csv-alvo");
+    if (!alvo) continue;
+    var nome = s.getAttribute("data-csv");
+    var dados = await carregarCSV(nome);
+    if (dados) { alvo.innerHTML = tabelaHTML(dados, 15); s.classList.add("com-dados"); }
+    else { alvo.innerHTML = "<span class='aguardando'>Aguardando C8: deposite " + esc(nome) +
+           " em ana/api-mv/absorcao-producao/resultados/</span>"; }
+  }
+  atualizarSelosEstado();
+}
+document.addEventListener("DOMContentLoaded", hidratarSecoes);
+
+function atualizarSelosEstado() {
+  document.querySelectorAll(".card[data-insight]").forEach(function (card) {
+    var selo = card.querySelector(".selo-estado");
+    if (!selo) return;
+    if (card.querySelector("[data-csv].com-dados")) {
+      selo.textContent = "evidência disponível";
+      selo.classList.add("evidencia");
+    } else {
+      selo.textContent = "hipótese";
+      selo.classList.remove("evidencia");
+    }
+  });
+}
+
+document.addEventListener("click", function (ev) {
+  var b = ev.target.closest("[data-copiar]");
+  if (!b) return;
+  var alvo = document.getElementById(b.getAttribute("data-copiar"));
+  if (!alvo) return;
+  navigator.clipboard.writeText(alvo.textContent).then(function () {
+    var t = b.textContent; b.textContent = "copiado!";
+    setTimeout(function () { b.textContent = t; }, 1200);
+  });
+});
+</script>
+
+</body>
+</html>
