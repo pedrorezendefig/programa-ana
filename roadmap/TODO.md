@@ -61,9 +61,10 @@ Feito em 30/jul/2026: `roadmap/roteiro-cenarios.md`. 10 cenários principais (ur
 ### V9 · Acesso de edição para o negócio
 **Contexto:** o NocoDB é a tela onde o usuário de negócio edita valores, diferenciais e cobertura (grid estilo planilha). Falta o Pedro convidar quem edita (Base Ana > Members, papel Editor) e passar o passo a passo básico. Mudança salva na tabela vale na resposta seguinte da Ana, sem redeploy.
 **Pronto quando:** ao menos um usuário de negócio (ou o próprio Pedro no papel) editar um valor e a Ana responder o valor novo.
+**Adiada em 31/jul por decisão do Pedro:** por enquanto só ele edita; o convite ao negócio fica para bem depois.
 
 ### V7 · Revogar token Cloudflare
-Pendência de segurança do onboarding de 29/jul: o token de API usado para criar os DNS (agents/langfuse/coolify) ainda está ativo. Revogar no painel da Cloudflare.
+Pendência de segurança do onboarding de 29/jul: o token de API usado para criar os DNS (agents/langfuse/coolify) ainda está ativo. Revogar no painel da Cloudflare. **Adiada em 31/jul por decisão do Pedro:** o token ainda vai ser usado; revogar só quando não houver mais uso previsto.
 
 ### V8 · Hotfix do Chatwoot
 A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da versão .111: 500 em /agent_bots e /labels via token) **evapora no próximo redeploy**. Cobrar o fix upstream (bug report já enviado) e, se o 500 voltar, reaplicar. Detalhe em `bug-report-fazer-ai.md`.

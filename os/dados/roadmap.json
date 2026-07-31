@@ -59,7 +59,8 @@
       "titulo": "Revogar o token Cloudflare usado no onboarding",
       "dono": "P",
       "status": "fazer",
-      "deps": []
+      "deps": [],
+      "nota": "Adiada em 31/jul: o token ainda vai ser usado; revogar quando não houver mais uso previsto."
     },
     {
       "id": "V8",
@@ -75,7 +76,8 @@
       "status": "fazer",
       "deps": [
         "V3"
-      ]
+      ],
+      "nota": "Adiada em 31/jul: por enquanto só o Pedro edita; convite ao negócio fica para depois."
     },
     {
       "id": "OS1",
