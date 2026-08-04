@@ -9,7 +9,7 @@
 
 ---
 
-## Estado (31/jul/2026)
+## Estado (04/ago/2026)
 
 A Ana foi migrada do n8n para a plataforma **fazer.ai agents** (onboarding 29/jul, E2E aprovado): agente id 1 no tenant `vitta-tech`, modo teste, prompt completo do SOP, ferramentas nativas (kanban, tags, handoff, notas), KB "Base Hospital São Matheus". As inboxes do Chatwoot vinculadas são o **bot do Telegram (SaoMatheusBot)** e a inbox de API "Ana E2E". Observabilidade: conversas no Chatwoot, raciocínio e custo por resposta no Langfuse.
 
@@ -83,6 +83,7 @@ A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da 
 
 ## Log
 
+- **04/ago/2026:** check de retomada. O trabalho OS6/OS7 (redesign Ledger + grafo, ADR-0008) estava concluído e testado desde 31/jul mas sem commit; commitado agora. Instância fazer.ai conferida (gpt-5-mini, agente ativo em modo teste, inboxes Telegram + API vinculadas). Nenhum caco novo no diretório. Fronteira do estágio segue a V6: rodar o roteiro de cenários no Telegram.
 - **31/jul/2026 (3):** OS6 e OS7 executadas na sessão do grilling: Ana OS inteiro no design Ledger (referência refero), home dashboard, página Roadmap com o grafo de execução (propostas P1..P6 + GH1 posicionada, prompts copiáveis em 12 nós), server validando propostas, fumaça completa. Fronteira do estágio segue a V6.
 - **31/jul/2026 (2):** grilling do redesign (ADR-0008): visual refero substitui o Aaply nas 10 páginas, home vira dashboard funcional, nasce o grafo de execução em página própria com a camada de propostas (P1..P7, trilha GH/MV) e prompts copiáveis por nó. Reversão consciente do "sem grafo" do ADR-0007. Nascem OS6 e OS7.
 - **31/jul/2026:** serviço n8n parado no Coolify (a pedido do Pedro, via MCP): 503 na URL pública é proposital; religar é um `start`. Instância fazer.ai conferida no check (gpt-5-mini, modo teste, inboxes Telegram + API vinculadas). Fronteira do estágio: rodar a V6.
