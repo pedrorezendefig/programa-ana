@@ -1,20 +1,25 @@
-/* Ana OS: tokens do design system (fonte: os/DESIGN.md, referência Aaply).
-   Tema claro apenas (ADR-0007). Nenhuma cor fora da paleta. */
+/* Ana OS: tokens do design system Ledger (fonte: os/DESIGN.md, referência refero, ADR-0008).
+   Tema claro único. Nenhuma cor fora desta tabela. */
 
 @import url("fonts/fonts.css");
 
 :root {
   /* Cores */
-  --color-highlighter-yellow: #e6e51e;
-  --color-annotation-red: #f34646;
-  --color-signal-blue: #466cf3;
-  --color-peach-wash: #ff8562;
-  --color-carbon: #000000;
-  --color-paper-white: #ffffff;
-  --color-graphite-mist: #f2f2f2;
-  --color-hairline-gray: #e6e6e6;
-  --color-shadow-gray: #cccccc;
-  --color-sunbeam: #fff705;
+  --cor-canvas: #f3f2f0;
+  --cor-card: #ffffff;
+  --cor-card-interno: #f6f5f3;
+  --cor-tinta: #111111;
+  --cor-sidebar: #0d0d0d;
+  --cor-rotulo: #8c8c8c;
+  --cor-mudo: #b9b7b2;
+  --cor-fio: #e8e7e4;
+  --cor-verde: #2e9e44;
+  --cor-verde-tinta: #e3f4e4;
+  --cor-vermelho: #e04434;
+  --cor-vermelho-tinta: #fde9e6;
+  --cor-azul: #2b52c9;
+  --cor-azul-tinta: #e8effc;
+  --cor-areia: #efece7;
 
   /* Famílias */
   --font-poppins: 'Poppins', 'DM Sans', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -22,37 +27,36 @@
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   /* Escala tipográfica */
-  --text-caption: 14px;   --leading-caption: 1.57;
-  --text-body: 16px;      --leading-body: 1.53;
-  --text-subheading: 18px; --leading-subheading: 1.4;  --tracking-subheading: -0.5px;
-  --text-heading-sm: 27px; --leading-heading-sm: 1.33; --tracking-heading-sm: -0.49px;
-  --text-heading: 34px;    --leading-heading: 1.05;    --tracking-heading: -0.65px;
-  --text-heading-lg: 52px; --leading-heading-lg: 1;    --tracking-heading-lg: -3.85px;
-  --text-display: 57px;    --leading-display: 1.05;    --tracking-display: -4.22px;
+  --texto-display: 40px;    --tracking-display: -1.5px;
+  --texto-indicador: 30px;  --tracking-indicador: -1px;
+  --texto-h1: 34px;         --tracking-h1: -1px;
+  --texto-h2: 22px;         --tracking-h2: -0.4px;
+  --texto-h3: 17px;         --tracking-h3: -0.2px;
+  --texto-corpo: 15px;
+  --texto-rotulo: 14px;
+  --texto-legenda: 13px;
+  --texto-micro: 11px;      --tracking-micro: 0.08em;
 
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-bold: 700;
+  --peso-regular: 400;
+  --peso-medio: 500;
+  --peso-semibold: 600;
+  --peso-bold: 700;
 
   /* Layout */
-  --page-max-width: 1200px;
-  --section-gap: 96px;
-  --card-padding: 32px;
-  --element-gap: 20px;
+  --largura-conteudo: 1240px;
+  --sidebar-largura: 64px;
+  --sidebar-margem: 16px;
+  --gap-cards: 14px;
+  --gap-secoes: 28px;
+  --pad-card: 24px;
 
   /* Raios */
-  --radius-nav: 30px;
-  --radius-cards: 32px;
-  --radius-inputs: 16px;
-  --radius-pill: 3000px;
-  --radius-productframe: 16px;
+  --raio-sidebar: 32px;
+  --raio-card: 24px;
+  --raio-interno: 14px;
+  --raio-icone: 12px;
+  --raio-pill: 999px;
 
-  /* Sombra (única do sistema, só na nav) */
-  --shadow-md: rgba(0, 0, 0, 0.2) 0px 10px 10px -5px;
-
-  /* Superfícies */
-  --surface-canvas: #f2f2f2;
-  --surface-card: #ffffff;
-  --surface-tinted-accent: #ff8562;
-  --surface-highlight-frame: #fff705;
+  /* Sombra (única do sistema, só na sidebar) */
+  --sombra-sidebar: 0 12px 28px -12px rgba(0, 0, 0, .35);
 }

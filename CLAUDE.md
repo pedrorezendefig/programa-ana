@@ -8,7 +8,7 @@ O **Ana OS** (`os/` na raiz, ADR-0007) é o cockpit único do programa: `python3
 
 O estado do programa mora em dois lugares que precisam concordar sempre:
 - `roadmap/TODO.md`: a verdade **narrativa** do estágio atual (estado, fichas curtas com "pronto quando", log). IDs estáveis V1../OS1.. e pendentes GH1/OV1, donos P/C/E.
-- `os/dados/roadmap.json`: o espelho de **dados** que a home do Ana OS renderiza (tarefas, pendentes e a faixa de Ideias). O "bloqueada" é derivado de `deps`, nunca escrito à mão. As Ideias também são editáveis pela própria UI (única rota de escrita do server); ideia nova no JSON é insumo do Pedro a digerir.
+- `os/dados/roadmap.json`: o espelho de **dados** que a home e o grafo de execução do Ana OS renderizam (tarefas, pendentes, a faixa de Ideias e a camada de `propostas` P1.., ADR-0008). O "bloqueada" é derivado de `deps`, nunca escrito à mão. As Ideias também são editáveis pela própria UI (única rota de escrita do server); ideia nova no JSON é insumo do Pedro a digerir. Propostas e os campos `prompt` dos nós acionáveis não têm espelho no TODO.md: preserve-os ao reconciliar; proposta só vira tarefa quando o Pedro puxar.
 
 Regra: **se você avançar, concluir ou criar uma tarefa do roadmap em qualquer sessão, atualize os DOIS** (o status/log no TODO.md e o campo `status` da tarefa no roadmap.json), mantendo o mesmo ID. Nas páginas do OS, só mexa quando a tarefa for evoluir o próprio OS; dados vivem nos JSON de `os/dados/`. O `/check` reconcilia os dois toda vez que roda, então ele é a rede de segurança, mas não conte com ele: deixe sincronizado ao mexer.
 

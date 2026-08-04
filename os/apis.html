@@ -20,20 +20,20 @@
 
   .legenda { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); margin-top: 22px; }
   .legenda .card { padding: 20px 22px; }
-  .legenda .card p { font-size: 13.5px; color: #555; margin-top: 8px; }
+  .legenda .card p { font-size: 13.5px; color: var(--cor-rotulo); margin-top: 8px; }
 
   .tema { margin-bottom: 56px; }
-  .tema > .resumo { color: #555; max-width: 76ch; margin-bottom: 18px; }
+  .tema > .resumo { color: var(--cor-rotulo); max-width: 76ch; margin-bottom: 18px; }
   .endpoint {
     display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
-    background: var(--surface-card); border: 1px solid var(--color-hairline-gray);
-    border-radius: var(--radius-productframe); padding: 14px 18px;
+    background: var(--cor-card); border: 1px solid var(--cor-fio);
+    border-radius: var(--raio-interno); padding: 14px 18px;
     transition: transform .18s ease, border-color .18s ease;
   }
-  .endpoint:hover { transform: translateY(-2px); border-color: var(--color-carbon); }
-  .endpoint .titulo { font: var(--font-weight-medium) 15px/1.4 var(--font-inter); }
-  .endpoint .path { font: var(--font-weight-regular) 13px/1.4 var(--font-mono); color: #555; }
-  .endpoint .resumo { flex-basis: 100%; font-size: 13.5px; color: #555; }
+  .endpoint:hover { transform: translateY(-2px); border-color: var(--cor-tinta); }
+  .endpoint .titulo { font: var(--peso-medio) 15px/1.4 var(--font-inter); }
+  .endpoint .path { font: var(--peso-regular) 13px/1.4 var(--font-mono); color: var(--cor-rotulo); }
+  .endpoint .resumo { flex-basis: 100%; font-size: 13.5px; color: var(--cor-rotulo); }
   .endpoints { display: flex; flex-direction: column; gap: 10px; }
 
   .cta-fim { text-align: center; margin-top: 8px; }
@@ -44,7 +44,7 @@
 
 <main>
   <section class="hero compacta">
-    <h1>Mapa das <span class="destaque">APIs</span> 🗺️</h1>
+    <h1>Mapa das <span class="destaque">APIs</span></h1>
     <p class="lead">A API GH de agendamento WhatsApp organizada por tema, com o selo do que dá e do que não dá
       para testar. Ela é <strong>puramente de agendamento</strong>: não é janela de leitura do banco MV
       (quem lê o MV é o Oracle TST na bancada, e o Atlas para produção).</p>
@@ -56,7 +56,7 @@
       da Global Health que o hospital não enxerga. Só a finalização grava no Oracle.</p>
     <div class="bancos">
       <div class="card banco">
-        <h3><span class="ponto" style="background: var(--color-peach-wash);"></span>Banco SaaS da GH</h3>
+        <h3><span class="ponto" style="background: var(--cor-areia);"></span>Banco SaaS da GH</h3>
         <p class="caption" style="margin-top: 10px;">Onde moram os passos intermediários: cadastro de pessoa,
           carteiras, anexos. <strong>Inacessível ao hospital.</strong> "Nada mudou" no Oracle depois dessas
           chamadas é o comportamento esperado, não uma falha.</p>
@@ -67,7 +67,7 @@
         <span class="caption">a finalização</span>
       </div>
       <div class="card banco">
-        <h3><span class="ponto" style="background: var(--color-signal-blue);"></span>Soul · Oracle MV</h3>
+        <h3><span class="ponto" style="background: var(--cor-azul);"></span>Soul · Oracle MV</h3>
         <p class="caption" style="margin-top: 10px;">O banco do hospital. O agendamento só chega aqui quando é
           <strong>finalizado</strong>. Na homolog, a hipótese é que esse Soul seja a Base TST: provar isso é a
           pergunta <strong>GH-18</strong> (a Prova no banco da bancada existe para isso).</p>

@@ -7,22 +7,22 @@
 <link rel="stylesheet" href="assets/os.css">
 <style>
   .hero { padding: 24px 0 8px; }
-  .hero .selo { font: var(--font-weight-medium) 12px/1 var(--font-mono); color: #777; text-transform: uppercase; letter-spacing: .1em; }
+  .hero .selo { font: var(--peso-semibold) var(--texto-micro)/1 var(--font-inter); color: var(--cor-rotulo); text-transform: uppercase; letter-spacing: var(--tracking-micro); }
   .hero h1 { margin: 14px 0 16px; }
 
-  /* aviso de produção: moldura amarela com etiqueta vermelha */
+  /* aviso de produção: moldura de atenção com etiqueta vermelha */
   .aviso-producao { margin: 8px 0 0; }
   .aviso-producao p { margin-top: 10px; max-width: 78ch; }
 
   code.arquivo { white-space: nowrap; }
 
-  .q-card { padding: 24px 26px; margin-bottom: var(--element-gap); }
+  .q-card { padding: 24px 26px; margin-bottom: var(--gap-cards); }
   .q-card h4 { margin: 0; }
   .q-card .linha > .chip { margin-left: auto; }
-  .q-card .meta { font-size: var(--text-caption); line-height: var(--leading-caption); color: #555; margin: 8px 0 0; max-width: 84ch; }
+  .q-card .meta { font-size: var(--texto-legenda); line-height: 1.55; color: var(--cor-rotulo); margin: 8px 0 0; max-width: 84ch; }
   .q-card .sql-cab { margin: 16px 0 8px; }
   .q-card pre { margin: 0; }
-  .fonte-sql { font: var(--font-weight-regular) 12px/1 var(--font-mono); color: #777; }
+  .fonte-sql { font: var(--peso-regular) 12px/1 var(--font-mono); color: var(--cor-rotulo); }
 
   .bloco-titulo { margin: 40px 0 16px; }
   .regras { margin: 0; padding-left: 22px; }
@@ -32,9 +32,9 @@
 
   .aguardando {
     display: inline-block;
-    background: var(--color-highlighter-yellow); color: var(--color-carbon);
-    border-radius: var(--radius-productframe);
-    padding: 10px 14px; font-size: 13px;
+    background: var(--cor-fio); color: var(--cor-tinta);
+    border-radius: var(--raio-interno);
+    padding: 10px 14px; font-size: var(--texto-legenda);
   }
   #aviso-api:empty { display: none; }
 </style>
@@ -744,7 +744,7 @@ ORDER BY OWNER;
         NUNCA commitar, NUNCA servir pelo portal. A conferência é manual, no Finder.</p>
     </div>
 
-    <div class="card q-card" id="q-99-1" style="margin-top: var(--element-gap)">
+    <div class="card q-card" id="q-99-1" style="margin-top: var(--gap-cards)">
       <div class="linha">
         <h4>99-1 · Amostra de IT_AGENDA_CENTRAL</h4>
         <span class="chip bloqueada">fora do portal, conferir no Finder</span>

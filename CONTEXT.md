@@ -141,12 +141,24 @@ _Avoid_: numerar entregas internas como "Fase N" solta (colide com as fases do p
 ### Roadmap e cockpit
 
 **Ana OS**:
-O cockpit único do programa (decisão de 30/jul/2026, ADR-0007): o portal local em `localhost:8777` evolui, muda para a pasta `os/` na raiz e passa a reunir tudo numa navegação comum, no visual do `DESIGN.md` (estilo Aaply, tema claro): home com o roadmap e o painel de aplicações, diagrama de arquitetura dos canais, [[mapa-das-apis]], a bancada e o roteiro (o antigo Playground GH, agora seção), o [[atlas-do-banco]], insights de diretoria e a [[biblioteca]]. Substituiu o `roadmap/mapa.html` (aposentado em `roadmap/arquivo/` em 30/jul/2026). As regras de ambiente do ADR-0004 continuam valendo página a página.
-_Avoid_: "playground" como nome do portal inteiro (virou seção do OS); manter mapa.html e OS vivos ao mesmo tempo; terceira "central" paralela.
+O cockpit único do programa (decisão de 30/jul/2026, ADR-0007): o portal local em `localhost:8777` evolui, muda para a pasta `os/` na raiz e passa a reunir tudo numa navegação comum, no visual do `DESIGN.md` (desde 31/jul/2026, ADR-0008: referência refero, sidebar preta flutuante só de ícones, canvas claro, cards brancos arredondados, tema claro único; substituiu o estilo Aaply): home dashboard com indicadores funcionais do roadmap e o painel de aplicações, o [[grafo-de-execucao]], diagrama de arquitetura dos canais, [[mapa-das-apis]], a bancada e o roteiro (o antigo Playground GH, agora seção), o [[atlas-do-banco]], insights de diretoria e a [[biblioteca]]. Substituiu o `roadmap/mapa.html` (aposentado em `roadmap/arquivo/` em 30/jul/2026). As regras de ambiente do ADR-0004 continuam valendo página a página.
+_Avoid_: "playground" como nome do portal inteiro (virou seção do OS); manter mapa.html e OS vivos ao mesmo tempo; terceira "central" paralela; estilo Aaply como referência (aposentado).
 
 **Roadmap do OS**:
-A estrutura do roadmap dentro do Ana OS: **Estágio atual** (tarefas Vn, disciplinadas, espelho do TODO.md), **Pendente** (dívidas conscientes, uma linha cada) e a faixa de **Ideias**. Continua sem grafo de dependências, sem trilho da receita, sem criticidade derivada. Os dados vivem em arquivo JSON versionado (não em HTML); o `/check` reconcilia TODO.md com esse arquivo.
+A estrutura do roadmap dentro do Ana OS: **Estágio atual** (tarefas Vn, disciplinadas, espelho do TODO.md), **Pendente** (dívidas conscientes, uma linha cada), a faixa de **Ideias** e a camada de [[propostas]]. Desde 31/jul/2026 (ADR-0008) é renderizado também como [[grafo-de-execucao]] em página própria; segue sem trilho da receita, sem criticidade derivada, com métricas sempre funcionais. Os dados vivem em arquivo JSON versionado (não em HTML); o `/check` reconcilia TODO.md com esse arquivo, preservando propostas e prompts (que não têm espelho narrativo).
 _Avoid_: "vista Foco"; trilho da receita, alavanca do dia, esforço P/M/G e criticidade (conceitos do mapa arquivado); reintroduzir mensalidade/KPI; card do n8n no painel; kanban de colunas.
+
+**Grafo de execução**:
+A página Roadmap do Ana OS (ADR-0008): grafo SVG sem biblioteca externa que renderiza tarefas, pendentes e [[propostas]] como nós com dependências, em colunas da esquerda para a direita (feitas → estágio ativo → propostas → horizonte). Cada nó acionável tem o seu [[prompt-de-no]] com botão de copiar; nó feito aparece concluído, sem botão; nó bloqueado fica esmaecido mostrando quem o bloqueia. Reverte conscientemente o "sem grafo" do ADR-0007: o propósito é outro (mapa de leitura e execução, não mesa de arrastar cards).
+_Avoid_: edição de nós pelo grafo (a única escrita da UI segue sendo a faixa de Ideias); tratar o grafo como fonte do estado (a fonte é TODO.md + roadmap.json).
+
+**Propostas (camada do roadmap)**:
+Passos futuros recomendados pelas sessões Claude, com ID próprio (P1, P2...), deps e prompt, vivendo na chave `propostas` do `roadmap.json`. Renderizadas no grafo com visual distinto (tracejado). Proposta não é compromisso: não tem status nem dono, e não entra no TODO.md até o Pedro puxá-la para o estágio (aí vira tarefa com ficha e "pronto quando", nos dois arquivos). Trilha inicial P1..P6: demo do catálogo GH ao diretor, VPN da TST, prova da finalização (GH-18), tools GH de identificação, horários livres na conversa, agendamento fim a fim em homolog. O desenho do fluxo GH não é proposta: é a pendente GH1, que ganha posição no grafo (deps e prompt) sem mudar de natureza.
+_Avoid_: dar status/dono a proposta; criar proposta como tarefa oficial sem decisão do Pedro; deixar proposta puxada sem espelho no TODO.md.
+
+**Prompt de nó**:
+O campo `prompt` dos nós acionáveis do `roadmap.json` (tarefas `fazer`, pendentes, propostas): texto pronto para o Pedro colar no Claude Code, em pt-BR, passo a passo para leigo. Tarefa manual do Pedro vira prompt do tipo "me guie enquanto eu faço, diga o que clicar e confira cada resultado"; tarefa técnica vira prompt que manda a sessão executar com ele acompanhando.
+_Avoid_: prompt em nó feito (ruído); prompt que assume conhecimento técnico do Pedro; prompt em arquivo separado do roadmap.json.
 
 **Ideias (faixa do roadmap)**:
 Cards livres do Roadmap do OS: título + poucas linhas + link opcional para doc. Ideia não tem ID, dono nem dependência até ser puxada para o estágio (aí vira tarefa no TODO.md, com ficha e "pronto quando"). Únicos dados do OS editáveis pela interface: o server grava num único arquivo de dados do roadmap, por rota de escrita restrita (ADR-0007).

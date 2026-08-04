@@ -17,30 +17,30 @@
   .insight p { margin: 0; }
   .insight-topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
-  .selo-estado { background: var(--color-hairline-gray); color: var(--color-carbon); }
-  .selo-estado.evidencia { background: var(--color-highlighter-yellow); color: var(--color-carbon); }
+  .selo-estado { background: var(--cor-fio); color: var(--cor-tinta); }
+  .selo-estado.evidencia { background: var(--cor-verde-tinta); color: var(--cor-verde); }
 
   .rotulo {
-    font: var(--font-weight-medium) 11px/1.4 var(--font-mono);
-    text-transform: uppercase; letter-spacing: .08em; color: #555;
+    font: var(--peso-semibold) var(--texto-micro)/1.4 var(--font-inter);
+    text-transform: uppercase; letter-spacing: .08em; color: var(--cor-rotulo);
     display: block; margin-bottom: 2px;
   }
-  .csv-nome { font: var(--font-weight-regular) 12px/1.4 var(--font-mono); color: #555; margin: 0 0 8px; }
+  .csv-nome { font: var(--peso-regular) 12px/1.4 var(--font-mono); color: var(--cor-rotulo); margin: 0 0 8px; }
   .bloco-csv {
-    border-left: 3px solid var(--color-signal-blue);
+    border-left: 3px solid var(--cor-azul);
     padding-left: 14px; margin: 4px 0;
   }
   .aguardando {
     display: inline-block;
-    font: var(--font-weight-regular) 12px/1.5 var(--font-mono);
-    color: #555; background: var(--color-graphite-mist);
-    border: 1px dashed var(--color-shadow-gray);
-    border-radius: var(--radius-inputs); padding: 9px 12px;
+    font: var(--peso-regular) 12px/1.5 var(--font-mono);
+    color: var(--cor-rotulo); background: var(--cor-card-interno);
+    border: 1px dashed var(--cor-mudo);
+    border-radius: var(--raio-interno); padding: 9px 12px;
   }
 
-  /* o insight mais valioso: moldura amarela e largura cheia */
+  /* o insight mais valioso: moldura destacada e largura cheia */
   .card.moldura { grid-column: 1 / -1; }
-  .card.moldura.hover:hover { border-color: var(--color-highlighter-yellow); }
+  .card.moldura.hover:hover { box-shadow: inset 0 0 0 1.5px var(--cor-mudo); }
 
   .fechamento { text-align: center; }
   .fechamento .acoes { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }

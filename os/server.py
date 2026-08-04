@@ -314,6 +314,23 @@ def validar_roadmap(doc):
     for p in doc["pendentes"]:
         if not isinstance(p, dict) or not isinstance(p.get("id"), str) or not isinstance(p.get("titulo"), str):
             return "cada pendente precisa de id e titulo (texto)"
+        if not isinstance(p.get("deps", []), list):
+            return "pendente %s: deps deve ser lista" % p["id"]
+        if "prompt" in p and not isinstance(p["prompt"], str):
+            return "pendente %s: prompt deve ser texto" % p["id"]
+    # Propostas (ADR-0008): passos recomendados, sem status/dono ate serem puxados.
+    for pr in doc.get("propostas", []):
+        if not isinstance(pr, dict) or not isinstance(pr.get("id"), str) or not isinstance(pr.get("titulo"), str):
+            return "cada proposta precisa de id e titulo (texto)"
+        if not isinstance(pr.get("deps", []), list):
+            return "proposta %s: deps deve ser lista" % pr["id"]
+        if "prompt" in pr and not isinstance(pr["prompt"], str):
+            return "proposta %s: prompt deve ser texto" % pr["id"]
+        if "status" in pr or "dono" in pr:
+            return "proposta %s: proposta nao tem status nem dono (vira tarefa quando puxada)" % pr["id"]
+        if pr["id"] in ids:
+            return "id de proposta duplicado ou colidindo com tarefa: %s" % pr["id"]
+        ids.add(pr["id"])
     for i in doc["ideias"]:
         if not isinstance(i, dict) or not isinstance(i.get("titulo"), str) or not i["titulo"].strip():
             return "cada ideia precisa ao menos de titulo (texto)"

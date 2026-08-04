@@ -17,81 +17,83 @@
   details.tema > summary::-webkit-details-marker { display: none; }
   .grupo-cabeca {
     display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-    border-bottom: 2px solid var(--color-carbon); padding-bottom: 10px;
+    border-bottom: 2px solid var(--cor-tinta); padding-bottom: 10px;
   }
-  details.tema > summary:hover .grupo-cabeca { border-color: var(--color-signal-blue); }
+  details.tema > summary:hover .grupo-cabeca { border-color: var(--cor-azul); }
   .grupo-num {
-    font: var(--font-weight-bold) 13px/1 var(--font-mono);
-    letter-spacing: 1px; color: var(--color-carbon);
-    background: var(--color-highlighter-yellow);
-    border-radius: var(--radius-pill); padding: 6px 12px;
+    font: var(--peso-bold) 13px/1 var(--font-mono);
+    letter-spacing: 1px; color: #ffffff;
+    background: var(--cor-tinta);
+    border-radius: var(--raio-pill); padding: 6px 12px;
   }
-  .grupo-cabeca h2 { font-size: var(--text-heading-sm); line-height: 1.2; letter-spacing: var(--tracking-heading-sm); margin: 0; }
+  .grupo-cabeca h2 { font-size: var(--texto-h2); line-height: 1.2; letter-spacing: var(--tracking-h2); margin: 0; }
   .abrir-indicador {
-    margin-left: auto; font: var(--font-weight-medium) 11px/1 var(--font-inter);
-    letter-spacing: 1.5px; text-transform: uppercase; color: #555; white-space: nowrap;
+    margin-left: auto; font: var(--peso-semibold) var(--texto-micro)/1 var(--font-inter);
+    letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--cor-rotulo); white-space: nowrap;
   }
   details.tema > summary .abrir-indicador::after { content: "abrir +"; }
   details.tema[open] > summary .abrir-indicador::after { content: "fechar -"; }
-  .grupo-desc { color: #444; margin: 14px 0 18px; font-size: var(--text-body); max-width: 76ch; }
+  .grupo-desc { color: var(--cor-rotulo); margin: 14px 0 18px; font-size: var(--texto-corpo); max-width: 76ch; }
 
-  article.card { margin-bottom: var(--element-gap); }
+  article.card { margin-bottom: var(--gap-cards); }
   article.card h3 {
     font-size: 20px; line-height: 1.3; letter-spacing: -0.2px;
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 8px;
   }
-  /* marcador do passo: círculo amarelo com o número em preto */
+  /* marcador do passo: badge circular preto com o número em branco */
   .num {
-    font: var(--font-weight-bold) 13px/1 var(--font-poppins);
-    color: var(--color-carbon); background: var(--color-highlighter-yellow);
-    border-radius: var(--radius-pill); min-width: 30px; height: 30px; padding: 0 9px;
+    font: var(--peso-bold) 13px/1 var(--font-poppins);
+    color: #ffffff; background: var(--cor-tinta);
+    border-radius: var(--raio-pill); min-width: 30px; height: 30px; padding: 0 9px;
     display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
   }
-  .path { font: var(--font-weight-regular) 12.5px/1.4 var(--font-mono); color: #666; }
+  .path { font: var(--peso-regular) 12.5px/1.4 var(--font-mono); color: var(--cor-rotulo); }
 
-  .objetivo { margin: 8px 0 12px; font-size: 15px; color: #444; max-width: 78ch; }
-  .objetivo b { color: var(--color-carbon); }
+  .objetivo { margin: 8px 0 12px; font-size: 15px; color: var(--cor-rotulo); max-width: 78ch; }
+  .objetivo b { color: var(--cor-tinta); }
 
   ol.passos { margin: 0 0 14px; padding-left: 22px; font-size: 15px; }
   ol.passos li { margin-bottom: 6px; max-width: 78ch; }
-  ol.passos .atencao { color: var(--color-annotation-red); font-weight: var(--font-weight-medium); }
+  ol.passos .atencao { color: var(--cor-vermelho); font-weight: var(--peso-medio); }
 
   .query-bloco { margin: 14px 0; }
   .query-bloco .frame-topo { align-items: center; gap: 8px; }
   .query-bloco .frame-topo .ponto { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
   .query-titulo {
-    font: var(--font-weight-medium) 11.5px/1.3 var(--font-inter);
-    letter-spacing: .06em; text-transform: uppercase; margin-left: 4px;
+    font: var(--peso-semibold) var(--texto-micro)/1.3 var(--font-inter);
+    letter-spacing: var(--tracking-micro); text-transform: uppercase;
+    color: var(--cor-rotulo); margin-left: 4px;
   }
   .query-bloco .frame-corpo { padding: 0; }
   .query-bloco pre { border-radius: 0; margin: 0; }
   .copiar { margin-left: auto; }
 
   .nota {
-    background: var(--surface-card); border: 1px solid var(--color-hairline-gray);
-    border-left: 6px solid var(--color-highlighter-yellow);
-    border-radius: var(--radius-productframe); padding: 16px 20px;
-    font-size: 15px; margin-bottom: var(--element-gap); max-width: 88ch;
+    background: var(--cor-card); border: 1px solid var(--cor-fio);
+    border-left: 6px solid var(--cor-tinta);
+    border-radius: var(--raio-interno); padding: 16px 20px;
+    font-size: 15px; margin-bottom: var(--gap-cards); max-width: 88ch;
   }
-  .nota.vermelha { border-left-color: var(--color-annotation-red); }
+  .nota.vermelha { border-left-color: var(--cor-vermelho); }
 
   .veredito, .sem-trilha {
-    border: 1px solid var(--color-hairline-gray);
-    border-radius: var(--radius-productframe);
-    background: var(--color-graphite-mist);
+    border: 1px solid var(--cor-fio);
+    border-radius: var(--raio-interno);
+    background: var(--cor-card-interno);
     padding: 14px 18px; margin: 14px 0; font-size: 14.5px; max-width: 82ch;
   }
-  .veredito { border-left: 6px solid var(--color-highlighter-yellow); }
-  .sem-trilha { border-left: 6px solid var(--color-annotation-red); }
+  .veredito { border-left: 6px solid var(--cor-tinta); }
+  .sem-trilha { border-left: 6px solid var(--cor-vermelho); }
   .veredito .titulo, .sem-trilha .titulo {
-    font: var(--font-weight-medium) 11px/1 var(--font-inter);
-    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+    font: var(--peso-semibold) var(--texto-micro)/1 var(--font-inter);
+    letter-spacing: var(--tracking-micro); text-transform: uppercase;
+    color: var(--cor-rotulo); margin-bottom: 8px;
   }
   .veredito ul { margin: 0; padding-left: 18px; }
   .veredito li { margin-bottom: 6px; max-width: 80ch; }
-  .veredito b.ok { color: #0a7a43; }
-  .veredito b.meio { color: var(--color-signal-blue); }
-  .veredito b.ruim { color: var(--color-annotation-red); }
+  .veredito b.ok { color: var(--cor-verde); }
+  .veredito b.meio { color: var(--cor-azul); }
+  .veredito b.ruim { color: var(--cor-vermelho); }
 </style>
 </head>
 <body>

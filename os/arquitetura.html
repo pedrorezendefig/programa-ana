@@ -10,31 +10,30 @@
   .hero .lead { margin: 18px auto 0; }
 
   .diagrama { margin-top: 36px; }
-  .diagrama .frame-corpo {
-    background-image: radial-gradient(var(--color-hairline-gray) 1.2px, transparent 1.2px);
-    background-size: 20px 20px;
-    padding: 36px 28px;
-  }
+  .diagrama .frame-corpo { padding: 36px 28px; }
   .trilho { display: flex; align-items: stretch; justify-content: center; gap: 0; flex-wrap: wrap; }
   .trilho .fluxo-no { width: 200px; }
   .conector {
     display: flex; align-items: center; padding: 0 10px;
-    font-size: 22px; color: var(--color-carbon);
+    font-size: 22px; color: var(--cor-mudo);
   }
   .conector .rotulo-conector {
-    font: var(--font-weight-medium) 11px/1.3 var(--font-inter);
-    color: #555; text-align: center; margin-right: 6px; max-width: 90px;
+    font: var(--peso-medio) var(--texto-micro)/1.3 var(--font-inter);
+    color: var(--cor-rotulo); text-align: center; margin-right: 6px; max-width: 90px;
   }
-  .desce { text-align: center; font-size: 22px; margin: 10px 0; }
+  .desce { text-align: center; font-size: 22px; color: var(--cor-mudo); margin: 10px 0; }
   .ramo { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 6px; }
   .ramo .fluxo-no { width: 220px; }
-  .futuro { border: 3px solid var(--surface-highlight-frame); border-radius: var(--radius-cards); padding: 22px; margin-top: 40px; }
+  .futuro {
+    background: var(--cor-card); border: 1.5px dashed var(--cor-mudo);
+    border-radius: var(--raio-card); padding: 22px; margin-top: 40px;
+  }
   .futuro .cabecalho { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   .obs { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 40px; }
   .obs .card { flex: 1; min-width: 280px; padding: 22px; }
-  .obs .card h4 { font-family: var(--font-poppins); font-weight: var(--font-weight-bold); margin-bottom: 6px; }
-  .obs .card p { font-size: 14px; color: #555; }
-  .chip-futuro { background: var(--surface-highlight-frame); color: var(--color-carbon); }
+  .obs .card h4 { font-family: var(--font-poppins); font-weight: var(--peso-bold); margin-bottom: 6px; }
+  .obs .card p { font-size: 14px; color: var(--cor-rotulo); }
+  .chip-futuro { background: var(--cor-fio); color: var(--cor-tinta); }
   @media (max-width: 720px) { .conector { transform: rotate(90deg); padding: 6px 0; } }
 </style>
 </head>
@@ -42,7 +41,7 @@
 
 <main>
   <section class="hero compacta">
-    <h1>Como as peças se <span class="destaque">conectam</span> 🔌</h1>
+    <h1>Como as peças se <span class="destaque">conectam</span></h1>
     <p class="lead">O caminho de uma mensagem do paciente até a resposta da Ana, e onde cada aplicação entra.
       Para plugar um canal novo (o WhatsApp oficial, outro bot), o desenho é o mesmo: o canal vira uma
       <strong>inbox do Chatwoot</strong> e a inbox é vinculada à Ana no fazer.ai agents.</p>

@@ -52,7 +52,8 @@
         "V4",
         "V5"
       ],
-      "nota": "Critério de pronto do estágio: tudo passando com gpt-5-mini."
+      "nota": "Critério de pronto do estágio: tudo passando com gpt-5-mini.",
+      "prompt": "Vamos rodar o Roteiro de cenários no Telegram, juntos e passo a passo (sou leigo). Leia roadmap/roteiro-cenarios.md e me conduza cenário por cenário: para cada um, me diga exatamente o que escrever no bot SaoMatheusBot do Telegram, espere eu colar aqui a resposta da Ana, e então me diga o que conferir no Chatwoot (etapa e tag corretas) e no Langfuse (ferramentas chamadas e custo), conferindo comigo cada resultado. Registre o desfecho de cada cenário na tabela do próprio roteiro. Se um cenário falhar, proponha o ajuste de prompt ou ferramenta, aplique com a minha aprovação e rode o cenário de novo antes de seguir. No final, atualize o TODO.md e o os/dados/roadmap.json (V6) e me diga se o estágio está concluído."
     },
     {
       "id": "V7",
@@ -60,14 +61,16 @@
       "dono": "P",
       "status": "fazer",
       "deps": [],
-      "nota": "Adiada em 31/jul: o token ainda vai ser usado; revogar quando não houver mais uso previsto."
+      "nota": "Adiada em 31/jul: o token ainda vai ser usado; revogar quando não houver mais uso previsto.",
+      "prompt": "Quero revogar o token de API da Cloudflare usado no onboarding de 29/jul (ele criou os DNS de agents/langfuse/coolify). Sou leigo: me guie passo a passo no painel dash.cloudflare.com, dizendo exatamente onde clicar para chegar em API Tokens, como identificar o token certo, como confirmar comigo que nada mais depende dele (esta tarefa foi adiada porque ele ainda tinha uso previsto; verifique isso comigo primeiro), e só então como revogar. Espere a minha confirmação em cada passo. No final, atualize o TODO.md e o os/dados/roadmap.json (V7)."
     },
     {
       "id": "V8",
       "titulo": "Resolver o hotfix temporário do Chatwoot (upstream ou reaplicar)",
       "dono": "P+C",
       "status": "fazer",
-      "deps": []
+      "deps": [],
+      "prompt": "Vamos resolver o hotfix temporário do Chatwoot. Primeiro leia bug-report-fazer-ai.md para relembrar o caso (regressão da versão .111: 500 em /agent_bots e /labels via token; a correção de 1 linha aplicada no container evapora a cada redeploy). Depois: verifique se o 500 voltou (teste você mesmo pelas ferramentas, me mostrando o resultado), confira se o fix upstream já foi lançado, e me recomende o caminho. Se for preciso reaplicar a correção no container, me explique cada comando antes de rodar e rode só com a minha aprovação. No final, atualize o TODO.md e o os/dados/roadmap.json (V8)."
     },
     {
       "id": "V9",
@@ -77,7 +80,8 @@
       "deps": [
         "V3"
       ],
-      "nota": "Adiada em 31/jul: por enquanto só o Pedro edita; convite ao negócio fica para depois."
+      "nota": "Adiada em 31/jul: por enquanto só o Pedro edita; convite ao negócio fica para depois.",
+      "prompt": "Quero dar acesso de edição do NocoDB (Base Ana) ao usuário de negócio. Sou leigo: me guie passo a passo com telas: abrir o NocoDB, entrar na Base Ana, achar Members, convidar o e-mail da pessoa com papel Editor. Depois me ajude a escrever um passo a passo simples (meia página) para essa pessoa: como editar um valor ou diferencial e a regra de ouro (mudança salva vale na resposta seguinte da Ana, sem redeploy). Feche o ciclo testando comigo: um valor é editado, e você confere no playground que a Ana já responde o valor novo. No final, atualize o TODO.md e o os/dados/roadmap.json (V9)."
     },
     {
       "id": "OS1",
@@ -127,16 +131,94 @@
         "OS4"
       ],
       "nota": "mapa.html e playground antigos em arquivo/; CLAUDE.md e /check apontam para o OS."
+    },
+    {
+      "id": "OS6",
+      "titulo": "Ana OS: redesign referência refero (DESIGN.md novo + 10 páginas + home dashboard)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [],
+      "nota": "Feita em 31/jul/2026: DESIGN.md Ledger, assets novos, 11 paginas no visual refero, fumaça ok."
+    },
+    {
+      "id": "OS7",
+      "titulo": "Ana OS: grafo de execução (página Roadmap, propostas P1..P6, prompts copiáveis)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS6"
+      ],
+      "nota": "Feita em 31/jul/2026: grafo com propostas P1..P6 + GH1, prompts copiaveis, painel de ficha."
     }
   ],
   "pendentes": [
     {
       "id": "GH1",
-      "titulo": "Desenhar onde as APIs Global Health entram no fluxo da Ana (metade restante; o catálogo virou o Mapa das APIs)"
+      "titulo": "Desenhar onde as APIs Global Health entram no fluxo da Ana (metade restante; o catálogo virou o Mapa das APIs)",
+      "deps": [
+        "V6",
+        "P3"
+      ],
+      "prompt": "Quero fazer a sessão de desenho do fluxo GH (a pendente GH1): decidir onde cada endpoint da API Global Health entra no fluxo de atendimento da Ana. Conduza como grilling (use a skill grill-with-docs), uma pergunta por vez, com recomendação em cada uma. Insumos que você deve ler antes: o Mapa das APIs (os/dados/apis.json, com os selos de testabilidade), o SOP da Ana na plataforma fazer.ai agents, o roadmap/roteiro-cenarios.md e o acervo em roadmap/arquivo/. Saída esperada: o desenho do fluxo registrado no CONTEXT.md (e ADR se a decisão for grande), e as tarefas novas que nascerem entrando no TODO.md e no os/dados/roadmap.json."
     },
     {
       "id": "OV1",
-      "titulo": "Sistema de protocolo da ouvidoria"
+      "titulo": "Sistema de protocolo da ouvidoria",
+      "deps": [],
+      "prompt": "Quero decidir o mecanismo de protocolo da ouvidoria (a pendente OV1). Hoje o SOP proíbe a Ana de inventar número de protocolo. Me entreviste, uma pergunta por vez e com recomendação, sobre as opções: sequencial simples numa tabela do NocoDB, usar o id da conversa do Chatwoot, ou aguardar a integração com o MV. Considere o que a ouvidoria precisa de verdade (rastreabilidade, sigilo, prazo de resposta). Registre a decisão no CONTEXT.md e, se virar implementação, crie a tarefa no TODO.md e no os/dados/roadmap.json."
+    }
+  ],
+  "propostas": [
+    {
+      "id": "P1",
+      "titulo": "Demo do catálogo GH ao diretor (só leitura, dá para fazer hoje)",
+      "resumo": "Especialidades, exames, convênios e horários reais da homologação numa demonstração de 5 minutos. Valor político imediato: o diretor vê o MV respondendo, sem tocar em banco.",
+      "deps": [],
+      "prompt": "Quero montar a demonstração do catálogo da API Global Health para o diretor do hospital, usando só leituras da homologação (nada de escrita). Sou leigo: me conduza passo a passo. Primeiro suba o Ana OS (python3 os/server.py) e me diga como abrir a Bancada. Depois me guie chamando, um por um: GET /consultas (especialidades), GET /exames, GET /convenios e GET /agendas/v2 com uma especialidade real (ex.: cardiologia), me explicando o que cada resposta significa. No final, monte comigo um roteiro de demonstração de 5 minutos: o que mostrar, em que ordem, e a fala de cada momento, provando que o sistema do hospital responde de verdade pela API."
+    },
+    {
+      "id": "P2",
+      "titulo": "Religar a VPN da Base TST (caída desde 13/jul)",
+      "resumo": "Sem a VPN não existe prova no banco nenhuma: nem a bancada, nem a GH-18. Destravar é conversa com a TI do hospital.",
+      "deps": [],
+      "prompt": "A VPN de acesso à Base TST (o Oracle de teste do MV) está caída desde 13/jul e sem ela não há prova no banco. Me ajude a destravar: primeiro rode python3 ana/api-mv/scripts/query-mv.py \"SELECT 1 FROM DUAL\" e interprete o erro comigo em linguagem simples. Depois me ajude a escrever a mensagem para o analista de TI do hospital pedindo o restabelecimento do acesso (o histórico e os textos prontos estão em roadmap/arquivo/; aproveite o que já existe). Quando a TI responder que voltou, rode o teste de novo e confirme comigo no Ana OS que a Conexão TST está verde."
+    },
+    {
+      "id": "P3",
+      "titulo": "Prova da finalização: a homolog grava na Base TST? (GH-18)",
+      "resumo": "Agendar na homologação com o paciente-sonda e procurar o registro no Oracle. A pergunta mais importante do mundo MV, decidida com a Prova no banco.",
+      "deps": [
+        "P2"
+      ],
+      "prompt": "Com a VPN da TST ativa, quero responder a pergunta GH-18: a homologação da Global Health grava na Base TST na finalização do agendamento? Me conduza passo a passo na Bancada do Ana OS: (1) buscar o paciente-sonda (CPF 66301102770) no GET /pessoas; (2) listar horários livres no GET /agendas/v2; (3) preparar o POST /horarios/agendar de teste. Antes da chamada de escrita, fotografe o resultado da query de conferência na TST; depois dela, rode a query de novo e me mostre a diferença (a Prova no banco). Se o agendamento aparecer no Oracle, a GH-18 está respondida: registre a evidência no CONTEXT.md e nos docs do api-mv. Se não aparecer, registre o que vimos e escreva comigo a pergunta objetiva para a MV/Global Health."
+    },
+    {
+      "id": "P4",
+      "titulo": "Primeiras tools GH na Ana: identificar o paciente (CPF/telefone)",
+      "resumo": "A Ana passa a buscar o cadastro real na conversa (GET /pessoas). O passo 1 de qualquer fluxo de agendamento de verdade, guiado pelo desenho da sessão GH1.",
+      "deps": [
+        "GH1"
+      ],
+      "prompt": "Quero criar as primeiras tools da API Global Health na Ana (plataforma fazer.ai agents): buscar paciente por CPF e por telefone (GET /pessoas da homologação). Siga o que foi desenhado na sessão GH1. Antes de mexer, me mostre o plano em linguagem simples: como a tool chama a homolog, onde o token fica guardado (nunca no prompt do agente), e em que momento do SOP a Ana decide usar a busca. Depois crie as tools pelo MCP da plataforma usando dry_run primeiro, me mostre o diff do que vai mudar, aplique só com a minha aprovação, e prove no playground buscando o paciente-sonda (CPF 66301102770). No final, registre a mudança no TODO.md e no os/dados/roadmap.json."
+    },
+    {
+      "id": "P5",
+      "titulo": "Horários livres na conversa: a Ana consulta disponibilidade real",
+      "resumo": "GET /agendas/v2 e GET /prestadores viram tools: pergunto por cardiologia e a Ana oferece slots reais da homolog. A vitrine do agendamento.",
+      "deps": [
+        "P4"
+      ],
+      "prompt": "Quero que a Ana consulte horários livres de verdade durante a conversa, usando a homologação da Global Health (GET /agendas/v2 e GET /prestadores). Como fizemos na identificação (P4): primeiro o plano em linguagem simples, depois as tools criadas pelo MCP da plataforma com dry_run e diff, aplicação só com a minha aprovação, e o prompt do agente ajustado para oferecer horários reais no fluxo de agendamento (sem inventar horário nunca). Prova final no playground: eu pergunto por uma consulta de cardiologia e a Ana me oferece slots reais da homolog, com o Langfuse mostrando as chamadas. Registre tudo no TODO.md e no os/dados/roadmap.json."
+    },
+    {
+      "id": "P6",
+      "titulo": "Agendamento fim a fim em homolog: a Ana finaliza uma marcação",
+      "resumo": "Identificação, escolha de horário e POST /horarios/agendar pela conversa, com a Prova no banco confirmando na TST. O Entregável funcional a um passo.",
+      "deps": [
+        "P5",
+        "P3"
+      ],
+      "prompt": "A prova final em homologação: quero que a Ana agende fim a fim pela conversa. Me conduza cenário por cenário no playground: identificação do paciente (paciente-sonda), escolha de especialidade e horário real, e a finalização com o POST /horarios/agendar, conferindo cada chamada no Langfuse. Depois da finalização, faça a Prova no banco na Base TST (como na P3) para confirmar que a marcação chegou ao Oracle. No final, escreva comigo o relatório da prova: o que funciona, o que falta para produção (canal principal, cadastros reais, LGPD), e registre nos docs, no TODO.md e no os/dados/roadmap.json."
     }
   ],
   "ideias": [

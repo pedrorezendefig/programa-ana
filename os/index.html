@@ -7,74 +7,76 @@
 <link rel="stylesheet" href="assets/os.css">
 <style>
   /* ---- só o que é exclusivo do cockpit ---- */
-  .hero { text-align: center; padding: 48px 0 40px; }
-  .hero .emoji { font-size: .85em; }
-  .hero .lead { margin: 18px auto 0; }
-  .hero .acoes { margin-top: 28px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-  .status-strip { display: flex; gap: 10px; justify-content: center; margin-top: 26px; flex-wrap: wrap; }
+  .cabeca { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
+  .cabeca .lead { margin-top: 6px; }
+  .status-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
 
-  .tarefa {
-    background: var(--surface-card); border: 1px solid var(--color-hairline-gray);
-    border-radius: var(--radius-productframe);
-    padding: 14px 18px; display: flex; align-items: baseline; gap: 14px;
-    transition: transform .18s ease, border-color .18s ease;
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--gap-cards); }
+  .stat.card { padding: 20px 22px; }
+
+  .destaques { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: var(--gap-cards); margin-top: var(--gap-cards); }
+  .destaque-card .topo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .destaque-card .topo h3 { margin: 0; flex: 1; }
+  .destaque-card .titulo-grande {
+    font: var(--peso-bold) 21px/1.3 var(--font-poppins); letter-spacing: -0.3px;
+    margin: 4px 0 14px;
   }
-  .tarefa:hover { transform: translateY(-2px); border-color: var(--color-carbon); }
-  .tarefa .id { font: var(--font-weight-bold) 12px/1.6 var(--font-mono); color: #777; min-width: 34px; }
-  .tarefa .titulo { flex: 1; }
-  .tarefa.feito .titulo { color: #999; text-decoration: line-through; text-decoration-color: var(--color-hairline-gray); }
-  .tarefa .dono { font-size: 12px; color: #777; }
-  .tarefa .nota { color: #666; font-size: 13px; margin-top: 2px; }
-  .tarefas { display: flex; flex-direction: column; gap: 10px; }
+  .destaque-card .legenda-serie { display: flex; gap: 18px; font-size: var(--texto-legenda); color: var(--cor-rotulo); margin: 10px 0 14px; }
+  .destaque-card .legenda-serie strong { color: var(--cor-tinta); }
+  .destaque-card .acoes { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .destaque-card .nota-pronto { font-size: var(--texto-legenda); color: var(--cor-rotulo); margin-top: 10px; }
 
   .ideia-card { position: relative; }
   .ideia-card.puxada { opacity: .55; }
   .ideia-card .acoes-ideia { position: absolute; top: 18px; right: 18px; display: none; gap: 6px; }
   .ideia-card:hover .acoes-ideia { display: flex; }
-  .ideia-card h4 { font-family: var(--font-poppins); font-weight: var(--font-weight-bold); margin-bottom: 6px; }
-  .ideia-card p { font-size: 14px; color: #555; }
-  .ideia-card a.doc { font-size: 13px; color: var(--color-signal-blue); }
-  #form-ideia { display: none; margin-top: 18px; }
+  .ideia-card h4 { font: var(--peso-bold) 15px/1.35 var(--font-poppins); margin-bottom: 6px; }
+  .ideia-card p { font-size: 14px; color: var(--cor-rotulo); }
+  .ideia-card a.doc { font-size: 13px; color: var(--cor-azul); }
+  #form-ideia { display: none; margin-top: 16px; }
   #form-ideia.aberto { display: block; }
   #form-ideia .campos { display: grid; gap: 12px; margin-bottom: 14px; }
 
-  .app-card .nome { font: var(--font-weight-bold) 17px/1.3 var(--font-poppins); }
-  .app-card .desc { color: #555; font-size: 14px; margin-top: 5px; }
-  .app-card .url { color: var(--color-signal-blue); font-size: 12.5px; margin-top: 12px; word-break: break-all; }
+  .app-card .nome { font: var(--peso-bold) 16px/1.3 var(--font-poppins); }
+  .app-card .desc { color: var(--cor-rotulo); font-size: 14px; margin-top: 5px; }
+  .app-card .url { color: var(--cor-azul); font-size: 12.5px; margin-top: 12px; word-break: break-all; }
+
+  /* entrada em cascata */
+  .anima { opacity: 0; transform: translateY(8px); animation: entrar .45s ease forwards; }
+  @keyframes entrar { to { opacity: 1; transform: none; } }
 </style>
 </head>
 <body>
 
 <main>
-  <section class="hero compacta">
-    <h1>O cockpit do <span class="destaque">Programa Ana</span> <span class="emoji">🏥</span><span class="emoji">💬</span></h1>
-    <p class="lead" id="hero-sub">Carregando o estágio...</p>
-    <div class="acoes">
-      <a class="btn amarelo" href="#roadmap">O que fazer agora</a>
-      <a class="btn preto" href="apis.html">Mapa das APIs</a>
+  <section class="compacta">
+    <div class="cabeca">
+      <div>
+        <h1>Programa Ana</h1>
+        <p class="lead" id="hero-sub">Carregando o estágio...</p>
+      </div>
+      <div class="status-strip" id="status-strip">
+        <span class="chip bloqueada">verificando conexões...</span>
+      </div>
     </div>
-    <div class="status-strip" id="status-strip">
-      <span class="chip bloqueada">verificando conexões...</span>
-    </div>
-  </section>
-
-  <section id="roadmap">
-    <h2>Estágio atual</h2>
-    <div class="tarefas" id="tarefas"></div>
+    <div class="stats" id="stats"></div>
+    <div class="destaques" id="destaques"></div>
   </section>
 
   <section class="compacta">
-    <h2>Pendente</h2>
-    <p class="lead caption">Dívidas conscientes, uma linha cada. Sem detalhamento até serem puxadas para o estágio.</p>
-    <div class="tarefas" id="pendentes" style="margin-top: 14px;"></div>
+    <div class="linha" style="margin-bottom: 14px;">
+      <h2 style="margin: 0;">Roadmap</h2>
+      <a class="btn claro mini direita" href="roadmap.html">Abrir o grafo de execução</a>
+    </div>
+    <p class="caption">O mapa completo (tarefas, pendentes e propostas, com o prompt de cada passo) vive na página Roadmap. A ficha narrativa é o <code>roadmap/TODO.md</code>.</p>
   </section>
 
   <section>
-    <div class="linha" style="margin-bottom: 18px;">
+    <div class="linha" style="margin-bottom: 16px;">
       <h2 style="margin: 0;">Ideias</h2>
-      <button class="btn amarelo mini direita" id="btn-nova-ideia">+ Ideia</button>
+      <button class="btn primario mini direita" id="btn-nova-ideia">+ Ideia</button>
     </div>
-    <p class="lead caption">Cards livres: sem ID, dono ou dependência até serem puxados para o estágio (aí viram tarefa no TODO.md).</p>
+    <p class="caption">Cards livres: sem ID, dono ou dependência até serem puxados para o estágio (aí viram tarefa no TODO.md).</p>
     <div class="card" id="form-ideia">
       <div class="campos">
         <div><label for="ideia-titulo">Título</label><input type="text" id="ideia-titulo" maxlength="120" placeholder="A ideia em uma frase"></div>
@@ -82,12 +84,12 @@
         <div><label for="ideia-link">Link para doc (opcional)</label><input type="text" id="ideia-link" maxlength="300" placeholder="docs/adr/0007-ana-os.md, https://..."></div>
       </div>
       <div class="linha">
-        <button class="btn preto mini" id="btn-salvar-ideia">Salvar ideia</button>
-        <button class="btn ghost mini" id="btn-cancelar-ideia">Cancelar</button>
+        <button class="btn primario mini" id="btn-salvar-ideia">Salvar ideia</button>
+        <button class="btn claro mini" id="btn-cancelar-ideia">Cancelar</button>
         <span class="caption" id="ideia-msg"></span>
       </div>
     </div>
-    <div class="grade c3" id="ideias" style="margin-top: 20px;"></div>
+    <div class="grade c3" id="ideias" style="margin-top: 18px;"></div>
   </section>
 
   <section>
@@ -123,42 +125,95 @@ async function carregar() {
   status();
 }
 
+/* Estado derivado: feito / fazer / bloqueada (deps não concluídas) */
+function derivar(d) {
+  const feitas = new Set(d.tarefas.filter(t => t.status === "feito").map(t => t.id));
+  function estadoDe(no, ehTarefa) {
+    if (ehTarefa && no.status === "feito") return "feito";
+    const travas = (no.deps || []).filter(dep => !feitas.has(dep));
+    return travas.length ? "bloqueada" : "fazer";
+  }
+  return { feitas, estadoDe };
+}
+
+function sparkline(feito, total) {
+  /* progresso acumulado das tarefas, na ordem do estágio: um gesto, não um gráfico */
+  const n = total || 1, passos = [];
+  for (let i = 0; i <= n; i++) passos.push(i <= feito ? i / n : feito / n);
+  const w = 260, h = 44;
+  const pts = passos.map((v, i) => (i / n * w).toFixed(1) + "," + (h - 4 - v * (h - 10)).toFixed(1)).join(" ");
+  return '<svg class="sparkline" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none">' +
+    '<line class="base" x1="0" y1="' + (h - 4) + '" x2="' + w + '" y2="' + (h - 4) + '"/>' +
+    '<polyline class="serie verde" points="' + pts + '"/></svg>';
+}
+
 function render() {
   const d = ROADMAP;
+  const { estadoDe } = derivar(d);
   document.getElementById("hero-sub").textContent = d.estagio + " · atualizado em " + d.atualizado;
 
-  const feitas = new Set(d.tarefas.filter(t => t.status === "feito").map(t => t.id));
-  document.getElementById("tarefas").innerHTML = d.tarefas.map(t => {
-    const travas = (t.deps || []).filter(dep => !feitas.has(dep));
-    const estado = t.status === "feito" ? "feito" : (travas.length ? "bloqueada" : "fazer");
-    const rotulo = estado === "feito" ? "feito" : estado === "bloqueada" ? "aguarda " + travas.join(", ") : "a fazer";
-    return '<div class="tarefa ' + estado + '">' +
-      '<span class="id">' + esc(t.id) + '</span>' +
-      '<span class="titulo">' + esc(t.titulo) +
-      (t.nota ? '<div class="nota">' + esc(t.nota) + '</div>' : '') + '</span>' +
-      '<span class="dono">' + esc(t.dono) + '</span>' +
-      '<span class="chip ' + estado + '">' + esc(rotulo) + '</span></div>';
-  }).join("");
+  const tarefasFeitas = d.tarefas.filter(t => t.status === "feito");
+  const aFazer = d.tarefas.filter(t => t.status === "fazer");
+  const fronteira = aFazer.find(t => estadoDe(t, true) === "fazer") || null;
+  const propostas = d.propostas || [];
+  const proximaProposta = propostas.find(p => estadoDe(p, false) === "fazer") || null;
+  const bloqueadas = aFazer.filter(t => estadoDe(t, true) === "bloqueada").length;
 
-  document.getElementById("pendentes").innerHTML = d.pendentes.map(p =>
-    '<div class="tarefa"><span class="id">' + esc(p.id) + '</span>' +
-    '<span class="titulo">' + esc(p.titulo) + '</span>' +
-    '<span class="chip pendente">pendente</span></div>').join("");
+  const stats = [
+    { rotulo: "Feitas", num: tarefasFeitas.length, det: "de <strong>" + d.tarefas.length + "</strong> no estágio" },
+    { rotulo: "Fronteira", num: fronteira ? fronteira.id : "·", det: fronteira ? esc(fronteira.dono) + " no comando" : "estágio limpo" },
+    { rotulo: "A fazer", num: aFazer.length, det: bloqueadas ? '<span class="ponto vermelho"></span>' + bloqueadas + " bloqueada" + (bloqueadas > 1 ? "s" : "") : '<span class="ponto verde"></span>nenhuma bloqueada' },
+    { rotulo: "Propostas", num: propostas.length, det: proximaProposta ? "próxima: <strong>" + esc(proximaProposta.id) + "</strong>" : "nenhuma destravada" },
+    { rotulo: "Pendentes", num: (d.pendentes || []).length, det: (d.pendentes || []).map(p => esc(p.id)).join(" · ") || "nenhuma" },
+    { rotulo: "Ideias", num: (d.ideias || []).length, det: "faixa editável aqui" },
+  ];
+  document.getElementById("stats").innerHTML = stats.map((s, i) =>
+    '<div class="card stat anima" style="animation-delay:' + (i * 45) + 'ms">' +
+    '<span class="rotulo">' + s.rotulo + '</span>' +
+    '<span class="num-indicador">' + s.num + '</span>' +
+    '<span class="detalhe">' + s.det + '</span></div>').join("");
 
-  document.getElementById("ideias").innerHTML = d.ideias.map((i, idx) => {
-    const link = i.link
-      ? '<a class="doc" href="' + esc(linkDoc(i.link)) + '" target="_blank" rel="noopener">' + esc(i.link) + '</a>'
-      : '';
-    return '<div class="card hover ideia-card' + (i.puxada ? ' puxada' : '') + '">' +
-      '<div class="acoes-ideia">' +
-      '<button class="btn ghost mini" onclick="editarIdeia(' + idx + ')">editar</button>' +
-      '<button class="btn ghost mini" onclick="removerIdeia(' + idx + ')">remover</button></div>' +
-      '<h4>' + esc(i.titulo) + '</h4>' +
-      (i.descricao ? '<p>' + esc(i.descricao) + '</p>' : '') + link +
-      (i.puxada ? '<div style="margin-top:10px;"><span class="chip feito">puxada para o estágio</span></div>' : '') +
-      '</div>';
-  }).join("") || '<p class="caption">Nenhuma ideia ainda. O botão amarelo é o gesto de 5 segundos.</p>';
+  const cards = [];
+  if (fronteira) cards.push(cardDestaque("A fronteira de hoje", fronteira, "fazer", tarefasFeitas.length, d.tarefas.length, 6));
+  if (proximaProposta) cards.push(cardDestaque("Próxima proposta destravada", proximaProposta, "proposta", tarefasFeitas.length, d.tarefas.length, 7));
+  document.getElementById("destaques").innerHTML = cards.join("");
 }
+
+function cardDestaque(micro, no, tipo, feito, total, delayIdx) {
+  const selecionado = tipo === "fazer";
+  const chip = tipo === "fazer"
+    ? '<span class="chip fazer">a fazer</span>'
+    : '<span class="chip proposta">proposta</span>';
+  return '<div class="card destaque-card anima' + (selecionado ? " selecionado" : "") + '" style="animation-delay:' + (delayIdx * 45) + 'ms">' +
+    '<div class="topo"><h3>' + esc(no.id) + '</h3>' + chip +
+    '<span class="badge-circulo">' + (no.deps || []).length + '</span></div>' +
+    '<span class="micro">' + micro + '</span>' +
+    '<div class="titulo-grande">' + esc(no.titulo) + '</div>' +
+    sparkline(feito, total) +
+    '<div class="legenda-serie"><span><span class="ponto verde"></span>concluídas <strong>' + feito + '</strong></span>' +
+    '<span><span class="ponto"></span>restantes <strong>' + (total - feito) + '</strong></span></div>' +
+    ((no.nota || no.resumo) ? '<div class="card-interno"><div class="linha-dado"><span>' + esc(no.nota || no.resumo) + '</span></div></div>' : '') +
+    '<div class="acoes">' +
+    (no.prompt ? '<button class="btn primario mini" onclick="copiarPrompt(this, \'' + esc(no.id) + '\')">Copiar prompt</button>' : '') +
+    '<a class="btn claro mini" href="roadmap.html#' + esc(no.id) + '">Ver no grafo</a></div>' +
+    '</div>';
+}
+
+/* ---- copiar prompt (o nó vem do ROADMAP em memória) ---- */
+window.copiarPrompt = async function (btn, id) {
+  const todos = [].concat(ROADMAP.tarefas, ROADMAP.pendentes || [], ROADMAP.propostas || []);
+  const no = todos.find(n => n.id === id);
+  if (!no || !no.prompt) return;
+  try { await navigator.clipboard.writeText(no.prompt); }
+  catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = no.prompt; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove();
+  }
+  const original = btn.textContent;
+  btn.textContent = "Copiado ✓";
+  setTimeout(() => { btn.textContent = original; }, 1600);
+};
 
 function linkDoc(l) {
   if (/^https?:\/\//.test(l)) return l;
@@ -168,6 +223,22 @@ function linkDoc(l) {
     return "biblioteca.html#" + grupo + "/" + m[1];
   }
   return "biblioteca.html";
+}
+
+function renderIdeias() {
+  document.getElementById("ideias").innerHTML = ROADMAP.ideias.map((i, idx) => {
+    const link = i.link
+      ? '<a class="doc" href="' + esc(linkDoc(i.link)) + '" target="_blank" rel="noopener">' + esc(i.link) + '</a>'
+      : '';
+    return '<div class="card hover ideia-card' + (i.puxada ? ' puxada' : '') + '">' +
+      '<div class="acoes-ideia">' +
+      '<button class="btn claro mini" onclick="editarIdeia(' + idx + ')">editar</button>' +
+      '<button class="btn claro mini" onclick="removerIdeia(' + idx + ')">remover</button></div>' +
+      '<h4>' + esc(i.titulo) + '</h4>' +
+      (i.descricao ? '<p>' + esc(i.descricao) + '</p>' : '') + link +
+      (i.puxada ? '<div style="margin-top:10px;"><span class="chip feito">puxada para o estágio</span></div>' : '') +
+      '</div>';
+  }).join("") || '<p class="caption">Nenhuma ideia ainda. O botão preto é o gesto de 5 segundos.</p>';
 }
 
 function renderApps(apps) {
@@ -183,16 +254,17 @@ async function status() {
   try {
     const s = await fetch("/api/status").then(r => r.json());
     el.innerHTML =
-      '<span class="chip ' + (s.token_valido ? "selo-finalizacao" : "tag") + '">API GH homolog: ' +
+      '<span class="chip ' + (s.token_valido ? "feito" : "tag") + '">API GH homolog: ' +
       (s.token_valido ? "ok · " + s.latencia_ms + "ms" : s.gh_alcancavel ? "token não validou" : "fora de alcance") + '</span>' +
-      '<span class="chip ' + (s.oracle_ok ? "selo-finalizacao" : "bloqueada") + '">Oracle TST: ' +
+      '<span class="chip ' + (s.oracle_ok ? "feito" : "bloqueada") + '">Oracle TST: ' +
       (s.oracle_ok ? "ok · " + s.oracle_latencia_ms + "ms" : "sem conexão") + '</span>';
   } catch (e) {
     el.innerHTML = '<span class="chip tag">servidor fora do ar?</span>';
   }
 }
 
-/* ---- Ideias: a única escrita do OS (rota /api/roadmap, restrita ao JSON) ---- */
+/* ---- Ideias: a única escrita do OS (rota /api/roadmap, restrita ao JSON).
+       O documento inteiro (com propostas e prompts) é preservado ao gravar. ---- */
 
 let editando = null; /* índice da ideia em edição, ou null */
 
@@ -237,14 +309,14 @@ async function gravar(msgOk) {
     body: JSON.stringify(ROADMAP),
   }).then(x => x.json()).catch(() => ({ ok: false, erro: "servidor fora do ar" }));
   const msg = document.getElementById("ideia-msg");
-  if (r.ok) { msg.textContent = msgOk; render(); return true; }
+  if (r.ok) { msg.textContent = msgOk; render(); renderIdeias(); return true; }
   msg.textContent = "erro: " + (r.erro || "?");
   const atual = await fetch("/api/roadmap").then(x => x.json()).catch(() => null);
-  if (atual && atual.ok) { ROADMAP = atual.roadmap; render(); }
+  if (atual && atual.ok) { ROADMAP = atual.roadmap; render(); renderIdeias(); }
   return false;
 }
 
-carregar();
+carregar().then(() => renderIdeias());
 </script>
 
 </body>
