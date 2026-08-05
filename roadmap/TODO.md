@@ -9,7 +9,7 @@
 
 ---
 
-## Estado (04/ago/2026)
+## Estado (05/ago/2026)
 
 A Ana foi migrada do n8n para a plataforma **fazer.ai agents** (onboarding 29/jul, E2E aprovado): agente id 1 no tenant `vitta-tech`, modo teste, prompt completo do SOP, ferramentas nativas (kanban, tags, handoff, notas), KB "Base Hospital São Matheus". As inboxes do Chatwoot vinculadas são o **bot do Telegram (SaoMatheusBot)** e a inbox de API "Ana E2E". Observabilidade: conversas no Chatwoot, raciocínio e custo por resposta no Langfuse.
 
@@ -72,7 +72,7 @@ Feito em 30/jul/2026: `roadmap/roteiro-cenarios.md`. 10 cenários principais (ur
 Pendência de segurança do onboarding de 29/jul: o token de API usado para criar os DNS (agents/langfuse/coolify) ainda está ativo. Revogar no painel da Cloudflare. **Adiada em 31/jul por decisão do Pedro:** o token ainda vai ser usado; revogar só quando não houver mais uso previsto.
 
 ### V8 · Hotfix do Chatwoot
-A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da versão .111: 500 em /agent_bots e /labels via token) **evapora no próximo redeploy**. Cobrar o fix upstream (bug report já enviado) e, se o 500 voltar, reaplicar. Detalhe em `bug-report-fazer-ai.md`.
+A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da versão .111: 500 em /agent_bots e /labels via token) **evapora no próximo redeploy**. Cobrar o fix upstream (bug report já enviado) e, se o 500 voltar, reaplicar. Detalhe técnico na memória do projeto (`fazer-ai-agents-instancia`): 1 linha em `app/controllers/api/v1/accounts/base_controller.rb` (`Current.account` → `current_account`). O arquivo `bug-report-fazer-ai.md` foi enviado ao Pedro mas nunca entrou no repo; se ele ainda o tiver, vale depositar aqui.
 
 ## Pendente (dívidas conscientes, sem detalhamento até serem puxadas)
 
@@ -83,6 +83,7 @@ A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da 
 
 ## Log
 
+- **05/ago/2026:** check sem novidade externa: nenhum commit desde 04/ago, diretório sem cacos, instância fazer.ai conferida (gpt-5-mini, agente ativo em modo teste, inboxes Telegram + API vinculadas). Corrigida a referência da V8: `bug-report-fazer-ai.md` não está no repo (foi enviado ao Pedro, nunca commitado); o detalhe do hotfix vive na memória do projeto. Fronteira do estágio segue a V6.
 - **04/ago/2026:** check de retomada. O trabalho OS6/OS7 (redesign Ledger + grafo, ADR-0008) estava concluído e testado desde 31/jul mas sem commit; commitado agora. Instância fazer.ai conferida (gpt-5-mini, agente ativo em modo teste, inboxes Telegram + API vinculadas). Nenhum caco novo no diretório. Fronteira do estágio segue a V6: rodar o roteiro de cenários no Telegram.
 - **31/jul/2026 (3):** OS6 e OS7 executadas na sessão do grilling: Ana OS inteiro no design Ledger (referência refero), home dashboard, página Roadmap com o grafo de execução (propostas P1..P6 + GH1 posicionada, prompts copiáveis em 12 nós), server validando propostas, fumaça completa. Fronteira do estágio segue a V6.
 - **31/jul/2026 (2):** grilling do redesign (ADR-0008): visual refero substitui o Aaply nas 10 páginas, home vira dashboard funcional, nasce o grafo de execução em página própria com a camada de propostas (P1..P7, trilha GH/MV) e prompts copiáveis por nó. Reversão consciente do "sem grafo" do ADR-0007. Nascem OS6 e OS7.

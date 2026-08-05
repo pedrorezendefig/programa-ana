@@ -1,6 +1,6 @@
 {
   "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
-  "atualizado": "04/ago/2026",
+  "atualizado": "05/ago/2026",
   "tarefas": [
     {
       "id": "V1",
@@ -70,7 +70,7 @@
       "dono": "P+C",
       "status": "fazer",
       "deps": [],
-      "prompt": "Vamos resolver o hotfix temporário do Chatwoot. Primeiro leia bug-report-fazer-ai.md para relembrar o caso (regressão da versão .111: 500 em /agent_bots e /labels via token; a correção de 1 linha aplicada no container evapora a cada redeploy). Depois: verifique se o 500 voltou (teste você mesmo pelas ferramentas, me mostrando o resultado), confira se o fix upstream já foi lançado, e me recomende o caminho. Se for preciso reaplicar a correção no container, me explique cada comando antes de rodar e rode só com a minha aprovação. No final, atualize o TODO.md e o os/dados/roadmap.json (V8)."
+      "prompt": "Vamos resolver o hotfix temporário do Chatwoot. Primeiro leia a ficha da V8 no roadmap/TODO.md e a memória do projeto (fazer-ai-agents-instancia) para relembrar o caso (regressão da versão .111: 500 em /agent_bots e /labels via token; a correção de 1 linha em app/controllers/api/v1/accounts/base_controller.rb, aplicada no container, evapora a cada redeploy). Depois: verifique se o 500 voltou (teste você mesmo pelas ferramentas, me mostrando o resultado), confira se o fix upstream já foi lançado, e me recomende o caminho. Se for preciso reaplicar a correção no container, me explique cada comando antes de rodar e rode só com a minha aprovação. No final, atualize o TODO.md e o os/dados/roadmap.json (V8)."
     },
     {
       "id": "V9",
