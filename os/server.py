@@ -71,11 +71,13 @@ def find_env():
         candidate = parent / ".env"
         if candidate.is_file():
             return candidate
-    sys.exit("ERRO: .env nao encontrado subindo a partir de " + str(Path(__file__).resolve()))
+    return None
 
 
 def load_env(path):
     env = {}
+    if path is None:
+        return env
     for line in path.read_text().splitlines():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
@@ -85,10 +87,11 @@ def load_env(path):
 
 
 ENV = load_env(find_env())
-TOKEN = ENV.get("GH_TOKEN_HOMOLOG")
+TOKEN = ENV.get("GH_TOKEN_HOMOLOG", "")
 if not TOKEN:
-    sys.exit("ERRO: GH_TOKEN_HOMOLOG nao encontrado no .env da raiz do repo. "
-             "Adicione a variavel (token de homologacao da Global Health) e rode de novo.")
+    print("AVISO: .env ausente ou sem GH_TOKEN_HOMOLOG. O OS sobe normalmente; "
+          "as paginas que chamam a API GH (bancada, roteiro) e o Oracle TST vao "
+          "responder erro ate as credenciais existirem (ver README, passo 5).", flush=True)
 
 
 def call_gh(method, path, query=None, body=None):
