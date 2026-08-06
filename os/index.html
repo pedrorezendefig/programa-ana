@@ -93,6 +93,12 @@
   </section>
 
   <section>
+    <h2>Radar</h2>
+    <p class="caption">Pontos fora do grafo de execução: bugs, hotfixes e higienes que não impactam o objetivo (a solução funcional). Prioridade de 1 (ignorável) a 10 (crítico) diz quanta atenção dar. Ficam aqui até merecerem virar tarefa.</p>
+    <div class="grade c3" id="radar" style="margin-top: 18px;"></div>
+  </section>
+
+  <section>
     <h2>Aplicações</h2>
     <div class="grade c2" id="apps"></div>
   </section>
@@ -166,6 +172,7 @@ function render() {
     { rotulo: "Propostas", num: propostas.length, det: proximaProposta ? "próxima: <strong>" + esc(proximaProposta.id) + "</strong>" : "nenhuma destravada" },
     { rotulo: "Pendentes", num: (d.pendentes || []).length, det: (d.pendentes || []).map(p => esc(p.id)).join(" · ") || "nenhuma" },
     { rotulo: "Ideias", num: (d.ideias || []).length, det: "faixa editável aqui" },
+    { rotulo: "Radar", num: (d.radar || []).length, det: (d.radar || []).map(r => esc(r.id)).join(" · ") || "limpo" },
   ];
   document.getElementById("stats").innerHTML = stats.map((s, i) =>
     '<div class="card stat anima" style="animation-delay:' + (i * 45) + 'ms">' +
@@ -239,6 +246,17 @@ function renderIdeias() {
       (i.puxada ? '<div style="margin-top:10px;"><span class="chip feito">puxada para o estágio</span></div>' : '') +
       '</div>';
   }).join("") || '<p class="caption">Nenhuma ideia ainda. O botão preto é o gesto de 5 segundos.</p>';
+}
+
+function renderRadar() {
+  const itens = (ROADMAP.radar || []).slice().sort((a, b) => b.prioridade - a.prioridade);
+  document.getElementById("radar").innerHTML = itens.map(r =>
+    '<div class="card hover">' +
+    '<div class="linha" style="margin-bottom: 8px;"><h4 style="margin: 0;">' + esc(r.id) + '</h4>' +
+    '<span class="chip tag direita">prioridade ' + r.prioridade + '/10</span></div>' +
+    '<p style="margin: 0 0 8px;">' + esc(r.titulo) + '</p>' +
+    (r.nota ? '<p class="caption" style="margin: 0;">' + esc(r.nota) + '</p>' : '') +
+    '</div>').join("") || '<p class="caption">Radar limpo: nada pendurado fora do grafo.</p>';
 }
 
 function renderApps(apps) {
@@ -316,7 +334,7 @@ async function gravar(msgOk) {
   return false;
 }
 
-carregar().then(() => renderIdeias());
+carregar().then(() => { renderIdeias(); renderRadar(); });
 </script>
 
 </body>

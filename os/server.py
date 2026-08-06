@@ -331,6 +331,20 @@ def validar_roadmap(doc):
         if pr["id"] in ids:
             return "id de proposta duplicado ou colidindo com tarefa: %s" % pr["id"]
         ids.add(pr["id"])
+    # Radar: pontos fora do grafo de execucao (bugs/hotfixes nao criticos), com prioridade 1-10.
+    for r in doc.get("radar", []):
+        if not isinstance(r, dict) or not isinstance(r.get("id"), str) or not isinstance(r.get("titulo"), str):
+            return "cada item do radar precisa de id e titulo (texto)"
+        if not isinstance(r.get("prioridade"), int) or not 1 <= r["prioridade"] <= 10:
+            return "radar %s: prioridade deve ser inteiro de 1 a 10" % r["id"]
+        for chave in ("nota", "prompt"):
+            if chave in r and not isinstance(r[chave], str):
+                return "radar %s: %s deve ser texto" % (r["id"], chave)
+        if "status" in r or "deps" in r:
+            return "radar %s: item do radar nao tem status nem deps (esta fora do grafo)" % r["id"]
+        if r["id"] in ids:
+            return "id do radar duplicado ou colidindo com tarefa/proposta: %s" % r["id"]
+        ids.add(r["id"])
     for i in doc["ideias"]:
         if not isinstance(i, dict) or not isinstance(i.get("titulo"), str) or not i["titulo"].strip():
             return "cada ideia precisa ao menos de titulo (texto)"
