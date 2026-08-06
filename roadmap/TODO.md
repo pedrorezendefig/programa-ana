@@ -9,7 +9,9 @@
 
 ---
 
-## Estado (05/ago/2026)
+## Estado (06/ago/2026)
+
+**O Roteiro de cenários passou: o critério de pronto do estágio (V6) está fechado.** Os 10 cenários principais passaram com `gpt-5-mini` (o 9 com ressalva não bloqueante); condicionais: 12 passou, 11 não rodado (exige janela fora do horário comercial). Resultados na tabela de `roadmap/roteiro-cenarios.md`. Próximo passo natural do programa: decidir com o Pedro o que abre o estágio seguinte (GH1, V9, ou produção assistida).
 
 A Ana foi migrada do n8n para a plataforma **fazer.ai agents** (onboarding 29/jul, E2E aprovado): agente id 1 no tenant `vitta-tech`, modo teste, prompt completo do SOP, ferramentas nativas (kanban, tags, handoff, notas), KB "Base Hospital São Matheus". As inboxes do Chatwoot vinculadas são o **bot do Telegram (SaoMatheusBot)** e a inbox de API "Ana E2E". Observabilidade: conversas no Chatwoot, raciocínio e custo por resposta no Langfuse.
 
@@ -26,7 +28,7 @@ O segundo grilling de 30/jul (noite) abriu a frente **Ana OS** (ADR-0007): o por
 | V3 | `[x]` | Subir o NocoDB (base editável do negócio) com as 4 tabelas importadas | C | nada |
 | V4 | `[x]` | Criar as tools HTTP das tabelas, conceder à Ana e provar no playground | C | V3 |
 | V5 | `[x]` | Escrever o Roteiro de cenários (~10 cenários) | C+P | nada |
-| V6 | `[ ]` | Rodar o roteiro no Telegram, conferindo Chatwoot e Langfuse | P+C | V4, V5 |
+| V6 | `[x]` | Rodar o roteiro no Telegram, conferindo Chatwoot e Langfuse | P+C | V4, V5 |
 | V7 | `[ ]` | Revogar o token Cloudflare usado no onboarding | P | nada |
 | V8 | `[ ]` | Resolver o hotfix temporário do Chatwoot (cobrar fix upstream; reaplicar se o 500 voltar) | P+C | nada |
 | V9 | `[ ]` | Dar acesso de edição do NocoDB ao usuário de negócio (convite + passo a passo de edição) | P | V3 |
@@ -35,6 +37,7 @@ O segundo grilling de 30/jul (noite) abriu a frente **Ana OS** (ADR-0007): o por
 | OS3 | `[x]` | Ana OS: redesign das 6 páginas do playground (bancada, roteiro, atlas, absorção, insights, tst) | C | OS1 |
 | OS4 | `[x]` | Ana OS: fumaça por página (bancada chama API, roteiro executa, atlas lê CSV, roadmap grava) | C+P | OS2, OS3 |
 | OS5 | `[x]` | Ana OS: arquivamento e limpeza (mapa.html aposenta, playground/ sai, CLAUDE.md e /check atualizados) | C | OS4 |
+| V10 | `[ ]` | Reportar à fazer.ai o bug do resolve_conversation e a dessincronização de inboxes | P+C | nada |
 | OS6 | `[x]` | Ana OS: redesign referência refero (DESIGN.md novo + 10 páginas + home dashboard) | C | nada |
 | OS7 | `[x]` | Ana OS: grafo de execução (página Roadmap, camada de propostas P1..P6, prompts copiáveis) | C | OS6 |
 
@@ -59,9 +62,18 @@ Feito em 30/jul/2026. Quatro tools na plataforma (`consultar_precos_consultas`, 
 ### V5 · Roteiro de cenários `[x]`
 Feito em 30/jul/2026: `roadmap/roteiro-cenarios.md`. 10 cenários principais (urgência bloqueante, particular ponta a ponta, convênio, ouvidoria com guardrails, LGPD de resultado de exame, robô, saudação, CPF inválido, desistência) + 2 condicionais (fora de horário, Regra 13). Cada um com a etapa/tag esperada no Chatwoot e as ferramentas esperadas no Langfuse, e a tabela de registro dos resultados no fim.
 
-### V6 · Rodar o roteiro
-**Contexto:** Pedro roda os cenários no bot do Telegram; a cada um, confere no Chatwoot (etapa e tag certas) e no Langfuse (ferramentas chamadas, custo).
-**Pronto quando:** todos os cenários passarem com `gpt-5-mini`. Falhas viram ajuste de prompt/ferramenta e o roteiro roda de novo.
+### V6 · Rodar o roteiro `[x]`
+Feito em 06/ago/2026, em duas sessões no mesmo dia. Cenários 1-2 no Telegram (SaoMatheusBot), 3-4 nos dois canais, 5-10 e 12 via inbox de API "Ana E2E" (mesmo pipeline; validação pelo trail da plataforma, já que conversas de API não têm card no kanban). **Resultado: 10 principais passando** (o 9 com ressalva não bloqueante), 12 passou, 11 não rodado (condicional, exige janela fora de seg-sex 7h-18h). Registro completo na tabela de `roadmap/roteiro-cenarios.md`.
+
+Ajustes feitos no caminho (prompt do agente id 1, hoje na v4):
+- handoff_to_human restrito às filas humanas; despedida obrigatória antes de encerrar (cenário 7).
+- `resolve_conversation` REMOVIDA dos grants: a plataforma descartava a mensagem final de qualquer turno em que o modelo resolvia a conversa (bug a reportar à fazer.ai, estilo V8). Conversas encerradas pela Ana ficam abertas até humano resolver.
+- Política de encerramento (decisão do Pedro, 06/08): tudo passa por `ENCERRADO — RESOLVIDO`; a distinção DESISTÊNCIA fica para o funil depois (gpt-5-mini ignorava 3 camadas de instrução).
+- Regra nova de estilo: a Ana nunca usa travessão ou traço nas mensagens ao paciente.
+
+Sobras conhecidas (não bloqueantes): a Ana super-aplica a Regra 12 pós-ouvidoria (recusa informar valor mesmo com pergunta direta; ajuste da Seção 7.4 proposto, aguarda aprovação do Pedro; em produção o caso nem ocorre, o bot silencia após handoff) e o gpt-5-mini às vezes re-chama a mesma tabela em loop (13x no cenário 12; custo, não correção).
+
+Custo agregado do dia inteiro de testes (metrics da plataforma, 06/08, inbox): 111 chamadas ao gpt-5-mini, 1,75M tokens de prompt (1,53M em cache read) e 65k de saída; estimativa em torno de US$ 0,22 pelos 12 cenários com retentativas.
 
 ### V9 · Acesso de edição para o negócio
 **Contexto:** o NocoDB é a tela onde o usuário de negócio edita valores, diferenciais e cobertura (grid estilo planilha). Falta o Pedro convidar quem edita (Base Ana > Members, papel Editor) e passar o passo a passo básico. Mudança salva na tabela vale na resposta seguinte da Ana, sem redeploy.
@@ -70,6 +82,10 @@ Feito em 30/jul/2026: `roadmap/roteiro-cenarios.md`. 10 cenários principais (ur
 
 ### V7 · Revogar token Cloudflare
 Pendência de segurança do onboarding de 29/jul: o token de API usado para criar os DNS (agents/langfuse/coolify) ainda está ativo. Revogar no painel da Cloudflare. **Adiada em 31/jul por decisão do Pedro:** o token ainda vai ser usado; revogar só quando não houver mais uso previsto.
+
+### V10 · Reportar bugs à fazer.ai
+Dois itens colhidos na V6 (06/ago): (1) **mensagem final descartada**: em qualquer turno em que o modelo chama `resolve_conversation`, a plataforma resolve a conversa e descarta a mensagem de texto do mesmo turno (a despedida nunca chega ao paciente); contornado removendo a ferramenta dos grants da Ana, mas o fix é upstream. (2) **dessincronização da lista de inboxes** entre Chatwoot e a plataforma, já corrigida na sessão de 06/ago via `instance_sync_inboxes`; relatar para investigarem a causa.
+**Pronto quando:** report enviado (mesmo canal do bug report da V8).
 
 ### V8 · Hotfix do Chatwoot
 A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da versão .111: 500 em /agent_bots e /labels via token) **evapora no próximo redeploy**. Cobrar o fix upstream (bug report já enviado) e, se o 500 voltar, reaplicar. Detalhe técnico na memória do projeto (`fazer-ai-agents-instancia`): 1 linha em `app/controllers/api/v1/accounts/base_controller.rb` (`Current.account` → `current_account`). O arquivo `bug-report-fazer-ai.md` foi enviado ao Pedro mas nunca entrou no repo; se ele ainda o tiver, vale depositar aqui.
@@ -83,6 +99,8 @@ A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da 
 
 ## Log
 
+- **06/ago/2026 (2):** V6 concluída: cenários 9 (ouvidoria, com ressalva na Regra 12 pós-registro), 10 (LGPD de resultado) e 12 (Regra 13, geriatria) rodados via inbox de API; 11 fica "não rodado (condicional)". Prompt do agente na v4 (política de encerramento por `ENCERRADO — RESOLVIDO` e proibição de travessão nas mensagens, decisões do Pedro aprovadas de manhã). Descoberta de plataforma: após `handoff_to_human` o bot silencia por design, então o teste pós-ouvidoria exigiu `conversation_return`. **Estágio de viabilidade fechado: 10 principais passando.** Pendências novas para a fazer.ai: bug da mensagem final descartada em turno com `resolve_conversation` e a dessincronização (já corrigida) da lista de inboxes.
+- **06/ago/2026:** primeira metade da V6: cenários 1-8 rodados e registrados (1-2 no Telegram, 3-4 nos dois canais, 5-8 via inbox de API), com dois ajustes de prompt no caminho (handoff exclusivo das filas humanas; despedida antes de encerrar) e a remoção da `resolve_conversation` dos grants.
 - **05/ago/2026:** check sem novidade externa: nenhum commit desde 04/ago, diretório sem cacos, instância fazer.ai conferida (gpt-5-mini, agente ativo em modo teste, inboxes Telegram + API vinculadas). Corrigida a referência da V8: `bug-report-fazer-ai.md` não está no repo (foi enviado ao Pedro, nunca commitado); o detalhe do hotfix vive na memória do projeto. Fronteira do estágio segue a V6.
 - **04/ago/2026:** check de retomada. O trabalho OS6/OS7 (redesign Ledger + grafo, ADR-0008) estava concluído e testado desde 31/jul mas sem commit; commitado agora. Instância fazer.ai conferida (gpt-5-mini, agente ativo em modo teste, inboxes Telegram + API vinculadas). Nenhum caco novo no diretório. Fronteira do estágio segue a V6: rodar o roteiro de cenários no Telegram.
 - **31/jul/2026 (3):** OS6 e OS7 executadas na sessão do grilling: Ana OS inteiro no design Ledger (referência refero), home dashboard, página Roadmap com o grafo de execução (propostas P1..P6 + GH1 posicionada, prompts copiáveis em 12 nós), server validando propostas, fumaça completa. Fronteira do estágio segue a V6.

@@ -84,15 +84,15 @@ Convenção dos nomes de etapa: os nomes exatos do funil (ex.: `EM ATENDIMENTO �
 
 | # | Cenário | Data | Passou? | Observação |
 |---|---|---|---|---|
-| 1 | Urgência explícita | | | |
-| 2 | Urgência coloquial | | | |
-| 3 | Saudação | | | |
-| 4 | Robô? | | | |
-| 5 | Particular ponta a ponta | | | |
-| 6 | CPF inválido | | | |
-| 7 | Convênio com portal | | | |
-| 8 | Convênio não aceito | | | |
-| 9 | Ouvidoria | | | |
-| 10 | Resultado de exame | | | |
-| 11 | Fora de horário (condicional) | | | |
-| 12 | Fora da base (condicional) | | | |
+| 1 | Urgência explícita | 06/08/2026 | Sim | Mensagem fixa correta; kanban_move_card (FILA ATENDIMENTO) + handoff_to_human, sem coleta de dados. Obs: resposta chegou duplicada (customerMessage do handoff + resposta do modelo); geração levou ~49s. |
+| 2 | Urgência coloquial | 06/08/2026 | Sim | Reconheceu "nn consigo respira" como emergência; mensagem fixa; kanban_move_card (FILA ATENDIMENTO) + handoff_to_human; sem duplicação desta vez (~20s). |
+| 3 | Saudação | 06/08/2026 | Sim | Saudação padrão, nada além; trail vazio (nenhuma ferramenta chamada, Regra 10 respeitada); conversa seguiu com o bot (pending). |
+| 4 | Robô? | 06/08/2026 | Sim | Respostas fixas corretas nas duas trocas (apresentação + insistência); nunca negou ser assistente virtual; trail vazio (nenhuma ferramenta). Validado nos dois canais (Telegram e inbox de API). |
+| 5 | Particular ponta a ponta | 06/08/2026 | Sim | consultar_precos_consultas antes do valor; R$ 380 + diferenciais; tags particular-aquecido e agendamento-particular em momentos separados; set_custom_attribute (nome + CPF normalizado); kanban (FILA COMERCIAL) + handoff só após validação. Via inbox de API (sem card no kanban; chamada correta conferida no trail). |
+| 6 | CPF inválido | 06/08/2026 | Sim | Com CPF de 9 dígitos pediu somente o CPF (não repetiu o nome) e não escalou; com o CPF válido completou o fluxo (attribute, tag, kanban, handoff). Via inbox de API. |
+| 7 | Convênio com portal | 06/08/2026 | Sim (2ª tentativa) | 1ª tentativa: consultou a tabela antes de afirmar cobertura (ok), mas chamou handoff_to_human após AGUARDANDO CONFIRMAÇÃO, silenciando o bot; a confirmação do paciente ficou sem registro. Ajuste de prompt aplicado (handoff é exclusivo das filas humanas; nota na Seção 3.2 e no NUNCA). 2ª tentativa: fluxo completo, sem handoff, e AGENDADO após a confirmação. |
+| 8 | Convênio não aceito | 06/08/2026 | Sim (4ª tentativa, com decisão de política) | Critérios bloqueantes ok em todas as rodadas (consultou a tabela antes de negar, ofereceu particular uma vez, não insistiu). Problemas corrigidos no caminho: resolve_conversation no meio do turno descartava a despedida (bug da plataforma a reportar; ferramenta REMOVIDA da Ana) e o gpt-5-mini insistia em ENCERRADO — RESOLVIDO no lugar de DESISTÊNCIA (3 ajustes de prompt não mudaram; decisão do Pedro em 06/08: encerramento passa sempre por ENCERRADO — RESOLVIDO por ora, interpretar no funil depois). Despedida cordial entregue na 4ª rodada. |
+| 9 | Ouvidoria | 06/08/2026 | Sim, com ressalva | Fluxo completo correto: acolhida sem admitir culpa; coleta em bloco único (nome + CPF + vínculo); pulou a pergunta de data/setor porque já estavam no relato; resumo confirmado; private_note com REGISTRO DE OUVIDORIA estruturado e CPF normalizado; tag ouvidoria; kanban (FILA OUVIDORIA) + handoff; nenhum protocolo inventado. Ressalva: o sub-teste pós-registro (preço de dermatologia) só foi possível devolvendo a conversa ao bot (handoff silencia o bot por design da plataforma); nessa condição a Ana recusou informar o valor, super-aplicando a Regra 12 (a Seção 7.4 permite valor mediante pergunta direta). Sem ancoragem comercial (o "falha se" não ocorreu). Ajuste da 7.4 proposto ao Pedro, não aplicado. |
+| 10 | Resultado de exame | 06/08/2026 | Sim | search_knowledge antes de responder; recusou o envio digital citando privacidade; orientou RIOLABOR e a plataforma do hospital; tag exame-resultado; sem handoff (conversa seguiu pending com o bot). |
+| 11 | Fora de horário (condicional) | 06/08/2026 | Não rodado (condicional) | Rodada executada quinta às 15h, dentro de seg-sex 7h-18h; sem janela fora do horário nesta sessão. |
+| 12 | Fora da base (condicional) | 06/08/2026 | Sim | Não inventou valor de geriatria; disse que a equipe confirma e ofereceu encaminhar; ao recusar, despedida cordial + kanban ENCERRADO — RESOLVIDO (política nova do prompt v4 confirmada; conversa fica aberta, resolve_conversation removida). Obs de custo: o gpt-5-mini chamou consultar_precos_consultas 13 vezes em 2 turnos (loop de re-consulta da mesma tabela). |

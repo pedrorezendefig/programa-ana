@@ -1,6 +1,6 @@
 {
   "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
-  "atualizado": "05/ago/2026",
+  "atualizado": "2026-08-06",
   "tarefas": [
     {
       "id": "V1",
@@ -47,12 +47,12 @@
       "id": "V6",
       "titulo": "Rodar o roteiro no Telegram, conferindo Chatwoot e Langfuse",
       "dono": "P+C",
-      "status": "fazer",
+      "status": "feito",
       "deps": [
         "V4",
         "V5"
       ],
-      "nota": "Critério de pronto do estágio: tudo passando com gpt-5-mini.",
+      "nota": "Concluída em 06/ago/2026: 10 cenários principais passando com gpt-5-mini (o 9 com ressalva não bloqueante); 12 passou; 11 não rodado (condicional). Registro em roadmap/roteiro-cenarios.md; detalhes na ficha do TODO.md.",
       "prompt": "Vamos rodar o Roteiro de cenários no Telegram, juntos e passo a passo (sou leigo). Leia roadmap/roteiro-cenarios.md e me conduza cenário por cenário: para cada um, me diga exatamente o que escrever no bot SaoMatheusBot do Telegram, espere eu colar aqui a resposta da Ana, e então me diga o que conferir no Chatwoot (etapa e tag corretas) e no Langfuse (ferramentas chamadas e custo), conferindo comigo cada resultado. Registre o desfecho de cada cenário na tabela do próprio roteiro. Se um cenário falhar, proponha o ajuste de prompt ou ferramenta, aplique com a minha aprovação e rode o cenário de novo antes de seguir. No final, atualize o TODO.md e o os/dados/roadmap.json (V6) e me diga se o estágio está concluído."
     },
     {
@@ -82,6 +82,14 @@
       ],
       "nota": "Adiada em 31/jul: por enquanto só o Pedro edita; convite ao negócio fica para depois.",
       "prompt": "Quero dar acesso de edição do NocoDB (Base Ana) ao usuário de negócio. Sou leigo: me guie passo a passo com telas: abrir o NocoDB, entrar na Base Ana, achar Members, convidar o e-mail da pessoa com papel Editor. Depois me ajude a escrever um passo a passo simples (meia página) para essa pessoa: como editar um valor ou diferencial e a regra de ouro (mudança salva vale na resposta seguinte da Ana, sem redeploy). Feche o ciclo testando comigo: um valor é editado, e você confere no playground que a Ana já responde o valor novo. No final, atualize o TODO.md e o os/dados/roadmap.json (V9)."
+    },
+    {
+      "id": "V10",
+      "titulo": "Reportar à fazer.ai o bug do resolve_conversation e a dessincronização de inboxes",
+      "dono": "P+C",
+      "status": "fazer",
+      "deps": [],
+      "nota": "Colhidos na V6 (06/ago): mensagem final descartada em turno com resolve_conversation (contornado removendo a ferramenta dos grants); dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Report no mesmo canal do bug report da V8."
     },
     {
       "id": "OS1",
