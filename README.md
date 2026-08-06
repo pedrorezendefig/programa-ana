@@ -52,7 +52,86 @@ A home mostra o roadmap, o grafo de execução e os painéis. As páginas que co
 - **fazer.ai agents** (prompt, ferramentas e configuração do agente): operado via MCP em sessões Claude Code; o token é pessoal e nunca entra no git.
 - **NocoDB** (tabelas de preços e cobertura): convite como editor quando for a hora (tarefa V9 do roadmap).
 
-**4. Trabalhar com Claude Code (o fluxo padrão do projeto).** As sessões de trabalho usam o Claude Code aberto neste diretório. O comando `/check` lê o estado, reconcilia o roadmap e devolve orientação de próximos passos. O `CLAUDE.md` da raiz contém as regras que as sessões seguem (o que pode e o que não pode).
+**4. Trabalhar com Claude Code (o fluxo padrão do projeto).** As sessões de trabalho usam o Claude Code aberto neste diretório. O comando `/check` lê o estado, reconcilia o roadmap e devolve orientação de próximos passos. O `CLAUDE.md` da raiz contém as regras que as sessões seguem (o que pode e o que não pode). O setup completo está na seção seguinte.
+
+## Setup completo da estação de trabalho (replicar o ambiente do Pedro)
+
+Siga na ordem. Os passos 1 a 3 não dependem de ninguém; do passo 4 em diante você vai precisar de credenciais, e elas são entregues **pessoalmente pelo Pedro** (ligação ou presencial, de preferência via gerenciador de senhas; nunca por grupo de WhatsApp, e-mail ou commit).
+
+**1. Pré-requisitos na máquina**
+
+- git e Python 3 (macOS e Linux já têm).
+- [Claude Code](https://claude.com/claude-code) instalado (CLI ou app desktop) com uma conta que tenha acesso ao plano da VITTA TECH.
+
+**2. Clonar o repositório**
+
+```bash
+git clone git@github.com:pedrorezendefig/programa-ana.git
+cd programa-ana
+```
+
+**3. Validar o que funciona sem credencial**
+
+```bash
+python3 os/server.py   # abrir http://localhost:8777 (o cockpit Ana OS)
+```
+
+Leia `roadmap/TODO.md` e o `CONTEXT.md` antes de seguir: o resto do setup faz mais sentido depois.
+
+**4. Pedir ao Pedro (pessoalmente) o kit de credenciais**
+
+| Item | Para quê | Formato |
+|---|---|---|
+| Conteúdo do `.env` | Consultas ao Oracle TST e à API GH homolog | Arquivo/texto para colar na raiz |
+| Token MCP da plataforma fazer.ai | Operar a Ana pelo Claude Code | URL do endpoint + token |
+| Convite do Chatwoot | Ver conversas reais e de teste | Convite por e-mail |
+| Convite do Langfuse | Custo e traces por resposta | Convite por e-mail |
+| Convite do NocoDB | Editar tabelas de preço/cobertura (quando V9 abrir) | Convite por e-mail |
+
+**5. Montar o `.env` na raiz** (nunca commitá-lo; o `.gitignore` já o ignora)
+
+```
+ORACLE_HOST=...
+ORACLE_PORT=1521
+ORACLE_SERVICE=...        # ou ORACLE_SID
+ORACLE_USER=...
+ORACLE_PASSWORD=...
+GH_TOKEN_HOMOLOG=...
+```
+
+Instale o driver do Oracle: `python3 -m pip install --user oracledb`. Se o modo thin não conectar, o guia do modo thick (Instant Client) está em `ana/api-mv/conexao-oracle.md`.
+
+**6. Testar as conexões**
+
+```bash
+python3 ana/api-mv/scripts/query-mv.py "SELECT 1 FROM DUAL"   # Oracle TST
+python3 ana/api-mv/scripts/smoke-gh.py                         # API GH homolog
+```
+
+**7. Conectar o MCP da fazer.ai no Claude Code** (com a URL e o token do passo 4)
+
+```bash
+claude mcp add fazer-ai --transport http <URL-do-endpoint-MCP> --header "Authorization: Bearer <token>"
+```
+
+Depois, numa sessão Claude Code aberta neste diretório, rode `/check`: ele confere a instância, reconcilia o roadmap e te diz a fronteira do dia.
+
+**8. Regras de operação que valem para todos**
+
+- Banco Oracle: somente leitura, sempre pelo `query-mv.py` (ele recusa o que não for SELECT). Produção é só o Pedro, manualmente.
+- API Global Health: somente homologação nas ferramentas locais. Produção jamais.
+- Mudança em prompt ou ferramentas da Ana: sempre com aprovação explícita antes de aplicar, e registrada no roadmap.
+- Avançou ou criou tarefa do roadmap? Atualize `roadmap/TODO.md` E `os/dados/roadmap.json` juntos (mesmo ID).
+
+## URLs do programa (todas atrás de login)
+
+| Serviço | URL |
+|---|---|
+| Plataforma fazer.ai agents (tenant `vitta-tech`) | https://agents.hospitalsaomatheus.cloud |
+| Chatwoot (conversas) | https://chatwoot.mala-ia.cloud |
+| Langfuse (custo e traces) | https://langfuse.hospitalsaomatheus.cloud |
+| Coolify (infra na VPS) | https://coolify.hospitalsaomatheus.cloud |
+| Ana OS (local) | http://localhost:8777 após `python3 os/server.py` |
 
 ## Segurança: o que NUNCA entra neste repositório
 
