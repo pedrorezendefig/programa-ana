@@ -99,6 +99,10 @@ _Avoid_: "modo pesquisa da Ana" (é agente separado); review gating; publicar re
 O cadastro de teste TESTE INTEGRACAO ANA VITTA (CPF 66301102770, id 1681) criado de propósito na homologação da Global Health (07/jul/2026). É a referência fixa dos testes de leitura da API e da investigação sobre qual banco MV a homolog enxerga.
 _Avoid_: apagar o registro; usar CPF de paciente real em teste.
 
+**Protocolo da ouvidoria**:
+O número que a Ana informa ao paciente ao registrar uma manifestação, no formato ANO-NNNN (ex.: 2026-0007). Decisão da OV1 (06/ago/2026, ADR-0010, decisão autônoma a revisar): vive na tabela `5_Ouvidoria_Protocolos` da [[base-ana-nocodb]], numerado pelo autoincremento do NocoDB e formatado por coluna de fórmula, nunca composto pelo modelo. O NNNN é contínuo, não reinicia por ano. Diferente do protocolo de agendamento (numérico, devolvido pela Global Health), que nunca se mistura com este. É a única tabela da Base Ana sem shared view pública, e guarda só o índice da manifestação (data, categoria, setor, status, prazo): nome, CPF e relato ficam na conversa do Chatwoot. Se a gravação ou a leitura falhar, vale a Regra Híbrida e a Ana não cita número algum.
+_Avoid_: a Ana compor ou estimar o número; nome ou CPF na tabela; shared view pública nesta tabela; ler o último protocolo e incrementar.
+
 **Base TST (Oracle do MV)**:
 O banco Oracle de teste do MV que o DBeaver e a sessão Claude leem diretamente (prefixo `tst`, ~2,5 mil pacientes, base viva). Regra de acesso (07/jul/2026): homolog = leitura direta pela sessão; produção = só o Pedro, manualmente, no DBeaver. Não está confirmado que é o mesmo banco que a homologação da Global Health enxerga; até prova em contrário (pergunta GH-18), tratar como ambientes distintos.
 _Avoid_: chamar de "produção"; assumir que escrita via API GH aparece nela sem verificar.

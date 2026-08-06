@@ -162,6 +162,14 @@
       "nota": "Concluída em 06/ago/2026 em modo autônomo por decisão do Pedro (ADR-0009): a Ana fala com a GH por uma fachada de 7 ferramentas de agenda (as do SOP reescrito de docs/04), cada uma encapsulando sua cadeia de endpoints; os 22 endpoints do Mapa das APIs mapeados sem órfão. Implementação por fases: P4 (tools diretas), P5 (proxy de orquestração), P6 (finalização, gated pela GH-18). A dep em P3 foi removida: a Prova no banco é gate da P6, não do desenho."
     },
     {
+      "id": "OV1",
+      "titulo": "Decidir o mecanismo de protocolo da ouvidoria (ADR-0010)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [],
+      "nota": "Concluída em 06/ago/2026 em modo autônomo (decisão autônoma, a revisar pelo Pedro): protocolo sequencial ANO-NNNN na tabela nova 5_Ouvidoria_Protocolos da Base Ana, numerado pelo autoincremento do NocoDB e formatado por coluna de fórmula (nunca pelo modelo). Tabela sem shared view pública e sem dado pessoal (índice, não dossiê). Implementação não executada por falta de via segura (metadados do NocoDB exigem xc-token novo, só o Pedro gera): virou a pendente OV2, specs completas das tools no ADR-0010."
+    },
+    {
       "id": "V12",
       "titulo": "Tools GH de identificação na Ana: buscar paciente por CPF e por telefone",
       "dono": "C+P",
@@ -174,10 +182,10 @@
   ],
   "pendentes": [
     {
-      "id": "OV1",
-      "titulo": "Sistema de protocolo da ouvidoria",
+      "id": "OV2",
+      "titulo": "Implementar o protocolo da ouvidoria (tabela + token + tools + Seção 7.3)",
       "deps": [],
-      "prompt": "Quero decidir o mecanismo de protocolo da ouvidoria (a pendente OV1). Hoje o SOP proíbe a Ana de inventar número de protocolo. Me entreviste, uma pergunta por vez e com recomendação, sobre as opções: sequencial simples numa tabela do NocoDB, usar o id da conversa do Chatwoot, ou aguardar a integração com o MV. Considere o que a ouvidoria precisa de verdade (rastreabilidade, sigilo, prazo de resposta). Registre a decisão no CONTEXT.md e, se virar implementação, crie a tarefa no TODO.md e no os/dados/roadmap.json."
+      "prompt": "Quero implementar o protocolo da ouvidoria decidido no ADR-0010 (a pendente OV2). Primeiro me guie no que só eu posso fazer: criar a tabela 5_Ouvidoria_Protocolos na tela do NocoDB (as 9 colunas e as duas fórmulas estão prontas para colar na seção A tabela do ADR docs/adr/0010-protocolo-ouvidoria.md) e gerar um API token do NocoDB, guardando no vault da plataforma como nocodb-base-ana-token (tipo header, header xc-token), sem o segredo passar pelo chat. Depois, crie as duas tools da spec do ADR (registrar_ouvidoria e consultar_protocolo_ouvidoria, formato compacto nativo de input_schema) com dry_run e diff, aplique com a minha aprovação, costure a Seção 7.3 do prompt (gravar, ler o protocolo e só então informar; falha cai na Regra Híbrida sem citar número) e prove no playground com um relato de teste. No final, atualize o TODO.md e o os/dados/roadmap.json."
     }
   ],
   "propostas": [
