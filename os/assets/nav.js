@@ -22,6 +22,8 @@
       svg: icone('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7.5 9.5l3 2.5-3 2.5M13 15h3.5"/>') },
     { arquivo: "roteiro.html", rotulo: "Roteiro",
       svg: icone('<path d="M4 6.5l1.5 1.5L8.5 5M4 12.5l1.5 1.5L8.5 11M4 18.5L5.5 20 8.5 17"/><path d="M12 6.5h8M12 12.5h8M12 18.5h8"/>') },
+    { arquivo: "cadeias.html", rotulo: "Cadeias",
+      svg: icone('<circle cx="5" cy="12" r="2.6"/><circle cx="12" cy="5" r="2.6"/><circle cx="12" cy="19" r="2.6"/><circle cx="19" cy="12" r="2.6"/><path d="M7 10.2 10 6.8M14 6.8l3 3.4M7 13.8l3 3.4M14 17.2l3-3.4"/>') },
     { arquivo: "atlas.html", rotulo: "Atlas",
       svg: icone('<ellipse cx="12" cy="5.5" rx="8" ry="2.8"/><path d="M4 5.5v13c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8v-13"/><path d="M4 12c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8"/>') },
     { arquivo: "absorcao.html", rotulo: "Absorção",

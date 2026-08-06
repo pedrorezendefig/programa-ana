@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana OS · Cadeias</title>
+<link rel="stylesheet" href="assets/os.css">
+<style>
+  .hero { text-align: center; padding: 40px 0 8px; }
+  .hero .lead { margin: 18px auto 0; }
+
+  .status-linha { display: flex; justify-content: center; gap: 18px; margin-top: 18px; flex-wrap: wrap; }
+  .status-linha .item { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--cor-rotulo); }
+
+  .legenda-estados { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 22px; }
+
+  .cadeia { margin-top: 28px; padding: 26px; }
+  .cadeia-topo { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .cadeia-topo .letra {
+    width: 44px; height: 44px; border-radius: 14px; background: var(--cor-tinta); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font: var(--peso-bold) 20px/1 var(--font-poppins); flex-shrink: 0;
+  }
+  .cadeia-topo .textos { flex: 1; min-width: 260px; }
+  .cadeia-topo .textos p { font-size: 13.5px; color: var(--cor-rotulo); margin-top: 6px; max-width: 80ch; }
+  .cadeia-topo .acao { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .cadeia-topo .acao .nota-escrita { font-size: 12px; color: var(--cor-rotulo); max-width: 240px; text-align: right; }
+  .btn:disabled { opacity: .6; cursor: wait; transform: none; }
+
+  .elos { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .elo {
+    background: var(--cor-card-interno); border-radius: var(--raio-interno);
+    padding: 14px 18px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  .elo .num { font: var(--peso-semibold) 12px/1 var(--font-inter); color: var(--cor-rotulo); width: 26px; }
+  .elo .metodo { font: var(--peso-semibold) 12px/1 var(--font-mono); }
+  .elo .metodo.get { color: var(--cor-azul); }
+  .elo .metodo.post { color: #8a6d1a; }
+  .elo .metodo.delete { color: var(--cor-vermelho); }
+  .elo .path { font: var(--peso-regular) 13px/1.4 var(--font-mono); color: var(--cor-tinta); }
+  .elo .explica { flex-basis: 100%; font-size: 13px; color: var(--cor-rotulo); padding-left: 38px; }
+  .elo .resultado { flex-basis: 100%; padding-left: 38px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .elo .resultado .detalhe { font-size: 13px; color: var(--cor-tinta); }
+  .elo .resultado .ms { font-size: 12px; color: var(--cor-mudo); }
+  .elo.bloqueado { opacity: .55; }
+  .elo details { flex-basis: 100%; padding-left: 38px; }
+  .elo details summary { font-size: 12px; color: var(--cor-rotulo); cursor: pointer; }
+  .elo details pre {
+    margin-top: 8px; background: var(--cor-tinta); color: #fff; border-radius: var(--raio-interno);
+    padding: 14px 16px; font: 12px/1.55 var(--font-mono); overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+  }
+
+  .placar { margin-top: 16px; font-size: 13.5px; color: var(--cor-rotulo); }
+  .placar strong { color: var(--cor-tinta); }
+
+  .roteiro { margin-top: 56px; }
+  .roteiro .atos { display: grid; gap: var(--gap-cards); grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); margin-top: 20px; }
+  .momento { border-bottom: 1px solid var(--cor-fio); padding: 14px 0; }
+  .momento:last-child { border-bottom: none; }
+  .momento .quando { display: flex; align-items: center; gap: 10px; }
+  .momento .fala { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--cor-tinta); font-style: normal; }
+  .momento .fala::before { content: "“"; color: var(--cor-mudo); }
+  .momento .fala::after { content: "”"; color: var(--cor-mudo); }
+  .momento .gesto { margin-top: 6px; font-size: 12.5px; color: var(--cor-rotulo); }
+  .checklist li { font-size: 14px; line-height: 1.7; color: var(--cor-tinta); margin-left: 18px; }
+  .checklist code { background: var(--cor-fio); border-radius: 6px; padding: 1px 7px; font: 12.5px var(--font-mono); }
+</style>
+</head>
+<body>
+
+<main>
+  <section class="hero compacta">
+    <h1>Cadeias: a API contando <span class="destaque">histórias do hospital</span></h1>
+    <p class="lead">Uma resposta 200 solta não prova nada: mock também devolve 200. O que prova um sistema
+      vivo é a <strong>consequência encadeada</strong>: o que um POST cria, o GET seguinte encontra; o que
+      falta, a API recusa com a regra certa. Seis histórias cobrindo os 22 endpoints do Mapa das APIs,
+      cada elo rodando ao vivo na homologação, com o payload enviado e a resposta crua expansíveis.</p>
+    <div class="status-linha" id="status-linha">
+      <span class="item"><span class="ponto" id="ponto-gh"></span> API GH homolog</span>
+      <span class="item" id="status-texto">verificando conexão...</span>
+    </div>
+    <div class="legenda-estados">
+      <span class="chip feito">funcionou</span>
+      <span class="chip azul">vazio esperado</span>
+      <span class="chip selo-saas">recusou certo (validação)</span>
+      <span class="chip bloqueada">bloqueado (GH-19)</span>
+      <span class="chip tag">falha real</span>
+    </div>
+  </section>
+
+  <section id="cadeias"></section>
+
+  <section class="roteiro compacta">
+    <h2>A demonstração de 5 minutos, em dois atos</h2>
+    <p class="lead">Ato 1 prova que o sistema do hospital responde de verdade. Ato 2 transforma o catálogo
+      vazio em pedido do diretor à Global Health. As falas abaixo são sugestão de tom, não script rígido.</p>
+
+    <div class="atos">
+      <div class="card">
+        <h3>Antes da reunião (5 min, sozinho)</h3>
+        <ul class="checklist" style="margin-top: 14px; list-style: disc;">
+          <li>Subir o cockpit: <code>python3 os/server.py</code> e abrir <code>localhost:8777/cadeias.html</code>.</li>
+          <li>Conferir o ponto verde de "API GH homolog" no topo desta página.</li>
+          <li>Rodar a Cadeia A uma vez de ensaio (cria 1 cadastro de teste, sem problema).</li>
+          <li>Deixar a janela aberta nesta página, sem mais nada na tela.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Ato 1 · O sistema responde (3 min)</h3>
+        <div class="momento">
+          <div class="quando"><span class="chip contorno">0:00</span><span class="micro">abertura</span></div>
+          <p class="fala">Isso aqui é o sistema de agendamento do hospital, o MV, respondendo pela API que a
+            Global Health disponibilizou para o WhatsApp. Nada do que você vai ver é tela de mentira: cada
+            linha é uma chamada de verdade, agora, no ambiente de testes deles.</p>
+        </div>
+        <div class="momento">
+          <div class="quando"><span class="chip contorno">0:30</span><span class="micro">cadeia A ao vivo</span></div>
+          <p class="fala">Vou inventar um paciente agora, na sua frente. Primeiro o sistema confirma que esse
+            CPF não existe. Aí eu crio o cadastro. E agora eu pergunto de novo, pelo CPF e pelo telefone, e
+            ele me devolve o paciente que não existia dez segundos atrás.</p>
+          <p class="gesto">Clicar em "Rodar ao vivo" na Cadeia A e narrar os elos conforme acendem. O elo do
+            telefone é o ponto alto: é assim que a Ana vai reconhecer o paciente no WhatsApp.</p>
+        </div>
+        <div class="momento">
+          <div class="quando"><span class="chip contorno">2:00</span><span class="micro">cadeia C</span></div>
+          <p class="fala">E não é um sistema bobo que aceita qualquer coisa: quando eu mando um cadastro de
+            carteira incompleto de propósito, ele recusa e me diz exatamente qual campo falta. Isso é regra de
+            negócio do MV funcionando.</p>
+          <p class="gesto">Rodar a Cadeia C e apontar a mensagem "nrCarteira é obrigatório".</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Ato 2 · O que falta não é nosso (2 min)</h3>
+        <div class="momento">
+          <div class="quando"><span class="chip contorno">3:00</span><span class="micro">cadeia D bloqueada</span></div>
+          <p class="fala">Essa é a cadeia que agenda uma consulta de verdade: especialidade, convênio, horário
+            e a marcação final. Ela está travada no primeiro elo, e o motivo não é técnico do nosso lado: a
+            Global Health ainda não publicou o catálogo de testes que pedimos em julho. Especialidades, exames
+            e agendas voltam vazios.</p>
+          <p class="gesto">Rodar a Cadeia D: o elo 1 volta vazio e os seguintes aparecem bloqueados. É a
+            imagem do argumento.</p>
+        </div>
+        <div class="momento">
+          <div class="quando"><span class="chip contorno">4:00</span><span class="micro">o pedido</span></div>
+          <p class="fala">O pedido está escrito e é pequeno: uma especialidade e um exame publicados no
+            ambiente de testes. Vindo do hospital, que é o cliente da MV, isso anda em dias. No dia em que
+            publicarem, eu volto aqui e te mostro os horários de cardiologia aparecendo nesta tela.</p>
+          <p class="gesto">Se o diretor topar, o texto pronto está na Biblioteca: "cobranca-massa-homolog".
+            Sai em nome do hospital, com a direção em cópia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/nav.js" data-ambiente="homolog" defer></script>
+<script>
+"use strict";
+
+/* ---------- infra ---------- */
+
+async function gh(method, path, query, body) {
+  const pedido = { method: method, path: path, query: query || {}, body: body || null };
+  const resp = await fetch("/api/gh", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(pedido),
+  });
+  const r = await resp.json();
+  r.pedido = pedido;
+  return r;
+}
+
+function conteudoDe(r) {
+  if (r && r.json && Array.isArray(r.json.conteudo)) return r.json.conteudo;
+  if (r && Array.isArray(r.json)) return r.json;
+  return null;
+}
+
+function cpfSintetico() {
+  const n = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10));
+  const dv = (base, pesoInicial) => {
+    const soma = base.reduce((acc, d, i) => acc + d * (pesoInicial - i), 0);
+    return (soma * 10) % 11 % 10;
+  };
+  const d1 = dv(n, 10), d2 = dv(n.concat(d1), 11);
+  return n.concat(d1, d2).join("");
+}
+
+function telefoneSintetico() {
+  return "2199" + String(Math.floor(1000000 + Math.random() * 9000000));
+}
+
+/* Dados mocados regenerados a cada execução, para variar a demonstração.
+   O prefixo TESTE DEMO é fixo: todo cadastro de teste tem que ser reconhecível.
+   Regra da API descoberta em campo (417): o nome não pode conter números,
+   então a variação vem do alfabeto fonético. */
+const SUFIXOS_NOME = ["ALFA", "BRAVO", "CHARLIE", "DELTA", "ECO", "FOX", "GOLF",
+  "HOTEL", "INDIA", "JULIET", "KILO", "LIMA", "MIKE", "NOVEMBER", "OSCAR",
+  "PAPA", "QUEBEC", "ROMEO", "SIERRA", "TANGO", "UNIFORM", "VICTOR", "ZULU"];
+
+function pessoaSintetica() {
+  const ano = 1950 + Math.floor(Math.random() * 56);
+  const mes = 1 + Math.floor(Math.random() * 12);
+  const dia = 1 + Math.floor(Math.random() * 28);
+  const pad = (n) => String(n).padStart(2, "0");
+  return {
+    cpf: cpfSintetico(),
+    telefone: telefoneSintetico(),
+    nome: "TESTE DEMO ANA VITTA " + SUFIXOS_NOME[Math.floor(Math.random() * SUFIXOS_NOME.length)],
+    dataNascimento: ano + "-" + pad(mes) + "-" + pad(dia),
+    sexo: Math.random() < 0.5 ? "F" : "M",
+  };
+}
+
+/* ---------- as quatro cadeias ----------
+   Cada elo: rotulo(ctx) mostra a chamada; executar(ctx) roda e devolve
+   {estado: ok|vazio|recusa|bloqueado|falha, detalhe, resposta}. Elo bloqueado nem chama. */
+
+const ESTADO_CHIP = {
+  ok: { classe: "chip feito", texto: "funcionou" },
+  vazio: { classe: "chip azul", texto: "vazio esperado" },
+  recusa: { classe: "chip selo-saas", texto: "recusou certo" },
+  bloqueado: { classe: "chip bloqueada", texto: "bloqueado · GH-19" },
+  falha: { classe: "chip tag", texto: "falha real" },
+};
+
+const CADEIAS = [
+  {
+    letra: "A", titulo: "Paciente novo chega pelo WhatsApp",
+    resumo: "A prova de criação: o sistema confirma que o CPF não existe, aceita o cadastro e devolve o paciente novo por CPF e por telefone. O elo do telefone é o caminho real da Ana.",
+    escrita: "Cria 1 cadastro de teste (nome TESTE DEMO ANA VITTA + número) na homologação. CPF, telefone, nascimento e sexo são regenerados aleatoriamente a cada execução, para variar a demonstração. Não há como apagar pessoas pela API; os testes acumulam e isso é esperado.",
+    botao: "Rodar ao vivo (cria 1 cadastro de teste)",
+    preparar(ctx) { const p = pessoaSintetica(); ctx.p = p; ctx.cpf = p.cpf; ctx.tel = p.telefone; },
+    elos: [
+      {
+        metodo: "GET", caminho: "/pessoas?cpf=<sintético>",
+        explica: "Fotografia do antes: esse CPF acabou de ser inventado, então o certo é voltar vazio.",
+        async executar(ctx) {
+          const r = await gh("GET", "/pessoas", { cpf: ctx.cpf });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const achou = (r.corpo_cru || "").indexOf(ctx.cpf) >= 0;
+          return achou
+            ? { estado: "falha", detalhe: "CPF sintético já existia (colisão raríssima): rode de novo", resposta: r }
+            : { estado: "ok", detalhe: "0 encontrados para o CPF " + ctx.cpf + " (o esperado)", resposta: r };
+        },
+      },
+      {
+        metodo: "POST", caminho: "/pessoas",
+        explica: "A criação: nome TESTE DEMO + número, nascimento, sexo e telefone sorteados nesta execução (o payload enviado mostra os valores). A API deve devolver o id na hora.",
+        async executar(ctx) {
+          const r = await gh("POST", "/pessoas", null, ctx.p);
+          if (r.status === 200 && r.json && r.json.id) {
+            ctx.id = r.json.id;
+            return { estado: "ok", detalhe: "criado " + ctx.p.nome + " com id " + r.json.id, resposta: r };
+          }
+          return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/pessoas?cpf=<o mesmo>",
+        explica: "A releitura: o cadastro que não existia segundos atrás agora tem que voltar completo.",
+        async executar(ctx) {
+          const r = await gh("GET", "/pessoas", { cpf: ctx.cpf });
+          const achou = r.status === 200 && (r.corpo_cru || "").indexOf(ctx.cpf) >= 0;
+          return achou
+            ? { estado: "ok", detalhe: "reencontrado pelo CPF (id " + (ctx.id || "?") + ")", resposta: r }
+            : { estado: "falha", detalhe: "criou mas não releu (HTTP " + r.status + ")", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/pessoas?telefone=<o mesmo>",
+        explica: "O elo de ouro: achar o paciente pelo telefone. É exatamente assim que a Ana identifica quem conversa no WhatsApp.",
+        async executar(ctx) {
+          const r = await gh("GET", "/pessoas", { telefone: ctx.tel });
+          const achou = r.status === 200 && (r.corpo_cru || "").indexOf(ctx.cpf) >= 0;
+          return achou
+            ? { estado: "ok", detalhe: "reencontrado pelo telefone " + ctx.tel, resposta: r }
+            : { estado: "falha", detalhe: "não achou pelo telefone (HTTP " + r.status + ")", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/agendamentos?cpf=<o mesmo>&tipoAgendamento=CONSULTA",
+        explica: "Coerência: paciente recém-criado não tem histórico. Lista vazia aqui é o comportamento certo, não um problema.",
+        async executar(ctx) {
+          const r = await gh("GET", "/agendamentos", { cpf: ctx.cpf, tipoAgendamento: "CONSULTA" });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          return c.length === 0
+            ? { estado: "vazio", detalhe: "0 agendamentos (o certo para paciente novo)", resposta: r }
+            : { estado: "ok", detalhe: c.length + " agendamento(s)", resposta: r };
+        },
+      },
+    ],
+  },
+  {
+    letra: "B", titulo: "Paciente conhecido (o sonda de julho)",
+    resumo: "Persistência: o paciente-sonda (id 1681) foi criado pela API em 07/jul. Um mês depois, continua lá, íntegro, com carteiras e agendamentos coerentemente vazios.",
+    botao: "Rodar cadeia (só leituras)",
+    elos: [
+      {
+        metodo: "GET", caminho: "/pessoas?cpf=66301102770",
+        explica: "O sonda TESTE INTEGRACAO ANA VITTA, criado via API há um mês. Voltar íntegro prova que o dado persiste.",
+        async executar() {
+          const r = await gh("GET", "/pessoas", { cpf: "66301102770" });
+          const achou = r.status === 200 && (r.corpo_cru || "").indexOf("66301102770") >= 0;
+          return achou
+            ? { estado: "ok", detalhe: "sonda íntegro desde 07/jul (id 1681)", resposta: r }
+            : { estado: "falha", detalhe: "sonda não encontrado (HTTP " + r.status + ")", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/carteiras?cpf=<sonda>",
+        explica: "Nunca criamos carteira para ele: lista vazia é coerência, não defeito.",
+        async executar() {
+          const r = await gh("GET", "/carteiras", { cpf: "66301102770" });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " carteira(s)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/agendamentos?cpf=<sonda>&tipoAgendamento=CONSULTA",
+        explica: "Nunca finalizamos agendamento para ele (a finalização é a fronteira da GH-18).",
+        async executar() {
+          const r = await gh("GET", "/agendamentos", { cpf: "66301102770", tipoAgendamento: "CONSULTA" });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " agendamento(s)", resposta: r };
+        },
+      },
+    ],
+  },
+  {
+    letra: "C", titulo: "Convênio e carteiras: a árvore inteira, e a API validando",
+    resumo: "A árvore convênio → plano → sub-plano é o caminho até a carteira do paciente. Com o catálogo seco (GH-19) os elos de escolha ficam bloqueados, e a cadeia prova outra coisa: um cadastro incompleto de propósito é recusado com a regra de negócio certa. Mock aceitaria qualquer coisa.",
+    escrita: "O POST deste fluxo é deliberadamente incompleto: a expectativa é a recusa (HTTP 417). Nada é gravado, nada é excluído.",
+    botao: "Rodar cadeia (a recusa é o sucesso)",
+    elos: [
+      {
+        metodo: "GET", caminho: "/convenios",
+        explica: "A raiz da árvore: os convênios aceitos no agendamento (o particular também é um, com flag própria). Vazio desde 07/jul (GH-19).",
+        async executar(ctx) {
+          const r = await gh("GET", "/convenios");
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          ctx.convenios = c;
+          return c.length
+            ? { estado: "ok", detalhe: c.length + " convênio(s) publicados: a GH-19 destravou!", resposta: r }
+            : { estado: "vazio", detalhe: "0 convênios (massa não publicada: GH-19)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/convenios/{idConvenio}/planos",
+        explica: "O segundo nível: os planos do convênio escolhido. Só se forma com um idConvenio real do elo anterior.",
+        async executar(ctx) {
+          if (!ctx.convenios || !ctx.convenios.length) return { estado: "bloqueado", detalhe: "sem convênio publicado, não há idConvenio para descer a árvore" };
+          const r = await gh("GET", "/convenios/" + ctx.convenios[0].id + "/planos");
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          ctx.planos = c;
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " plano(s)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/convenios/{idConvenio}/planos/{idPlano}/subPlanos",
+        explica: "O último nível da árvore, quando o plano tem subdivisões.",
+        async executar(ctx) {
+          if (!ctx.planos || !ctx.planos.length) return { estado: "bloqueado", detalhe: "sem plano, não há idPlano para o último nível" };
+          const r = await gh("GET", "/convenios/" + ctx.convenios[0].id + "/planos/" + ctx.planos[0].id + "/subPlanos");
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " sub-plano(s)", resposta: r };
+        },
+      },
+      {
+        metodo: "POST", caminho: "/carteiras (incompleto de propósito)",
+        explica: "Sem o número da carteira, o certo é a API recusar. A mensagem de erro citando o campo é regra de negócio do MV funcionando.",
+        async executar() {
+          const r = await gh("POST", "/carteiras", null, { cpf: "66301102770", idConvenio: 999999, idPlano: 999999 });
+          if (r.status === 417 || r.status === 400) {
+            let msg = "";
+            try { msg = r.json.mensagens[0].mensagem; } catch (e) { msg = "recusado"; }
+            return { estado: "recusa", detalhe: "HTTP " + r.status + ": “" + msg + "”", resposta: r };
+          }
+          if (r.status === 200) return { estado: "falha", detalhe: "aceitou dado incompleto (inesperado)", resposta: r };
+          return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+        },
+      },
+      {
+        metodo: "DELETE", caminho: "/carteiras/{id}",
+        explica: "A exclusão fecha o ciclo da carteira. Só roda com uma carteira real criada antes, o que exige a árvore de convênio publicada.",
+        async executar() {
+          return { estado: "bloqueado", detalhe: "sem convênio publicado não há carteira criada, e sem carteira não há id para excluir" };
+        },
+      },
+    ],
+  },
+  {
+    letra: "D", titulo: "Agendar consulta: a vitrine, travada no primeiro elo",
+    resumo: "O fluxo completo da consulta segundo a documentação: especialidade → prestadores → convênio → horários livres → instruções e tipo → finalização. Hoje morre no elo 1: sem especialidade publicada não existe idConsulta, e nada a jusante anda. Quando a Global Health publicar a massa, esta tela destrava sozinha.",
+    botao: "Rodar cadeia (mostra o bloqueio)",
+    elos: [
+      {
+        metodo: "GET", caminho: "/consultas (especialidades)",
+        explica: "O primeiro elo: as especialidades agendáveis. É daqui que sai o idConsulta que alimenta todo o resto.",
+        async executar(ctx) {
+          const r = await gh("GET", "/consultas");
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          ctx.consultas = c;
+          return c.length
+            ? { estado: "ok", detalhe: c.length + " especialidade(s): a GH-19 destravou! Hora da demo 2.", resposta: r }
+            : { estado: "vazio", detalhe: "0 especialidades publicadas (GH-19, pedida em 07/jul)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/prestadores?pesquisa=CARDIOLOGIA",
+        explica: "Quem atende: os médicos da especialidade. Roda ao vivo mesmo sem catálogo, e hoje volta vazio pelo mesmo motivo.",
+        async executar(ctx) {
+          const r = await gh("GET", "/prestadores", { pesquisa: "CARDIOLOGIA" });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          ctx.prestadores = c;
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " prestador(es) (GH-19)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/convenios + /planos",
+        explica: "Escolher o convênio do atendimento (o particular também é um convênio, com flag própria).",
+        async executar(ctx) {
+          if (!ctx.consultas || !ctx.consultas.length) return { estado: "bloqueado", detalhe: "sem especialidade, não há o que escolher" };
+          const r = await gh("GET", "/convenios");
+          const c = conteudoDe(r) || [];
+          ctx.convenios = c;
+          return c.length
+            ? { estado: "ok", detalhe: c.length + " convênio(s)", resposta: r }
+            : { estado: "vazio", detalhe: "0 convênios (GH-19)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/agendas/v2 (horários livres)",
+        explica: "A pergunta que o paciente faz: “que horários tem?”. Exige idConsulta e idConvenio dos elos anteriores.",
+        async executar(ctx) {
+          if (!ctx.consultas || !ctx.consultas.length || !ctx.convenios || !ctx.convenios.length) {
+            return { estado: "bloqueado", detalhe: "sem os ids dos elos anteriores, a chamada nem se forma (sem eles a API devolve 500)" };
+          }
+          const q = { idConsulta: ctx.consultas[0].id, idConvenio: ctx.convenios[0].id };
+          if (ctx.convenios[0].planos && ctx.convenios[0].planos.length) q.idPlano = ctx.convenios[0].planos[0].id;
+          const r = await gh("GET", "/agendas/v2", q);
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          ctx.agendas = c;
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " horário(s) livre(s)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/horarios/{id}/instrucoes",
+        explica: "As orientações do horário escolhido (preparo, chegada). Exige um horário real vindo do elo anterior.",
+        async executar(ctx) {
+          if (!ctx.agendas || !ctx.agendas.length) return { estado: "bloqueado", detalhe: "sem horário livre listado, não há id de horário para consultar" };
+          const r = await gh("GET", "/horarios/" + ctx.agendas[0].id + "/instrucoes");
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          return { estado: "ok", detalhe: "instruções do horário " + ctx.agendas[0].id, resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/consultas/tipos?idAgenda",
+        explica: "O tipo da consulta (primeira, retorno) que vira o idTipoMarcacao da finalização. Sem idAgenda a API devolve 500, como provamos na sessão.",
+        async executar(ctx) {
+          if (!ctx.agendas || !ctx.agendas.length) return { estado: "bloqueado", detalhe: "sem agenda escolhida, não há idAgenda (sem ele a API devolve 500)" };
+          const r = await gh("GET", "/consultas/tipos", { idAgenda: ctx.agendas[0].idAgenda || ctx.agendas[0].id });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " tipo(s) de consulta", resposta: r };
+        },
+      },
+      {
+        metodo: "POST", caminho: "/horarios/agendar (a finalização)",
+        explica: "O único ponto que grava no Oracle do hospital (e onde vive a pergunta GH-18). Nunca roda desta página: finalização é ato deliberado, feito na Bancada com a Prova no banco.",
+        async executar() {
+          return { estado: "bloqueado", detalhe: "não roda daqui por regra: usar a Bancada, com a Prova no banco na Base TST" };
+        },
+      },
+    ],
+  },
+  {
+    letra: "E", titulo: "Agendar exame: triagem, instruções e anexos",
+    resumo: "O fluxo do exame tem elos que a consulta não tem: as perguntas de triagem (uma resposta com impedeRealizacao = S bloqueia o exame), a instrução geral de preparo e os anexos (pedido médico, carteirinha) que sobem para o S3 da GH. Tudo depende do idExame do elo 1, vazio pela GH-19.",
+    botao: "Rodar cadeia (mostra o bloqueio)",
+    elos: [
+      {
+        metodo: "GET", caminho: "/exames",
+        explica: "Os exames agendáveis pela API. É daqui que sai o idExame que alimenta a triagem, o preparo e os anexos.",
+        async executar(ctx) {
+          const r = await gh("GET", "/exames");
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          ctx.exames = c;
+          return c.length
+            ? { estado: "ok", detalhe: c.length + " exame(s): a GH-19 destravou!", resposta: r }
+            : { estado: "vazio", detalhe: "0 exames publicados (GH-19, pedida em 07/jul)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/exames/perguntas",
+        explica: "A triagem do exame: o questionário que decide se pode agendar. Alternativa com impedeRealizacao = S bloqueia e escala para humano.",
+        async executar(ctx) {
+          if (!ctx.exames || !ctx.exames.length) return { estado: "bloqueado", detalhe: "sem exame publicado, não há idExame para buscar a triagem" };
+          const r = await gh("GET", "/exames/perguntas", { idExame: ctx.exames[0].id });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " pergunta(s) de triagem", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/exames/instrucaoGeral",
+        explica: "O preparo do exame (jejum, medicação), que a Ana repassaria ao paciente antes de confirmar.",
+        async executar(ctx) {
+          if (!ctx.exames || !ctx.exames.length) return { estado: "bloqueado", detalhe: "sem exame publicado, não há idExame para buscar o preparo" };
+          const r = await gh("GET", "/exames/instrucaoGeral", { idExame: ctx.exames[0].id });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          return { estado: "ok", detalhe: "instrução geral recebida", resposta: r };
+        },
+      },
+      {
+        metodo: "POST", caminho: "/anexos/agendamento",
+        explica: "Pergunta à API quais anexos o agendamento exige (pedido médico, carteirinha). Precisa do contexto montado: exame, convênio e horário.",
+        async executar() {
+          return { estado: "bloqueado", detalhe: "exige o contexto do agendamento (idExame, convênio, horário), impossível sem o catálogo" };
+        },
+      },
+      {
+        metodo: "POST", caminho: "/anexos/upload",
+        explica: "O envio do anexo em si (upload por URL, gravado no S3 da GH). Escrita no SaaS: a conferência é pela própria API, nunca pelo Oracle.",
+        async executar() {
+          return { estado: "bloqueado", detalhe: "sem anexo exigido pelo elo anterior, não há o que subir" };
+        },
+      },
+      {
+        metodo: "POST", caminho: "/horarios/agendar (a finalização)",
+        explica: "Como na consulta: o exame também finaliza aqui, gravando no Oracle. Nunca roda desta página.",
+        async executar() {
+          return { estado: "bloqueado", detalhe: "não roda daqui por regra: usar a Bancada, com a Prova no banco na Base TST" };
+        },
+      },
+    ],
+  },
+  {
+    letra: "F", titulo: "Gerir o que foi agendado: consultar, remarcar, cancelar",
+    resumo: "Depois de agendar, o paciente consulta, remarca e cancela pelo mesmo canal. A listagem roda ao vivo hoje; remarcar e cancelar são finalizações (gravam no Oracle) e ficam bloqueadas até existir um agendamento real, o que depende da cadeia D destravar.",
+    botao: "Rodar cadeia (listagem ao vivo)",
+    elos: [
+      {
+        metodo: "GET", caminho: "/agendamentos?cpf=<sonda>&tipoAgendamento=CONSULTA",
+        explica: "A lista de agendamentos do paciente. Detalhe de campo: o enum exige caixa alta (CONSULTA/EXAME), minúsculo dá 500.",
+        async executar(ctx) {
+          const r = await gh("GET", "/agendamentos", { cpf: "66301102770", tipoAgendamento: "CONSULTA" });
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          const c = conteudoDe(r) || [];
+          ctx.agendamentos = c;
+          return { estado: c.length ? "ok" : "vazio", detalhe: c.length + " agendamento(s) (nunca finalizamos nenhum: coerente)", resposta: r };
+        },
+      },
+      {
+        metodo: "GET", caminho: "/agendamentos/{id}",
+        explica: "O detalhe de um agendamento específico. Precisa de um id real vindo da listagem.",
+        async executar(ctx) {
+          if (!ctx.agendamentos || !ctx.agendamentos.length) return { estado: "bloqueado", detalhe: "lista vazia: não há id de agendamento para detalhar" };
+          const r = await gh("GET", "/agendamentos/" + ctx.agendamentos[0].id);
+          if (r.status !== 200) return { estado: "falha", detalhe: "HTTP " + r.status, resposta: r };
+          return { estado: "ok", detalhe: "agendamento " + ctx.agendamentos[0].id + " detalhado", resposta: r };
+        },
+      },
+      {
+        metodo: "POST", caminho: "/horarios/reagendar",
+        explica: "Remarcar é uma finalização: grava no Oracle como o agendar. Nunca roda desta página.",
+        async executar() {
+          return { estado: "bloqueado", detalhe: "finalização: exige agendamento real e roda na Bancada, com a Prova no banco" };
+        },
+      },
+      {
+        metodo: "DELETE", caminho: "/agendamentos/{id} (cancelar)",
+        explica: "Cancelar também é finalização e também grava no Oracle. Nunca roda desta página.",
+        async executar() {
+          return { estado: "bloqueado", detalhe: "finalização: exige agendamento real e roda na Bancada, com a Prova no banco" };
+        },
+      },
+    ],
+  },
+];
+
+/* ---------- render ---------- */
+
+const raiz = document.getElementById("cadeias");
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+CADEIAS.forEach((cadeia, ci) => {
+  const card = document.createElement("div");
+  card.className = "card cadeia";
+  card.innerHTML =
+    '<div class="cadeia-topo">' +
+      '<div class="letra">' + cadeia.letra + "</div>" +
+      '<div class="textos"><h3>Cadeia ' + cadeia.letra + " · " + cadeia.titulo + "</h3><p>" + cadeia.resumo + "</p></div>" +
+      '<div class="acao">' +
+        '<button class="btn primario" data-cadeia="' + ci + '">' + cadeia.botao + "</button>" +
+        (cadeia.escrita ? '<span class="nota-escrita">' + cadeia.escrita + "</span>" : "") +
+      "</div>" +
+    "</div>" +
+    '<div class="elos">' +
+    cadeia.elos.map((elo, ei) =>
+      '<div class="elo" id="elo-' + ci + "-" + ei + '">' +
+        '<span class="num">' + cadeia.letra + (ei + 1) + "</span>" +
+        '<span class="metodo ' + elo.metodo.toLowerCase() + '">' + elo.metodo + "</span>" +
+        '<span class="path">' + esc(elo.caminho) + "</span>" +
+        '<span class="explica">' + elo.explica + "</span>" +
+        '<span class="resultado" hidden></span>' +
+      "</div>"
+    ).join("") +
+    "</div>" +
+    '<p class="placar" hidden></p>';
+  raiz.appendChild(card);
+});
+
+async function rodarCadeia(ci, botao) {
+  const cadeia = CADEIAS[ci];
+  const ctx = {};
+  if (cadeia.preparar) cadeia.preparar(ctx);
+  botao.disabled = true;
+  const placarEl = botao.closest(".cadeia").querySelector(".placar");
+  placarEl.hidden = true;
+  const placar = { ok: 0, vazio: 0, recusa: 0, bloqueado: 0, falha: 0 };
+
+  for (let ei = 0; ei < cadeia.elos.length; ei++) {
+    const eloEl = document.getElementById("elo-" + ci + "-" + ei);
+    const resEl = eloEl.querySelector(".resultado");
+    eloEl.classList.remove("bloqueado");
+    const detalheAntigo = eloEl.querySelector("details");
+    if (detalheAntigo) detalheAntigo.remove();
+    resEl.hidden = false;
+    resEl.innerHTML = '<span class="chip pendente">rodando...</span>';
+    let r;
+    try { r = await cadeia.elos[ei].executar(ctx); }
+    catch (e) { r = { estado: "falha", detalhe: "erro local: " + e.message }; }
+    placar[r.estado]++;
+    const chip = ESTADO_CHIP[r.estado];
+    resEl.innerHTML =
+      '<span class="' + chip.classe + '">' + chip.texto + "</span>" +
+      '<span class="detalhe">' + r.detalhe + "</span>" +
+      (r.resposta && r.resposta.latencia_ms ? '<span class="ms">' + r.resposta.latencia_ms + "ms</span>" : "");
+    if (r.estado === "bloqueado") eloEl.classList.add("bloqueado");
+    if (r.resposta && r.resposta.pedido) {
+      const detP = document.createElement("details");
+      detP.innerHTML = "<summary>payload enviado</summary><pre></pre>";
+      detP.querySelector("pre").textContent =
+        r.resposta.pedido.method + " " + r.resposta.pedido.path + "\n" +
+        JSON.stringify({ query: r.resposta.pedido.query, body: r.resposta.pedido.body }, null, 2);
+      eloEl.appendChild(detP);
+    }
+    if (r.resposta && r.resposta.corpo_cru) {
+      const det = document.createElement("details");
+      const corpo = r.resposta.corpo_cru.length > 1500 ? r.resposta.corpo_cru.slice(0, 1500) + " (...)" : r.resposta.corpo_cru;
+      det.innerHTML = "<summary>resposta crua da API</summary><pre></pre>";
+      det.querySelector("pre").textContent = "HTTP " + r.resposta.status + "\n" + corpo;
+      eloEl.appendChild(det);
+    }
+  }
+
+  const partes = [];
+  if (placar.ok) partes.push("<strong>" + placar.ok + " funcionou</strong>");
+  if (placar.vazio) partes.push(placar.vazio + " vazio esperado");
+  if (placar.recusa) partes.push(placar.recusa + " recusa correta");
+  if (placar.bloqueado) partes.push(placar.bloqueado + " bloqueado (GH-19)");
+  if (placar.falha) partes.push("<strong>" + placar.falha + " falha real</strong>");
+  placarEl.innerHTML = "Placar da cadeia: " + partes.join(" · ");
+  placarEl.hidden = false;
+  botao.disabled = false;
+}
+
+document.addEventListener("click", (ev) => {
+  const botao = ev.target.closest("[data-cadeia]");
+  if (botao) rodarCadeia(Number(botao.dataset.cadeia), botao);
+});
+
+/* ---------- status da conexão ---------- */
+
+(async function () {
+  const ponto = document.getElementById("ponto-gh");
+  const texto = document.getElementById("status-texto");
+  try {
+    const r = await (await fetch("/api/status")).json();
+    if (r.token_valido) {
+      ponto.classList.add("verde");
+      texto.textContent = "conectado e autenticado (" + r.latencia_ms + "ms): pode rodar as cadeias";
+    } else if (r.gh_alcancavel) {
+      ponto.classList.add("vermelho");
+      texto.textContent = "API alcançável mas o token não validou (conferir GH_TOKEN_HOMOLOG no .env)";
+    } else {
+      ponto.classList.add("vermelho");
+      texto.textContent = "API fora de alcance (rede/DNS)";
+    }
+  } catch (e) {
+    ponto.classList.add("vermelho");
+    texto.textContent = "servidor do Ana OS não respondeu";
+  }
+})();
+</script>
+</body>
+</html>
