@@ -56,15 +56,6 @@
       "prompt": "Vamos rodar o Roteiro de cenários no Telegram, juntos e passo a passo (sou leigo). Leia roadmap/roteiro-cenarios.md e me conduza cenário por cenário: para cada um, me diga exatamente o que escrever no bot SaoMatheusBot do Telegram, espere eu colar aqui a resposta da Ana, e então me diga o que conferir no Chatwoot (etapa e tag corretas) e no Langfuse (ferramentas chamadas e custo), conferindo comigo cada resultado. Registre o desfecho de cada cenário na tabela do próprio roteiro. Se um cenário falhar, proponha o ajuste de prompt ou ferramenta, aplique com a minha aprovação e rode o cenário de novo antes de seguir. No final, atualize o TODO.md e o os/dados/roadmap.json (V6) e me diga se o estágio está concluído."
     },
     {
-      "id": "V7",
-      "titulo": "Revogar o token Cloudflare usado no onboarding",
-      "dono": "P",
-      "status": "fazer",
-      "deps": [],
-      "nota": "Adiada em 31/jul: o token ainda vai ser usado; revogar quando não houver mais uso previsto.",
-      "prompt": "Quero revogar o token de API da Cloudflare usado no onboarding de 29/jul (ele criou os DNS de agents/langfuse/coolify). Sou leigo: me guie passo a passo no painel dash.cloudflare.com, dizendo exatamente onde clicar para chegar em API Tokens, como identificar o token certo, como confirmar comigo que nada mais depende dele (esta tarefa foi adiada porque ele ainda tinha uso previsto; verifique isso comigo primeiro), e só então como revogar. Espere a minha confirmação em cada passo. No final, atualize o TODO.md e o os/dados/roadmap.json (V7)."
-    },
-    {
       "id": "V8",
       "titulo": "Resolver o hotfix temporário do Chatwoot (upstream ou reaplicar)",
       "dono": "P+C",
@@ -174,6 +165,13 @@
       "titulo": "Sistema de protocolo da ouvidoria",
       "deps": [],
       "prompt": "Quero decidir o mecanismo de protocolo da ouvidoria (a pendente OV1). Hoje o SOP proíbe a Ana de inventar número de protocolo. Me entreviste, uma pergunta por vez e com recomendação, sobre as opções: sequencial simples numa tabela do NocoDB, usar o id da conversa do Chatwoot, ou aguardar a integração com o MV. Considere o que a ouvidoria precisa de verdade (rastreabilidade, sigilo, prazo de resposta). Registre a decisão no CONTEXT.md e, se virar implementação, crie a tarefa no TODO.md e no os/dados/roadmap.json."
+    },
+    {
+      "id": "V7",
+      "titulo": "Revogar o token Cloudflare do onboarding (29/jul)",
+      "deps": [],
+      "nota": "Adiada em 31/jul e mantida em 06/ago por decisão do Pedro: o token ainda tem uso previsto. Verificado em 06/ago: o token não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify).",
+      "prompt": "Quero revogar o token de API da Cloudflare usado no onboarding de 29/jul (ele criou os DNS de agents/langfuse/coolify). Sou leigo: me guie passo a passo no painel dash.cloudflare.com, dizendo exatamente onde clicar para chegar em API Tokens, como identificar o token certo, como confirmar comigo que nada mais depende dele (verifique isso comigo primeiro), e só então como revogar. Espere a minha confirmação em cada passo. No final, atualize o TODO.md e o os/dados/roadmap.json (V7)."
     }
   ],
   "propostas": [

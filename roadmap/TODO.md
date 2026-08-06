@@ -29,7 +29,6 @@ O segundo grilling de 30/jul (noite) abriu a frente **Ana OS** (ADR-0007): o por
 | V4 | `[x]` | Criar as tools HTTP das tabelas, conceder à Ana e provar no playground | C | V3 |
 | V5 | `[x]` | Escrever o Roteiro de cenários (~10 cenários) | C+P | nada |
 | V6 | `[x]` | Rodar o roteiro no Telegram, conferindo Chatwoot e Langfuse | P+C | V4, V5 |
-| V7 | `[ ]` | Revogar o token Cloudflare usado no onboarding | P | nada |
 | V8 | `[ ]` | Resolver o hotfix temporário do Chatwoot (cobrar fix upstream; reaplicar se o 500 voltar) | P+C | nada |
 | V9 | `[ ]` | Dar acesso de edição do NocoDB ao usuário de negócio (convite + passo a passo de edição) | P | V3 |
 | OS1 | `[x]` | Ana OS: fundação (`os/`, server estendido, design system Aaply, dados em JSON) | C | nada |
@@ -80,9 +79,6 @@ Custo agregado do dia inteiro de testes (metrics da plataforma, 06/08, inbox): 1
 **Pronto quando:** ao menos um usuário de negócio (ou o próprio Pedro no papel) editar um valor e a Ana responder o valor novo.
 **Adiada em 31/jul por decisão do Pedro:** por enquanto só ele edita; o convite ao negócio fica para bem depois.
 
-### V7 · Revogar token Cloudflare
-Pendência de segurança do onboarding de 29/jul: o token de API usado para criar os DNS (agents/langfuse/coolify) ainda está ativo. Revogar no painel da Cloudflare. **Adiada em 31/jul por decisão do Pedro:** o token ainda vai ser usado; revogar só quando não houver mais uso previsto.
-
 ### V10 · Reportar bugs à fazer.ai
 Dois itens colhidos na V6 (06/ago): (1) **mensagem final descartada**: em qualquer turno em que o modelo chama `resolve_conversation`, a plataforma resolve a conversa e descarta a mensagem de texto do mesmo turno (a despedida nunca chega ao paciente); contornado removendo a ferramenta dos grants da Ana, mas o fix é upstream. (2) **dessincronização da lista de inboxes** entre Chatwoot e a plataforma, já corrigida na sessão de 06/ago via `instance_sync_inboxes`; relatar para investigarem a causa.
 **Pronto quando:** report enviado (mesmo canal do bug report da V8).
@@ -96,9 +92,11 @@ A correção de 1 linha aplicada dentro do container do Chatwoot (regressão da 
 |---|---|---|
 | GH1 | Sessão de desenho: onde as APIs Global Health entram no fluxo da Ana (metade restante) | A metade "catálogo e viabilidade" foi puxada pelo Mapa das APIs (OS2, ADR-0007); resta o desenho de fluxo em sessão dedicada. Acervo em `roadmap/arquivo/` e no Ana OS |
 | OV1 | Sistema de protocolo da ouvidoria | Hoje o SOP proíbe inventar protocolo; decidir o mecanismo quando for a hora |
+| V7 | Revogar o token Cloudflare do onboarding (29/jul) | Adiada em 31/jul e mantida em 06/ago por decisão do Pedro: o token ainda tem uso previsto; revogar quando não houver mais uso. Verificado em 06/ago: o token não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify) |
 
 ## Log
 
+- **06/ago/2026 (3):** V7 sai do estágio ativo por decisão do Pedro e vira dívida consciente na faixa Pendente: o token Cloudflare ainda tem uso previsto, então não será revogado por enquanto. Verificação feita antes de adiar: o token não está configurado em nenhum serviço (Coolify, scripts, `.env`), logo revogá-lo no futuro não quebra nada que está no ar.
 - **06/ago/2026 (2):** V6 concluída: cenários 9 (ouvidoria, com ressalva na Regra 12 pós-registro), 10 (LGPD de resultado) e 12 (Regra 13, geriatria) rodados via inbox de API; 11 fica "não rodado (condicional)". Prompt do agente na v4 (política de encerramento por `ENCERRADO — RESOLVIDO` e proibição de travessão nas mensagens, decisões do Pedro aprovadas de manhã). Descoberta de plataforma: após `handoff_to_human` o bot silencia por design, então o teste pós-ouvidoria exigiu `conversation_return`. **Estágio de viabilidade fechado: 10 principais passando.** Pendências novas para a fazer.ai: bug da mensagem final descartada em turno com `resolve_conversation` e a dessincronização (já corrigida) da lista de inboxes.
 - **06/ago/2026:** primeira metade da V6: cenários 1-8 rodados e registrados (1-2 no Telegram, 3-4 nos dois canais, 5-8 via inbox de API), com dois ajustes de prompt no caminho (handoff exclusivo das filas humanas; despedida antes de encerrar) e a remoção da `resolve_conversation` dos grants.
 - **05/ago/2026:** check sem novidade externa: nenhum commit desde 04/ago, diretório sem cacos, instância fazer.ai conferida (gpt-5-mini, agente ativo em modo teste, inboxes Telegram + API vinculadas). Corrigida a referência da V8: `bug-report-fazer-ai.md` não está no repo (foi enviado ao Pedro, nunca commitado); o detalhe do hotfix vive na memória do projeto. Fronteira do estágio segue a V6.
