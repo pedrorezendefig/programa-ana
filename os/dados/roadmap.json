@@ -162,6 +162,16 @@
       "nota": "Concluída em 06/ago/2026 em modo autônomo por decisão do Pedro (ADR-0009): a Ana fala com a GH por uma fachada de 7 ferramentas de agenda (as do SOP reescrito de docs/04), cada uma encapsulando sua cadeia de endpoints; os 22 endpoints do Mapa das APIs mapeados sem órfão. Implementação por fases: P4 (tools diretas), P5 (proxy de orquestração), P6 (finalização, gated pela GH-18). A dep em P3 foi removida: a Prova no banco é gate da P6, não do desenho."
     },
     {
+      "id": "V13",
+      "titulo": "Mapa visual do SOP no Ana OS (a proposta P7 puxada)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "V12"
+      ],
+      "nota": "Concluída em 06/ago/2026 em modo autônomo (o esboço para aprovar virou decisão autônoma, a revisar). Página os/sop.html (SVG à mão, visual do DESIGN.md, item na sidebar) com 8 raias, 72 nós e 98 arestas; hover mostra e clique fixa o painel com o trecho literal do prompt; clique na raia isola a jornada. Dados em os/dados/sop-fluxo.json: âncoras com os trechos literais do prompt v5.1 (86 trechos validados como substring exata do export via MCP). Re-validação por sessão quando o prompt mudar; o carimbo de versão vive no JSON e no cabeçalho da página."
+    },
+    {
       "id": "OV1",
       "titulo": "Decidir o mecanismo de protocolo da ouvidoria (ADR-0010)",
       "dono": "C",
@@ -214,15 +224,6 @@
         "P3"
       ],
       "prompt": "A prova final em homologação: quero que a Ana agende fim a fim pela conversa. Me conduza cenário por cenário no playground: identificação do paciente (paciente-sonda), escolha de especialidade e horário real, e a finalização com o POST /horarios/agendar, conferindo cada chamada no Langfuse. Depois da finalização, faça a Prova no banco na Base TST (como na P3) para confirmar que a marcação chegou ao Oracle. No final, escreva comigo o relatório da prova: o que funciona, o que falta para produção (canal principal, cadastros reais, LGPD), e registre nos docs, no TODO.md e no os/dados/roadmap.json."
-    },
-    {
-      "id": "P7",
-      "titulo": "Mapa visual do SOP no Ana OS: fluxograma com hover ligado ao prompt",
-      "resumo": "Página nova do OS com o fluxograma de todas as capacidades da Ana (raias por jornada, setas, chamadas de tool), em que o hover de cada nó mostra o trecho exato do prompt vivo que rege aquela capacidade, com a versão do prompt carimbada.",
-      "deps": [
-        "V12"
-      ],
-      "prompt": "Quero a página nova do Ana OS com o mapa visual do SOP da Ana (decisão de 06/ago/2026, sessão da V12). O desenho recomendado: SVG feito à mão sem biblioteca externa, no visual do os/DESIGN.md, como o grafo de execução; um JSON novo em os/dados/ (ex.: sop-fluxo.json) mapeando cada nó do fluxo (etapas do SOP, decisões, chamadas de tool) para a âncora exata no texto do prompt do agente; raias por jornada (particular, convênio, exame, ouvidoria, urgência); setas de fluxo; hover em cada nó abrindo painel com o trecho literal do prompt correspondente. A página declara a versão do prompt que retrata (exportada da plataforma pelo MCP) e avisa quando estiver defasada. Me mostre primeiro um esboço da estrutura (nós e raias) para eu aprovar, depois construa, e registre a tarefa no TODO.md e no os/dados/roadmap.json."
     },
     {
       "id": "P8",

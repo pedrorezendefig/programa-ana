@@ -16,6 +16,8 @@
       svg: icone('<circle cx="5.5" cy="12" r="2.5"/><circle cx="18.5" cy="5.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/><path d="M7.8 10.8 16.2 6.6M7.8 13.2l8.4 4.2"/>') },
     { arquivo: "arquitetura.html", rotulo: "Arquitetura",
       svg: icone('<path d="M12 3l8 4.5-8 4.5-8-4.5L12 3z"/><path d="M4 12.5L12 17l8-4.5"/><path d="M4 17L12 21.5 20 17"/>') },
+    { arquivo: "sop.html", rotulo: "Mapa do SOP",
+      svg: icone('<path d="M3.5 6.5h5M15.5 6.5h5M3.5 17.5h5M15.5 17.5h5"/><circle cx="12" cy="6.5" r="2.2"/><circle cx="12" cy="17.5" r="2.2"/><path d="M12 8.7v6.6"/>') },
     { arquivo: "apis.html", rotulo: "Mapa das APIs",
       svg: icone('<circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>') },
     { arquivo: "bancada.html", rotulo: "Bancada",
