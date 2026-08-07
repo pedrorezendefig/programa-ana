@@ -141,7 +141,7 @@
           <button class="btn primario mini" id="btn-revalidar">Copiar prompt</button>
           <a class="btn claro mini" href="dados/sop-fluxo.json" target="_blank" rel="noopener">Ver o JSON</a>
         </div>
-        <p class="caption" style="margin-top:10px;">Cole numa sessão Claude neste repositório para conferir os 72 trechos contra o prompt vivo.</p>
+        <p class="caption" style="margin-top:10px;">Cole numa sessão Claude neste repositório para conferir os 95 trechos contra o prompt vivo.</p>
       </div>
     </div>
   </section>
@@ -439,7 +439,7 @@ function mostrar(id, fixando) {
 
   var trechos = n.ancora.trechos.map(function (t, i) {
     return '<div class="bloco"><span class="micro">Trecho literal do prompt ' + esc(DADOS.meta.versao_prompt) +
-      " · linhas " + esc(t.linhas_v51) + "</span>" +
+      " · linhas " + esc(t.linhas) + "</span>" +
       '<pre class="trecho" id="trecho-' + i + '">' + esc(t.texto) + "</pre></div>";
   }).join("");
 

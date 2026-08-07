@@ -169,7 +169,7 @@
       "deps": [
         "V12"
       ],
-      "nota": "Concluída em 06/ago/2026 em modo autônomo (o esboço para aprovar virou decisão autônoma, a revisar). Página os/sop.html (SVG à mão, visual do DESIGN.md, item na sidebar) com 8 raias, 72 nós e 98 arestas; hover mostra e clique fixa o painel com o trecho literal do prompt; clique na raia isola a jornada. Dados em os/dados/sop-fluxo.json: âncoras com os trechos literais do prompt v5.1 (86 trechos validados como substring exata do export via MCP). Re-validação por sessão quando o prompt mudar; o carimbo de versão vive no JSON e no cabeçalho da página."
+      "nota": "Concluída em 06/ago/2026 em modo autônomo (o esboço para aprovar virou decisão autônoma, a revisar). Página os/sop.html (SVG à mão, visual do DESIGN.md, item na sidebar) com 8 raias, 72 nós e 98 arestas; hover mostra e clique fixa o painel com o trecho literal do prompt; clique na raia isola a jornada. Dados em os/dados/sop-fluxo.json: âncoras com os trechos literais do prompt. Re-validado em 07/ago/2026 contra a v5.3 (após V14/V15): 9 âncoras corrigidas, 5 nós novos (S9 cadastro, P13-P16 disponibilidade). Estado final: 77 nós, 106 arestas, 95 trechos validados, 0 ausentes. Re-validação por sessão quando o prompt mudar; o carimbo de versão vive no JSON e no cabeçalho da página."
     },
     {
       "id": "V15",
