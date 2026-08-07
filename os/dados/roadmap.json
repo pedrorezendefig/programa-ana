@@ -223,6 +223,7 @@
       "id": "P3",
       "titulo": "Prova da finalização: a homolog grava na Base TST? (GH-18)",
       "resumo": "Agendar na homologação com o paciente-sonda e procurar o registro no Oracle da Base TST. Responde a GH-18 e é o gate da P6 (a Ana só promete protocolo com a prova feita). Pré-requisito prático: religar a VPN da TST (item P2 do radar).",
+      "nota": "06/ago/2026 (sessão autônoma): bloqueada por fator externo, não executada. Evidência fresca: query-mv.py SELECT 1 falha com ORA-12170 (timeout TCP de 20s para 10.100.66.170:1521), a VPN da TST segue caída desde 13/jul e religar depende da TI do hospital (P2 do radar).",
       "deps": [],
       "prompt": "Com a VPN da TST ativa, quero responder a pergunta GH-18: a homologação da Global Health grava na Base TST na finalização do agendamento? Me conduza passo a passo na Bancada do Ana OS: (1) buscar o paciente-sonda (CPF 66301102770) no GET /pessoas; (2) listar horários livres no GET /agendas/v2; (3) preparar o POST /horarios/agendar de teste. Antes da chamada de escrita, fotografe o resultado da query de conferência na TST; depois dela, rode a query de novo e me mostre a diferença (a Prova no banco). Se o agendamento aparecer no Oracle, a GH-18 está respondida: registre a evidência no CONTEXT.md e nos docs do api-mv. Se não aparecer, registre o que vimos e escreva comigo a pergunta objetiva para a MV/Global Health."
     },
@@ -230,6 +231,7 @@
       "id": "P6",
       "titulo": "Agendamento fim a fim em homolog: a Ana finaliza uma marcação",
       "resumo": "Identificação, escolha de horário e POST /horarios/agendar pela conversa, com a Prova no banco confirmando na TST. O Entregável funcional a um passo.",
+      "nota": "07/ago/2026 (sessão autônoma): não executada, por regra e por bloqueio. Finalização nunca roda em modo autônomo; além disso depende da P3 (GH-18, travada pela VPN caída) e a vitrine de horários depende da GH-19. A mecânica que a antecede (identificação, cadastro, disponibilidade) ficou pronta nas V12/V14/V15.",
       "deps": [
         "V15",
         "P3"
@@ -255,7 +257,7 @@
       "id": "P2",
       "titulo": "Religar a VPN da Base TST (caída desde 13/jul)",
       "prioridade": 5,
-      "nota": "Movida das propostas para o radar em 06/ago por decisão do Pedro: religar fica para outro momento. Escopo confirmado: é só restabelecer e checar a conexão com o banco (SELECT 1 via query-mv.py, execução assistida de copiar e colar), nenhuma ação agêntica sobre o banco (o script recusa tudo que não for SELECT/WITH; Oracle TST é somente leitura por regra do programa). Enquanto caída, a Prova no banco (P3/GH-18) fica em espera; textos prontos para a TI em roadmap/arquivo/.",
+      "nota": "Movida das propostas para o radar em 06/ago por decisão do Pedro: religar fica para outro momento. Escopo confirmado: é só restabelecer e checar a conexão com o banco (SELECT 1 via query-mv.py, execução assistida de copiar e colar), nenhuma ação agêntica sobre o banco (o script recusa tudo que não for SELECT/WITH; Oracle TST é somente leitura por regra do programa). Enquanto caída, a Prova no banco (P3/GH-18) fica em espera; textos prontos para a TI em roadmap/arquivo/. Evidência fresca de 06/ago/2026 (sessão autônoma): ORA-12170, timeout TCP de 20s para 10.100.66.170:1521.",
       "prompt": "Quero religar a VPN de acesso à Base TST (o Oracle de teste do MV), caída desde 13/jul. Escopo: só restabelecer e checar a conexão, nada de ação agêntica no banco (eu executo os passos, você me assiste). Primeiro rode python3 ana/api-mv/scripts/query-mv.py \"SELECT 1 FROM DUAL\" e interprete o erro comigo em linguagem simples. Depois me ajude a escrever a mensagem para o analista de TI do hospital pedindo o restabelecimento do acesso (o histórico e os textos prontos estão em roadmap/arquivo/; aproveite o que já existe). Quando a TI responder que voltou, rode o teste de novo e confirme comigo no Ana OS que a Conexão TST está verde. No final, atualize o TODO.md e o os/dados/roadmap.json (P2 sai do radar)."
     },
     {
