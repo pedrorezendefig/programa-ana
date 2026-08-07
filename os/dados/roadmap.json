@@ -172,6 +172,16 @@
       "nota": "Concluída em 06/ago/2026 em modo autônomo (o esboço para aprovar virou decisão autônoma, a revisar). Página os/sop.html (SVG à mão, visual do DESIGN.md, item na sidebar) com 8 raias, 72 nós e 98 arestas; hover mostra e clique fixa o painel com o trecho literal do prompt; clique na raia isola a jornada. Dados em os/dados/sop-fluxo.json: âncoras com os trechos literais do prompt v5.1 (86 trechos validados como substring exata do export via MCP). Re-validação por sessão quando o prompt mudar; o carimbo de versão vive no JSON e no cabeçalho da página."
     },
     {
+      "id": "V14",
+      "titulo": "Cadastro de paciente pela Ana (POST /pessoas, a proposta P8 puxada)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "V12"
+      ],
+      "nota": "Concluída em 07/ago/2026 em modo autônomo (decisões autônomas a revisar na ficha do TODO.md). Tool id 7 cadastrar_paciente (POST /pessoas da homolog, credencial gh-homolog-token do vault, risco medium, primeira escrita da Ana), prompt v5.2 com o PASSO 3.6 (cadastro só após busca vazia e confirmação explícita; verificado por hash). Prova no playground: TESTE FOXTROT LIMA criado (id 1693), incluindo o 417 de data ausente tratado pela Ana. Fase P4 do ADR-0009 fechada. Achados no report V10: interpolação do body exige campo idêntico à chave do JSON; teto de 50k do systemPrompt sem validação no dry_run. Alerta: prompt a 9 caracteres do teto."
+    },
+    {
       "id": "OV1",
       "titulo": "Decidir o mecanismo de protocolo da ouvidoria (ADR-0010)",
       "dono": "C",
@@ -224,15 +234,6 @@
         "P3"
       ],
       "prompt": "A prova final em homologação: quero que a Ana agende fim a fim pela conversa. Me conduza cenário por cenário no playground: identificação do paciente (paciente-sonda), escolha de especialidade e horário real, e a finalização com o POST /horarios/agendar, conferindo cada chamada no Langfuse. Depois da finalização, faça a Prova no banco na Base TST (como na P3) para confirmar que a marcação chegou ao Oracle. No final, escreva comigo o relatório da prova: o que funciona, o que falta para produção (canal principal, cadastros reais, LGPD), e registre nos docs, no TODO.md e no os/dados/roadmap.json."
-    },
-    {
-      "id": "P8",
-      "titulo": "Cadastro de paciente pela Ana (POST /pessoas) com sanitização de nome",
-      "resumo": "A metade da fase P4 do ADR-0009 que ficou de fora da V12: quando a busca voltar vazia, a Ana cadastra o paciente (nome sem números, data de nascimento obrigatória). Primeira tool de escrita da fachada.",
-      "deps": [
-        "V12"
-      ],
-      "prompt": "Quero dar à Ana o cadastro de paciente (POST /pessoas da homologação Global Health), completando a fase P4 do ADR-0009. Pontos de atenção do desenho: sanitização do nome (a API recusa nome com números, HTTP 417), data de nascimento obrigatória para cadastro novo, e o formato compacto nativo de input_schema nas tools da plataforma (achado da V12). Me mostre o plano primeiro (quando a Ana decide cadastrar, o que pergunta, como evita cadastro duplicado usando a busca antes), depois crie a tool pelo MCP com dry_run e diff, aplique só com a minha aprovação, e prove no playground com um CPF sintético e nome com o prefixo TESTE (nunca dado real; o cadastro de teste fica no SaaS da GH, como os da página Cadeias). Registre no TODO.md, no os/dados/roadmap.json e no CONTEXT.md."
     }
   ],
   "radar": [
@@ -247,7 +248,7 @@
       "id": "V10",
       "titulo": "Reportar à fazer.ai o bug do resolve_conversation e a dessincronização de inboxes",
       "prioridade": 3,
-      "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado."
+      "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado. Somar também (achados da V14, 07/ago): o body de tool só interpola quando o nome do campo do input_schema é idêntico à chave do JSON enviado; e o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply)."
     },
     {
       "id": "P2",
