@@ -172,6 +172,16 @@
       "nota": "Concluída em 06/ago/2026 em modo autônomo (o esboço para aprovar virou decisão autônoma, a revisar). Página os/sop.html (SVG à mão, visual do DESIGN.md, item na sidebar) com 8 raias, 72 nós e 98 arestas; hover mostra e clique fixa o painel com o trecho literal do prompt; clique na raia isola a jornada. Dados em os/dados/sop-fluxo.json: âncoras com os trechos literais do prompt v5.1 (86 trechos validados como substring exata do export via MCP). Re-validação por sessão quando o prompt mudar; o carimbo de versão vive no JSON e no cabeçalho da página."
     },
     {
+      "id": "V15",
+      "titulo": "Horários livres na conversa: mecânica completa (a proposta P5 puxada; vitrine aguarda GH-19)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "V12"
+      ],
+      "nota": "Concluída em 07/ago/2026 em modo autônomo. Três tools de leitura (ids 8-10: consultar_especialidades_agenda, consultar_horarios_livres, consultar_prestadores_agenda), credencial do vault, risco low. Desvio consciente do ADR-0009 (a revisar): tools diretas em vez de proxy (cadeia particular tem 2 elos; antiloop virou regra de porta; proxy reavaliado na P6). Prompt v5.3 com dieta (49.991 para 49.353 caracteres; saíram as menções ao resolve_conversation e duplicações literais) + Seção 2.3.1 (lista numerada; caso vazio informa indisponibilidade sem inventar horário; nunca dizer que está marcado). Prova no playground: elo 1 vazio com resposta honesta e escalada; teste de pressão com zero chamadas. GH-19 re-evidenciada em 07/ago (catálogo vazio, /agendas/v2 500 sem ids). A vitrine destrava sozinha com a massa publicada. Achado de contrato: GET /pessoas não usa o envelope conteudo."
+    },
+    {
       "id": "V14",
       "titulo": "Cadastro de paciente pela Ana (POST /pessoas, a proposta P8 puxada)",
       "dono": "C",
@@ -217,20 +227,11 @@
       "prompt": "Com a VPN da TST ativa, quero responder a pergunta GH-18: a homologação da Global Health grava na Base TST na finalização do agendamento? Me conduza passo a passo na Bancada do Ana OS: (1) buscar o paciente-sonda (CPF 66301102770) no GET /pessoas; (2) listar horários livres no GET /agendas/v2; (3) preparar o POST /horarios/agendar de teste. Antes da chamada de escrita, fotografe o resultado da query de conferência na TST; depois dela, rode a query de novo e me mostre a diferença (a Prova no banco). Se o agendamento aparecer no Oracle, a GH-18 está respondida: registre a evidência no CONTEXT.md e nos docs do api-mv. Se não aparecer, registre o que vimos e escreva comigo a pergunta objetiva para a MV/Global Health."
     },
     {
-      "id": "P5",
-      "titulo": "Horários livres na conversa: a Ana consulta disponibilidade real",
-      "resumo": "GET /agendas/v2 e GET /prestadores viram tools: pergunto por cardiologia e a Ana oferece slots reais da homolog. A vitrine do agendamento.",
-      "deps": [
-        "V12"
-      ],
-      "prompt": "Quero que a Ana consulte horários livres de verdade durante a conversa, usando a homologação da Global Health (GET /agendas/v2 e GET /prestadores). Como fizemos na identificação (P4): primeiro o plano em linguagem simples, depois as tools criadas pelo MCP da plataforma com dry_run e diff, aplicação só com a minha aprovação, e o prompt do agente ajustado para oferecer horários reais no fluxo de agendamento (sem inventar horário nunca). Prova final no playground: eu pergunto por uma consulta de cardiologia e a Ana me oferece slots reais da homolog, com o Langfuse mostrando as chamadas. Registre tudo no TODO.md e no os/dados/roadmap.json."
-    },
-    {
       "id": "P6",
       "titulo": "Agendamento fim a fim em homolog: a Ana finaliza uma marcação",
       "resumo": "Identificação, escolha de horário e POST /horarios/agendar pela conversa, com a Prova no banco confirmando na TST. O Entregável funcional a um passo.",
       "deps": [
-        "P5",
+        "V15",
         "P3"
       ],
       "prompt": "A prova final em homologação: quero que a Ana agende fim a fim pela conversa. Me conduza cenário por cenário no playground: identificação do paciente (paciente-sonda), escolha de especialidade e horário real, e a finalização com o POST /horarios/agendar, conferindo cada chamada no Langfuse. Depois da finalização, faça a Prova no banco na Base TST (como na P3) para confirmar que a marcação chegou ao Oracle. No final, escreva comigo o relatório da prova: o que funciona, o que falta para produção (canal principal, cadastros reais, LGPD), e registre nos docs, no TODO.md e no os/dados/roadmap.json."
@@ -256,6 +257,12 @@
       "prioridade": 5,
       "nota": "Movida das propostas para o radar em 06/ago por decisão do Pedro: religar fica para outro momento. Escopo confirmado: é só restabelecer e checar a conexão com o banco (SELECT 1 via query-mv.py, execução assistida de copiar e colar), nenhuma ação agêntica sobre o banco (o script recusa tudo que não for SELECT/WITH; Oracle TST é somente leitura por regra do programa). Enquanto caída, a Prova no banco (P3/GH-18) fica em espera; textos prontos para a TI em roadmap/arquivo/.",
       "prompt": "Quero religar a VPN de acesso à Base TST (o Oracle de teste do MV), caída desde 13/jul. Escopo: só restabelecer e checar a conexão, nada de ação agêntica no banco (eu executo os passos, você me assiste). Primeiro rode python3 ana/api-mv/scripts/query-mv.py \"SELECT 1 FROM DUAL\" e interprete o erro comigo em linguagem simples. Depois me ajude a escrever a mensagem para o analista de TI do hospital pedindo o restabelecimento do acesso (o histórico e os textos prontos estão em roadmap/arquivo/; aproveite o que já existe). Quando a TI responder que voltou, rode o teste de novo e confirme comigo no Ana OS que a Conexão TST está verde. No final, atualize o TODO.md e o os/dados/roadmap.json (P2 sai do radar)."
+    },
+    {
+      "id": "R1",
+      "titulo": "Teto de 50.000 caracteres do systemPrompt: prompt no limite",
+      "prioridade": 6,
+      "nota": "Após a dieta da V15 sobram 647 caracteres de folga (49.353/50.000). A P6 (finalização) não cabe nesse orçamento: vai exigir reestruturação do prompt (ex.: mover blocos estáticos para a base de conhecimento). Achado da V14 (o teto existe e o dry_run do prompt_set não valida, recusa too_big só no apply; somado ao report V10); dieta feita na V15 (cortes documentados na ficha)."
     },
     {
       "id": "V7",
