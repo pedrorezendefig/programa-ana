@@ -77,6 +77,43 @@
   .seta { fill: var(--cor-mudo); }
   .seta.ativa { fill: var(--cor-tinta); }
 
+  /* filtros (OS9) */
+  .filtros { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; margin: 0 0 16px; }
+  .filtros .grupo { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filtros .rot-grupo {
+    font: var(--peso-semibold) var(--texto-micro)/1 var(--font-inter);
+    letter-spacing: var(--tracking-micro); text-transform: uppercase;
+    color: var(--cor-rotulo); margin-right: 2px;
+  }
+  button.chip-filtro { cursor: pointer; border: none; font-family: var(--font-inter); transition: opacity .15s ease, transform .12s ease; }
+  button.chip-filtro:hover { transform: translateY(-1px); }
+  button.chip-filtro.desligado { opacity: .32; }
+  button.chip-filtro .n { font-weight: var(--peso-semibold); margin-left: 5px; }
+  .no.oculto { display: none; }
+
+  /* tooltip de ficha no hover (OS9) */
+  .tooltip-ficha {
+    position: fixed; z-index: 120; width: 330px;
+    background: var(--cor-tinta); color: #ffffff;
+    border-radius: 14px; padding: 16px 18px;
+    pointer-events: none; opacity: 0; transition: opacity .12s ease;
+    box-shadow: 0 16px 36px -14px rgba(0,0,0,.45);
+  }
+  .tooltip-ficha.visivel { opacity: 1; }
+  .tooltip-ficha .tt-rot {
+    font: var(--peso-semibold) 10px/1.4 var(--font-inter);
+    letter-spacing: .08em; text-transform: uppercase;
+    color: #9a9a9a; margin: 9px 0 2px;
+  }
+  .tooltip-ficha .tt-rot:first-child { margin-top: 0; }
+  .tooltip-ficha .tt-txt { font-size: 12.5px; line-height: 1.5; }
+
+  /* ficha por extenso no painel (OS9) */
+  .painel .ficha-bloco { background: var(--cor-card-interno); border-radius: var(--raio-interno); padding: 14px 16px; margin-top: 14px; }
+  .painel .ficha-bloco + .ficha-bloco { margin-top: 8px; }
+  .painel .ficha-bloco .micro { display: block; margin-bottom: 4px; }
+  .painel .ficha-bloco p { font-size: 13.5px; line-height: 1.55; }
+
   /* painel lateral */
   .painel {
     position: fixed; top: 16px; right: 16px; bottom: 16px;
@@ -119,14 +156,8 @@
         <h1>Grafo de execução</h1>
         <p class="lead" id="sub">O caminho inteiro do programa, das tarefas feitas ao horizonte GH/MV. Clique num nó para ver a ficha e copiar o prompt do passo.</p>
       </div>
-      <div class="legenda">
-        <span class="chip feito">feito</span>
-        <span class="chip fazer">a fazer</span>
-        <span class="chip bloqueada">bloqueada</span>
-        <span class="chip pendente">pendente</span>
-        <span class="chip proposta">proposta</span>
-      </div>
     </div>
+    <div class="filtros" id="filtros" aria-label="Filtros do grafo"></div>
     <div class="card" style="padding: 26px 22px;">
       <div class="palco">
         <div class="grafo" id="grafo">
@@ -137,6 +168,9 @@
     <p class="caption" style="margin-top: 12px;">
       Propostas (tracejadas) são recomendações das sessões: não têm dono nem status até serem puxadas para o estágio
       (aí viram tarefa no <code>roadmap/TODO.md</code>). O bloqueio é derivado das dependências, nunca escrito à mão.
+      Os filtros combinam: um nó aparece se o status dele está ligado e (tendo dono) algum dono dele está ligado;
+      propostas e pendentes não têm dono e ignoram esse grupo. Passe o mouse num nó concluído para ver a ficha
+      (o que fez, o que mudou, o valor); o clique abre a ficha por extenso.
     </p>
   </section>
 </main>
@@ -163,8 +197,103 @@ function esc(s) {
 
 const CADEADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>';
 
-let NOS = [];        /* [{id, titulo, tipo, estado, dono, nota, resumo, prompt, deps, travas}] */
+let NOS = [];        /* [{id, titulo, tipo, estado, dono, nota, resumo, ficha, prompt, deps, travas}] */
 let FRONTEIRA = null;
+
+/* ---- filtros (OS9): categoria exibida e donos ---- */
+const FILTRO = {
+  cat: new Set(["feito", "fazer", "bloqueada", "pendente", "proposta"]),
+  dono: new Set(["P", "C", "E"])
+};
+function categoriaDe(n) {
+  if (n.tipo === "pendente") return "pendente";
+  if (n.tipo === "proposta") return "proposta";
+  return n.estado; /* feito | bloqueada | fazer */
+}
+function donosDe(n) { return n.dono ? n.dono.split(/[^PCE]+/).filter(Boolean) : []; }
+function visivel(n) {
+  if (!FILTRO.cat.has(categoriaDe(n))) return false;
+  const ds = donosDe(n); /* nó sem dono (proposta/pendente) não é afetado pelo filtro de dono */
+  if (ds.length && !ds.some(d => FILTRO.dono.has(d))) return false;
+  return true;
+}
+
+const ROT_CAT = [["feito", "feito"], ["fazer", "a fazer"], ["bloqueada", "bloqueada"], ["pendente", "pendente"], ["proposta", "proposta"]];
+const ROT_DONO = [["P", "Pedro"], ["C", "Claude"], ["E", "Externo"]];
+
+function renderFiltros() {
+  const alvo = document.getElementById("filtros");
+  const contaCat = {}, contaDono = { P: 0, C: 0, E: 0 };
+  NOS.forEach(function (n) {
+    const c = categoriaDe(n);
+    contaCat[c] = (contaCat[c] || 0) + 1;
+    donosDe(n).forEach(function (d) { if (contaDono[d] != null) contaDono[d]++; });
+  });
+  alvo.innerHTML =
+    '<div class="grupo"><span class="rot-grupo">Status</span>' +
+    ROT_CAT.map(function (par) {
+      const lig = FILTRO.cat.has(par[0]);
+      return '<button class="chip ' + par[0] + ' chip-filtro' + (lig ? "" : " desligado") +
+        '" data-grupo="cat" data-chave="' + par[0] + '" aria-pressed="' + lig + '">' +
+        par[1] + '<span class="n">' + (contaCat[par[0]] || 0) + "</span></button>";
+    }).join("") + "</div>" +
+    '<div class="grupo"><span class="rot-grupo">Dono</span>' +
+    ROT_DONO.map(function (par) {
+      const lig = FILTRO.dono.has(par[0]);
+      return '<button class="chip contorno chip-filtro' + (lig ? "" : " desligado") +
+        '" data-grupo="dono" data-chave="' + par[0] + '" aria-pressed="' + lig + '">' +
+        par[1] + '<span class="n">' + contaDono[par[0]] + "</span></button>";
+    }).join("") + "</div>";
+  alvo.querySelectorAll(".chip-filtro").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const conjunto = btn.dataset.grupo === "cat" ? FILTRO.cat : FILTRO.dono;
+      if (conjunto.has(btn.dataset.chave)) conjunto.delete(btn.dataset.chave);
+      else conjunto.add(btn.dataset.chave);
+      btn.classList.toggle("desligado");
+      btn.setAttribute("aria-pressed", conjunto.has(btn.dataset.chave));
+      aplicarFiltros();
+    });
+  });
+}
+
+function aplicarFiltros() {
+  esconderTip();
+  NOS.forEach(function (n) {
+    const el = document.getElementById("no-" + n.id);
+    if (el) el.classList.toggle("oculto", !visivel(n));
+  });
+  document.querySelectorAll("#grafo .coluna").forEach(function (col) {
+    const temVivo = col.querySelector(".no:not(.oculto)");
+    col.style.display = temVivo ? "" : "none";
+  });
+  requestAnimationFrame(desenharArestas);
+}
+
+/* ---- tooltip de ficha no hover (OS9) ---- */
+const TIP = document.createElement("div");
+TIP.className = "tooltip-ficha";
+document.body.appendChild(TIP);
+
+function mostrarTip(n, el) {
+  let html = "";
+  if (n.ficha) {
+    html = '<div class="tt-rot">O que fez</div><div class="tt-txt">' + esc(n.ficha.fez) + "</div>" +
+      '<div class="tt-rot">O que mudou</div><div class="tt-txt">' + esc(n.ficha.mudou) + "</div>" +
+      '<div class="tt-rot">O valor</div><div class="tt-txt">' + esc(n.ficha.valor) + "</div>";
+  } else if (n.resumo || n.nota) {
+    html = '<div class="tt-rot">Resumo</div><div class="tt-txt">' + esc(n.resumo || n.nota) + "</div>";
+  } else return;
+  TIP.innerHTML = html;
+  TIP.classList.add("visivel");
+  const r = el.getBoundingClientRect();
+  let x = r.right + 12;
+  if (x + 342 > window.innerWidth) x = Math.max(8, r.left - 342);
+  let y = Math.min(r.top, window.innerHeight - TIP.offsetHeight - 12);
+  TIP.style.left = x + "px";
+  TIP.style.top = Math.max(8, y) + "px";
+}
+function esconderTip() { TIP.classList.remove("visivel"); }
+document.addEventListener("scroll", esconderTip, true);
 
 async function carregar() {
   const r = await fetch("/api/roadmap").then(x => x.json());
@@ -178,8 +307,8 @@ async function carregar() {
     const travas = deps.filter(dep => !feitas.has(dep));
     const estado = (tipo === "tarefa" && no.status === "feito") ? "feito" : (travas.length ? "bloqueada" : "fazer");
     return { id: no.id, titulo: no.titulo, tipo: tipo, estado: estado, dono: no.dono || null,
-             nota: no.nota || null, resumo: no.resumo || null, prompt: no.prompt || null,
-             deps: deps, travas: travas };
+             nota: no.nota || null, resumo: no.resumo || null, ficha: no.ficha || null,
+             prompt: no.prompt || null, deps: deps, travas: travas };
   }
   NOS = [].concat(
     d.tarefas.map(t => montar(t, "tarefa")),
@@ -187,7 +316,9 @@ async function carregar() {
     (d.propostas || []).map(p => montar(p, "proposta"))
   );
   FRONTEIRA = NOS.find(n => n.tipo === "tarefa" && n.estado === "fazer") || null;
+  renderFiltros();
   desenhar();
+  aplicarFiltros();
   if (location.hash) abrirFicha(location.hash.slice(1));
 }
 
@@ -249,9 +380,15 @@ function desenhar() {
     grafo.appendChild(col);
   });
 
+  const porIdNos = {};
+  NOS.forEach(function (n) { porIdNos[n.id] = n; });
   grafo.querySelectorAll(".no").forEach(function (el) {
     el.addEventListener("click", function () { abrirFicha(el.dataset.id); });
     el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirFicha(el.dataset.id); } });
+    el.addEventListener("mouseenter", function () { mostrarTip(porIdNos[el.dataset.id], el); });
+    el.addEventListener("mouseleave", esconderTip);
+    el.addEventListener("focus", function () { mostrarTip(porIdNos[el.dataset.id], el); });
+    el.addEventListener("blur", esconderTip);
   });
 
   requestAnimationFrame(desenharArestas);
@@ -271,10 +408,10 @@ function desenharArestas() {
   let caminhos = "";
   NOS.forEach(function (n) {
     const alvoEl = document.getElementById("no-" + n.id);
-    if (!alvoEl) return;
+    if (!alvoEl || alvoEl.offsetParent === null) return; /* nó filtrado: sem aresta */
     n.deps.forEach(function (dep) {
       const origemEl = document.getElementById("no-" + dep);
-      if (!origemEl) return;
+      if (!origemEl || origemEl.offsetParent === null) return;
       const a = origemEl.getBoundingClientRect(), b = alvoEl.getBoundingClientRect();
       let x1 = a.right - base.left, y1 = a.top - base.top + a.height / 2;
       let x2 = b.left - base.left, y2 = b.top - base.top + b.height / 2;
@@ -310,6 +447,7 @@ function caminho(d, alvo, origem) {
 function abrirFicha(id) {
   const n = NOS.find(x => x.id === id);
   if (!n) return;
+  esconderTip();
   document.querySelectorAll(".no.aberto").forEach(el => el.classList.remove("aberto"));
   const el = document.getElementById("no-" + id);
   if (el) el.classList.add("aberto");
@@ -345,7 +483,13 @@ function abrirFicha(id) {
     '<div class="linha"><span class="id" style="font:700 13px/1 var(--font-mono);color:var(--cor-rotulo);">' + esc(n.id) + "</span>" + chip +
     (n.dono ? '<span class="caption">dono: ' + esc(n.dono) + "</span>" : "") + "</div>" +
     '<div class="titulo-no">' + esc(n.titulo) + "</div>" +
-    ((n.nota || n.resumo) ? '<div class="card-interno"><div class="linha-dado"><span>' + esc(n.nota || n.resumo) + "</span></div></div>" : "") +
+    (n.ficha
+      ? '<div class="ficha-bloco"><span class="micro">O que fez</span><p>' + esc(n.ficha.fez) + "</p></div>" +
+        '<div class="ficha-bloco"><span class="micro">O que mudou</span><p>' + esc(n.ficha.mudou) + "</p></div>" +
+        '<div class="ficha-bloco"><span class="micro">O valor</span><p>' + esc(n.ficha.valor) + "</p></div>"
+      : "") +
+    ((n.nota || n.resumo) ? '<div class="bloco"><span class="micro">' + (n.ficha ? "Nota de registro" : "Resumo") + '</span>' +
+      '<div class="card-interno" style="margin-top:8px;"><div class="linha-dado"><span>' + esc(n.nota || n.resumo) + "</span></div></div></div>" : "") +
     deps + prompt;
 
   const btn = document.getElementById("btn-copiar");

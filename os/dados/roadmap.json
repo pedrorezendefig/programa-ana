@@ -1,6 +1,6 @@
 {
   "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
-  "atualizado": "2026-08-06",
+  "atualizado": "2026-08-10",
   "tarefas": [
     {
       "id": "V1",
@@ -8,14 +8,24 @@
       "dono": "C",
       "status": "feito",
       "deps": [],
-      "nota": "31/jul: serviço n8n parado no Coolify (503 proposital); religar é um start."
+      "nota": "31/jul: serviço n8n parado no Coolify (503 proposital); religar é um start.",
+      "ficha": {
+        "fez": "Workflows Ana e Desliga Ana desativados via API; em 31/jul o serviço n8n inteiro foi parado no Coolify.",
+        "mudou": "O fazer.ai agents virou o único cérebro respondendo o bot do Telegram; a URL do n8n devolve 503 proposital.",
+        "valor": "Elimina o risco de resposta dupla e libera RAM na VPS; religar é um start no Coolify."
+      }
     },
     {
       "id": "V2",
       "titulo": "Trocar o modelo do agente para gpt-5-mini",
       "dono": "C",
       "status": "feito",
-      "deps": []
+      "deps": [],
+      "ficha": {
+        "fez": "Modelo do agente trocado de gpt-5.2 para gpt-5-mini (temperature 1, exigência do mini).",
+        "mudou": "Custo por 1M de tokens caiu de $1.75/$14.00 para $0.25/$2.00 (input/output).",
+        "valor": "Viabiliza testar barato em volume; se o mini degradar, voltar é uma linha."
+      }
     },
     {
       "id": "V3",
@@ -23,7 +33,12 @@
       "dono": "C",
       "status": "feito",
       "deps": [],
-      "nota": "Substituiu o Google Sheets (ADR-0006). HTTPS no Coolify, dados importados."
+      "nota": "Substituiu o Google Sheets (ADR-0006). HTTPS no Coolify, dados importados.",
+      "ficha": {
+        "fez": "NocoDB no ar no Coolify com HTTPS e as 4 tabelas do negócio importadas (consultas, exames, cirurgias, convênios).",
+        "mudou": "O Google Sheets saiu da equação (ADR-0006): a base editável ganhou tela própria com login, sem planilha pública.",
+        "valor": "O negócio edita preço numa tela segura e a Ana lê o dado vivo."
+      }
     },
     {
       "id": "V4",
@@ -33,7 +48,12 @@
       "deps": [
         "V3"
       ],
-      "nota": "4 tools + prompt com Tabelas Oficiais. Prova: cardiologia R$ 380 com diferenciais."
+      "nota": "4 tools + prompt com Tabelas Oficiais. Prova: cardiologia R$ 380 com diferenciais.",
+      "ficha": {
+        "fez": "Quatro tools HTTP na plataforma lendo shared views públicas somente leitura do NocoDB; prompt ganhou a seção Tabelas Oficiais.",
+        "mudou": "A Ana responde preço com dado vivo da base, com precedência sobre a base de conhecimento.",
+        "valor": "Prova no playground: cardiologia R$ 380 com diferenciais, no script exato da Seção 2.3."
+      }
     },
     {
       "id": "V5",
@@ -41,7 +61,12 @@
       "dono": "C+P",
       "status": "feito",
       "deps": [],
-      "nota": "Pronto em roadmap/roteiro-cenarios.md: 10 principais + 2 condicionais."
+      "nota": "Pronto em roadmap/roteiro-cenarios.md: 10 principais + 2 condicionais.",
+      "ficha": {
+        "fez": "Roteiro de cenários escrito (roadmap/roteiro-cenarios.md): 10 principais + 2 condicionais.",
+        "mudou": "O critério de pronto do estágio virou executável: cada cenário com etapa/tag esperada no Chatwoot e tools esperadas no Langfuse.",
+        "valor": "Transforma a pergunta 'a Ana funciona?' em checklist verificável."
+      }
     },
     {
       "id": "V6",
@@ -52,7 +77,12 @@
         "V4",
         "V5"
       ],
-      "nota": "Concluída em 06/ago/2026: 10 cenários principais passando com gpt-5-mini (o 9 com ressalva não bloqueante); 12 passou; 11 não rodado (condicional). Registro em roadmap/roteiro-cenarios.md; detalhes na ficha do TODO.md."
+      "nota": "Concluída em 06/ago/2026: 10 cenários principais passando com gpt-5-mini (o 9 com ressalva não bloqueante); 12 passou; 11 não rodado (condicional). Registro em roadmap/roteiro-cenarios.md; detalhes na ficha do TODO.md.",
+      "ficha": {
+        "fez": "Roteiro rodado nos dois canais (Telegram e inbox de API): 10 principais passando, o 12 passou, o 11 condicional não rodado.",
+        "mudou": "Prompt foi à v4 no caminho: handoff só às filas humanas, despedida antes de encerrar, resolve_conversation fora dos grants.",
+        "valor": "Estágio de viabilidade fechado com evidência; o dia inteiro de testes custou perto de US$ 0,22."
+      }
     },
     {
       "id": "V9",
@@ -62,7 +92,12 @@
       "deps": [
         "V3"
       ],
-      "nota": "Concluída em 06/ago/2026 com o Pedro no papel do negócio (convite a terceiros fica para quando fizer sentido). Guia de edição em docs/07-guia-edicao-base-ana.md. Prova ao vivo: Cardiologia editada para R$ 395,00 no NocoDB e a Ana respondeu o valor novo na resposta seguinte do playground, sem redeploy; valor revertido para R$ 380,00."
+      "nota": "Concluída em 06/ago/2026 com o Pedro no papel do negócio (convite a terceiros fica para quando fizer sentido). Guia de edição em docs/07-guia-edicao-base-ana.md. Prova ao vivo: Cardiologia editada para R$ 395,00 no NocoDB e a Ana respondeu o valor novo na resposta seguinte do playground, sem redeploy; valor revertido para R$ 380,00.",
+      "ficha": {
+        "fez": "Guia de edição de meia página (docs/07) e ciclo fechado com o Pedro no papel do usuário de negócio.",
+        "mudou": "Cardiologia editada para R$ 395 no NocoDB e a Ana respondeu o valor novo na resposta seguinte, sem redeploy (depois revertido).",
+        "valor": "Prova que o negócio muda preço sozinho e a Ana acompanha na hora."
+      }
     },
     {
       "id": "OS1",
@@ -70,7 +105,12 @@
       "dono": "C",
       "status": "feito",
       "deps": [],
-      "nota": "Server estendido (roadmap RW, docs allowlist), tokens/os.css/nav.js, fontes locais."
+      "nota": "Server estendido (roadmap RW, docs allowlist), tokens/os.css/nav.js, fontes locais.",
+      "ficha": {
+        "fez": "Fundação do cockpit: pasta os/, server estendido (roadmap RW, biblioteca com allowlist), design system e dados em JSON.",
+        "mudou": "O programa ganhou porta única local (localhost:8777) com regras duras: GH só homolog, TST só SELECT, dado pessoal nunca servido.",
+        "valor": "A base segura sobre a qual todas as páginas do OS nasceram."
+      }
     },
     {
       "id": "OS2",
@@ -80,7 +120,12 @@
       "deps": [
         "OS1"
       ],
-      "nota": "Cockpit com Ideias editaveis, apis.html com selos, arquitetura.html, biblioteca.html."
+      "nota": "Cockpit com Ideias editaveis, apis.html com selos, arquitetura.html, biblioteca.html.",
+      "ficha": {
+        "fez": "Páginas novas: home com Ideias editáveis pela UI, Mapa das APIs com selos de testabilidade, Arquitetura e Biblioteca.",
+        "mudou": "Roadmap, catálogo de APIs e documentação passaram a ser navegáveis num lugar só.",
+        "valor": "O estado do programa visível sem abrir arquivo."
+      }
     },
     {
       "id": "OS3",
@@ -90,7 +135,12 @@
       "deps": [
         "OS1"
       ],
-      "nota": "6 paginas portadas por agentes paralelos, catalogos e queries verificados verbatim."
+      "nota": "6 paginas portadas por agentes paralelos, catalogos e queries verificados verbatim.",
+      "ficha": {
+        "fez": "As 6 páginas do playground portadas para o OS por agentes paralelos (bancada, roteiro, atlas, absorção, insights, tst).",
+        "mudou": "Catálogos e queries preservados verbatim dentro do visual novo.",
+        "valor": "Uma casa só para explorar a API GH e o retrato da produção."
+      }
     },
     {
       "id": "OS4",
@@ -101,7 +151,12 @@
         "OS2",
         "OS3"
       ],
-      "nota": "Rotas, allowlist, escrita e visual conferidos; prova viva no Oracle aguarda VPN da TST."
+      "nota": "Rotas, allowlist, escrita e visual conferidos; prova viva no Oracle aguarda VPN da TST.",
+      "ficha": {
+        "fez": "Fumaça por página: rotas, allowlist, escrita do roadmap com backup e visual conferidos no Chrome.",
+        "mudou": "Defeitos de rota e validação corrigidos antes do uso real.",
+        "valor": "Confiança de que o cockpit não mente nem vaza."
+      }
     },
     {
       "id": "OS5",
@@ -111,7 +166,12 @@
       "deps": [
         "OS4"
       ],
-      "nota": "mapa.html e playground antigos em arquivo/; CLAUDE.md e /check apontam para o OS."
+      "nota": "mapa.html e playground antigos em arquivo/; CLAUDE.md e /check apontam para o OS.",
+      "ficha": {
+        "fez": "Arquivamento: mapa.html e playground antigos movidos para arquivo/, CLAUDE.md e /check apontando para o OS.",
+        "mudou": "Uma fonte só de estado (TODO.md + roadmap.json); o acervo antigo preservado intacto para consulta.",
+        "valor": "Zero ambiguidade sobre onde mora a verdade do programa."
+      }
     },
     {
       "id": "OS6",
@@ -119,7 +179,12 @@
       "dono": "C",
       "status": "feito",
       "deps": [],
-      "nota": "Feita em 31/jul/2026: DESIGN.md Ledger, assets novos, 11 paginas no visual refero, fumaça ok."
+      "nota": "Feita em 31/jul/2026: DESIGN.md Ledger, assets novos, 11 paginas no visual refero, fumaça ok.",
+      "ficha": {
+        "fez": "Redesign completo no design Ledger (referência refero): DESIGN.md novo, tokens e navegação reescritos, 11 páginas portadas.",
+        "mudou": "A home virou dashboard com indicadores funcionais, destaque da fronteira e sparkline de progresso.",
+        "valor": "O cockpit lê como produto, não como protótipo."
+      }
     },
     {
       "id": "OS7",
@@ -129,7 +194,12 @@
       "deps": [
         "OS6"
       ],
-      "nota": "Feita em 31/jul/2026: grafo com propostas P1..P6 + GH1, prompts copiaveis, painel de ficha."
+      "nota": "Feita em 31/jul/2026: grafo com propostas P1..P6 + GH1, prompts copiaveis, painel de ficha.",
+      "ficha": {
+        "fez": "Página Roadmap com o grafo de execução: colunas Feito, Estágio ativo e Horizonte, propostas P1..P6 e prompts copiáveis.",
+        "mudou": "roadmap.json ganhou a camada de propostas, o server valida e o /check preserva.",
+        "valor": "O caminho inteiro do programa virou mapa clicável com o próximo passo pronto para colar."
+      }
     },
     {
       "id": "OS8",
@@ -139,7 +209,12 @@
       "deps": [
         "OS6"
       ],
-      "nota": "Feita em 06/ago/2026: cadeias A (paciente novo, escrita com dados regenerados a cada execução), B (sonda), C (árvore de convênio + validação 417), D (consulta, bloqueada pela GH-19), E (exame: triagem, preparo, anexos) e F (gerir o agendado). Payload enviado e resposta crua expansíveis por elo; roteiro da demo de 5 minutos na própria página."
+      "nota": "Feita em 06/ago/2026: cadeias A (paciente novo, escrita com dados regenerados a cada execução), B (sonda), C (árvore de convênio + validação 417), D (consulta, bloqueada pela GH-19), E (exame: triagem, preparo, anexos) e F (gerir o agendado). Payload enviado e resposta crua expansíveis por elo; roteiro da demo de 5 minutos na própria página.",
+      "ficha": {
+        "fez": "Página Cadeias: a API GH contada em 6 histórias encadeadas cobrindo os 22 endpoints, rodando ao vivo pelo proxy /api/gh.",
+        "mudou": "Payload enviado e resposta crua expansíveis por elo; dados de escrita regenerados a cada execução com prefixo TESTE DEMO ANA VITTA.",
+        "valor": "A tela oficial da demo ao diretor; provou ao vivo a API funcional e o catálogo vazio (GH-19)."
+      }
     },
     {
       "id": "V11",
@@ -149,7 +224,12 @@
       "deps": [
         "OS8"
       ],
-      "nota": "Concluída em 06/ago/2026 por decisão do Pedro: cadeias rodadas por ele e re-certificadas pela sessão (API funcional, catálogo 100% vazio nos 4 endpoints, bloqueio da GH-19 real e externo). A apresentação ao diretor e o envio da cobrança (ana/api-mv/cobranca-massa-homolog.md) ficam com o Pedro, fora do roadmap."
+      "nota": "Concluída em 06/ago/2026 por decisão do Pedro: cadeias rodadas por ele e re-certificadas pela sessão (API funcional, catálogo 100% vazio nos 4 endpoints, bloqueio da GH-19 real e externo). A apresentação ao diretor e o envio da cobrança (ana/api-mv/cobranca-massa-homolog.md) ficam com o Pedro, fora do roadmap.",
+      "ficha": {
+        "fez": "Cadeias rodadas pelo Pedro e re-certificadas pela sessão: API funcional, catálogo 100% vazio, bloqueio da Cadeia D real e externo.",
+        "mudou": "O pronto quando foi relaxado por decisão: a apresentação ao diretor e o envio da cobrança ficam com o Pedro, fora do roadmap.",
+        "valor": "Demo pronta na prateleira e o argumento da cobrança da massa provado ao vivo."
+      }
     },
     {
       "id": "GH1",
@@ -159,7 +239,12 @@
       "deps": [
         "V6"
       ],
-      "nota": "Concluída em 06/ago/2026 em modo autônomo por decisão do Pedro (ADR-0009): a Ana fala com a GH por uma fachada de 7 ferramentas de agenda (as do SOP reescrito de docs/04), cada uma encapsulando sua cadeia de endpoints; os 22 endpoints do Mapa das APIs mapeados sem órfão. Implementação por fases: P4 (tools diretas), P5 (proxy de orquestração), P6 (finalização, gated pela GH-18). A dep em P3 foi removida: a Prova no banco é gate da P6, não do desenho."
+      "nota": "Concluída em 06/ago/2026 em modo autônomo por decisão do Pedro (ADR-0009): a Ana fala com a GH por uma fachada de 7 ferramentas de agenda (as do SOP reescrito de docs/04), cada uma encapsulando sua cadeia de endpoints; os 22 endpoints do Mapa das APIs mapeados sem órfão. Implementação por fases: P4 (tools diretas), P5 (proxy de orquestração), P6 (finalização, gated pela GH-18). A dep em P3 foi removida: a Prova no banco é gate da P6, não do desenho.",
+      "ficha": {
+        "fez": "ADR-0009 escrito: a fachada de agenda. As 7 ferramentas do SOP encapsulando os 22 endpoints GH, nenhum órfão, fases P4/P5/P6.",
+        "mudou": "A Ana não ganha 22 tools, ganha 7 ferramentas do fluxo real; token só no vault, sanitização na fachada, 417 vira Regra Híbrida.",
+        "valor": "O desenho que evita um agente colcha de retalhos: cada tool nasce do SOP, não do catálogo."
+      }
     },
     {
       "id": "V13",
@@ -169,7 +254,12 @@
       "deps": [
         "V12"
       ],
-      "nota": "Concluída em 06/ago/2026 em modo autônomo (o esboço para aprovar virou decisão autônoma, a revisar). Página os/sop.html (SVG à mão, visual do DESIGN.md, item na sidebar) com 8 raias, 72 nós e 98 arestas; hover mostra e clique fixa o painel com o trecho literal do prompt; clique na raia isola a jornada. Dados em os/dados/sop-fluxo.json: âncoras com os trechos literais do prompt. Re-validado em 07/ago/2026 contra a v5.3 (após V14/V15): 9 âncoras corrigidas, 5 nós novos (S9 cadastro, P13-P16 disponibilidade). Estado final: 77 nós, 106 arestas, 95 trechos validados, 0 ausentes. Re-validação por sessão quando o prompt mudar; o carimbo de versão vive no JSON e no cabeçalho da página."
+      "nota": "Concluída em 06/ago/2026 em modo autônomo (o esboço para aprovar virou decisão autônoma, a revisar). Página os/sop.html (SVG à mão, visual do DESIGN.md, item na sidebar) com 8 raias, 72 nós e 98 arestas; hover mostra e clique fixa o painel com o trecho literal do prompt; clique na raia isola a jornada. Dados em os/dados/sop-fluxo.json: âncoras com os trechos literais do prompt. Re-validado em 07/ago/2026 contra a v5.3 (após V14/V15): 9 âncoras corrigidas, 5 nós novos (S9 cadastro, P13-P16 disponibilidade). Estado final: 77 nós, 106 arestas, 95 trechos validados, 0 ausentes. Re-validação por sessão quando o prompt mudar; o carimbo de versão vive no JSON e no cabeçalho da página.",
+      "ficha": {
+        "fez": "Página Mapa do SOP (os/sop.html): 8 raias, 77 nós e 106 arestas, cada nó ancorado em trecho literal do prompt.",
+        "mudou": "O SOP saiu do texto corrido para um mapa clicável, re-validado contra a v5.3 (95 trechos, 0 ausentes).",
+        "valor": "Dá para ver o comportamento prometido da Ana e auditá-lo contra o prompt vivo."
+      }
     },
     {
       "id": "V15",
@@ -179,7 +269,12 @@
       "deps": [
         "V12"
       ],
-      "nota": "Concluída em 07/ago/2026 em modo autônomo. Três tools de leitura (ids 8-10: consultar_especialidades_agenda, consultar_horarios_livres, consultar_prestadores_agenda), credencial do vault, risco low. Desvio consciente do ADR-0009 (a revisar): tools diretas em vez de proxy (cadeia particular tem 2 elos; antiloop virou regra de porta; proxy reavaliado na P6). Prompt v5.3 com dieta (49.991 para 49.353 caracteres; saíram as menções ao resolve_conversation e duplicações literais) + Seção 2.3.1 (lista numerada; caso vazio informa indisponibilidade sem inventar horário; nunca dizer que está marcado). Prova no playground: elo 1 vazio com resposta honesta e escalada; teste de pressão com zero chamadas. GH-19 re-evidenciada em 07/ago (catálogo vazio, /agendas/v2 500 sem ids). A vitrine destrava sozinha com a massa publicada. Achado de contrato: GET /pessoas não usa o envelope conteudo."
+      "nota": "Concluída em 07/ago/2026 em modo autônomo. Três tools de leitura (ids 8-10: consultar_especialidades_agenda, consultar_horarios_livres, consultar_prestadores_agenda), credencial do vault, risco low. Desvio consciente do ADR-0009 (a revisar): tools diretas em vez de proxy (cadeia particular tem 2 elos; antiloop virou regra de porta; proxy reavaliado na P6). Prompt v5.3 com dieta (49.991 para 49.353 caracteres; saíram as menções ao resolve_conversation e duplicações literais) + Seção 2.3.1 (lista numerada; caso vazio informa indisponibilidade sem inventar horário; nunca dizer que está marcado). Prova no playground: elo 1 vazio com resposta honesta e escalada; teste de pressão com zero chamadas. GH-19 re-evidenciada em 07/ago (catálogo vazio, /agendas/v2 500 sem ids). A vitrine destrava sozinha com a massa publicada. Achado de contrato: GET /pessoas não usa o envelope conteudo.",
+      "ficha": {
+        "fez": "Três tools de disponibilidade (especialidades, horários livres, prestadores) e prompt v5.3 com a Seção 2.3.1 + dieta de 2.004 caracteres.",
+        "mudou": "Desvio consciente do ADR-0009: tools diretas, sem proxy. Caso vazio provado: indisponibilidade honesta, zero horário inventado.",
+        "valor": "A mecânica da vitrine de horários pronta; destrava sozinha quando a GH publicar a massa (GH-19)."
+      }
     },
     {
       "id": "V14",
@@ -189,7 +284,12 @@
       "deps": [
         "V12"
       ],
-      "nota": "Concluída em 07/ago/2026 em modo autônomo (decisões autônomas a revisar na ficha do TODO.md). Tool id 7 cadastrar_paciente (POST /pessoas da homolog, credencial gh-homolog-token do vault, risco medium, primeira escrita da Ana), prompt v5.2 com o PASSO 3.6 (cadastro só após busca vazia e confirmação explícita; verificado por hash). Prova no playground: TESTE FOXTROT LIMA criado (id 1693), incluindo o 417 de data ausente tratado pela Ana. Fase P4 do ADR-0009 fechada. Achados no report V10: interpolação do body exige campo idêntico à chave do JSON; teto de 50k do systemPrompt sem validação no dry_run. Alerta: prompt a 9 caracteres do teto."
+      "nota": "Concluída em 07/ago/2026 em modo autônomo (decisões autônomas a revisar na ficha do TODO.md). Tool id 7 cadastrar_paciente (POST /pessoas da homolog, credencial gh-homolog-token do vault, risco medium, primeira escrita da Ana), prompt v5.2 com o PASSO 3.6 (cadastro só após busca vazia e confirmação explícita; verificado por hash). Prova no playground: TESTE FOXTROT LIMA criado (id 1693), incluindo o 417 de data ausente tratado pela Ana. Fase P4 do ADR-0009 fechada. Achados no report V10: interpolação do body exige campo idêntico à chave do JSON; teto de 50k do systemPrompt sem validação no dry_run. Alerta: prompt a 9 caracteres do teto.",
+      "ficha": {
+        "fez": "Tool cadastrar_paciente (POST /pessoas, primeira escrita da Ana) e prompt v5.2 com o PASSO 3.6, verificado por hash.",
+        "mudou": "A Ana cria cadastro na homolog após busca vazia e confirmação explícita; provado com TESTE FOXTROT LIMA (id 1693), 417 tratado.",
+        "valor": "Fecha a fase P4 do ADR-0009: identificação e cadastro completos na conversa."
+      }
     },
     {
       "id": "OV1",
@@ -197,7 +297,12 @@
       "dono": "C",
       "status": "feito",
       "deps": [],
-      "nota": "Concluída em 06/ago/2026 em modo autônomo (decisão autônoma, a revisar pelo Pedro): protocolo sequencial ANO-NNNN na tabela nova 5_Ouvidoria_Protocolos da Base Ana, numerado pelo autoincremento do NocoDB e formatado por coluna de fórmula (nunca pelo modelo). Tabela sem shared view pública e sem dado pessoal (índice, não dossiê). Implementação não executada por falta de via segura (metadados do NocoDB exigem xc-token novo, só o Pedro gera): virou a pendente OV2, specs completas das tools no ADR-0010."
+      "nota": "Concluída em 06/ago/2026 em modo autônomo (decisão autônoma, a revisar pelo Pedro): protocolo sequencial ANO-NNNN na tabela nova 5_Ouvidoria_Protocolos da Base Ana, numerado pelo autoincremento do NocoDB e formatado por coluna de fórmula (nunca pelo modelo). Tabela sem shared view pública e sem dado pessoal (índice, não dossiê). Implementação não executada por falta de via segura (metadados do NocoDB exigem xc-token novo, só o Pedro gera): virou a pendente OV2, specs completas das tools no ADR-0010.",
+      "ficha": {
+        "fez": "ADR-0010 decidido: protocolo sequencial ANO-NNNN na tabela 5_Ouvidoria_Protocolos, numerado pelo autoincremento do banco.",
+        "mudou": "A tabela é índice, não dossiê: sem dado pessoal e sem shared view pública. A implementação virou a pendente OV2.",
+        "valor": "Devolve auditabilidade à ouvidoria: o número que o prompt promete passa a existir de verdade."
+      }
     },
     {
       "id": "V12",
@@ -207,7 +312,42 @@
       "deps": [
         "GH1"
       ],
-      "nota": "Concluída em 06/ago/2026 (a proposta P4 foi puxada, com grilling). Duas tools HTTP diretas na plataforma (buscar_paciente_por_cpf e buscar_paciente_por_telefone, GET /pessoas da homolog), com a credencial gh-homolog-token no vault (tipo header, header Token, preenchida pelo Pedro no console; o segredo nunca passou pela sessão nem pelo prompt). Prompt do agente na v5.1: seção Identificação de Paciente (com guardrail de LGPD) e PASSO 3.5 no Princípio de Coleta (busca automática após CPF validado, resultado citado no resumo interno da escalada). Provas no playground: sonda encontrado por CPF (com máscara sanitizada) e por telefone (cadastro confirmado só pelo primeiro nome), e o fluxo 2.4A chamando a busca sozinho. Achado de plataforma: a instância não normaliza input_schema em JSON Schema padrão (write edge anterior à normalização); as tools HTTP precisam do formato compacto nativo, senão o input do modelo é descartado e o query param sai vazio."
+      "nota": "Concluída em 06/ago/2026 (a proposta P4 foi puxada, com grilling). Duas tools HTTP diretas na plataforma (buscar_paciente_por_cpf e buscar_paciente_por_telefone, GET /pessoas da homolog), com a credencial gh-homolog-token no vault (tipo header, header Token, preenchida pelo Pedro no console; o segredo nunca passou pela sessão nem pelo prompt). Prompt do agente na v5.1: seção Identificação de Paciente (com guardrail de LGPD) e PASSO 3.5 no Princípio de Coleta (busca automática após CPF validado, resultado citado no resumo interno da escalada). Provas no playground: sonda encontrado por CPF (com máscara sanitizada) e por telefone (cadastro confirmado só pelo primeiro nome), e o fluxo 2.4A chamando a busca sozinho. Achado de plataforma: a instância não normaliza input_schema em JSON Schema padrão (write edge anterior à normalização); as tools HTTP precisam do formato compacto nativo, senão o input do modelo é descartado e o query param sai vazio.",
+      "ficha": {
+        "fez": "Duas tools GH de identificação (busca por CPF e por telefone, GET /pessoas) com credencial do vault; prompt v5.1 com o PASSO 3.5.",
+        "mudou": "A Ana reconhece paciente cadastrado sozinha, com guardrail de LGPD (confirma no máximo o primeiro nome).",
+        "valor": "A primeira conexão real Ana x Global Health, provada com o paciente-sonda no playground."
+      }
+    },
+    {
+      "id": "OS9",
+      "titulo": "Ana OS: filtros e fichas no grafo do Roadmap (status, dono, hover com fez/mudou/valor)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS7"
+      ],
+      "nota": "Feita em 10/ago/2026 (grilling do Pedro): chips de filtro por status e por dono com contagem, tooltip de hover com a ficha e ficha por extenso no painel. roadmap.json ganhou o campo estruturado ficha {fez, mudou, valor} nos nos concluidos, curado das fichas do TODO.md; a regra da casa passa a cobrir o campo.",
+      "ficha": {
+        "fez": "Filtros por status e por dono no grafo (chips com contagem), tooltip de hover com a ficha e a ficha por extenso no painel lateral.",
+        "mudou": "roadmap.json ganhou o campo ficha (fez / mudou / valor) em todo nó concluído; a regra de atualizar os dois arquivos passa a cobrir o campo novo.",
+        "valor": "O grafo responde na hora o que cada passo entregou e por que importou, sem abrir o TODO.md."
+      }
+    },
+    {
+      "id": "OS10",
+      "titulo": "Ana OS: página Circuito da Ana (circuito de execução + anatomia do prompt + as ferramentas)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "V13"
+      ],
+      "nota": "Feita em 10/ago/2026 (grilling do Pedro): os/circuito.html + os/dados/circuito.json. Circuito de um turno em 6 raias e 9 passos com os 3 caminhos de ferramenta (HTTP, nativa, RAG), catalogo das ferramentas com exemplos reais estaticos das provas, anatomia do prompt v5.3 em 41 secoes com 95 trechos literais reaproveitados do sop-fluxo.json (mesma regra de re-validacao). Sem MCP fazer.ai na sessao, o texto completo por secao fica para um export futuro (campo texto_completo previsto). Termo Circuito da Ana no CONTEXT.md.",
+      "ficha": {
+        "fez": "Página Circuito da Ana: o circuito de execução por raias com os 3 caminhos de ferramenta, o catálogo das 19 tools e a anatomia do prompt, cruzados por clique.",
+        "mudou": "As seções do prompt v5.3 ganharam vista própria com trechos literais e badges de tools; cada tool tem exemplo real estático das provas (200, vazio, 417) e o que a Ana faz com cada desfecho.",
+        "valor": "Explica o mecanismo de ponta a ponta: quem chama o quê, onde roda, o que volta e como a Ana reage. E deixa claro que não há LangChain: quem orquestra é a fazer.ai agents."
+      }
     }
   ],
   "pendentes": [

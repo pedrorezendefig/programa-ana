@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana OS · Circuito da Ana</title>
+<link rel="stylesheet" href="assets/os.css">
+<style>
+  /* ---- exclusivo do Circuito da Ana (OS10) ---- */
+  .cabeca { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
+
+  .aviso { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+  .aviso .texto { flex: 1; min-width: 320px; }
+  .aviso h3 { margin-bottom: 6px; }
+  .aviso p { font-size: 14px; color: var(--cor-rotulo); }
+  .aviso p + p { margin-top: 8px; }
+  .aviso p strong { color: var(--cor-tinta); }
+
+  /* seletor de caminho */
+  .caminhos { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  button.chip-caminho { cursor: pointer; border: none; font-family: var(--font-inter); transition: transform .12s ease; }
+  button.chip-caminho:hover { transform: translateY(-1px); }
+  button.chip-caminho.desligado { background: var(--cor-fio); color: var(--cor-rotulo); box-shadow: none; }
+
+  /* palco do circuito */
+  .palco { overflow-x: auto; padding-bottom: 6px; }
+  .palco svg { display: block; }
+  .faixa { fill: var(--cor-card-interno); }
+  .rot-raia { font: var(--peso-bold) 12.5px/1 var(--font-poppins); fill: var(--cor-tinta); }
+  .nota-raia { font: var(--peso-regular) 10px/1 var(--font-inter); fill: var(--cor-rotulo); }
+  .passo { cursor: default; }
+  .passo circle { fill: var(--cor-tinta); }
+  .passo.variavel circle { fill: var(--cor-azul); }
+  .passo text.num { font: var(--peso-semibold) 12px/1 var(--font-poppins); fill: #ffffff; text-anchor: middle; }
+  .passo text.tit { font: var(--peso-medio) 9.5px/1 var(--font-inter); fill: var(--cor-tinta); text-anchor: middle; }
+  .fio-passo { fill: none; stroke: var(--cor-mudo); stroke-width: 1.4; }
+  .fio-passo.laco { stroke-dasharray: 5 4; }
+  .fio-passo.trace { stroke-dasharray: 2 4; }
+  .seta-passo { fill: var(--cor-mudo); }
+  .rot-laco { font: var(--peso-medio) 10px/1 var(--font-inter); fill: var(--cor-rotulo); text-anchor: middle; }
+
+  .lista-passos { margin-top: 18px; display: flex; flex-direction: column; }
+  .lista-passos .item {
+    display: flex; gap: 14px; align-items: baseline;
+    padding: 11px 4px; border-bottom: 1px solid var(--cor-fio); font-size: 14px;
+  }
+  .lista-passos .item:last-child { border-bottom: none; }
+  .lista-passos .num-lista {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    background: var(--cor-tinta); color: #ffffff;
+    display: inline-grid; place-items: center; align-self: center;
+    font: var(--peso-semibold) 12px/1 var(--font-poppins);
+  }
+  .lista-passos .item.variavel .num-lista { background: var(--cor-azul); }
+  .lista-passos .corpo-item strong { display: block; }
+  .lista-passos .corpo-item span { color: var(--cor-rotulo); font-size: 13.5px; }
+  .lista-passos .chip { padding: 4px 10px; font-size: 11px; align-self: center; flex-shrink: 0; }
+
+  /* grid de ferramentas */
+  .grupo-tools { margin-top: 22px; }
+  .grupo-tools .micro { display: block; margin-bottom: 10px; }
+  .cards-tools { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .tool-card {
+    background: var(--cor-card); border-radius: 16px; padding: 15px 17px;
+    cursor: pointer; transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .tool-card:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--cor-mudo); }
+  .tool-card.aberta { box-shadow: inset 0 0 0 1.5px var(--cor-tinta); }
+  .tool-card .topo { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .tool-card .nome { font: var(--peso-semibold) 13px/1.3 var(--font-mono); word-break: break-all; }
+  .tool-card .chip { margin-left: auto; padding: 4px 10px; font-size: 11px; flex-shrink: 0; }
+  .tool-card .faz { font-size: 13px; color: var(--cor-rotulo); line-height: 1.5; }
+  .tool-card.fantasma {
+    background: transparent; outline: 1.5px dashed var(--cor-mudo); outline-offset: -1.5px;
+    cursor: default;
+  }
+  .tool-card.fantasma:hover { transform: none; box-shadow: none; }
+
+  /* anatomia do prompt */
+  .secao-prompt { background: var(--cor-card); border-radius: 16px; padding: 18px 20px; margin-bottom: 12px; }
+  .secao-prompt .cab { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .secao-prompt h3 { margin: 0; font-size: 15.5px; }
+  .secao-prompt .conta-trechos { font-size: 12px; color: var(--cor-rotulo); margin-left: auto; white-space: nowrap; }
+  .secao-prompt .papel { font-size: 13.5px; color: var(--cor-rotulo); margin-top: 4px; }
+  .secao-prompt .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  button.badge-tool {
+    cursor: pointer; border: none; border-radius: var(--raio-pill);
+    background: var(--cor-tinta); color: #ffffff;
+    font: var(--peso-medio) 11px/1 var(--font-mono); padding: 5px 11px;
+    transition: transform .12s ease;
+  }
+  button.badge-tool:hover { transform: translateY(-1px); }
+  .secao-prompt details { margin-top: 12px; }
+  .secao-prompt summary {
+    cursor: pointer; font: var(--peso-medio) 13px/1.4 var(--font-inter); color: var(--cor-tinta);
+    list-style: none; display: flex; align-items: center; gap: 7px;
+  }
+  .secao-prompt summary::-webkit-details-marker { display: none; }
+  .secao-prompt summary .zig { transition: transform .15s ease; font-size: 11px; }
+  .secao-prompt details[open] summary .zig { transform: rotate(90deg); }
+  .trecho {
+    background: var(--cor-card-interno); border-left: 3px solid var(--cor-mudo);
+    border-radius: 0 var(--raio-interno) var(--raio-interno) 0;
+    padding: 12px 16px; margin-top: 10px;
+    font-size: 12.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word;
+  }
+  .trecho .linhas { display: block; font: var(--peso-semibold) 10px/1 var(--font-mono); color: var(--cor-rotulo); margin-bottom: 7px; }
+  .secao-prompt.acesa { box-shadow: inset 0 0 0 1.5px var(--cor-tinta); }
+
+  /* painel lateral da ferramenta */
+  .painel {
+    position: fixed; top: 16px; right: 16px; bottom: 16px;
+    width: min(430px, calc(100vw - 32px));
+    background: var(--cor-card); border-radius: var(--raio-card);
+    box-shadow: 0 16px 44px -16px rgba(0,0,0,.3);
+    padding: 26px; overflow-y: auto;
+    transform: translateX(calc(100% + 32px));
+    transition: transform .28s cubic-bezier(.2,.8,.25,1);
+    z-index: 95;
+  }
+  .painel.aberto { transform: none; }
+  .painel .fechar { position: absolute; top: 18px; right: 18px; }
+  .painel .nome-tool { font: var(--peso-bold) 17px/1.35 var(--font-mono); margin: 10px 0 4px; word-break: break-all; }
+  .painel .bloco { margin-top: 16px; }
+  .painel .bloco > .micro { display: block; margin-bottom: 6px; }
+  .painel .exemplo { background: var(--cor-card-interno); border-radius: var(--raio-interno); padding: 13px 15px; font-size: 13px; line-height: 1.55; }
+  .painel .exemplo .lin { margin-top: 8px; }
+  .painel .exemplo .lin:first-child { margin-top: 0; }
+  .painel .exemplo .lin .k { font: var(--peso-semibold) 10px/1.4 var(--font-inter); letter-spacing: .07em; text-transform: uppercase; color: var(--cor-rotulo); display: block; }
+  .painel .exemplo .lin .v { font-family: var(--font-mono); font-size: 12px; word-break: break-word; }
+  .painel .exemplo .lin.fonte .v { font-family: var(--font-inter); font-size: 12.5px; color: var(--cor-rotulo); }
+  .painel .desfecho { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--cor-fio); font-size: 13px; }
+  .painel .desfecho:last-child { border-bottom: none; }
+  .painel .desfecho .rot { font-weight: var(--peso-semibold); white-space: nowrap; }
+  .painel .desfecho .acao { color: var(--cor-rotulo); }
+  .painel .chips-sec { display: flex; gap: 6px; flex-wrap: wrap; }
+  .painel .chips-sec .chip { cursor: pointer; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tool-card, button.badge-tool, button.chip-caminho { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <section class="compacta">
+    <div class="cabeca">
+      <div>
+        <h1>Circuito da Ana</h1>
+        <p class="lead" id="sub">Como uma mensagem vira resposta: o circuito de execução, as ferramentas e a anatomia do prompt, costurados.</p>
+      </div>
+    </div>
+    <div class="card aviso">
+      <div class="texto">
+        <h3>O mecanismo, de ponta a ponta</h3>
+        <p>Quem orquestra a Ana é a <strong>plataforma fazer.ai agents</strong> (agente id 1, tenant vitta-tech). Não existe LangChain nem n8n no circuito: a plataforma monta o turno com o prompt e o histórico, chama o <strong>gpt-5-mini</strong>, executa as ferramentas que o modelo pedir e grava o trace no Langfuse.</p>
+        <p>Esta página explica; ela nunca chama API. Os exemplos são <strong>reais e estáticos</strong>, capturados das provas registradas no roadmap. Para ver acontecendo ao vivo: <a href="cadeias.html">Cadeias</a> e <a href="bancada.html">Bancada</a>. As jornadas do SOP em mapa: <a href="sop.html">Mapa do SOP</a>. As caixas da infra: <a href="arquitetura.html">Arquitetura</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="compacta">
+    <h2>O circuito de um turno</h2>
+    <div class="caminhos" id="caminhos"><span class="micro" style="margin-right:4px;">Caminho da ferramenta</span></div>
+    <div class="card" style="padding: 24px 22px;">
+      <div class="palco"><svg id="svg-circuito"></svg></div>
+      <p class="caption" id="resumo-caminho" style="margin-top: 10px;"></p>
+    </div>
+    <div class="card" style="margin-top: 14px; padding: 18px 22px;">
+      <div class="lista-passos" id="lista-passos"></div>
+    </div>
+  </section>
+
+  <section class="compacta">
+    <h2>As ferramentas</h2>
+    <p class="lead" id="lead-tools" style="margin-bottom: 6px;"></p>
+    <div id="grupos-tools"></div>
+  </section>
+
+  <section class="compacta">
+    <h2>A anatomia do prompt</h2>
+    <p class="lead" id="lead-anatomia" style="margin-bottom: 16px;"></p>
+    <div id="secoes-prompt"></div>
+  </section>
+</main>
+
+<aside class="painel" id="painel" aria-label="Ficha da ferramenta">
+  <button class="btn icone fechar" id="btn-fechar" aria-label="Fechar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div id="painel-corpo"></div>
+</aside>
+
+<footer class="os-rodape" id="rodape">
+  Dados: <code>os/dados/circuito.json</code>. Os trechos literais vêm do <code>os/dados/sop-fluxo.json</code> (Mapa do SOP) e seguem a mesma regra de re-validação por sessão.
+</footer>
+
+<script src="assets/nav.js" data-ambiente="local"></script>
+<script>
+"use strict";
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+let D = null;
+let CAMINHO = "http";
+
+const ROT_TIPO = { http: "HTTP", nativa: "nativa", rag: "RAG" };
+const CHIP_TIPO = { http: "chip azul", nativa: "chip pendente", rag: "chip selo-saas" };
+const ROT_BACKEND = { nocodb: "NocoDB · Base Ana", gh: "API GH · homolog", plataforma: "plataforma / Chatwoot", kb: "base de conhecimento" };
+
+async function carregar() {
+  D = await fetch("/dados/circuito.json").then(function (r) { return r.json(); });
+  document.getElementById("sub").textContent =
+    "Prompt " + D.meta.versao_prompt + " (" + D.meta.prompt_caracteres.toLocaleString("pt-BR") +
+    " caracteres, exportado em " + D.meta.prompt_exportado_em + "). " +
+    "Como uma mensagem vira resposta: circuito, ferramentas e prompt, costurados.";
+  document.getElementById("lead-tools").textContent =
+    "Grants do agente id 1: " + D.meta.grants.nativas + " nativas + " + D.meta.grants.rag + " RAG + " +
+    D.meta.grants.http + " HTTP. Clique numa ferramenta para ver a chamada, o exemplo real e o que a Ana faz com cada desfecho.";
+  document.getElementById("lead-anatomia").textContent =
+    "As seções do prompt " + D.meta.versao_prompt + " na ordem em que aparecem, cada uma com as ferramentas que invoca e os trechos literais validados. " +
+    D.meta.cobertura_trechos;
+  renderCaminhos();
+  renderCircuito();
+  renderTools();
+  renderSecoes();
+  if (location.hash) irPara(location.hash.slice(1));
+}
+
+/* ---------- circuito ---------- */
+
+function renderCaminhos() {
+  const alvo = document.getElementById("caminhos");
+  Object.keys(D.caminhos).forEach(function (chave) {
+    const btn = document.createElement("button");
+    btn.className = "chip fazer chip-caminho" + (chave === CAMINHO ? "" : " desligado");
+    btn.dataset.chave = chave;
+    btn.textContent = D.caminhos[chave].rotulo;
+    btn.addEventListener("click", function () {
+      CAMINHO = chave;
+      alvo.querySelectorAll(".chip-caminho").forEach(function (b) {
+        b.classList.toggle("desligado", b.dataset.chave !== chave);
+      });
+      renderCircuito();
+    });
+    alvo.appendChild(btn);
+  });
+}
+
+function passosDoCaminho() {
+  const c = D.caminhos[CAMINHO];
+  return D.passos.map(function (p) {
+    if (p.n === 5) return Object.assign({}, p, { titulo: c.passo5, variavel: true });
+    if (p.n === 6) return Object.assign({}, p, { titulo: c.passo6, raia: c.passo6_raia, variavel: true });
+    return p;
+  });
+}
+
+function renderCircuito() {
+  const passos = passosDoCaminho();
+  const raias = D.raias;
+  const idxRaia = {};
+  raias.forEach(function (r, i) { idxRaia[r.id] = i; });
+
+  const ALT = 76, GUT = 190, PASSO_W = 96, R = 13;
+  const largura = GUT + passos.length * PASSO_W + 14;
+  const altura = raias.length * ALT;
+  const cx = function (n) { return GUT + (n - 0.5) * PASSO_W; };
+  const cy = function (raia) { return idxRaia[raia] * ALT + ALT / 2 - 6; };
+
+  let svg = "";
+  raias.forEach(function (r, i) {
+    if (i % 2 === 0) svg += '<rect class="faixa" x="0" y="' + (i * ALT) + '" width="' + largura + '" height="' + ALT + '" rx="10"/>';
+    svg += '<text class="rot-raia" x="14" y="' + (i * ALT + ALT / 2 - 4) + '">' + esc(r.rotulo) + "</text>" +
+      '<text class="nota-raia" x="14" y="' + (i * ALT + ALT / 2 + 12) + '">' + esc(r.nota) + "</text>";
+  });
+
+  function seta(x, y, aponta) {
+    const dx = aponta === "esq" ? 7 : -7;
+    return '<path class="seta-passo" d="M' + x + "," + y + " l" + dx + ",-4 v8 z\"/>";
+  }
+  function ligar(a, b) {
+    const x1 = cx(a.n) + R, y1 = cy(a.raia), x2 = cx(b.n) - R - 6, y2 = cy(b.raia);
+    if (a.raia === b.raia) return '<path class="fio-passo" d="M' + x1 + "," + y1 + " H" + x2 + '"/>' + seta(x2 + 6, y2, "dir");
+    const meio = (x1 + x2) / 2;
+    return '<path class="fio-passo" d="M' + x1 + "," + y1 + " C" + meio + "," + y1 + " " + meio + "," + y2 + " " + x2 + "," + y2 + '"/>' + seta(x2 + 6, y2, "dir");
+  }
+  for (let i = 0; i < passos.length - 2; i++) svg += ligar(passos[i], passos[i + 1]);
+  /* 8 -> 9: o trace cobre o turno inteiro; fio pontilhado */
+  const p8 = passos[7], p9 = passos[8];
+  const x8 = cx(p8.n), y8 = cy(p8.raia) + R, x9 = cx(p9.n) - R - 6, y9 = cy(p9.raia);
+  svg += '<path class="fio-passo trace" d="M' + x8 + "," + y8 + " C" + x8 + "," + (y9 - 8) + " " + (x8 + 20) + "," + y9 + " " + x9 + "," + y9 + '"/>' + seta(x9 + 6, y9, "dir");
+  /* laço 7 -> 4 */
+  const p4 = passos[3], p7 = passos[6];
+  const ax = cx(p7.n), ay = cy(p7.raia) - R, bx = cx(p4.n), by = cy(p4.raia) - R;
+  const topo = Math.min(ay, by) - 26;
+  svg += '<path class="fio-passo laco" d="M' + ax + "," + ay + " C" + ax + "," + topo + " " + bx + "," + topo + " " + bx + "," + (by - 5) + '"/>' +
+    '<path class="seta-passo" d="M' + bx + "," + (by - 3) + ' l-4,-7 h8 z"/>' +
+    '<text class="rot-laco" x="' + ax + '" y="' + (topo - 5) + '">o laço de ferramentas</text>';
+
+  passos.forEach(function (p) {
+    const x = cx(p.n), y = cy(p.raia);
+    svg += '<g class="passo' + (p.variavel ? " variavel" : "") + '">' +
+      '<circle cx="' + x + '" cy="' + y + '" r="' + R + '"/>' +
+      '<text class="num" x="' + x + '" y="' + (y + 4) + '">' + p.n + "</text>" +
+      '<text class="tit" x="' + x + '" y="' + (y + R + 14) + '">' + esc(p.titulo) + "</text></g>";
+  });
+
+  const el = document.getElementById("svg-circuito");
+  el.setAttribute("width", largura);
+  el.setAttribute("height", altura + 30);
+  el.setAttribute("viewBox", "0 -30 " + largura + " " + (altura + 30));
+  el.innerHTML = svg;
+
+  document.getElementById("resumo-caminho").textContent = D.caminhos[CAMINHO].resumo;
+
+  document.getElementById("lista-passos").innerHTML = passos.map(function (p) {
+    const raia = raias[idxRaia[p.raia]];
+    return '<div class="item' + (p.variavel ? " variavel" : "") + '">' +
+      '<span class="num-lista">' + p.n + "</span>" +
+      '<span class="chip ' + (p.variavel ? "azul" : "bloqueada") + '">' + esc(raia.rotulo) + "</span>" +
+      '<div class="corpo-item"><strong>' + esc(p.titulo) + "</strong><span>" + esc(p.detalhe) + "</span></div></div>";
+  }).join("");
+}
+
+/* ---------- ferramentas ---------- */
+
+const GRUPOS = [
+  ["gh", "API Global Health (homolog) · credencial gh-homolog-token no vault"],
+  ["nocodb", "NocoDB Base Ana · shared views públicas somente leitura, sem segredo"],
+  ["plataforma", "Nativas · efeito dentro da plataforma e do Chatwoot"],
+  ["kb", "RAG · base de conhecimento"],
+];
+
+function renderTools() {
+  const alvo = document.getElementById("grupos-tools");
+  alvo.innerHTML = GRUPOS.map(function (g) {
+    const doGrupo = D.tools.filter(function (t) { return t.backend === g[0]; });
+    let cards = doGrupo.map(function (t) {
+      return '<div class="tool-card" data-tool="' + esc(t.id) + '" id="tool-' + esc(t.id) + '" tabindex="0" role="button" aria-label="' + esc(t.id) + '">' +
+        '<div class="topo"><span class="nome">' + esc(t.id) + "</span>" +
+        '<span class="' + CHIP_TIPO[t.tipo] + '">' + ROT_TIPO[t.tipo] + "</span></div>" +
+        '<div class="faz">' + esc(t.faz) + "</div></div>";
+    }).join("");
+    if (g[0] === "plataforma") {
+      cards += '<div class="tool-card fantasma"><div class="topo"><span class="nome">+ 3 nativas</span></div>' +
+        '<div class="faz">' + esc(D.meta.grants.observacao) + "</div></div>";
+    }
+    return '<div class="grupo-tools"><span class="micro">' + esc(g[1]) + '</span><div class="cards-tools">' + cards + "</div></div>";
+  }).join("");
+
+  alvo.querySelectorAll(".tool-card[data-tool]").forEach(function (el) {
+    el.addEventListener("click", function () { abrirTool(el.dataset.tool); });
+    el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirTool(el.dataset.tool); } });
+  });
+}
+
+function abrirTool(id) {
+  const t = D.tools.find(function (x) { return x.id === id; });
+  if (!t) return;
+  document.querySelectorAll(".tool-card.aberta").forEach(function (el) { el.classList.remove("aberta"); });
+  const card = document.getElementById("tool-" + id);
+  if (card) card.classList.add("aberta");
+  history.replaceState(null, "", "#tool-" + id);
+
+  const chips = '<span class="' + CHIP_TIPO[t.tipo] + '">' + ROT_TIPO[t.tipo] + "</span>" +
+    '<span class="chip bloqueada">' + esc(ROT_BACKEND[t.backend]) + "</span>" +
+    (t.risco ? '<span class="chip ' + (t.risco === "medium" ? "tag" : "feito") + '">risco ' + esc(t.risco) + "</span>" : "") +
+    (t.plataforma_id ? '<span class="chip contorno">tool id ' + t.plataforma_id + "</span>" : "");
+
+  const exemplo = t.exemplo
+    ? '<div class="bloco"><span class="micro">Exemplo real (estático, das provas)</span><div class="exemplo">' +
+      '<div class="lin"><span class="k">Pedido</span><span class="v">' + esc(t.exemplo.pedido) + "</span></div>" +
+      '<div class="lin"><span class="k">Resposta</span><span class="v">' + esc(t.exemplo.resposta) + "</span></div>" +
+      '<div class="lin fonte"><span class="k">Fonte da prova</span><span class="v">' + esc(t.exemplo.fonte) + "</span></div>" +
+      "</div></div>"
+    : "";
+
+  const desfechos = (t.desfechos && t.desfechos.length)
+    ? '<div class="bloco"><span class="micro">O que a Ana faz com o resultado</span>' +
+      t.desfechos.map(function (d) {
+        return '<div class="desfecho"><span class="rot">' + esc(d.rotulo) + '</span><span class="acao">' + esc(d.ana) + "</span></div>";
+      }).join("") + "</div>"
+    : "";
+
+  const secoes = (t.secoes && t.secoes.length)
+    ? '<div class="bloco"><span class="micro">Seções do prompt que chamam</span><div class="chips-sec">' +
+      t.secoes.map(function (chave) {
+        const sec = D.secoes.find(function (s) { return s.chave === chave; });
+        return '<span class="chip contorno" data-sec="' + esc(sec ? sec.id : "") + '">' + esc(sec ? sec.rotulo : chave) + "</span>";
+      }).join("") + "</div></div>"
+    : "";
+
+  document.getElementById("painel-corpo").innerHTML =
+    '<div class="linha">' + chips + "</div>" +
+    '<div class="nome-tool">' + esc(t.id) + "</div>" +
+    '<p style="font-size:14px;">' + esc(t.faz) + "</p>" +
+    '<div class="bloco"><span class="micro">Chamada</span><code>' + esc(t.chamada) + "</code></div>" +
+    exemplo + desfechos + secoes +
+    '<div class="bloco caption">Quer ver ao vivo? A página <a href="cadeias.html">Cadeias</a> roda a API GH elo a elo e a <a href="bancada.html">Bancada</a> chama endpoint a endpoint.</div>';
+
+  document.querySelectorAll("#painel-corpo .chips-sec .chip").forEach(function (el) {
+    el.addEventListener("click", function () {
+      fecharPainel();
+      irPara("sec-" + el.dataset.sec);
+    });
+  });
+
+  document.getElementById("painel").classList.add("aberto");
+}
+
+/* ---------- anatomia ---------- */
+
+function renderSecoes() {
+  const alvo = document.getElementById("secoes-prompt");
+  alvo.innerHTML = D.secoes.map(function (s) {
+    const badges = s.tools.length
+      ? '<div class="badges">' + s.tools.map(function (t) {
+          return '<button class="badge-tool" data-tool="' + esc(t) + '">' + esc(t) + "</button>";
+        }).join("") + "</div>"
+      : "";
+    const trechos = s.trechos.map(function (tr) {
+      return '<div class="trecho">' +
+        (tr.linhas ? '<span class="linhas">linhas ' + esc(tr.linhas) + " do export " + esc(D.meta.versao_prompt) + "</span>" : "") +
+        esc(tr.texto) + "</div>";
+    }).join("");
+    return '<div class="secao-prompt" id="sec-' + esc(s.id) + '">' +
+      '<div class="cab"><h3>' + esc(s.rotulo) + "</h3>" +
+      '<span class="conta-trechos">' + s.trechos.length + (s.trechos.length === 1 ? " trecho literal" : " trechos literais") + "</span></div>" +
+      '<div class="papel">' + esc(s.papel) + "</div>" + badges +
+      "<details><summary><span class=\"zig\">▶</span>Ver o texto literal do prompt</summary>" + trechos + "</details></div>";
+  }).join("");
+
+  alvo.querySelectorAll(".badge-tool").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const card = document.getElementById("tool-" + btn.dataset.tool);
+      if (card) card.scrollIntoView({ block: "center" });
+      abrirTool(btn.dataset.tool);
+    });
+  });
+}
+
+/* ---------- navegação interna ---------- */
+
+function irPara(hash) {
+  if (hash.indexOf("tool-") === 0) {
+    const id = hash.slice(5);
+    const card = document.getElementById("tool-" + id);
+    if (card) card.scrollIntoView({ block: "center" });
+    abrirTool(id);
+    return;
+  }
+  const el = document.getElementById(hash);
+  if (!el) return;
+  if (el.classList.contains("secao-prompt")) {
+    const det = el.querySelector("details");
+    if (det) det.open = true;
+    el.classList.add("acesa");
+    setTimeout(function () { el.classList.remove("acesa"); }, 2200);
+  }
+  el.scrollIntoView({ block: "center" });
+  history.replaceState(null, "", "#" + hash);
+}
+
+function fecharPainel() {
+  document.getElementById("painel").classList.remove("aberto");
+  document.querySelectorAll(".tool-card.aberta").forEach(function (el) { el.classList.remove("aberta"); });
+}
+document.getElementById("btn-fechar").onclick = fecharPainel;
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") fecharPainel(); });
+
+carregar();
+</script>
+
+</body>
+</html>
