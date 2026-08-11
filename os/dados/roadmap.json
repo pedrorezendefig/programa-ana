@@ -368,17 +368,16 @@
       "id": "OS12",
       "titulo": "Ana OS: Mesa de ação na home (cards por canal, hover com ficha, prompt por canal)",
       "dono": "C",
-      "status": "fazer",
+      "status": "feito",
       "deps": [
         "OS9"
       ],
-      "canal": "comigo",
-      "canal_desde": "2026-08-11",
-      "mesa": {
-        "destrava": "A home passa a responder 'o que eu toco agora e o que está na mão de quem', com a idade das esperas à vista.",
-        "gesto": "Em execução na sessão de 11/ago (grilling do ADR-0011)."
-      },
-      "nota": "Nasceu do grilling de 11/ago/2026 (ADR-0011): a mesa substitui os destaques da home, varre as 4 faixas, agrupa por canal (dispare / comigo / aguardando), hover com a ficha {destrava, gesto}, clique fixa painel com nota, prompt rotulado pelo canal e o gesto 'marquei: disparado' (a única escrita nova da UI: canal e canal_desde)."
+      "nota": "Feita em 11/ago/2026, na sessão do grilling (ADR-0011): a mesa substitui os destaques da home, varre as 4 faixas, agrupa por canal (dispare / comigo / aguardando), hover com a ficha {destrava, gesto}, clique fixa painel com nota, prompt rotulado pelo canal e o gesto 'marquei: disparado' (a única escrita nova da UI: canal e canal_desde de item aberto, validada pelo server). Reativar a validação nova exige reiniciar o server (python3 os/server.py).",
+      "ficha": {
+        "fez": "A home ganhou a Mesa de ação: os itens abertos das 4 faixas agrupados por canal, hover com a ficha destrava/gesto, clique com painel, prompt rotulado pelo canal e o gesto 'marquei: disparado'.",
+        "mudou": "roadmap.json ganhou canal/canal_desde/mesa em todo item aberto (validados pelo server), os prompts que faltavam (V10, R1) e os cards GH19 e V16; a UI passou a mover canal (ADR-0011 reescreve a regra do ADR-0007).",
+        "valor": "A home responde 'o que eu toco agora e o que está na mão de quem', com a idade das esperas à vista (a P3 já mostra os 29 dias da VPN)."
+      }
     },
     {
       "id": "V16",

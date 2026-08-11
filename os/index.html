@@ -14,17 +14,40 @@
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--gap-cards); }
   .stat.card { padding: 20px 22px; }
 
-  .destaques { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: var(--gap-cards); margin-top: var(--gap-cards); }
-  .destaque-card .topo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .destaque-card .topo h3 { margin: 0; flex: 1; }
-  .destaque-card .titulo-grande {
-    font: var(--peso-bold) 21px/1.3 var(--font-poppins); letter-spacing: -0.3px;
-    margin: 4px 0 14px;
+  /* ---- Mesa de ação (OS12, ADR-0011) ---- */
+  .mesa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--gap-cards); margin-top: 18px; align-items: start; }
+  .mesa-col .col-cabeca { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+  .mesa-col .col-cabeca h3 { margin: 0; font: var(--peso-bold) 15px/1.3 var(--font-poppins); }
+  .mesa-col .col-cabeca .conta { font: var(--peso-semibold) 12px/1 var(--font-inter); color: var(--cor-rotulo); }
+  .mesa-col > .caption { display: block; margin-bottom: 12px; }
+  .mesa-card { cursor: pointer; margin-bottom: 12px; }
+  .mesa-card .id-faixa { font: var(--peso-semibold) 10.5px/1.4 var(--font-inter); letter-spacing: .07em; text-transform: uppercase; color: var(--cor-rotulo); }
+  .mesa-card h4 { font: var(--peso-bold) 14.5px/1.4 var(--font-poppins); margin: 6px 0 0; }
+  .mesa-card .rodape-card { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .mesa-card.ativo { box-shadow: inset 0 0 0 2px var(--cor-tinta); }
+  .mesa-vazia { font-size: 13px; color: var(--cor-rotulo); }
+  .painel-mesa { margin-top: var(--gap-cards); }
+  .painel-mesa .mesa-bloco { background: var(--cor-card-interno); border-radius: var(--raio-interno); padding: 14px 16px; margin-top: 12px; }
+  .painel-mesa .mesa-bloco .micro { display: block; margin-bottom: 4px; }
+  .painel-mesa .mesa-bloco p { font-size: 13.5px; line-height: 1.55; margin: 0; }
+  .painel-mesa .acoes { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
+
+  /* tooltip de ficha no hover (padrão OS9) */
+  .tooltip-ficha {
+    position: fixed; z-index: 120; width: 330px;
+    background: var(--cor-tinta); color: #ffffff;
+    border-radius: 14px; padding: 16px 18px;
+    pointer-events: none; opacity: 0; transition: opacity .12s ease;
+    box-shadow: 0 16px 36px -14px rgba(0,0,0,.45);
   }
-  .destaque-card .legenda-serie { display: flex; gap: 18px; font-size: var(--texto-legenda); color: var(--cor-rotulo); margin: 10px 0 14px; }
-  .destaque-card .legenda-serie strong { color: var(--cor-tinta); }
-  .destaque-card .acoes { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-  .destaque-card .nota-pronto { font-size: var(--texto-legenda); color: var(--cor-rotulo); margin-top: 10px; }
+  .tooltip-ficha.visivel { opacity: 1; }
+  .tooltip-ficha .tt-rot {
+    font: var(--peso-semibold) 10px/1.4 var(--font-inter);
+    letter-spacing: .08em; text-transform: uppercase;
+    color: #9a9a9a; margin: 9px 0 2px;
+  }
+  .tooltip-ficha .tt-rot:first-child { margin-top: 0; }
+  .tooltip-ficha .tt-txt { font-size: 12.5px; line-height: 1.5; }
 
   .ideia-card { position: relative; }
   .ideia-card.puxada { opacity: .55; }
@@ -60,7 +83,16 @@
       </div>
     </div>
     <div class="stats" id="stats"></div>
-    <div class="destaques" id="destaques"></div>
+  </section>
+
+  <section>
+    <div class="linha" style="margin-bottom: 6px;">
+      <h2 style="margin: 0;">Mesa de ação</h2>
+      <span class="caption direita">passe o mouse para a ficha; clique para o prompt</span>
+    </div>
+    <p class="caption">Tudo que está aberto, agrupado por quem destrava: você em minutos, uma sessão comigo, ou terceiros (aqui mora a cobrança).</p>
+    <div class="mesa-grid" id="mesa"></div>
+    <div class="card painel-mesa" id="painel-mesa" style="display: none;"></div>
   </section>
 
   <section class="compacta">
@@ -142,17 +174,6 @@ function derivar(d) {
   return { feitas, estadoDe };
 }
 
-function sparkline(feito, total) {
-  /* progresso acumulado das tarefas, na ordem do estágio: um gesto, não um gráfico */
-  const n = total || 1, passos = [];
-  for (let i = 0; i <= n; i++) passos.push(i <= feito ? i / n : feito / n);
-  const w = 260, h = 44;
-  const pts = passos.map((v, i) => (i / n * w).toFixed(1) + "," + (h - 4 - v * (h - 10)).toFixed(1)).join(" ");
-  return '<svg class="sparkline" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none">' +
-    '<line class="base" x1="0" y1="' + (h - 4) + '" x2="' + w + '" y2="' + (h - 4) + '"/>' +
-    '<polyline class="serie verde" points="' + pts + '"/></svg>';
-}
-
 function render() {
   const d = ROADMAP;
   const { estadoDe } = derivar(d);
@@ -180,35 +201,155 @@ function render() {
     '<span class="num-indicador">' + s.num + '</span>' +
     '<span class="detalhe">' + s.det + '</span></div>').join("");
 
-  const cards = [];
-  if (fronteira) cards.push(cardDestaque("A fronteira de hoje", fronteira, "fazer", tarefasFeitas.length, d.tarefas.length, 6));
-  if (proximaProposta) cards.push(cardDestaque("Próxima proposta destravada", proximaProposta, "proposta", tarefasFeitas.length, d.tarefas.length, 7));
-  document.getElementById("destaques").innerHTML = cards.join("");
+  renderMesa();
 }
 
-function cardDestaque(micro, no, tipo, feito, total, delayIdx) {
-  const selecionado = tipo === "fazer";
-  const chip = tipo === "fazer"
-    ? '<span class="chip fazer">a fazer</span>'
-    : '<span class="chip proposta">proposta</span>';
-  return '<div class="card destaque-card anima' + (selecionado ? " selecionado" : "") + '" style="animation-delay:' + (delayIdx * 45) + 'ms">' +
-    '<div class="topo"><h3>' + esc(no.id) + '</h3>' + chip +
-    '<span class="badge-circulo">' + (no.deps || []).length + '</span></div>' +
-    '<span class="micro">' + micro + '</span>' +
-    '<div class="titulo-grande">' + esc(no.titulo) + '</div>' +
-    sparkline(feito, total) +
-    '<div class="legenda-serie"><span><span class="ponto verde"></span>concluídas <strong>' + feito + '</strong></span>' +
-    '<span><span class="ponto"></span>restantes <strong>' + (total - feito) + '</strong></span></div>' +
-    ((no.nota || no.resumo) ? '<div class="card-interno"><div class="linha-dado"><span>' + esc(no.nota || no.resumo) + '</span></div></div>' : '') +
-    '<div class="acoes">' +
-    (no.prompt ? '<button class="btn primario mini" onclick="copiarPrompt(this, \'' + esc(no.id) + '\')">Copiar prompt</button>' : '') +
-    '<a class="btn claro mini" href="roadmap.html#' + esc(no.id) + '">Ver no grafo</a></div>' +
-    '</div>';
+/* ---- Mesa de ação (OS12, ADR-0011): itens abertos por canal ---- */
+
+const CANAIS_META = {
+  dispare: { titulo: "Dispare hoje", desc: "só você, minutos" },
+  comigo: { titulo: "Sente comigo", desc: "uma sessão Claude Code" },
+  aguardando: { titulo: "Aguardando terceiros", desc: "a cobrança mora aqui" },
+};
+
+function hojeLocal() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
 }
+
+function diasDesde(data) {
+  if (!data) return null;
+  const ms = new Date(hojeLocal()) - new Date(data);
+  return Math.max(0, Math.round(ms / 86400000));
+}
+
+function itensMesa() {
+  const d = ROADMAP;
+  return [].concat(
+    d.tarefas.filter(t => t.status === "fazer").map(t => Object.assign({ faixa: "tarefa" }, t)),
+    (d.pendentes || []).map(p => Object.assign({ faixa: "pendente" }, p)),
+    (d.propostas || []).map(p => Object.assign({ faixa: "proposta" }, p)),
+    (d.radar || []).map(r => Object.assign({ faixa: "radar" }, r)));
+}
+
+function cardMesa(it) {
+  const dias = diasDesde(it.canal_desde);
+  const chips = ['<span class="chip ' + (it.faixa === "radar" ? "tag" : it.faixa === "tarefa" ? "fazer" : it.faixa) + '">' + it.faixa + "</span>"];
+  if (it.canal === "aguardando" && dias !== null)
+    chips.push('<span class="chip ' + (dias >= 14 ? "tag" : "bloqueada") + '">há ' + dias + " dia" + (dias === 1 ? "" : "s") + "</span>");
+  if (it.faixa === "radar") chips.push('<span class="chip bloqueada">prio ' + it.prioridade + "/10</span>");
+  if (!it.prompt) chips.push('<span class="chip bloqueada">sem prompt ainda</span>');
+  return '<div class="card hover mesa-card" data-mesa-id="' + esc(it.id) + '">' +
+    '<span class="id-faixa">' + esc(it.id) + '</span>' +
+    '<h4>' + esc(it.titulo) + '</h4>' +
+    '<div class="rodape-card">' + chips.join("") + '</div></div>';
+}
+
+function renderMesa() {
+  const itens = itensMesa();
+  const cols = Object.keys(CANAIS_META).map(canal => {
+    const doCanal = itens.filter(i => i.canal === canal)
+      .sort((a, b) => (diasDesde(b.canal_desde) || 0) - (diasDesde(a.canal_desde) || 0));
+    const meta = CANAIS_META[canal];
+    return '<div class="mesa-col" data-canal="' + canal + '">' +
+      '<div class="col-cabeca"><h3>' + meta.titulo + '</h3><span class="conta">' + doCanal.length + '</span></div>' +
+      '<span class="caption">' + meta.desc + '</span>' +
+      (doCanal.map(cardMesa).join("") || '<p class="mesa-vazia">nada aqui agora.</p>') +
+      '</div>';
+  });
+  const semCanal = itens.filter(i => !i.canal);
+  document.getElementById("mesa").innerHTML = cols.join("") +
+    (semCanal.length ? '<p class="caption" style="grid-column: 1 / -1;">Sem canal (corrigir no /check): ' +
+      semCanal.map(i => esc(i.id)).join(" · ") + '</p>' : "");
+  document.querySelectorAll(".mesa-card").forEach(el => {
+    const it = itens.find(i => i.id === el.dataset.mesaId);
+    el.addEventListener("mouseenter", () => mostrarTip(it, el));
+    el.addEventListener("mouseleave", esconderTip);
+    el.addEventListener("click", () => abrirPainelMesa(it.id));
+  });
+}
+
+/* tooltip de ficha no hover (padrão OS9) */
+const TIP = document.createElement("div");
+TIP.className = "tooltip-ficha";
+document.body.appendChild(TIP);
+
+function mostrarTip(it, el) {
+  let html = "";
+  if (it.mesa) {
+    html = '<div class="tt-rot">Destrava</div><div class="tt-txt">' + esc(it.mesa.destrava) + "</div>" +
+      '<div class="tt-rot">O gesto</div><div class="tt-txt">' + esc(it.mesa.gesto) + "</div>";
+  } else if (it.resumo || it.nota) {
+    html = '<div class="tt-rot">Resumo</div><div class="tt-txt">' + esc(it.resumo || it.nota) + "</div>";
+  } else return;
+  TIP.innerHTML = html;
+  TIP.classList.add("visivel");
+  const r = el.getBoundingClientRect();
+  let x = r.right + 12;
+  if (x + 342 > window.innerWidth) x = Math.max(8, r.left - 342);
+  const y = Math.min(r.top, window.innerHeight - TIP.offsetHeight - 12);
+  TIP.style.left = x + "px";
+  TIP.style.top = Math.max(8, y) + "px";
+}
+function esconderTip() { TIP.classList.remove("visivel"); }
+document.addEventListener("scroll", esconderTip, true);
+
+window.abrirPainelMesa = function (id) {
+  const it = itensMesa().find(i => i.id === id);
+  const painel = document.getElementById("painel-mesa");
+  if (!it) { painel.style.display = "none"; return; }
+  document.querySelectorAll(".mesa-card").forEach(el =>
+    el.classList.toggle("ativo", el.dataset.mesaId === id));
+  const dias = diasDesde(it.canal_desde);
+  const rotuloPrompt = it.canal === "comigo" ? "Copiar prompt de sessão" : "Copiar prompt de terminal";
+  painel.innerHTML =
+    '<div class="linha"><div>' +
+    '<span class="micro">' + esc(it.id) + " · " + esc(it.faixa) +
+    (it.canal ? " · " + esc(CANAIS_META[it.canal].titulo).toLowerCase() : "") +
+    (dias !== null ? " · neste canal há " + dias + " dia" + (dias === 1 ? "" : "s") : "") + '</span>' +
+    '<h3 style="margin: 4px 0 0;">' + esc(it.titulo) + '</h3></div>' +
+    '<button class="btn claro mini direita" onclick="fecharPainelMesa()">fechar</button></div>' +
+    (it.mesa ? '<div class="mesa-bloco"><span class="micro">Destrava</span><p>' + esc(it.mesa.destrava) + '</p></div>' +
+      '<div class="mesa-bloco"><span class="micro">O gesto</span><p>' + esc(it.mesa.gesto) + '</p></div>' : "") +
+    ((it.nota || it.resumo) ? '<div class="mesa-bloco"><span class="micro">Nota de registro</span><p>' + esc(it.nota || it.resumo) + '</p></div>' : "") +
+    '<div class="acoes">' +
+    (it.prompt ? '<button class="btn primario mini" onclick="copiarPrompt(this, \'' + esc(it.id) + '\')">' + rotuloPrompt + '</button>'
+      : '<span class="chip bloqueada">sem prompt ainda</span>') +
+    (it.canal === "dispare" ? '<button class="btn claro mini" onclick="marcarDisparado(\'' + esc(it.id) + '\')">Marquei: disparado hoje</button>' : "") +
+    (it.faixa !== "radar" ? '<a class="btn claro mini" href="roadmap.html#' + esc(it.id) + '">Ver no grafo</a>' : "") +
+    '<span class="caption" id="mesa-msg"></span></div>';
+  painel.style.display = "block";
+};
+
+window.fecharPainelMesa = function () {
+  document.getElementById("painel-mesa").style.display = "none";
+  document.querySelectorAll(".mesa-card.ativo").forEach(el => el.classList.remove("ativo"));
+};
+
+/* a única escrita da mesa (ADR-0011): mover canal de item aberto */
+window.marcarDisparado = async function (id) {
+  const listas = [ROADMAP.tarefas, ROADMAP.pendentes || [], ROADMAP.propostas || [], ROADMAP.radar || []];
+  let alvo = null;
+  listas.forEach(l => { alvo = alvo || l.find(n => n.id === id); });
+  if (!alvo || alvo.canal !== "dispare") return;
+  alvo.canal = "aguardando";
+  alvo.canal_desde = hojeLocal();
+  const r = await fetch("/api/roadmap", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(ROADMAP),
+  }).then(x => x.json()).catch(() => ({ ok: false, erro: "servidor fora do ar" }));
+  if (r.ok) { renderMesa(); abrirPainelMesa(id); }
+  else {
+    const msg = document.getElementById("mesa-msg");
+    if (msg) msg.textContent = "erro ao gravar: " + (r.erro || "?");
+    const atual = await fetch("/api/roadmap").then(x => x.json()).catch(() => null);
+    if (atual && atual.ok) { ROADMAP = atual.roadmap; render(); }
+  }
+};
 
 /* ---- copiar prompt (o nó vem do ROADMAP em memória) ---- */
 window.copiarPrompt = async function (btn, id) {
-  const todos = [].concat(ROADMAP.tarefas, ROADMAP.pendentes || [], ROADMAP.propostas || []);
+  const todos = [].concat(ROADMAP.tarefas, ROADMAP.pendentes || [], ROADMAP.propostas || [], ROADMAP.radar || []);
   const no = todos.find(n => n.id === id);
   if (!no || !no.prompt) return;
   try { await navigator.clipboard.writeText(no.prompt); }

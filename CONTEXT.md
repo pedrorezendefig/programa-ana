@@ -162,7 +162,15 @@ _Avoid_: "vista Foco"; trilho da receita, alavanca do dia, esforço P/M/G e crit
 
 **Grafo de execução**:
 A página Roadmap do Ana OS (ADR-0008): grafo SVG sem biblioteca externa que renderiza tarefas, pendentes e [[propostas]] como nós com dependências, em colunas da esquerda para a direita (feitas → estágio ativo → propostas → horizonte). Cada nó acionável tem o seu [[prompt-de-no]] com botão de copiar; nó feito aparece concluído, sem botão; nó bloqueado fica esmaecido mostrando quem o bloqueia. Reverte conscientemente o "sem grafo" do ADR-0007: o propósito é outro (mapa de leitura e execução, não mesa de arrastar cards).
-_Avoid_: edição de nós pelo grafo (a única escrita da UI segue sendo a faixa de Ideias); tratar o grafo como fonte do estado (a fonte é TODO.md + roadmap.json).
+_Avoid_: edição de nós pelo grafo (a escrita da UI é só a faixa de Ideias e o mover de canal na [[mesa-de-acao]], ADR-0011); tratar o grafo como fonte do estado (a fonte é TODO.md + roadmap.json).
+
+**Mesa de ação (home do Ana OS)**:
+A seção principal da home desde 11/ago/2026 (OS12, ADR-0011), no lugar dos antigos cards de destaque: todos os itens abertos do roadmap (tarefas a fazer, pendentes, propostas e radar) agrupados por [[canal-de-acao]], cada card com hover mostrando a ficha `mesa {destrava, gesto}` e clique fixando painel com a nota, o prompt copiável **rotulado pelo canal** (prompt de terminal para dispare/aguardando, que guia ou redige a ação externa; prompt de sessão para comigo, que executa a tarefa) e, nos cards dispare, o gesto **"marquei: disparado"** (move para aguardando com a data do dia, a única escrita da mesa). Card sem prompt exibe "sem prompt ainda": é defeito visível a corrigir, não estado aceitável. Itens de espera mostram a idade ("há N dias", vermelho a partir de 14). Responde "o que eu toco agora e o que está na mão de quem"; o [[grafo-de-execucao]] segue respondendo "como as coisas se encadeiam".
+_Avoid_: derivar canal de dono/deps (canal é juízo de situação curado); histórico de movimentos por card (a história mora em canal_desde + log do TODO.md); mesa mostrando item concluído.
+
+**Canal de ação**:
+O campo `canal` dos itens abertos do `roadmap.json` (com `canal_desde`, a data de entrada no canal): **dispare** (depende só do Pedro, minutos: enviar mensagem, criar tabela, clicar em painel), **comigo** (resolve numa sessão Claude Code) e **aguardando** (já foi pedido a terceiro; aqui mora a cobrança, com a idade à vista). É a taxonomia do /check virando dado: as sessões escrevem, a UI da mesa só move dispare → aguardando, e o /check é o fiador da atualidade na reconciliação. A distinção que vale ouro: cobrança pronta não enviada é **dispare** (está na mão do Pedro), não aguardando.
+_Avoid_: canal em item concluído; quarto canal; "aguardando" para o que ninguém pediu ainda (exceção deliberada: a P3 aguarda a VPN, cujo pedido é o card P2).
 
 **Mapa do SOP (página do Ana OS)**:
 O retrato visual do comportamento da Ana (06/ago/2026, a proposta P7 executada como V13): `os/sop.html` desenha o SOP inteiro em oito raias (as cinco jornadas, mais entrada e saída transversais e a raia de apoio de prontuário/dúvidas), com etapas, decisões e chamadas de tool ligadas por setas. Cada nó carrega a âncora do prompt: o trecho literal, guardado em `os/dados/sop-fluxo.json`, que originou aquele passo. O mapa retrata um prompt congelado (a versão e a data de exportação ficam carimbadas no JSON e no cabeçalho da página) e não consulta a plataforma ao vivo. A re-validação é feita por sessão Claude, que reexporta o prompt e procura cada trecho como texto exato; trecho não encontrado é nó defasado. Não confundir com o SOP em texto (`docs/04-sop-ana-reescrito.md`), que é o documento de origem, nem com o [[grafo-de-execucao]], que mapeia tarefas do programa e não o comportamento do agente.
@@ -181,7 +189,7 @@ O campo `prompt` dos nós acionáveis do `roadmap.json` (tarefas `fazer`, penden
 _Avoid_: prompt em nó feito (ruído); prompt que assume conhecimento técnico do Pedro; prompt em arquivo separado do roadmap.json.
 
 **Ideias (faixa do roadmap)**:
-Cards livres do Roadmap do OS: título + poucas linhas + link opcional para doc. Ideia não tem ID, dono nem dependência até ser puxada para o estágio (aí vira tarefa no TODO.md, com ficha e "pronto quando"). Únicos dados do OS editáveis pela interface: o server grava num único arquivo de dados do roadmap, por rota de escrita restrita (ADR-0007).
+Cards livres do Roadmap do OS: título + poucas linhas + link opcional para doc. Ideia não tem ID, dono nem dependência até ser puxada para o estágio (aí vira tarefa no TODO.md, com ficha e "pronto quando"). A rota de escrita da UI é restrita ao arquivo de dados do roadmap (ADR-0007) e cobre só as Ideias e o mover de canal da [[mesa-de-acao]] (ADR-0011).
 _Avoid_: promover ideia a tarefa sem passar pelo TODO.md; dar status/dono a card de ideia.
 
 **Mapa das APIs**:

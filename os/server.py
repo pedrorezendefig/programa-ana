@@ -291,6 +291,23 @@ def ler_roadmap():
         return json.load(f)
 
 
+CANAIS = ("dispare", "comigo", "aguardando")
+
+
+def _erro_canal(item, rotulo):
+    """Valida os campos da Mesa de acao (ADR-0011) num item aberto de qualquer faixa."""
+    if "canal" in item and item["canal"] not in CANAIS:
+        return "%s %s: canal deve ser um de %s" % (rotulo, item["id"], "/".join(CANAIS))
+    if "canal_desde" in item and not isinstance(item["canal_desde"], str):
+        return "%s %s: canal_desde deve ser texto (AAAA-MM-DD)" % (rotulo, item["id"])
+    if "mesa" in item:
+        m = item["mesa"]
+        if not isinstance(m, dict) or not isinstance(m.get("destrava"), str) \
+                or not isinstance(m.get("gesto"), str):
+            return "%s %s: mesa deve ser objeto com destrava e gesto (texto)" % (rotulo, item["id"])
+    return None
+
+
 def validar_roadmap(doc):
     """Valida o documento inteiro do roadmap. Devolve None se ok, senao a mensagem."""
     if not isinstance(doc, dict):
@@ -314,6 +331,9 @@ def validar_roadmap(doc):
         if t["id"] in ids:
             return "id de tarefa duplicado: %s" % t["id"]
         ids.add(t["id"])
+        erro = _erro_canal(t, "tarefa")
+        if erro:
+            return erro
     for p in doc["pendentes"]:
         if not isinstance(p, dict) or not isinstance(p.get("id"), str) or not isinstance(p.get("titulo"), str):
             return "cada pendente precisa de id e titulo (texto)"
@@ -321,6 +341,9 @@ def validar_roadmap(doc):
             return "pendente %s: deps deve ser lista" % p["id"]
         if "prompt" in p and not isinstance(p["prompt"], str):
             return "pendente %s: prompt deve ser texto" % p["id"]
+        erro = _erro_canal(p, "pendente")
+        if erro:
+            return erro
     # Propostas (ADR-0008): passos recomendados, sem status/dono ate serem puxados.
     for pr in doc.get("propostas", []):
         if not isinstance(pr, dict) or not isinstance(pr.get("id"), str) or not isinstance(pr.get("titulo"), str):
@@ -334,6 +357,9 @@ def validar_roadmap(doc):
         if pr["id"] in ids:
             return "id de proposta duplicado ou colidindo com tarefa: %s" % pr["id"]
         ids.add(pr["id"])
+        erro = _erro_canal(pr, "proposta")
+        if erro:
+            return erro
     # Radar: pontos fora do grafo de execucao (bugs/hotfixes nao criticos), com prioridade 1-10.
     for r in doc.get("radar", []):
         if not isinstance(r, dict) or not isinstance(r.get("id"), str) or not isinstance(r.get("titulo"), str):
@@ -348,6 +374,9 @@ def validar_roadmap(doc):
         if r["id"] in ids:
             return "id do radar duplicado ou colidindo com tarefa/proposta: %s" % r["id"]
         ids.add(r["id"])
+        erro = _erro_canal(r, "radar")
+        if erro:
+            return erro
     for i in doc["ideias"]:
         if not isinstance(i, dict) or not isinstance(i.get("titulo"), str) or not i["titulo"].strip():
             return "cada ideia precisa ao menos de titulo (texto)"
