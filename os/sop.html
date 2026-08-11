@@ -28,10 +28,16 @@
   .mapa { display: flex; gap: 14px; align-items: flex-start; }
   .gutter { width: 176px; flex-shrink: 0; padding-top: 0; }
   .gutter .raia-rot {
-    display: flex; flex-direction: column; justify-content: center; gap: 5px;
+    display: block;
     padding: 0 14px 0 2px; cursor: pointer;
     border-left: 3px solid transparent;
     transition: border-color .15s ease, opacity .2s ease;
+  }
+  /* o rótulo acompanha o scroll dentro da raia (as faixas agora são altas) */
+  .gutter .raia-rot .fixo {
+    position: sticky; top: 14px;
+    display: flex; flex-direction: column; gap: 5px;
+    padding-top: 10px;
   }
   .gutter .raia-rot .nome { font: var(--peso-bold) 14px/1.3 var(--font-poppins); letter-spacing: -0.2px; }
   .gutter .raia-rot .nota { font-size: 11.5px; line-height: 1.4; color: var(--cor-rotulo); }
@@ -184,10 +190,13 @@
 <script>
 "use strict";
 
-/* ---------- geometria ---------- */
-var NO_L = 178, NO_A = 70, COL_GAP = 34, LIN_GAP = 16;
-var COL_PASSO = NO_L + COL_GAP, LIN_PASSO = NO_A + LIN_GAP;
-var PAD_X = 20, FAIXA_TOPO = 22, FAIXA_BASE = 22, FAIXA_GAP = 14;
+/* ---------- geometria ----------
+   Layout vertical (OS13): a progressão (col) DESCE; os paralelos (linha) ficam lado a lado.
+   CORREDOR é a margem lateral por onde as arestas longas viajam sem cruzar cartões. */
+var NO_L = 200, NO_A = 70, HGAP = 30, VGAP = 30;
+var PASSO_X = NO_L + HGAP, PASSO_Y = NO_A + VGAP;
+var PAD_X = 14, CORREDOR = 40, FAIXA_TOPO = 26, FAIXA_BASE = 26, FAIXA_GAP = 18;
+var DIM_LARG = 0;
 
 var DADOS = null, POR_ID = {}, GEO = {}, FAIXAS = {};
 var FIXADO = null, RAIA_FOCO = null;
@@ -264,21 +273,27 @@ function dataBR(iso) {
 
 /* ---------- layout ---------- */
 function calcular() {
-  var maxCol = 0;
-  DADOS.nos.forEach(function (n) { if (n.col > maxCol) maxCol = n.col; });
-  var largura = PAD_X * 2 + (maxCol + 1) * COL_PASSO - COL_GAP;
+  var maxLinha = 0;
+  DADOS.nos.forEach(function (n) { if (n.linha > maxLinha) maxLinha = n.linha; });
+  var largura = CORREDOR * 2 + PAD_X * 2 + (maxLinha + 1) * PASSO_X - HGAP;
 
   var y = 0;
   DADOS.raias.forEach(function (r) {
     var deles = DADOS.nos.filter(function (n) { return n.raia === r.id; });
-    var linhas = 0;
-    deles.forEach(function (n) { if (n.linha + 1 > linhas) linhas = n.linha + 1; });
-    var altura = FAIXA_TOPO + linhas * LIN_PASSO - LIN_GAP + FAIXA_BASE;
-    FAIXAS[r.id] = { topo: y, altura: altura, linhas: linhas, qtd: deles.length };
+    /* col é alinhado ao progresso global (herança do desenho horizontal): normaliza por raia
+       para a faixa começar no primeiro nó dela, sem vazio no topo */
+    var minCol = Infinity, maxCol = 0;
+    deles.forEach(function (n) {
+      if (n.col < minCol) minCol = n.col;
+      if (n.col > maxCol) maxCol = n.col;
+    });
+    var fileiras = maxCol - minCol + 1;
+    var altura = FAIXA_TOPO + fileiras * PASSO_Y - VGAP + FAIXA_BASE;
+    FAIXAS[r.id] = { topo: y, altura: altura, linhas: fileiras, qtd: deles.length };
     deles.forEach(function (n) {
       GEO[n.id] = {
-        x: PAD_X + n.col * COL_PASSO,
-        y: y + FAIXA_TOPO + n.linha * LIN_PASSO
+        x: CORREDOR + PAD_X + n.linha * PASSO_X,
+        y: y + FAIXA_TOPO + (n.col - minCol) * PASSO_Y
       };
     });
     y += altura + FAIXA_GAP;
@@ -289,6 +304,7 @@ function calcular() {
 /* ---------- desenho ---------- */
 function desenhar() {
   var dim = calcular();
+  DIM_LARG = dim.largura;
   var svg = document.getElementById("svg");
   svg.setAttribute("width", dim.largura);
   svg.setAttribute("height", dim.altura);
@@ -316,32 +332,58 @@ function centro(id) {
 }
 
 function aresta(a, i) {
-  var o = centro(a.de), d = centro(a.para), caminho, fx, fy, ang;
-  if (d.x1 > o.x2 + 8) {
-    var folga = Math.max(26, (d.x1 - o.x2) * 0.42);
-    caminho = "M" + o.x2 + "," + o.y + " C" + (o.x2 + folga) + "," + o.y + " " +
-      (d.x1 - folga) + "," + d.y + " " + (d.x1 - 7) + "," + d.y;
-    fx = d.x1 - 7; fy = d.y; ang = 0;
-  } else if (d.y1 > o.y2 + 4) {
-    caminho = "M" + o.x + "," + o.y2 + " C" + o.x + "," + (o.y2 + 30) + " " +
-      d.x + "," + (d.y1 - 30) + " " + d.x + "," + (d.y1 - 7);
+  var o = centro(a.de), d = centro(a.para), caminho, fx, fy, ang, mx, my;
+  var LONGA = PASSO_Y * 2.4;
+  if (d.y1 > o.y2 + 8 && d.y1 - o.y2 > LONGA) {
+    /* descida longa: sai pela direita, viaja no corredor direito e entra pela direita do destino */
+    var bx = DIM_LARG - 22;
+    caminho = "M" + o.x2 + "," + o.y +
+      " C" + bx + "," + o.y + " " + bx + "," + (o.y + 50) + " " + bx + "," + (o.y + 110) +
+      " L" + bx + "," + (d.y - 110) +
+      " C" + bx + "," + (d.y - 50) + " " + bx + "," + d.y + " " + (d.x2 + 7) + "," + d.y;
+    fx = d.x2 + 7; fy = d.y; ang = 180;
+    mx = bx; my = (o.y + d.y) / 2;
+  } else if (d.y1 > o.y2 + 8) {
+    /* descida curta: vertical direta */
+    var folga = Math.max(24, (d.y1 - o.y2) * 0.45);
+    caminho = "M" + o.x + "," + o.y2 + " C" + o.x + "," + (o.y2 + folga) + " " +
+      d.x + "," + (d.y1 - folga) + " " + d.x + "," + (d.y1 - 7);
     fx = d.x; fy = d.y1 - 7; ang = 90;
+    mx = (o.x + d.x) / 2; my = (o.y2 + d.y1) / 2;
+  } else if (d.y2 < o.y1 - 4 && o.y1 - d.y2 > LONGA) {
+    /* retorno longo: viaja no corredor esquerdo e entra pela esquerda do destino */
+    var be = 22;
+    caminho = "M" + o.x1 + "," + o.y +
+      " C" + be + "," + o.y + " " + be + "," + (o.y - 50) + " " + be + "," + (o.y - 110) +
+      " L" + be + "," + (d.y + 110) +
+      " C" + be + "," + (d.y + 50) + " " + be + "," + d.y + " " + (d.x1 - 7) + "," + d.y;
+    fx = d.x1 - 7; fy = d.y; ang = 0;
+    mx = be; my = (o.y + d.y) / 2;
   } else if (d.y2 < o.y1 - 4) {
+    /* subida curta: vertical direta */
     caminho = "M" + o.x + "," + o.y1 + " C" + o.x + "," + (o.y1 - 30) + " " +
       d.x + "," + (d.y2 + 30) + " " + d.x + "," + (d.y2 + 7);
     fx = d.x; fy = d.y2 + 7; ang = -90;
+    mx = (o.x + d.x) / 2; my = (o.y1 + d.y2) / 2;
+  } else if (d.x1 > o.x2 + 4) {
+    /* vizinho à direita, mesmo nível */
+    caminho = "M" + o.x2 + "," + o.y + " C" + (o.x2 + 30) + "," + o.y + " " +
+      (d.x1 - 30) + "," + d.y + " " + (d.x1 - 7) + "," + d.y;
+    fx = d.x1 - 7; fy = d.y; ang = 0;
+    mx = (o.x2 + d.x1) / 2; my = (o.y + d.y) / 2 - 7;
   } else {
+    /* vizinho à esquerda, mesmo nível */
     caminho = "M" + o.x1 + "," + o.y + " C" + (o.x1 - 30) + "," + o.y + " " +
       (d.x2 + 30) + "," + d.y + " " + (d.x2 + 7) + "," + d.y;
     fx = d.x2 + 7; fy = d.y; ang = 180;
+    mx = (o.x1 + d.x2) / 2; my = (o.y + d.y) / 2 - 7;
   }
   var seta = '<path class="seta" data-i="' + i + '" d="M0,0 l-8,-4.5 v9 z" transform="translate(' +
     fx + "," + fy + ") rotate(" + ang + ')"/>';
   var rot = "";
   if (a.rotulo) {
-    var mx = (o.x2 + d.x1) / 2, my = (o.y + d.y) / 2 - 7;
-    if (ang !== 0) { mx = (o.x + d.x) / 2; my = (o.y + d.y) / 2; }
     var larg = a.rotulo.length * 5.4 + 12;
+    mx = Math.min(Math.max(mx, larg / 2 + 6), DIM_LARG - larg / 2 - 6);
     rot = '<rect class="rot-aresta-fundo" data-i="' + i + '" x="' + (mx - larg / 2) + '" y="' + (my - 9) +
       '" width="' + larg + '" height="15" rx="7"/>' +
       '<text class="rot-aresta" data-i="' + i + '" x="' + mx + '" y="' + (my + 2) +
@@ -373,10 +415,10 @@ function montarGutter() {
   g.innerHTML = DADOS.raias.map(function (r) {
     var f = FAIXAS[r.id];
     return '<div class="raia-rot" data-raia="' + esc(r.id) + '" style="height:' + f.altura +
-      "px;margin-bottom:" + FAIXA_GAP + 'px" tabindex="0" role="button">' +
+      "px;margin-bottom:" + FAIXA_GAP + 'px" tabindex="0" role="button"><div class="fixo">' +
       '<span class="conta">' + f.qtd + " nós</span>" +
       '<span class="nome">' + esc(r.rotulo) + "</span>" +
-      '<span class="nota">' + esc(r.nota) + "</span></div>";
+      '<span class="nota">' + esc(r.nota) + "</span></div></div>";
   }).join("");
 }
 

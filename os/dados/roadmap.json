@@ -380,6 +380,21 @@
       }
     },
     {
+      "id": "OS13",
+      "titulo": "Ana OS: Mapa do SOP na vertical (fluxo desce, corredores laterais, rótulo de raia fixo)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "V13"
+      ],
+      "nota": "Feita em 11/ago/2026, a pedido do Pedro (setas passavam por cima dos cartões e o scroll horizontal escondia o desenho). Transposição do layout em os/sop.html: a progressão (col) desce e os paralelos (linha) ficam lado a lado (máximo 4, cabe sem scroll horizontal); cada raia normalizada para começar no primeiro nó dela; arestas longas viajam por corredores laterais (descida à direita, retorno à esquerda) sem cruzar cartão; rótulo da raia fica fixo (sticky) enquanto ela rola. Dados e interação intactos (mesmo sop-fluxo.json, hover, clique, isolar raia, deep link).",
+      "ficha": {
+        "fez": "O Mapa do SOP virou de cabeça para baixo: o fluxo desce e a página rola só na vertical, com as arestas longas viajando por corredores laterais.",
+        "mudou": "Só a geometria do os/sop.html: colunas normalizadas por raia (sem vazios), nó maior, rótulo de raia fixo no scroll; dados e interação intactos.",
+        "valor": "Nada mais passa por cima dos cartões: dá para ler o SOP inteiro descendo a página, raia por raia."
+      }
+    },
+    {
       "id": "V16",
       "titulo": "Mini-roteiro GH no canal de teste: identificação, cadastro e caso vazio no Telegram",
       "dono": "C+P",

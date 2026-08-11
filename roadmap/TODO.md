@@ -51,6 +51,7 @@ O segundo grilling de 30/jul (noite) abriu a frente **Ana OS** (ADR-0007): o por
 | OS10 | `[x]` | Ana OS: página Circuito da Ana (circuito de execução + anatomia do prompt + as ferramentas) | C | V13 |
 | OS11 | `[x]` | Ana OS: Circuito legível (correção do desenho + fichas de hover entra/acontece/sai) | C | OS10 |
 | OS12 | `[x]` | Ana OS: Mesa de ação na home (cards por canal, hover com ficha, prompt por canal) | C | OS9 |
+| OS13 | `[x]` | Ana OS: Mapa do SOP na vertical (fluxo desce, corredores laterais, rótulo de raia fixo) | C | V13 |
 | V16 | `[ ]` | Mini-roteiro GH no canal de teste: identificação, cadastro e caso vazio no Telegram | C+P | V12, V14, V15 |
 
 ### OS1..OS5 · Ana OS no ar `[x]`
@@ -157,6 +158,9 @@ Feita em 11/ago/2026, na sessão do grilling da mesa (ADR-0011). A home trocou o
 - Regra do ADR-0007 reescrita pelo ADR-0011: **a UI escreve Ideias e move canal de item aberto** (nada mais). O /check vira fiador de canal/canal_desde/mesa na reconciliação.
 - Fumaça: JSON válido, `node --check` limpo, validação recusando canal inválido e mesa incompleta, rotas 200, conferência viva no Chrome (3 colunas, tooltip do GH19, painel com os botões certos, P3 mostrando "há 29 dias" em vermelho).
 
+### OS13 · Mapa do SOP na vertical `[x]`
+Feita em 11/ago/2026, a pedido do Pedro na mesma sessão da OS12: no desenho horizontal, as setas passavam por cima dos cartões e o scroll da esquerda para a direita escondia metade do mapa. A transposição em `os/sop.html`: a progressão (`col`) agora **desce** e os paralelos (`linha`) ficam lado a lado (máximo 4, o desenho cabe na tela sem scroll horizontal); cada raia foi normalizada para começar no primeiro nó dela (o `col` era alinhado ao progresso global, herança do desenho horizontal, e criava vazios enormes no topo das faixas); as **arestas longas viajam por corredores laterais** (descida pelo direito, retorno pelo esquerdo) e não cruzam mais nenhum cartão; o rótulo da raia fica **fixo (sticky)** enquanto ela rola. Dados e interação intactos: mesmo `sop-fluxo.json` (zero mudança de dado), hover, clique com painel, isolar raia e deep link funcionando. Fumaça: `node --check` limpo, desenho conferido no Chrome de ponta a ponta (altura final 4002px, largura 1010px), clique no E3 abrindo o painel com as 2 arestas acesas.
+
 ### V16 · Mini-roteiro GH no canal de teste `[ ]`
 Nasceu do grilling de 11/ago/2026 (ADR-0011), da provocação "nada deveria depender do externo". O testável sem externo que faltava: as provas das V12/V14/V15 rodaram todas no playground; nenhum fluxo GH rodou ainda no Telegram de ponta a ponta (Chatwoot, kanban, tags, Langfuse). Três cenários no padrão do roteiro: identificação do sonda (2.4A), cadastro de um TESTE (PASSO 3.6), caso vazio de horários (Seção 2.3.1) com escalada. Nenhuma finalização.
 **Pronto quando:** os 3 cenários registrados na tabela do roteiro com etapa/tag/tools conferidas.
@@ -182,6 +186,7 @@ Bugs, hotfixes e higienes que **não impactam o objetivo** (montar a solução f
 
 ## Log
 
+- **11/ago/2026 (4):** OS13 executada a pedido do Pedro: o Mapa do SOP virou de cabeça para baixo (scroll vertical, fluxo descendo por raia), com colunas normalizadas por raia, arestas longas por corredores laterais sem cruzar cartão e rótulo de raia fixo no scroll. Só geometria: `sop-fluxo.json`, hover, painel e isolamento de raia intactos.
 - **11/ago/2026 (3):** OS12 executada na sessão do grilling da mesa (ADR-0011): a home troca os destaques pela **Mesa de ação** (itens abertos das 4 faixas por canal, hover com ficha {destrava, gesto}, painel com prompt rotulado pelo canal, gesto "marquei: disparado"). `roadmap.json` ganha canal/canal_desde/mesa em todo item aberto, os prompts que faltavam (V10, R1), o pendente novo **GH19** e a ideia da massa simulada; o server valida os campos novos (reativar = reiniciar o server); a regra da escrita da UI vira "Ideias + mover canal". Nascem **V16** (mini-roteiro GH no Telegram, o testável sem externo que faltava) e os termos Mesa de ação e Canal de ação no CONTEXT.md. O /check vira fiador de canal/mesa.
 - **11/ago/2026 (2):** OS11 concluída (grilling do Pedro): o Circuito da Ana ficou legível. Desenho corrigido (zona do laço no lugar do arco que sobrepunha o passo 5, títulos multilinha com halo, raias mais altas) e fichas de hover em 5 alvos (passos com entra/acontece/sai por caminho, raias, laço com exemplos reais, fios, chips), com clique fixando a ficha e a lista abaixo do desenho virando a versão narrativa. `circuito.json` ganhou as fichas e perdeu o `detalhe`; verbete do CONTEXT.md atualizado.
 - **11/ago/2026:** check sem novidade externa: nenhum commit desde 10/ago, git limpo, diretório sem cacos. MCP da fazer.ai indisponível na sessão (a conferência da instância e o export do `texto_completo` do Circuito ficam para uma sessão conectada). Estado reescrito para a fronteira real: grafo sem tarefa aberta; destravas são a GH-19 (35 dias), a VPN da TST (29 dias), a primeira metade da OV2 (tabela + token, com o Pedro) e a revisão das decisões autônomas.
