@@ -28,33 +28,82 @@
   .faixa { fill: var(--cor-card-interno); }
   .rot-raia { font: var(--peso-bold) 12.5px/1 var(--font-poppins); fill: var(--cor-tinta); }
   .nota-raia { font: var(--peso-regular) 10px/1 var(--font-inter); fill: var(--cor-rotulo); }
-  .passo { cursor: default; }
+  .hit-raia { fill: transparent; cursor: pointer; }
+  .hit-raia:hover + .rot-raia, .g-raia:hover .rot-raia { fill: var(--cor-azul); }
+  .passo { cursor: pointer; }
   .passo circle { fill: var(--cor-tinta); }
   .passo.variavel circle { fill: var(--cor-azul); }
+  .passo:hover circle { opacity: .82; }
   .passo text.num { font: var(--peso-semibold) 12px/1 var(--font-poppins); fill: #ffffff; text-anchor: middle; }
-  .passo text.tit { font: var(--peso-medio) 9.5px/1 var(--font-inter); fill: var(--cor-tinta); text-anchor: middle; }
-  .fio-passo { fill: none; stroke: var(--cor-mudo); stroke-width: 1.4; }
-  .fio-passo.laco { stroke-dasharray: 5 4; }
+  .passo text.tit {
+    font: var(--peso-medio) 9.5px/1 var(--font-inter); fill: var(--cor-tinta); text-anchor: middle;
+    paint-order: stroke; stroke: var(--cor-card); stroke-width: 3px; stroke-linejoin: round;
+  }
+  .fio-passo { fill: none; stroke: var(--cor-mudo); stroke-width: 1.4; pointer-events: none; }
   .fio-passo.trace { stroke-dasharray: 2 4; }
+  .fio-passo.aceso { stroke: var(--cor-tinta); }
+  .fio-hit { fill: none; stroke: #000; stroke-opacity: 0; stroke-width: 16; cursor: pointer; }
   .seta-passo { fill: var(--cor-mudo); }
-  .rot-laco { font: var(--peso-medio) 10px/1 var(--font-inter); fill: var(--cor-rotulo); text-anchor: middle; }
+  .zona-laco {
+    fill: transparent; stroke: var(--cor-mudo); stroke-width: 1.4;
+    stroke-dasharray: 6 5; pointer-events: stroke; cursor: pointer;
+  }
+  .rot-zona {
+    font: var(--peso-medio) 10.5px/1 var(--font-inter); fill: var(--cor-rotulo); cursor: pointer;
+    paint-order: stroke; stroke: var(--cor-card); stroke-width: 3px; stroke-linejoin: round;
+  }
+  .g-zona.aceso .zona-laco { stroke: var(--cor-tinta); }
+  .g-zona.aceso .rot-zona { fill: var(--cor-tinta); }
+
+  /* tooltip de ficha no hover (mesmo padrão OS9 do grafo do roadmap) */
+  .tooltip-ficha {
+    position: fixed; z-index: 120; width: 340px;
+    background: var(--cor-tinta); color: #ffffff;
+    border-radius: 14px; padding: 16px 18px;
+    pointer-events: none; opacity: 0; transition: opacity .12s ease;
+    box-shadow: 0 16px 36px -14px rgba(0,0,0,.45);
+  }
+  .tooltip-ficha.visivel { opacity: 1; }
+  .tooltip-ficha.fixa { pointer-events: auto; }
+  .tooltip-ficha .tt-cab { font: var(--peso-semibold) 13px/1.4 var(--font-poppins); padding-right: 20px; }
+  .tooltip-ficha .tt-onde { display: block; font: var(--peso-medio) 10.5px/1.5 var(--font-inter); color: #9a9a9a; }
+  .tooltip-ficha .tt-rot {
+    font: var(--peso-semibold) 10px/1.4 var(--font-inter);
+    letter-spacing: .08em; text-transform: uppercase;
+    color: #9a9a9a; margin: 9px 0 2px;
+  }
+  .tooltip-ficha .tt-txt { font-size: 12.5px; line-height: 1.5; }
+  .tooltip-ficha .tt-dica { margin-top: 10px; font: var(--peso-regular) 10.5px/1.4 var(--font-inter); color: #9a9a9a; }
+  .tooltip-ficha .tt-fechar {
+    position: absolute; top: 10px; right: 10px; width: 22px; height: 22px;
+    border: none; border-radius: 50%; background: rgba(255,255,255,.16); color: #ffffff;
+    cursor: pointer; font: 12px/1 var(--font-inter); display: none;
+  }
+  .tooltip-ficha.fixa .tt-fechar { display: grid; place-items: center; }
 
   .lista-passos { margin-top: 18px; display: flex; flex-direction: column; }
   .lista-passos .item {
     display: flex; gap: 14px; align-items: baseline;
-    padding: 11px 4px; border-bottom: 1px solid var(--cor-fio); font-size: 14px;
+    padding: 13px 4px; border-bottom: 1px solid var(--cor-fio); font-size: 14px;
   }
   .lista-passos .item:last-child { border-bottom: none; }
   .lista-passos .num-lista {
     width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
     background: var(--cor-tinta); color: #ffffff;
-    display: inline-grid; place-items: center; align-self: center;
+    display: inline-grid; place-items: center; align-self: flex-start;
     font: var(--peso-semibold) 12px/1 var(--font-poppins);
   }
   .lista-passos .item.variavel .num-lista { background: var(--cor-azul); }
+  .lista-passos .corpo-item { flex: 1; }
   .lista-passos .corpo-item strong { display: block; }
-  .lista-passos .corpo-item span { color: var(--cor-rotulo); font-size: 13.5px; }
-  .lista-passos .chip { padding: 4px 10px; font-size: 11px; align-self: center; flex-shrink: 0; }
+  .lista-passos .fx { display: grid; grid-template-columns: 82px 1fr; gap: 3px 12px; margin-top: 7px; }
+  .lista-passos .fx .k {
+    font: var(--peso-semibold) 10px/1.7 var(--font-inter);
+    letter-spacing: .07em; text-transform: uppercase; color: var(--cor-rotulo);
+  }
+  .lista-passos .fx .v { font-size: 13px; line-height: 1.55; color: var(--cor-rotulo); }
+  .lista-passos .fx .v strong { display: inline; color: var(--cor-tinta); font-weight: var(--peso-semibold); }
+  .lista-passos .chip { padding: 4px 10px; font-size: 11px; align-self: flex-start; margin-top: 4px; flex-shrink: 0; }
 
   /* grid de ferramentas */
   .grupo-tools { margin-top: 22px; }
@@ -231,6 +280,76 @@ async function carregar() {
   if (location.hash) irPara(location.hash.slice(1));
 }
 
+/* ---------- tooltip de ficha (padrão OS9) ---------- */
+
+const TIP = document.createElement("div");
+TIP.className = "tooltip-ficha";
+document.body.appendChild(TIP);
+let TIP_FIXADA = false;
+
+function blocosFicha(f) {
+  return '<div class="tt-rot">O que entra</div><div class="tt-txt">' + esc(f.entra) + "</div>" +
+    '<div class="tt-rot">O que acontece</div><div class="tt-txt">' + esc(f.acontece) + "</div>" +
+    '<div class="tt-rot">O que sai</div><div class="tt-txt">' + esc(f.sai) + "</div>";
+}
+
+function posicionarTip(el) {
+  const r = el.getBoundingClientRect();
+  let x = r.right + 12;
+  if (x + 352 > window.innerWidth) x = Math.max(8, r.left - 352);
+  TIP.style.left = x + "px";
+  TIP.style.top = "0px";
+  const alt = TIP.offsetHeight;
+  let y = Math.min(r.top, window.innerHeight - alt - 12);
+  TIP.style.top = Math.max(8, y) + "px";
+}
+
+function encherTip(html, fixa) {
+  TIP.innerHTML = '<button class="tt-fechar" aria-label="Fechar">✕</button>' + html +
+    (fixa ? "" : '<div class="tt-dica">clique para fixar a ficha</div>');
+  const b = TIP.querySelector(".tt-fechar");
+  if (b) b.addEventListener("click", soltarTip);
+}
+
+function mostrarTip(html, el) {
+  if (TIP_FIXADA) return;
+  encherTip(html, false);
+  TIP.classList.add("visivel");
+  posicionarTip(el);
+}
+
+function fixarTip(html, el) {
+  TIP_FIXADA = true;
+  encherTip(html, true);
+  TIP.classList.add("visivel");
+  TIP.classList.add("fixa");
+  posicionarTip(el);
+}
+
+function soltarTip() {
+  TIP_FIXADA = false;
+  TIP.classList.remove("visivel");
+  TIP.classList.remove("fixa");
+}
+
+function esconderTip() { if (!TIP_FIXADA) TIP.classList.remove("visivel"); }
+
+document.addEventListener("scroll", function () { soltarTip(); }, true);
+document.addEventListener("click", function (e) {
+  if (TIP_FIXADA && !TIP.contains(e.target) && !e.target.closest("[data-tip]")) soltarTip();
+});
+
+/* liga hover + clique-fixa num elemento com conteúdo de ficha */
+function armarTip(el, montarHtml) {
+  el.setAttribute("data-tip", "1");
+  el.addEventListener("mouseenter", function () { mostrarTip(montarHtml(), el); });
+  el.addEventListener("mouseleave", esconderTip);
+  el.addEventListener("click", function (e) {
+    e.stopPropagation();
+    fixarTip(montarHtml(), el);
+  });
+}
+
 /* ---------- circuito ---------- */
 
 function renderCaminhos() {
@@ -240,7 +359,13 @@ function renderCaminhos() {
     btn.className = "chip fazer chip-caminho" + (chave === CAMINHO ? "" : " desligado");
     btn.dataset.chave = chave;
     btn.textContent = D.caminhos[chave].rotulo;
+    btn.addEventListener("mouseenter", function () {
+      mostrarTip('<div class="tt-cab">' + esc(D.caminhos[chave].rotulo) + "</div>" +
+        '<div class="tt-rot">O caminho</div><div class="tt-txt">' + esc(D.caminhos[chave].resumo) + "</div>", btn);
+    });
+    btn.addEventListener("mouseleave", esconderTip);
     btn.addEventListener("click", function () {
+      soltarTip();
       CAMINHO = chave;
       alvo.querySelectorAll(".chip-caminho").forEach(function (b) {
         b.classList.toggle("desligado", b.dataset.chave !== chave);
@@ -254,76 +379,168 @@ function renderCaminhos() {
 function passosDoCaminho() {
   const c = D.caminhos[CAMINHO];
   return D.passos.map(function (p) {
-    if (p.n === 5) return Object.assign({}, p, { titulo: c.passo5, variavel: true });
-    if (p.n === 6) return Object.assign({}, p, { titulo: c.passo6, raia: c.passo6_raia, variavel: true });
+    if (p.n === 5) return Object.assign({}, p, { titulo: c.passo5, ficha: c.ficha5, variavel: true });
+    if (p.n === 6) return Object.assign({}, p, { titulo: c.passo6, ficha: c.ficha6, raia: c.passo6_raia, variavel: true });
     return p;
   });
 }
 
+/* quebra o título em linhas de até ~17 caracteres */
+function quebrarTitulo(t) {
+  const palavras = String(t).split(" ");
+  const linhas = [];
+  let atual = "";
+  palavras.forEach(function (w) {
+    if (atual && (atual + " " + w).length > 17) { linhas.push(atual); atual = w; }
+    else atual = atual ? atual + " " + w : w;
+  });
+  if (atual) linhas.push(atual);
+  return linhas;
+}
+
 function renderCircuito() {
+  soltarTip();
   const passos = passosDoCaminho();
   const raias = D.raias;
   const idxRaia = {};
   raias.forEach(function (r, i) { idxRaia[r.id] = i; });
 
-  const ALT = 76, GUT = 190, PASSO_W = 96, R = 13;
+  const ALT = 100, GUT = 190, PASSO_W = 104, R = 13;
   const largura = GUT + passos.length * PASSO_W + 14;
   const altura = raias.length * ALT;
   const cx = function (n) { return GUT + (n - 0.5) * PASSO_W; };
-  const cy = function (raia) { return idxRaia[raia] * ALT + ALT / 2 - 6; };
+  const cy = function (raia) { return idxRaia[raia] * ALT + 38; };
+  const titulos = {};
+  passos.forEach(function (p) { titulos[p.n] = quebrarTitulo(p.titulo); });
 
   let svg = "";
   raias.forEach(function (r, i) {
     if (i % 2 === 0) svg += '<rect class="faixa" x="0" y="' + (i * ALT) + '" width="' + largura + '" height="' + ALT + '" rx="10"/>';
-    svg += '<text class="rot-raia" x="14" y="' + (i * ALT + ALT / 2 - 4) + '">' + esc(r.rotulo) + "</text>" +
-      '<text class="nota-raia" x="14" y="' + (i * ALT + ALT / 2 + 12) + '">' + esc(r.nota) + "</text>";
+    svg += '<g class="g-raia" data-raia="' + esc(r.id) + '">' +
+      '<rect class="hit-raia" x="0" y="' + (i * ALT) + '" width="' + (GUT - 16) + '" height="' + ALT + '"/>' +
+      '<text class="rot-raia" x="14" y="' + (i * ALT + ALT / 2 - 4) + '">' + esc(r.rotulo) + "</text>" +
+      '<text class="nota-raia" x="14" y="' + (i * ALT + ALT / 2 + 12) + '">' + esc(r.nota) + "</text></g>";
   });
 
-  function seta(x, y, aponta) {
-    const dx = aponta === "esq" ? 7 : -7;
-    return '<path class="seta-passo" d="M' + x + "," + y + " l" + dx + ",-4 v8 z\"/>";
-  }
+  /* zona do laço: a moldura tracejada abraçando os passos 4 a 7 */
+  const doLaco = passos.filter(function (p) { return p.n >= 4 && p.n <= 7; });
+  const lanesLaco = doLaco.map(function (p) { return idxRaia[p.raia]; });
+  const zx1 = cx(4) - 46, zx2 = cx(7) + 46;
+  const zy1 = Math.min.apply(null, lanesLaco) * ALT + 5;
+  const zy2 = (Math.max.apply(null, lanesLaco) + 1) * ALT - 5;
+  svg += '<g class="g-zona" id="g-zona">' +
+    '<rect class="zona-laco" x="' + zx1 + '" y="' + zy1 + '" width="' + (zx2 - zx1) + '" height="' + (zy2 - zy1) + '" rx="16"/>' +
+    '<text class="rot-zona" x="' + (zx1 + 12) + '" y="' + (zy1 - 8) + '">' + esc(D.laco.titulo) + " · os passos 4→5→6 repetem até a mensagem final ↺</text></g>";
+
+  function seta(x, y) { return '<path class="seta-passo" d="M' + x + "," + y + ' l-7,-4 v8 z"/>'; }
+  const fios = [];
   function ligar(a, b) {
     const x1 = cx(a.n) + R, y1 = cy(a.raia), x2 = cx(b.n) - R - 6, y2 = cy(b.raia);
-    if (a.raia === b.raia) return '<path class="fio-passo" d="M' + x1 + "," + y1 + " H" + x2 + '"/>' + seta(x2 + 6, y2, "dir");
-    const meio = (x1 + x2) / 2;
-    return '<path class="fio-passo" d="M' + x1 + "," + y1 + " C" + meio + "," + y1 + " " + meio + "," + y2 + " " + x2 + "," + y2 + '"/>' + seta(x2 + 6, y2, "dir");
+    let d;
+    if (a.raia === b.raia) d = "M" + x1 + "," + y1 + " H" + x2;
+    else {
+      const meio = (x1 + x2) / 2;
+      d = "M" + x1 + "," + y1 + " C" + meio + "," + y1 + " " + meio + "," + y2 + " " + x2 + "," + y2;
+    }
+    fios.push({ d: d, de: a, para: b, extra: "" });
+    return seta(x2 + 6, y2);
   }
-  for (let i = 0; i < passos.length - 2; i++) svg += ligar(passos[i], passos[i + 1]);
-  /* 8 -> 9: o trace cobre o turno inteiro; fio pontilhado */
+  let setas = "";
+  for (let i = 0; i < passos.length - 2; i++) setas += ligar(passos[i], passos[i + 1]);
+  /* 8 -> 9: o trace cobre o turno inteiro; fio pontilhado partindo abaixo do título do 8 */
   const p8 = passos[7], p9 = passos[8];
-  const x8 = cx(p8.n), y8 = cy(p8.raia) + R, x9 = cx(p9.n) - R - 6, y9 = cy(p9.raia);
-  svg += '<path class="fio-passo trace" d="M' + x8 + "," + y8 + " C" + x8 + "," + (y9 - 8) + " " + (x8 + 20) + "," + y9 + " " + x9 + "," + y9 + '"/>' + seta(x9 + 6, y9, "dir");
-  /* laço 7 -> 4 */
-  const p4 = passos[3], p7 = passos[6];
-  const ax = cx(p7.n), ay = cy(p7.raia) - R, bx = cx(p4.n), by = cy(p4.raia) - R;
-  const topo = Math.min(ay, by) - 26;
-  svg += '<path class="fio-passo laco" d="M' + ax + "," + ay + " C" + ax + "," + topo + " " + bx + "," + topo + " " + bx + "," + (by - 5) + '"/>' +
-    '<path class="seta-passo" d="M' + bx + "," + (by - 3) + ' l-4,-7 h8 z"/>' +
-    '<text class="rot-laco" x="' + ax + '" y="' + (topo - 5) + '">o laço de ferramentas</text>';
+  const x8 = cx(p8.n), y8 = cy(p8.raia) + R + titulos[8].length * 11 + 14;
+  const x9 = cx(p9.n) - R - 6, y9 = cy(p9.raia);
+  fios.push({ d: "M" + x8 + "," + y8 + " C" + x8 + "," + (y9 - 10) + " " + (x8 + 24) + "," + y9 + " " + x9 + "," + y9, de: p8, para: p9, extra: " trace" });
+  setas += seta(x9 + 6, y9);
+
+  fios.forEach(function (f, i) {
+    svg += '<path class="fio-passo' + f.extra + '" id="fio-' + i + '" d="' + f.d + '"/>';
+  });
+  svg += setas;
+  fios.forEach(function (f, i) {
+    svg += '<path class="fio-hit" data-fio="' + i + '" d="' + f.d + '"/>';
+  });
 
   passos.forEach(function (p) {
     const x = cx(p.n), y = cy(p.raia);
-    svg += '<g class="passo' + (p.variavel ? " variavel" : "") + '">' +
+    const tspans = titulos[p.n].map(function (lin, i) {
+      return '<tspan x="' + x + '" dy="' + (i === 0 ? 0 : 11) + '">' + esc(lin) + "</tspan>";
+    }).join("");
+    svg += '<g class="passo' + (p.variavel ? " variavel" : "") + '" data-passo="' + p.n + '">' +
       '<circle cx="' + x + '" cy="' + y + '" r="' + R + '"/>' +
       '<text class="num" x="' + x + '" y="' + (y + 4) + '">' + p.n + "</text>" +
-      '<text class="tit" x="' + x + '" y="' + (y + R + 14) + '">' + esc(p.titulo) + "</text></g>";
+      '<text class="tit" x="' + x + '" y="' + (y + R + 14) + '">' + tspans + "</text></g>";
   });
 
   const el = document.getElementById("svg-circuito");
   el.setAttribute("width", largura);
-  el.setAttribute("height", altura + 30);
-  el.setAttribute("viewBox", "0 -30 " + largura + " " + (altura + 30));
+  el.setAttribute("height", altura + 6);
+  el.setAttribute("viewBox", "0 -6 " + largura + " " + (altura + 6));
   el.innerHTML = svg;
+
+  /* ---- hovers do desenho ---- */
+  const porN = {};
+  passos.forEach(function (p) { porN[p.n] = p; });
+
+  el.querySelectorAll(".passo").forEach(function (g) {
+    const p = porN[+g.dataset.passo];
+    armarTip(g, function () {
+      const raia = raias[idxRaia[p.raia]];
+      let html = '<div class="tt-cab">' + p.n + " · " + esc(p.titulo) +
+        '<span class="tt-onde">na raia ' + esc(raia.rotulo) + "</span></div>";
+      if (p.ficha) html += blocosFicha(p.ficha);
+      return html;
+    });
+  });
+
+  el.querySelectorAll(".g-raia").forEach(function (g) {
+    const r = raias[idxRaia[g.dataset.raia]];
+    armarTip(g, function () {
+      const nesta = passos.filter(function (p) { return p.raia === r.id; }).map(function (p) { return p.n; });
+      return '<div class="tt-cab">' + esc(r.rotulo) + '<span class="tt-onde">' + esc(r.nota) + "</span></div>" +
+        '<div class="tt-rot">Quem é</div><div class="tt-txt">' + esc(r.ficha.quem) + "</div>" +
+        '<div class="tt-rot">O que só ela faz</div><div class="tt-txt">' + esc(r.ficha.faz) + "</div>" +
+        '<div class="tt-rot">Passos nesta raia</div><div class="tt-txt">' + (nesta.length ? nesta.join(", ") : "nenhum neste caminho") + "</div>";
+    });
+  });
+
+  const gz = el.querySelector("#g-zona");
+  armarTip(gz, function () {
+    return '<div class="tt-cab">' + esc(D.laco.titulo) + "</div>" +
+      '<div class="tt-rot">O mecanismo</div><div class="tt-txt">' + esc(D.laco.texto) + "</div>" +
+      '<div class="tt-rot">Exemplo real (das provas)</div><div class="tt-txt">' + esc(D.laco.exemplo) + "</div>";
+  });
+  gz.addEventListener("mouseenter", function () { gz.classList.add("aceso"); });
+  gz.addEventListener("mouseleave", function () { gz.classList.remove("aceso"); });
+
+  el.querySelectorAll(".fio-hit").forEach(function (hit) {
+    const f = fios[+hit.dataset.fio];
+    const visivel = el.querySelector("#fio-" + hit.dataset.fio);
+    armarTip(hit, function () {
+      return '<div class="tt-cab">passo ' + f.de.n + " → passo " + f.para.n + "</div>" +
+        '<div class="tt-rot">O que trafega aqui</div><div class="tt-txt">' +
+        esc(f.para.ficha ? f.para.ficha.entra : "") + "</div>";
+    });
+    hit.addEventListener("mouseenter", function () { visivel.classList.add("aceso"); });
+    hit.addEventListener("mouseleave", function () { visivel.classList.remove("aceso"); });
+  });
 
   document.getElementById("resumo-caminho").textContent = D.caminhos[CAMINHO].resumo;
 
+  /* a versão narrativa: a mesma ficha, em leitura sequencial */
   document.getElementById("lista-passos").innerHTML = passos.map(function (p) {
     const raia = raias[idxRaia[p.raia]];
+    const fx = p.ficha
+      ? '<div class="fx">' +
+        '<span class="k">entra</span><span class="v">' + esc(p.ficha.entra) + "</span>" +
+        '<span class="k">acontece</span><span class="v">' + esc(p.ficha.acontece) + "</span>" +
+        '<span class="k">sai</span><span class="v">' + esc(p.ficha.sai) + "</span></div>"
+      : "";
     return '<div class="item' + (p.variavel ? " variavel" : "") + '">' +
       '<span class="num-lista">' + p.n + "</span>" +
       '<span class="chip ' + (p.variavel ? "azul" : "bloqueada") + '">' + esc(raia.rotulo) + "</span>" +
-      '<div class="corpo-item"><strong>' + esc(p.titulo) + "</strong><span>" + esc(p.detalhe) + "</span></div></div>";
+      '<div class="corpo-item"><strong>' + esc(p.titulo) + "</strong>" + fx + "</div></div>";
   }).join("");
 }
 
@@ -471,7 +688,7 @@ function fecharPainel() {
   document.querySelectorAll(".tool-card.aberta").forEach(function (el) { el.classList.remove("aberta"); });
 }
 document.getElementById("btn-fechar").onclick = fecharPainel;
-document.addEventListener("keydown", function (e) { if (e.key === "Escape") fecharPainel(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") { fecharPainel(); soltarTip(); } });
 
 carregar();
 </script>

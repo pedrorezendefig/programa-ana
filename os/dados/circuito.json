@@ -17,32 +17,56 @@
     {
       "id": "paciente",
       "rotulo": "Paciente",
-      "nota": "Telegram hoje; WhatsApp na visão"
+      "nota": "Telegram hoje; WhatsApp na visão",
+      "ficha": {
+        "quem": "A pessoa conversando com a Ana. Hoje pelo Telegram (SaoMatheusBot) e pela inbox de API de teste; WhatsApp, Instagram e Facebook na visão do SOP.",
+        "faz": "Origina a conversa e recebe a resposta final. É o único ator fora da infraestrutura do programa."
+      }
     },
     {
       "id": "chatwoot",
       "rotulo": "Chatwoot",
-      "nota": "inbox, kanban, tags, filas"
+      "nota": "inbox, kanban, tags, filas",
+      "ficha": {
+        "quem": "A central de atendimento onde a conversa vive.",
+        "faz": "Só ele guarda a conversa: inbox, kanban, tags e filas humanas. É a ponte entre o canal do paciente e a plataforma, e é nele que as ferramentas nativas agem."
+      }
     },
     {
       "id": "plataforma",
       "rotulo": "fazer.ai agents",
-      "nota": "agente id 1, vault, grants"
+      "nota": "agente id 1, vault, grants",
+      "ficha": {
+        "quem": "A plataforma fazer.ai agents (agente id 1, tenant vitta-tech), a orquestradora da Ana.",
+        "faz": "Monta o turno, guarda o vault de credenciais, executa os 19 grants (8 nativas + 1 RAG + 10 HTTP) e publica a resposta. Não há LangChain nem n8n no circuito."
+      }
     },
     {
       "id": "modelo",
       "rotulo": "gpt-5-mini",
-      "nota": "temperature 1, o cérebro do turno"
+      "nota": "temperature 1, o cérebro do turno",
+      "ficha": {
+        "quem": "O gpt-5-mini (temperature 1), o cérebro do turno.",
+        "faz": "Toda decisão passa por ele: responder texto, pedir uma ferramenta ou escalar para humano. Ele nunca fala com backend: só pede; quem executa é a plataforma."
+      }
     },
     {
       "id": "backend",
       "rotulo": "Backends",
-      "nota": "NocoDB (Base Ana) e API GH homolog"
+      "nota": "NocoDB (Base Ana) e API GH homolog",
+      "ficha": {
+        "quem": "Os sistemas de dados: NocoDB (Base Ana, as Tabelas Oficiais) e a API Global Health de homologação (pessoas e agenda).",
+        "faz": "Respondem às tools HTTP. O NocoDB via shared views públicas somente leitura, sem segredo; a API GH com a credencial gh-homolog-token injetada do vault."
+      }
     },
     {
       "id": "langfuse",
       "rotulo": "Langfuse",
-      "nota": "trace, tokens e custo por turno"
+      "nota": "trace, tokens e custo por turno",
+      "ficha": {
+        "quem": "A observabilidade do programa.",
+        "faz": "Grava o trace de cada turno: prompt, chamadas de ferramenta, tokens e custo. É onde se audita o que a Ana fez e por quê."
+      }
     }
   ],
   "passos": [
@@ -50,55 +74,81 @@
       "n": 1,
       "raia": "paciente",
       "titulo": "Mensagem enviada",
-      "detalhe": "Hoje pelo Telegram (SaoMatheusBot) e pela inbox de API de teste; WhatsApp, Instagram e Facebook na visão do SOP."
+      "ficha": {
+        "entra": "A intenção do paciente, digitada no chat (ex. real das provas: \"quero marcar uma consulta de cardiologia\").",
+        "acontece": "A mensagem sai pelo canal: hoje o Telegram (SaoMatheusBot) e a inbox de API de teste; WhatsApp, Instagram e Facebook na visão do SOP.",
+        "sai": "A mensagem crua, entregue à inbox do Chatwoot."
+      }
     },
     {
       "n": 2,
       "raia": "chatwoot",
       "titulo": "Inbox recebe",
-      "detalhe": "A conversa vive no Chatwoot: é lá que existem o kanban, as tags e as filas humanas."
+      "ficha": {
+        "entra": "A mensagem crua vinda do canal.",
+        "acontece": "O Chatwoot anexa a mensagem à conversa do contato. É nele que vivem o kanban, as tags e as filas humanas; o Agent Bot repassa a conversa à plataforma.",
+        "sai": "A conversa atualizada (histórico + mensagem nova), entregue ao agente id 1."
+      }
     },
     {
       "n": 3,
       "raia": "plataforma",
       "titulo": "Turno montado",
-      "detalhe": "A plataforma fazer.ai agents (agente id 1, tenant vitta-tech) junta o systemPrompt v5.3, o histórico e a mensagem nova. Não há LangChain nem n8n no circuito."
+      "ficha": {
+        "entra": "A conversa do Chatwoot: o histórico e a mensagem nova.",
+        "acontece": "A plataforma fazer.ai agents (agente id 1, tenant vitta-tech) monta o pedido: systemPrompt v5.3 (~49k caracteres) + histórico + mensagem nova + as 19 ferramentas concedidas. Não há LangChain nem n8n.",
+        "sai": "Um único pedido de chat completion, pronto para o gpt-5-mini."
+      }
     },
     {
       "n": 4,
       "raia": "modelo",
       "titulo": "gpt-5-mini decide",
-      "detalhe": "O modelo (temperature 1) responde texto OU pede uma ferramenta, com os argumentos do input_schema (formato compacto nativo da instância)."
+      "ficha": {
+        "entra": "O pedido completo: prompt, histórico, mensagem e a lista de ferramentas com seus input_schema.",
+        "acontece": "O modelo (temperature 1) aplica as regras do prompt e decide o próximo passo: responder texto OU pedir uma ferramenta com argumentos (formato compacto nativo da instância).",
+        "sai": "Ou a mensagem final (pula ao passo 8), ou um pedido de ferramenta (ex. real: buscar_paciente_por_cpf com o CPF informado), que dispara o passo 5."
+      }
     },
     {
       "n": 5,
       "raia": "plataforma",
-      "titulo": "Plataforma executa",
-      "detalhe": "O caminho depende do tipo da ferramenta: HTTP sai para um backend, nativa age dentro do Chatwoot, RAG busca na base de conhecimento."
+      "titulo": "Plataforma executa"
     },
     {
       "n": 6,
       "raia": "backend",
-      "titulo": "Resultado volta cru",
-      "detalhe": "A resposta da ferramenta (JSON, efeito confirmado ou trechos da KB) entra no turno exatamente como veio."
+      "titulo": "Resultado volta cru"
     },
     {
       "n": 7,
       "raia": "modelo",
       "titulo": "O laço continua",
-      "detalhe": "Com o resultado em mãos o modelo responde, chama outra ferramenta ou escala. Os passos 4 a 6 repetem até sair a mensagem final."
+      "ficha": {
+        "entra": "O resultado cru da ferramenta, anexado ao turno.",
+        "acontece": "Com o resultado em mãos o modelo decide de novo: responde, chama outra ferramenta ou escala para humano. Os passos 4→5→6 repetem até sair a mensagem final.",
+        "sai": "A mensagem final do turno, ou mais uma volta no laço."
+      }
     },
     {
       "n": 8,
       "raia": "chatwoot",
       "titulo": "Resposta desce",
-      "detalhe": "A mensagem final volta pela inbox ao paciente."
+      "ficha": {
+        "entra": "A mensagem final decidida pelo modelo.",
+        "acontece": "A plataforma publica a resposta na conversa do Chatwoot, que a entrega pelo canal de origem.",
+        "sai": "A resposta na tela do paciente (ex. real da V15: o preço da cardiologia, a indisponibilidade da agenda e a escalada, sem horário inventado)."
+      }
     },
     {
       "n": 9,
       "raia": "langfuse",
       "titulo": "Trace gravado",
-      "detalhe": "O turno inteiro (prompt, chamadas de ferramenta, tokens e custo) fica registrado no Langfuse."
+      "ficha": {
+        "entra": "Tudo o que o turno produziu: prompt, mensagens, cada chamada de ferramenta com pedido e resposta, tokens.",
+        "acontece": "O Langfuse grava o trace completo do turno, com tokens e custo. Nada é descartado.",
+        "sai": "O trace consultável: debug, custo por turno e auditoria do que a Ana fez."
+      }
     }
   ],
   "caminhos": {
@@ -107,21 +157,51 @@
       "resumo": "A plataforma injeta a credencial do vault (a da GH é gh-homolog-token, header Token) e chama o backend: NocoDB para as tabelas oficiais, API Global Health homolog para pessoas e agenda. O segredo nunca aparece no prompt nem nos traces.",
       "passo5": "Injeta credencial e faz a chamada HTTP",
       "passo6_raia": "backend",
-      "passo6": "NocoDB ou API GH respondem (200, vazio, 417...)"
+      "passo6": "NocoDB ou API GH respondem (200, vazio, 417...)",
+      "ficha5": {
+        "entra": "O pedido de ferramenta HTTP, com os argumentos escolhidos pelo modelo.",
+        "acontece": "A plataforma injeta a credencial do vault (na GH: gh-homolog-token, header Token) e faz a chamada HTTP. O segredo nunca aparece no prompt nem nos traces.",
+        "sai": "A requisição no backend certo: NocoDB para as Tabelas Oficiais, API GH homolog para pessoas e agenda."
+      },
+      "ficha6": {
+        "entra": "A requisição HTTP com a credencial injetada.",
+        "acontece": "O backend responde como qualquer API: 200 com dados, 200 vazio, 417 de validação, 500. Exemplos reais: cardiologia R$ 380,00 no NocoDB; {\"conteudo\": []} na GH enquanto a GH-19 não publica a massa.",
+        "sai": "A resposta crua (JSON), sem tradução, de volta ao turno."
+      }
     },
     "nativa": {
       "rotulo": "Tool nativa",
       "resumo": "Nenhuma chamada externa: a plataforma executa a ação dentro do Chatwoot (mover card no kanban, aplicar tag, transferir fila, gravar nota privada) e devolve a confirmação ao modelo.",
       "passo5": "Executa a ação no Chatwoot",
       "passo6_raia": "chatwoot",
-      "passo6": "Kanban, tag, fila ou nota mudam na conversa"
+      "passo6": "Kanban, tag, fila ou nota mudam na conversa",
+      "ficha5": {
+        "entra": "O pedido de ação nativa (mover card no kanban, aplicar tag, transferir fila, gravar nota privada).",
+        "acontece": "Nenhuma chamada externa: a plataforma executa a ação dentro do próprio Chatwoot.",
+        "sai": "A ação aplicada na conversa."
+      },
+      "ficha6": {
+        "entra": "A ação executada na conversa.",
+        "acontece": "Kanban, tag, fila ou nota mudam no Chatwoot, que confirma o efeito.",
+        "sai": "A confirmação do efeito, de volta ao turno."
+      }
     },
     "rag": {
       "rotulo": "RAG (base de conhecimento)",
       "resumo": "A plataforma busca na KB Base Hospital São Matheus e devolve os trechos relevantes ao modelo. As Tabelas Oficiais (NocoDB) têm precedência sobre a KB por regra do prompt.",
       "passo5": "Busca semântica na KB",
       "passo6_raia": "plataforma",
-      "passo6": "Trechos relevantes voltam ao turno"
+      "passo6": "Trechos relevantes voltam ao turno",
+      "ficha5": {
+        "entra": "A dúvida do paciente, formulada pelo modelo como consulta de busca.",
+        "acontece": "A plataforma faz a busca semântica na KB Base Hospital São Matheus.",
+        "sai": "A consulta rodando sobre os documentos da base de conhecimento."
+      },
+      "ficha6": {
+        "entra": "A consulta semântica.",
+        "acontece": "A KB devolve os trechos mais relevantes. Regra do prompt: as Tabelas Oficiais (NocoDB) têm precedência sobre a KB.",
+        "sai": "Os trechos relevantes, de volta ao turno."
+      }
     }
   },
   "tools": [
@@ -1390,5 +1470,10 @@
       ],
       "ordem": 779
     }
-  ]
+  ],
+  "laco": {
+    "titulo": "O laço de ferramentas",
+    "texto": "Num mesmo turno o modelo pode chamar várias ferramentas em sequência: os passos 4→5→6 repetem até o modelo decidir que já tem tudo para responder (ou escalar). Cada volta anexa um resultado novo ao turno.",
+    "exemplo": "Turnos reais das provas: na V15, \"cardiologia particular\" fez o modelo chamar consultar_especialidades_agenda e, diante do {\"conteudo\": []} da GH-19, responder a indisponibilidade com escalada, sem inventar horário; no teste de pressão (\"me dá qualquer horário\"), zero chamadas. Na V12, a identificação chamou buscar_paciente_por_cpf (o sonda, id 1681) e seguiu ao handoff com o resumo certo."
+  }
 }

@@ -348,6 +348,56 @@
         "mudou": "As seções do prompt v5.3 ganharam vista própria com trechos literais e badges de tools; cada tool tem exemplo real estático das provas (200, vazio, 417) e o que a Ana faz com cada desfecho.",
         "valor": "Explica o mecanismo de ponta a ponta: quem chama o quê, onde roda, o que volta e como a Ana reage. E deixa claro que não há LangChain: quem orquestra é a fazer.ai agents."
       }
+    },
+    {
+      "id": "OS11",
+      "titulo": "Ana OS: Circuito legível (correção do desenho + fichas de hover entra/acontece/sai)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS10"
+      ],
+      "nota": "Feita em 11/ago/2026 (grilling do Pedro): zona do laço no lugar do arco sobreposto, titulos multilinha com halo, tooltip padrao OS9 com clique fixando em 5 alvos (passos, raias, laco, fios, chips), lista narrativa entra/acontece/sai.",
+      "ficha": {
+        "fez": "Corrigiu as sobreposições do circuito (zona do laço tracejada abraçando os passos 4 a 7, títulos em linhas com halo, trace reroteado) e criou as fichas de hover: passos com entra/acontece/sai por caminho, raias, laço com exemplos reais, fios e chips.",
+        "mudou": "circuito.json ganhou as fichas curadas das provas (e perdeu o campo detalhe); circuito.html ganhou o tooltip padrão OS9 com clique para fixar, e a lista abaixo do desenho virou a versão narrativa do turno.",
+        "valor": "Um funcional entende o que entra, o que acontece e o que sai em cada fase do turno sem sair do desenho."
+      }
+    },
+    {
+      "id": "OS12",
+      "titulo": "Ana OS: Mesa de ação na home (cards por canal, hover com ficha, prompt por canal)",
+      "dono": "C",
+      "status": "fazer",
+      "deps": [
+        "OS9"
+      ],
+      "canal": "comigo",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "A home passa a responder 'o que eu toco agora e o que está na mão de quem', com a idade das esperas à vista.",
+        "gesto": "Em execução na sessão de 11/ago (grilling do ADR-0011)."
+      },
+      "nota": "Nasceu do grilling de 11/ago/2026 (ADR-0011): a mesa substitui os destaques da home, varre as 4 faixas, agrupa por canal (dispare / comigo / aguardando), hover com a ficha {destrava, gesto}, clique fixa painel com nota, prompt rotulado pelo canal e o gesto 'marquei: disparado' (a única escrita nova da UI: canal e canal_desde)."
+    },
+    {
+      "id": "V16",
+      "titulo": "Mini-roteiro GH no canal de teste: identificação, cadastro e caso vazio no Telegram",
+      "dono": "C+P",
+      "status": "fazer",
+      "deps": [
+        "V12",
+        "V14",
+        "V15"
+      ],
+      "canal": "comigo",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "A prova dos fluxos GH no pipeline real (Chatwoot, kanban, tags, Langfuse): até hoje eles só rodaram no playground.",
+        "gesto": "Sentar comigo com o Telegram aberto e rodar os 3 cenários (uns 30 minutos)."
+      },
+      "nota": "Nasceu do grilling de 11/ago/2026 (ADR-0011): o testável sem dependência externa que faltava. Zero finalização: só leitura e um cadastro de teste.",
+      "prompt": "Quero rodar o mini-roteiro GH no canal de teste (a tarefa V16): provar no Telegram, de ponta a ponta, os fluxos GH que até agora só rodaram no playground. Primeiro escreva comigo os 3 cenários no padrão do roadmap/roteiro-cenarios.md: (1) identificação do paciente-sonda por CPF no fluxo 2.4A, (2) cadastro de um paciente novo com prefixo TESTE (busca vazia, PASSO 3.6, confirmação explícita antes do POST), (3) pedido de horário de cardiologia caindo no caso vazio da Seção 2.3.1 com escalada correta. Depois eu rodo cada um no SaoMatheusBot enquanto você confere comigo a etapa e as tags no Chatwoot e as chamadas de tool no Langfuse ou nos logs da plataforma. Nenhuma finalização. No final, registre os resultados na tabela do roteiro e atualize o TODO.md e o os/dados/roadmap.json (V16)."
     }
   ],
   "pendentes": [
@@ -355,7 +405,26 @@
       "id": "OV2",
       "titulo": "Implementar o protocolo da ouvidoria (tabela + token + tools + Seção 7.3)",
       "deps": [],
+      "canal": "dispare",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "As duas tools da ouvidoria e a Seção 7.3 (uma sessão comigo): a Ana passa a dar protocolo de verdade.",
+        "gesto": "Criar a tabela 5_Ouvidoria_Protocolos e o API token no NocoDB (10 a 15 min; specs prontas no ADR-0010)."
+      },
       "prompt": "Quero implementar o protocolo da ouvidoria decidido no ADR-0010 (a pendente OV2). Primeiro me guie no que só eu posso fazer: criar a tabela 5_Ouvidoria_Protocolos na tela do NocoDB (as 9 colunas e as duas fórmulas estão prontas para colar na seção A tabela do ADR docs/adr/0010-protocolo-ouvidoria.md) e gerar um API token do NocoDB, guardando no vault da plataforma como nocodb-base-ana-token (tipo header, header xc-token), sem o segredo passar pelo chat. Depois, crie as duas tools da spec do ADR (registrar_ouvidoria e consultar_protocolo_ouvidoria, formato compacto nativo de input_schema) com dry_run e diff, aplique com a minha aprovação, costure a Seção 7.3 do prompt (gravar, ler o protocolo e só então informar; falha cai na Regra Híbrida sem citar número) e prove no playground com um relato de teste. No final, atualize o TODO.md e o os/dados/roadmap.json."
+    },
+    {
+      "id": "GH19",
+      "titulo": "Massa de homologação publicada pela Global Health (a GH-19)",
+      "deps": [],
+      "canal": "dispare",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "A vitrine de horários da V15, a Cadeia D da demo e o caminho feliz da P6; também o primeiro teste real das tools 9 e 10.",
+        "gesto": "Enviar a cobrança pronta (ana/api-mv/cobranca-massa-homolog.md) ao diretor ou direto à Global Health, e marcar 'disparado' aqui."
+      },
+      "nota": "Pedida em 07/jul/2026 e nunca cobrada formalmente; virou card em 11/ago/2026 (ADR-0011). Enquanto a massa não existe: catálogo 100% vazio nos GETs e /agendas/v2 com 500 sem ids reais (evidência fresca de 07/ago). Não existe POST de catálogo na API: publicar é ato do lado GH/hospital, por isso o card é externo de verdade. O canal vira 'aguardando' no dia do envio da cobrança.",
+      "prompt": "Quero disparar a cobrança da massa de homologação da Global Health (o card GH19). Abra ana/api-mv/cobranca-massa-homolog.md e revise o texto comigo: confira se a evidência segue atual (rode python3 ana/api-mv/scripts/smoke-gh.py e me mostre o catálogo vazio), ajuste as datas, me pergunte por qual via vou enviar (o diretor endossa ou eu envio direto em nome do hospital) e me entregue a versão final pronta para colar. Depois do envio, eu marco o card como disparado na home do Ana OS; se eu esquecer, marque você: canal 'aguardando' com canal_desde de hoje no os/dados/roadmap.json e o registro no TODO.md."
     }
   ],
   "propostas": [
@@ -365,6 +434,12 @@
       "resumo": "Agendar na homologação com o paciente-sonda e procurar o registro no Oracle da Base TST. Responde a GH-18 e é o gate da P6 (a Ana só promete protocolo com a prova feita). Pré-requisito prático: religar a VPN da TST (item P2 do radar).",
       "nota": "06/ago/2026 (sessão autônoma): bloqueada por fator externo, não executada. Evidência fresca: query-mv.py SELECT 1 falha com ORA-12170 (timeout TCP de 20s para 10.100.66.170:1521), a VPN da TST segue caída desde 13/jul e religar depende da TI do hospital (P2 do radar).",
       "deps": [],
+      "canal": "aguardando",
+      "canal_desde": "2026-07-13",
+      "mesa": {
+        "destrava": "A resposta da GH-18 e o gate da P6: sem a Prova no banco a Ana não promete protocolo de agendamento.",
+        "gesto": "Nada seu por ora: espera a VPN da TST voltar (o pedido à TI é o card P2, esse sim dispare)."
+      },
       "prompt": "Com a VPN da TST ativa, quero responder a pergunta GH-18: a homologação da Global Health grava na Base TST na finalização do agendamento? Me conduza passo a passo na Bancada do Ana OS: (1) buscar o paciente-sonda (CPF 66301102770) no GET /pessoas; (2) listar horários livres no GET /agendas/v2; (3) preparar o POST /horarios/agendar de teste. Antes da chamada de escrita, fotografe o resultado da query de conferência na TST; depois dela, rode a query de novo e me mostre a diferença (a Prova no banco). Se o agendamento aparecer no Oracle, a GH-18 está respondida: registre a evidência no CONTEXT.md e nos docs do api-mv. Se não aparecer, registre o que vimos e escreva comigo a pergunta objetiva para a MV/Global Health."
     },
     {
@@ -376,6 +451,12 @@
         "V15",
         "P3"
       ],
+      "canal": "aguardando",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "O Entregável funcional da Ana (a marcação fim a fim), que destrava +R$ 2.000/mês no contrato.",
+        "gesto": "Nada seu por ora: destrava quando P3 (VPN) e GH19 (massa) fecharem. Nunca roda em modo autônomo."
+      },
       "prompt": "A prova final em homologação: quero que a Ana agende fim a fim pela conversa. Me conduza cenário por cenário no playground: identificação do paciente (paciente-sonda), escolha de especialidade e horário real, e a finalização com o POST /horarios/agendar, conferindo cada chamada no Langfuse. Depois da finalização, faça a Prova no banco na Base TST (como na P3) para confirmar que a marcação chegou ao Oracle. No final, escreva comigo o relatório da prova: o que funciona, o que falta para produção (canal principal, cadastros reais, LGPD), e registre nos docs, no TODO.md e no os/dados/roadmap.json."
     }
   ],
@@ -384,6 +465,12 @@
       "id": "V8",
       "titulo": "Hotfix temporário do Chatwoot (regressão .111: 500 em /agent_bots e /labels via token)",
       "prioridade": 4,
+      "canal": "comigo",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "Segurança de que o bind de inbox e as tags da Ana sobrevivem a um redeploy do Chatwoot.",
+        "gesto": "Sessão comigo quando houver redeploy ou resposta da fazer.ai; hoje está verificado e quieto."
+      },
       "nota": "A correção de 1 linha aplicada no container evapora num redeploy; se evaporar, quebram o bind de inbox e a aplicação de tags da Ana. Re-verificado em 06/ago/2026 (noite, sessão autônoma): hotfix intacto no container (linha 11 do base_controller.rb com current_account), zero 5xx em todo o log desde 29/jul, containers de pé há 8 dias sem restart. Ressalva: teste ponta a ponta por token não rodou (bloqueio de permissão do harness); evidência é a inspeção do arquivo + ausência de 5xx. Fix upstream não lançado; o bug é herdado do Chatwoot oficial (commit #14973). Tocar quando: houver redeploy do Chatwoot (reaplicar, detalhe na memória do projeto) ou resposta da fazer.ai (cobrar build novo).",
       "prompt": "Vamos resolver o hotfix temporário do Chatwoot. Primeiro leia a ficha da V8 no roadmap/TODO.md e a memória do projeto (fazer-ai-agents-instancia) para relembrar o caso (regressão da versão .111: 500 em /agent_bots e /labels via token; a correção de 1 linha em app/controllers/api/v1/accounts/base_controller.rb, aplicada no container, evapora a cada redeploy). Depois: verifique se o 500 voltou (teste você mesmo pelas ferramentas, me mostrando o resultado), confira se o fix upstream já foi lançado, e me recomende o caminho. Se for preciso reaplicar a correção no container, me explique cada comando antes de rodar e rode só com a minha aprovação. No final, atualize o TODO.md e o os/dados/roadmap.json (V8)."
     },
@@ -391,12 +478,25 @@
       "id": "V10",
       "titulo": "Reportar à fazer.ai o bug do resolve_conversation e a dessincronização de inboxes",
       "prioridade": 3,
+      "canal": "comigo",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "Os fixes upstream da fazer.ai (resolve_conversation, input_schema, interpolação do body, teto de 50k) sem gambiarras nossas.",
+        "gesto": "Sessão comigo de 20 min: eu redijo o report consolidado e você envia no canal da fazer.ai."
+      },
+      "prompt": "Quero fechar o report V10 para a fazer.ai. Leia a nota do V10 no os/dados/roadmap.json e redija comigo um bug report consolidado, num arquivo local, com os 4 achados: (1) mensagem final descartada em turno com resolve_conversation, (2) input_schema em JSON Schema padrão gravado cru vira campo-fantasma (a instância exige o formato compacto nativo), (3) o body de tool HTTP só interpola quando o nome do campo é idêntico à chave do JSON, (4) o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Cada um com passos de reprodução, comportamento esperado e observado e a versão da instância. Some o pedido de build novo do chatwoot-pro (o hotfix V8). Me entregue o texto pronto para colar no canal deles; depois do envio, mova o canal do V10 para 'aguardando' e registre no TODO.md.",
       "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado. Somar também (achados da V14, 07/ago): o body de tool só interpola quando o nome do campo do input_schema é idêntico à chave do JSON enviado; e o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply)."
     },
     {
       "id": "P2",
       "titulo": "Religar a VPN da Base TST (caída desde 13/jul)",
       "prioridade": 5,
+      "canal": "dispare",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "A Conexão TST verde, a Prova no banco (P3) e, atrás dela, a P6.",
+        "gesto": "Enviar à TI do hospital o pedido de restabelecimento (texto pronto em roadmap/arquivo/)."
+      },
       "nota": "Movida das propostas para o radar em 06/ago por decisão do Pedro: religar fica para outro momento. Escopo confirmado: é só restabelecer e checar a conexão com o banco (SELECT 1 via query-mv.py, execução assistida de copiar e colar), nenhuma ação agêntica sobre o banco (o script recusa tudo que não for SELECT/WITH; Oracle TST é somente leitura por regra do programa). Enquanto caída, a Prova no banco (P3/GH-18) fica em espera; textos prontos para a TI em roadmap/arquivo/. Evidência fresca de 06/ago/2026 (sessão autônoma): ORA-12170, timeout TCP de 20s para 10.100.66.170:1521.",
       "prompt": "Quero religar a VPN de acesso à Base TST (o Oracle de teste do MV), caída desde 13/jul. Escopo: só restabelecer e checar a conexão, nada de ação agêntica no banco (eu executo os passos, você me assiste). Primeiro rode python3 ana/api-mv/scripts/query-mv.py \"SELECT 1 FROM DUAL\" e interprete o erro comigo em linguagem simples. Depois me ajude a escrever a mensagem para o analista de TI do hospital pedindo o restabelecimento do acesso (o histórico e os textos prontos estão em roadmap/arquivo/; aproveite o que já existe). Quando a TI responder que voltou, rode o teste de novo e confirme comigo no Ana OS que a Conexão TST está verde. No final, atualize o TODO.md e o os/dados/roadmap.json (P2 sai do radar)."
     },
@@ -404,17 +504,35 @@
       "id": "R1",
       "titulo": "Teto de 50.000 caracteres do systemPrompt: prompt no limite",
       "prioridade": 6,
+      "canal": "comigo",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "Espaço no prompt para a Seção 7.3 (OV2) e para a P6, sem sacrificar regra viva.",
+        "gesto": "Sessão comigo para desenhar a reestruturação (o que migra para a base de conhecimento) antes de precisar dela."
+      },
+      "prompt": "Quero atacar o R1: o systemPrompt da Ana está a 647 caracteres do teto de 50.000, e a Seção 7.3 (OV2) e a P6 não cabem nesse orçamento. Sem aplicar nada ainda: exporte o prompt v5.3 da plataforma (MCP fazer-ai), me apresente um inventário dos blocos por tamanho e proponha a reestruturação: o que pode migrar para a base de conhecimento (search_knowledge) sem perder força normativa, o que pode compactar, e o que é intocável (guardrails, scripts fixos). Estime a folga resultante em caracteres. A aplicação fica para outra sessão, com dry_run, hash e a re-validação do Mapa do SOP (a regra da V13).",
       "nota": "Após a dieta da V15 sobram 647 caracteres de folga (49.353/50.000). A P6 (finalização) não cabe nesse orçamento: vai exigir reestruturação do prompt (ex.: mover blocos estáticos para a base de conhecimento). Achado da V14 (o teto existe e o dry_run do prompt_set não valida, recusa too_big só no apply; somado ao report V10); dieta feita na V15 (cortes documentados na ficha)."
     },
     {
       "id": "V7",
       "titulo": "Revogar o token Cloudflare do onboarding (29/jul)",
       "prioridade": 2,
+      "canal": "dispare",
+      "canal_desde": "2026-08-11",
+      "mesa": {
+        "destrava": "Higiene: menos um token vivo com poder de DNS.",
+        "gesto": "Quando declarar que o uso acabou, revogar no painel da Cloudflare (o prompt te guia passo a passo)."
+      },
       "nota": "Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou.",
       "prompt": "Quero revogar o token de API da Cloudflare usado no onboarding de 29/jul (ele criou os DNS de agents/langfuse/coolify). Sou leigo: me guie passo a passo no painel dash.cloudflare.com, dizendo exatamente onde clicar para chegar em API Tokens, como identificar o token certo, como confirmar comigo que nada mais depende dele (verifique isso comigo primeiro), e só então como revogar. Espere a minha confirmação em cada passo. No final, atualize o TODO.md e o os/dados/roadmap.json (V7)."
     }
   ],
   "ideias": [
+    {
+      "titulo": "Massa simulada para ensaiar o caminho feliz da vitrine (A1)",
+      "descricao": "Se a GH-19 se arrastar: tool de teste apontando para um mock com horários fictícios, só para ver a lista numerada A1 da Seção 2.3.1 funcionando. Decisão do grilling de 11/ago: guardar, não fazer (prova o prompt contra contrato imaginado; a resposta real vem com a massa).",
+      "link": "docs/adr/0011-mesa-de-acao.md"
+    },
     {
       "titulo": "Central de front-ending (Ana OS)",
       "descricao": "Puxada em 30/jul/2026: virou a frente OS1..OS5 do estágio.",
