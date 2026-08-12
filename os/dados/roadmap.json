@@ -413,20 +413,18 @@
       "id": "V16",
       "titulo": "Mini-roteiro GH no canal de teste: identificação, cadastro e caso vazio no Telegram",
       "dono": "C+P",
-      "status": "fazer",
+      "status": "feito",
       "deps": [
         "V12",
         "V14",
         "V15"
       ],
-      "canal": "comigo",
-      "canal_desde": "2026-08-11",
-      "mesa": {
-        "destrava": "A prova dos fluxos GH no pipeline real (Chatwoot, kanban, tags, Langfuse): até hoje eles só rodaram no playground.",
-        "gesto": "Sentar comigo com o Telegram aberto e rodar os 3 cenários (uns 30 minutos)."
-      },
-      "nota": "Nasceu do grilling de 11/ago/2026 (ADR-0011): o testável sem dependência externa que faltava. Zero finalização: só leitura e um cadastro de teste.",
-      "prompt": "Quero rodar o mini-roteiro GH no canal de teste (a tarefa V16): provar no Telegram, de ponta a ponta, os fluxos GH que até agora só rodaram no playground. Primeiro escreva comigo os 3 cenários no padrão do roadmap/roteiro-cenarios.md: (1) identificação do paciente-sonda por CPF no fluxo 2.4A, (2) cadastro de um paciente novo com prefixo TESTE (busca vazia, PASSO 3.6, confirmação explícita antes do POST), (3) pedido de horário de cardiologia caindo no caso vazio da Seção 2.3.1 com escalada correta. Depois eu rodo cada um no SaoMatheusBot enquanto você confere comigo a etapa e as tags no Chatwoot e as chamadas de tool no Langfuse ou nos logs da plataforma. Nenhuma finalização. No final, registre os resultados na tabela do roteiro e atualize o TODO.md e o os/dados/roadmap.json (V16)."
+      "nota": "Concluída em 12/ago/2026, na bateria E2E automatizada da V19 (inbox de API Ana E2E, mesmo pipeline do Telegram; decisão do Pedro). Identificação: PASSO 3.5 achou o sonda GH id 1681 por CPF. Cadastro: busca vazia -> coleta -> confirmação -> cadastrar_paciente HTTP 200 (GH id 1697, TESTE GOLF HOTEL) -> FILA COMERCIAL + handoff. Caso vazio: uma única chamada de consultar_especialidades_agenda, indisponibilidade honesta, sem loop nem horário inventado. Infra nova: token de API do Chatwoot no .env e runner e2e.py pela Public API. Registro na tabela do roteiro-cenarios-v2.md.",
+      "ficha": {
+        "fez": "Os 3 cenários GH rodaram de ponta a ponta num canal Chatwoot real (inbox de API): sonda identificado, paciente novo cadastrado na homolog (id 1697) e caso vazio tratado com honestidade.",
+        "mudou": "O fluxo GH saiu do playground e foi provado no canal, com tags, filas e handoff conferidos nos logs; nasceu o runner E2E reutilizável (e2e.py + token do Chatwoot no .env).",
+        "valor": "A fachada de agenda está validada no caminho que o paciente real vai usar; qualquer regressão futura se re-testa em minutos com a bateria automatizada."
+      }
     },
     {
       "id": "V17",
@@ -476,18 +474,16 @@
       "id": "V19",
       "titulo": "Rodar o Roteiro de cenários v2 (critério de pronto do trio lógico)",
       "dono": "C+P",
-      "status": "fazer",
+      "status": "feito",
       "deps": [
         "V17"
       ],
-      "canal": "comigo",
-      "canal_desde": "2026-08-12",
-      "mesa": {
-        "destrava": "A confirmação de que o prompt v6.0 (trio lógico) não regrediu nada: regressão R1-R4 + os 5 cenários de fronteira entre blocos.",
-        "gesto": "Sentar comigo com o Telegram aberto e rodar os 9 cenários do roadmap/roteiro-cenarios-v2.md (uns 45 minutos; dá para emendar com a V16 na mesma sessão)."
-      },
-      "nota": "Nasceu em 12/ago/2026 (ADR-0012): o rollout foi substituir direto e ajustar no ar, e o Roteiro v2 é o critério de pronto a posteriori. Regressão (urgências, particular ponta a ponta, ouvidoria) + fronteiras novas (urgência no meio do agendamento, ouvidoria bloqueando comercial, assunto misto, agenda vazia GH-19, convênio no meio do particular). Sobrepõe parcialmente a V16: rodar juntas.",
-      "prompt": "Quero rodar o Roteiro de cenários v2 (a tarefa V19), o critério de pronto do trio lógico do ADR-0012. Abra roadmap/roteiro-cenarios-v2.md e me guie cenário a cenário no Telegram (bot SaoMatheusBot, cada conversa começa com /teste): primeiro a regressão R1-R4, depois os cenários de fronteira 13 a 17. Para cada um, me diga o que enviar, espere eu colar a resposta da Ana, e confira comigo a etapa e as tags no Chatwoot e as ferramentas chamadas no Langfuse ou nos logs da plataforma. Se der para emendar a V16 (mini-roteiro GH) na mesma sessão, emende. No final registre os resultados na tabela do roteiro v2 e atualize o TODO.md e o os/dados/roadmap.json (V19 e, se rodada, V16)."
+      "nota": "Concluída em 12/ago/2026 (bateria E2E automatizada, conversas 47-56 do Chatwoot). 9 de 9 cenários passando: trio lógico v6.2 validado no canal. Ressalvas na tabela do roteiro: R4 registrou e gerou protocolo (2026-0001) mas a customerMessage do handoff saiu sem o número (no cenário 14 idêntico o número foi citado; ajuste proposto na Seção 7.3); tag emergencia aplicada sem existir no catálogo (adotar ou proibir); sub-teste pós-handoff não roda por design. Achado novo ao V10: {{conversation_id}} não interpola no body (Conversa_Id nulo em conversa real).",
+      "ficha": {
+        "fez": "O Roteiro v2 inteiro (regressão R1-R4 + fronteiras 13-17) rodou automatizado num canal real, com cada veredito conferido nos logs de ferramenta da plataforma.",
+        "mudou": "O trio lógico v6.2 saiu de publicado para validado: urgência interrompe qualquer bloco, ouvidoria dá protocolo do banco, a Regra 12 segura o comercial e o caso vazio da GH-19 não alucina.",
+        "valor": "O critério de pronto do ADR-0012 está cumprido com evidência; sobram dois ajustes finos propostos, não bloqueantes, para o Pedro decidir."
+      }
     },
     {
       "id": "OV2",

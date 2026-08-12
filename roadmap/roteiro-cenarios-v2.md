@@ -52,14 +52,22 @@ Os demais cenários do v1 (3, 4, 6, 7, 8, 10, 12) só precisam re-rodar se algum
 
 | # | Cenário | Data | Passou? | Observação |
 |---|---|---|---|---|
-| R1 | Urgência explícita | | | |
-| R2 | Urgência coloquial | | | |
-| R3 | Particular ponta a ponta | | | |
-| R4 | Ouvidoria completa | | | |
-| 13 | Urgência no meio do agendamento | | | |
-| 14 | Ouvidoria bloqueia comercial | | | |
-| 15 | Assunto misto | | | |
-| 16 | Agenda vazia (GH-19) | | | |
-| 17 | Convênio no meio do particular | | | |
+| R1 | Urgência explícita | 12/08/2026 | Sim | Mensagem fixa verbatim; FILA ATENDIMENTO + handoff sem coleta. Obs: aplicou tag `emergencia`, que não existe no catálogo do SOP (o Chatwoot criou a label; decidir se adota ou proíbe) |
+| R2 | Urgência coloquial | 12/08/2026 | Sim | Reconheceu "meu pai desmaio... nn ta acordando"; mensagem fixa; FILA ATENDIMENTO + handoff (sem tag desta vez) |
+| R3 | Particular ponta a ponta | 12/08/2026 | Sim | Preço R$ 380 + diferenciais via tabela; tags nos momentos certos; PASSO 3.5 rodou e achou o sonda (GH id 1681); FILA COMERCIAL + handoff após validação. Cobre a identificação do V16 |
+| R4 | Ouvidoria completa | 12/08/2026 | Sim, com ressalva | registrar_ouvidoria (Id 1) + consultar_protocolo (2026-0001) no trace, nota interna completa, FILA OUVIDORIA + handoff. Ressalva: a mensagem ao paciente veio da customerMessage do handoff SEM o número do protocolo (o número ficou só no resumo interno). Ajuste proposto: exigir que a customerMessage repita o template com o protocolo |
+| 13 | Urgência no meio do agendamento | 12/08/2026 | Sim | Ao sinal de dor: mensagem fixa + FILA ATENDIMENTO + handoff, sem pergunta de sintoma nem coleta. O "posso verificar disponibilidade" visível após a queixa é resto do turno anterior (corrida de mensagens do canal, não retomada da venda) |
+| 14 | Ouvidoria bloqueia comercial | 12/08/2026 | Sim (sub-teste não rodado) | Registro perfeito com protocolo 2026-0002 CITADO ao paciente. O sub-teste do preço pós-registro não rodou: o handoff silencia o bot por design (mesma ressalva do cenário 9 do v1; testar exigiria conversation_return) |
+| 15 | Assunto misto | 12/08/2026 | Sim | Preparo via consultar_exames; no assunto novo consultou consultar_convenios_especialidade ANTES de afirmar cobertura; AGUARDANDO CONFIRMAÇÃO + portal, sem handoff (Seção 3.2 correta) |
+| 16 | Agenda vazia (GH-19) | 12/08/2026 | Sim | UMA chamada de consultar_especialidades_agenda(CARDIOLOGIA) com conteudo vazio; indisponibilidade honesta, sem loop, sem horário inventado; seguiu para a coleta da 2.4A. Cobre o caso vazio do V16 |
+| 17 | Convênio no meio do particular | 12/08/2026 | Sim | Interrompeu o particular na menção à Unimed, consultou a tabela e orientou o portal, sem re-oferecer particular. Ressalva menor: não moveu para AGUARDANDO CONFIRMAÇÃO (sem efeito prático: conversa de API não tem card) |
+
+### Registro da execução de 12/08/2026 (V19 + V16)
+
+Rodado de forma automatizada pela **inbox de API "Ana E2E"** (canal Chatwoot real, mesmo pipeline do Telegram), conversas 47-56 do Chatwoot, com o Pedro acompanhando ao vivo. O modo teste exige `/teste` como primeira mensagem de cada conversa (vale também no canal de API). Conversas de API não têm card no kanban: o `kanban_move_card` roda e responde "nothing to move" (limitação conhecida desde o V6); etapa conferida pela chamada nos logs.
+
+**V16 (mini-roteiro GH) coberto na mesma bateria:** identificação = R3 (sonda encontrado por CPF); caso vazio = cenário 16; **cadastro** = conversa 56: busca vazia → coleta de nascimento e telefone → confirmação explícita → `cadastrar_paciente` HTTP 200 (**GH id 1697**, TESTE GOLF HOTEL, data normalizada para 1991-05-12, telefone só dígitos) → tag + FILA COMERCIAL + handoff. Ressalva de canal: a prova rodou no canal de API, não no Telegram (decisão do Pedro; o Telegram fica como conferência opcional, o pipeline é o mesmo).
+
+**Achado novo para o V10:** `{{conversation_id}}` no body de tool NÃO interpola (Conversa_Id ficou nulo mesmo em conversa real de inbox); o vínculo protocolo-conversa segue na direção inversa (resumo do handoff), como o ADR-0010 previa.
 
 Nota: os smoke tests de 12/ago (playground, sessão do ADR-0012) já cobriram informalmente o núcleo de R1, R3 e R4 com o prompt v6.0 no ar; o roteiro no Telegram continua sendo o registro que vale.
