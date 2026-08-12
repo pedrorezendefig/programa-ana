@@ -1,4 +1,4 @@
-# Cobrança da massa de homologação (GH-19), atualizada em 06/ago/2026
+# Cobrança da massa de homologação (GH-19), atualizada em 12/ago/2026
 
 > Evolução do texto de julho (`roadmap/arquivo/PENDENCIAS.md`, seção 2). O que muda: agora há
 > evidência fresca, rodada ao vivo em 06/ago, e a estratégia é o **diretor** endossar o pedido
@@ -48,6 +48,28 @@ A direção do hospital acompanha este cronograma e a integração é prioridade
 do programa de atendimento digital.
 
 Atenciosamente,
+```
+
+## Versão WhatsApp (12/ago/2026, pronta para a Dácilla ou contato equivalente)
+
+Evidência re-testada em 12/ago (mesmo quadro: escrita OK com paciente de teste id 1696, catálogo
+100% vazio, /agendas/v2 com 500). Além do pedido da massa, esta versão pergunta as 4 dúvidas de
+arquitetura que fecham a GH-18 e a confusão "banco GH vs banco MV":
+
+```
+Oi, Dácilla, tudo bem? Sobre a homologação do agendamento WhatsApp do São Matheus (dem.agenda.globalhealth.mv): a API está funcional do nosso lado (autenticação, cadastro e busca de paciente OK), mas seguimos travados na massa de teste, pendente desde 07/jul. GET /consultas, /exames, /convenios e /prestadores retornam vazios, e sem isso não conseguimos testar horários (/agendas/v2 dá erro 500) nem finalizar agendamento.
+
+Preciso de 4 pontos para destravar:
+
+1. Publicar na homologação ao menos 1 especialidade e 1 exame, com convênio, prestador e agenda com horários. Se essa configuração for do lado do hospital (Soul MV), me passa o passo a passo que nossa TI executa.
+
+2. O catálogo da API (consultas, exames, convênios, prestadores) vem configurado aí no ambiente de vocês ou é espelhado do Soul MV do hospital? Quem publica essa massa?
+
+3. Quando o agendamento é finalizado pela API, a gravação no Oracle do hospital é imediata ou roda em rotina batch (fim do dia)? E em homologação, grava na base TST do hospital?
+
+4. Existe algum painel onde a gente consiga visualizar ou cadastrar os dados do ambiente de homologação (pacientes criados pela API, agendas, catálogo)? Hoje testamos às cegas, só pela própria API.
+
+Com isso a gente roda o fluxo completo de ponta a ponta e valida a integração. Consegue me ajudar ou me apontar quem acompanha isso aí? Obrigado!
 ```
 
 ## Como saber que destravou

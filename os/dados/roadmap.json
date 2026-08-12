@@ -436,9 +436,9 @@
       "deps": [
         "V15"
       ],
-      "nota": "Feita em 12/ago/2026, na sessão do grilling dos ADRs 0012/0013. Backup agent_export da v5.3 arquivado (ana/plataforma/), imagem agents-pro atualizada (29/jul -> 1.4.1, teto do prompt a 100.000 via default novo; Chatwoot e hotfix V8 intocados), fonte criada (nucleo-comum + bloco-orquestradora + bloco-particular com P6 gated + bloco-ouvidoria + compilar.py), prompt v6.0 compilado (50.816 chars, fidelidade verbatim 100% com a v5.3) e publicado via prompt_set. Smoke tests dos 3 blocos no playground: ancoragem com tag no Particular, mensagem fixa e escalada imediata na urgência, acolhimento com tag na ouvidoria.",
+      "nota": "Feita em 12/ago/2026, na sessão do grilling dos ADRs 0012/0013. Backup agent_export da v5.3 arquivado (ana/plataforma/), imagem agents-pro atualizada (29/jul -> 1.4.1, teto do prompt a 100.000 via default novo; Chatwoot e hotfix V8 intocados), fonte criada (nucleo-comum + bloco-orquestradora + bloco-particular com P6 gated + bloco-ouvidoria + compilar.py), prompt v6.0 compilado (52.502 chars; o registro original dizia 50.816, corrigido no check de 12/ago, fidelidade verbatim 100% com a v5.3) e publicado via prompt_set. Smoke tests dos 3 blocos no playground: ancoragem com tag no Particular, mensagem fixa e escalada imediata na urgência, acolhimento com tag na ouvidoria.",
       "ficha": {
-        "fez": "Grilling do ADR-0012 executado: fonte do prompt no repo (núcleo comum + 3 blocos de agente lógico + P6 gated), compilada por compilar.py e publicada como v6.0 (50.816 chars, verbatim com a v5.3; as 95 âncoras do Mapa do SOP seguem válidas).",
+        "fez": "Grilling do ADR-0012 executado: fonte do prompt no repo (núcleo comum + 3 blocos de agente lógico + P6 gated), compilada por compilar.py e publicada como v6.0 (52.502 chars, verbatim com a v5.3; as 95 âncoras do Mapa do SOP seguem válidas).",
         "mudou": "O prompt deixou de nascer na plataforma: nasce em ana/prompt/ e a plataforma recebe. A imagem agents-pro subiu para a 1.4.1 e o teto foi a 100k (o R1 saiu do radar).",
         "valor": "A P6 tem onde caber, a Seção 7.3 da OV2 também, e o trio vira 3 agentes físicos sem redesenho quando o supervisor router da fazer.ai existir."
       }
@@ -465,7 +465,7 @@
         "OS14",
         "V17"
       ],
-      "nota": "Feita em 12/ago/2026, na sequência da V17. os/dados/sop-fluxo.json ganhou a chave zonas (espelhando os arquivos de ana/prompt/) e as raias foram reordenadas em grupos contíguos: ORQUESTRADORA (entrada, urgência, convênio, apoio), PARTICULAR (particular, exame), OUVIDORIA e NÚCLEO COMUM (a antiga raia de saída, transversal). os/sop.html desenha o trilho e o cabeçalho preto de cada zona; o clique no cabeçalho abre a ficha da fronteira (quem decide, com que critério, o que viaja, como volta). Carimbo v6.0/50.816; 95 âncoras 100% válidas contra o prompt publicado; conferência viva no Chrome (zonas, gutter alinhado, painel da fronteira).",
+      "nota": "Feita em 12/ago/2026, na sequência da V17. os/dados/sop-fluxo.json ganhou a chave zonas (espelhando os arquivos de ana/prompt/) e as raias foram reordenadas em grupos contíguos: ORQUESTRADORA (entrada, urgência, convênio, apoio), PARTICULAR (particular, exame), OUVIDORIA e NÚCLEO COMUM (a antiga raia de saída, transversal). os/sop.html desenha o trilho e o cabeçalho preto de cada zona; o clique no cabeçalho abre a ficha da fronteira (quem decide, com que critério, o que viaja, como volta). Carimbo v6.0/52.502; 95 âncoras 100% válidas contra o prompt publicado; conferência viva no Chrome (zonas, gutter alinhado, painel da fronteira).",
       "ficha": {
         "fez": "O Mapa do SOP ganhou a camada de zonas: cabeçalho preto clicável por agente lógico com a ficha da fronteira, gutter rotulado e o NÚCLEO COMUM como faixa transversal.",
         "mudou": "sop-fluxo.json ganhou a chave zonas e reordenou as raias; o carimbo subiu para v6.0 sem invalidar nenhuma das 95 âncoras literais.",
@@ -508,13 +508,13 @@
       "id": "GH19",
       "titulo": "Massa de homologação publicada pela Global Health (a GH-19)",
       "deps": [],
-      "canal": "aguardando",
+      "canal": "dispare",
       "canal_desde": "2026-08-12",
       "mesa": {
         "destrava": "A vitrine de horários da V15, a Cadeia D da demo e o caminho feliz da P6; também o primeiro teste real das tools 9 e 10.",
-        "gesto": "Enviar a cobrança pronta (ana/api-mv/cobranca-massa-homolog.md) ao diretor ou direto à Global Health, e marcar 'disparado' aqui."
+        "gesto": "Colar a versão WhatsApp pronta (ana/api-mv/cobranca-massa-homolog.md, seção 'Versão WhatsApp') na conversa com a Dácilla ou contato equivalente, e marcar 'disparado' aqui."
       },
-      "nota": "Pedida em 07/jul/2026 e nunca cobrada formalmente; virou card em 11/ago/2026 (ADR-0011). Enquanto a massa não existe: catálogo 100% vazio nos GETs e /agendas/v2 com 500 sem ids reais (evidência fresca de 07/ago). Não existe POST de catálogo na API: publicar é ato do lado GH/hospital, por isso o card é externo de verdade. O canal vira 'aguardando' no dia do envio da cobrança.",
+      "nota": "Pedida em 07/jul/2026 e nunca cobrada formalmente; virou card em 11/ago/2026 (ADR-0011). 12/ago: a cobrança ganhou versão WhatsApp pronta para enviar, com 4 perguntas de arquitetura novas (origem do catálogo, sincronização com o MV/GH-18, painel da homolog, sentido inverso MV->API). Evidência re-testada em 12/ago: catálogo 100% vazio nos GETs, /agendas/v2 com 500, escrita OK (paciente de teste id 1696). Não existe POST de catálogo na API: publicar é ato do lado GH/hospital. O canal vira 'aguardando' no dia do envio.",
       "prompt": "Quero disparar a cobrança da massa de homologação da Global Health (o card GH19). Abra ana/api-mv/cobranca-massa-homolog.md e revise o texto comigo: confira se a evidência segue atual (rode python3 ana/api-mv/scripts/smoke-gh.py e me mostre o catálogo vazio), ajuste as datas, me pergunte por qual via vou enviar (o diretor endossa ou eu envio direto em nome do hospital) e me entregue a versão final pronta para colar. Depois do envio, eu marco o card como disparado na home do Ana OS; se eu esquecer, marque você: canal 'aguardando' com canal_desde de hoje no os/dados/roadmap.json e o registro no TODO.md."
     }
   ],
@@ -588,7 +588,7 @@
         "destrava": "A Conexão TST verde, a Prova no banco (P3) e, atrás dela, a P6.",
         "gesto": "Enviar à TI do hospital o pedido de restabelecimento (texto pronto em roadmap/arquivo/)."
       },
-      "nota": "Movida das propostas para o radar em 06/ago por decisão do Pedro: religar fica para outro momento. Escopo confirmado: é só restabelecer e checar a conexão com o banco (SELECT 1 via query-mv.py, execução assistida de copiar e colar), nenhuma ação agêntica sobre o banco (o script recusa tudo que não for SELECT/WITH; Oracle TST é somente leitura por regra do programa). Enquanto caída, a Prova no banco (P3/GH-18) fica em espera; textos prontos para a TI em roadmap/arquivo/. Evidência fresca de 06/ago/2026 (sessão autônoma): ORA-12170, timeout TCP de 20s para 10.100.66.170:1521.",
+      "nota": "Movida das propostas para o radar em 06/ago por decisão do Pedro: religar fica para outro momento. Escopo confirmado: é só restabelecer e checar a conexão com o banco (SELECT 1 via query-mv.py, execução assistida de copiar e colar), nenhuma ação agêntica sobre o banco (o script recusa tudo que não for SELECT/WITH; Oracle TST é somente leitura por regra do programa). Enquanto caída, a Prova no banco (P3/GH-18) fica em espera; textos prontos para a TI em roadmap/arquivo/. Evidência fresca de 12/ago/2026 (check): ORA-12170, timeout TCP de 20s para 10.100.66.170:1521, mesmo quadro de 06/ago.",
       "prompt": "Quero religar a VPN de acesso à Base TST (o Oracle de teste do MV), caída desde 13/jul. Escopo: só restabelecer e checar a conexão, nada de ação agêntica no banco (eu executo os passos, você me assiste). Primeiro rode python3 ana/api-mv/scripts/query-mv.py \"SELECT 1 FROM DUAL\" e interprete o erro comigo em linguagem simples. Depois me ajude a escrever a mensagem para o analista de TI do hospital pedindo o restabelecimento do acesso (o histórico e os textos prontos estão em roadmap/arquivo/; aproveite o que já existe). Quando a TI responder que voltou, rode o teste de novo e confirme comigo no Ana OS que a Conexão TST está verde. No final, atualize o TODO.md e o os/dados/roadmap.json (P2 sai do radar)."
     },
     {
