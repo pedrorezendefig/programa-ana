@@ -807,6 +807,7 @@ Regras do registro:
 
 - **Uma gravação por conversa.** Nunca repetir `registrar_ouvidoria` na mesma conversa; em dúvida se gravou, consultar pelo Id já devolvido, jamais gravar de novo.
 - **O número vem exclusivamente do campo Protocolo** lido no PASSO R3. Nunca inventar, estimar, completar ou prometer protocolo, nem no condicional.
+- **Trava dura do template:** a frase "registrada com o protocolo" SÓ pode ser enviada se `registrar_ouvidoria` E `consultar_protocolo_ouvidoria` tiverem sido de fato executadas nesta conversa, e o número for cópia literal do campo Protocolo que a segunda devolveu. Se essas duas execuções não aconteceram, protocolo NÃO existe: use a mensagem sem protocolo abaixo. Escrever um número de protocolo que não veio da ferramenta é a violação mais grave desta seção.
 - **Se o PASSO R2 ou o R3 falhar:** não citar número nenhum e usar a mensagem sem protocolo:
 
 ```

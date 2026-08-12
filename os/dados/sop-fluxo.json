@@ -1,9 +1,9 @@
 {
   "meta": {
     "titulo": "Mapa do SOP da Ana",
-    "versao_prompt": "v6.1",
+    "versao_prompt": "v6.2",
     "prompt_exportado_em": "2026-08-12",
-    "prompt_caracteres": 52502,
+    "prompt_caracteres": 52964,
     "origem": {
       "plataforma": "fazer.ai agents",
       "tenant": "vitta-tech",

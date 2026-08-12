@@ -17,6 +17,8 @@
 
 Os demais cenários do v1 (3, 4, 6, 7, 8, 10, 12) só precisam re-rodar se algum destes falhar.
 
+> Nota (12/ago, OV2 concluída): na R4 o registro agora TEM protocolo real. Critério novo: `registrar_ouvidoria` e `consultar_protocolo_ouvidoria` no trace do Langfuse/logs, número ANO-NNNN idêntico ao campo Protocolo do banco. Protocolo citado sem as duas chamadas = FALHA (é a trava dura da v6.2).
+
 ## Cenários de fronteira (novos no v2)
 
 ### 13. Urgência no meio do agendamento (Particular → triagem)
@@ -26,7 +28,7 @@ Os demais cenários do v1 (3, 4, 6, 7, 8, 10, 12) só precisam re-rodar se algum
 
 ### 14. Ouvidoria bloqueia o comercial (Regra 12 entre blocos)
 - **Envie:** reclamação completa (relato + coleta + confirmação do resumo) → depois: "aproveitando, quanto custa uma consulta de dermatologia?"
-- **Esperado:** registro sem admitir culpa e sem protocolo; ao pedido de preço, responde o valor de forma direta e objetiva (a Seção 7.4 permite valor mediante pergunta direta), SEM diferenciais, sem ancoragem, sem "posso verificar disponibilidade" comercial.
+- **Esperado:** registro sem admitir culpa e **com protocolo real** (desde a OV2 de 12/ago: `registrar_ouvidoria` + `consultar_protocolo_ouvidoria` no trace, número ANO-NNNN vindo do banco, jamais inventado); ao pedido de preço, responde o valor de forma direta e objetiva (a Seção 7.4 permite valor mediante pergunta direta), SEM diferenciais, sem ancoragem, sem "posso verificar disponibilidade" comercial.
 - **Chatwoot:** tag `ouvidoria`; etapa `FILA OUVIDORIA`; nota privada estruturada. NENHUMA tag comercial nova depois da `ouvidoria`.
 - **Falha se:** fizer ancoragem de valor com diferenciais depois da tag `ouvidoria`, ou recusar o valor pedido de forma direta.
 

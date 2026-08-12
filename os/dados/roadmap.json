@@ -488,33 +488,33 @@
       },
       "nota": "Nasceu em 12/ago/2026 (ADR-0012): o rollout foi substituir direto e ajustar no ar, e o Roteiro v2 é o critério de pronto a posteriori. Regressão (urgências, particular ponta a ponta, ouvidoria) + fronteiras novas (urgência no meio do agendamento, ouvidoria bloqueando comercial, assunto misto, agenda vazia GH-19, convênio no meio do particular). Sobrepõe parcialmente a V16: rodar juntas.",
       "prompt": "Quero rodar o Roteiro de cenários v2 (a tarefa V19), o critério de pronto do trio lógico do ADR-0012. Abra roadmap/roteiro-cenarios-v2.md e me guie cenário a cenário no Telegram (bot SaoMatheusBot, cada conversa começa com /teste): primeiro a regressão R1-R4, depois os cenários de fronteira 13 a 17. Para cada um, me diga o que enviar, espere eu colar a resposta da Ana, e confira comigo a etapa e as tags no Chatwoot e as ferramentas chamadas no Langfuse ou nos logs da plataforma. Se der para emendar a V16 (mini-roteiro GH) na mesma sessão, emende. No final registre os resultados na tabela do roteiro v2 e atualize o TODO.md e o os/dados/roadmap.json (V19 e, se rodada, V16)."
+    },
+    {
+      "id": "OV2",
+      "titulo": "Implementar o protocolo da ouvidoria (tabela + token + tools + Seção 7.3)",
+      "dono": "P+C",
+      "status": "feito",
+      "deps": [],
+      "nota": "Concluída em 12/ago/2026 em três atos: tabela 5_Ouvidoria_Protocolos criada pela sessão via Chrome do Pedro (id m5wgie504yzylk4, fumaça ok); token gerado pelo Pedro e guardado no vault (nocodb-base-ana-token, header xc-token); tools 11 registrar_ouvidoria (medium) e 12 consultar_protocolo_ouvidoria (low) criadas com Conversa_Id automático via {{conversation_id}}, grants concedidos pelo console (o apply via MCP foi bloqueado pelo classificador da sessão), Seção 7.3 reescrita (PASSOS R1/R2/R3 + falha na Regra Híbrida) no bloco-ouvidoria.md e publicada no prompt v6.1 pelo pipeline do ADR-0012 (52.502 chars, hash conferido no dry_run e no apply; teto agora é 100k na plataforma 1.4.1). Mapa do SOP re-validado: 80 nós, 111 arestas, 0 âncoras ausentes. Provas no playground: fluxo completo com protocolo 2026-0001 (sessão) e 2026-0002 (Pedro, em paralelo); o fallback sem protocolo provado no teste do Pedro pré-grants. Registros de teste na tabela a limpar com o Pedro.",
+      "ficha": {
+        "fez": "Tabela de protocolos, token no vault, as duas tools da ouvidoria (com Conversa_Id automático) e a Seção 7.3 nova (R1/R2/R3) publicada no prompt v6.1 pelo pipeline do trio.",
+        "mudou": "A promessa de protocolo saiu do limbo: a Ana grava a manifestação sem dado pessoal na Base Ana e informa o número real lido do banco; falha cai na Regra Híbrida sem citar número.",
+        "valor": "Provado no playground pelos dois caminhos: protocolo 2026-0001/0002 informado ao paciente, e a mensagem sem protocolo quando as tools não estavam disponíveis."
+      }
     }
   ],
   "pendentes": [
     {
-      "id": "OV2",
-      "titulo": "Implementar o protocolo da ouvidoria (tabela + token + tools + Seção 7.3)",
-      "deps": [],
-      "canal": "comigo",
-      "canal_desde": "2026-08-12",
-      "nota": "12/ago: a tabela 5_Ouvidoria_Protocolos foi criada pela sessão operando o Chrome do Pedro (id m5wgie504yzylk4, 9 colunas e as 2 fórmulas do ADR-0010; fumaça ok: Protocolo 2026-0001, apagado; o primeiro real será 2026-0002) e o Pedro gerou o token e guardou no vault como nocodb-base-ana-token (header xc-token). Falta só a sessão: as duas tools + Seção 7.3. Requisitos da sessão: MCP da fazer.ai conectado e atenção ao R1 (647 chars de folga no prompt).",
-      "mesa": {
-        "destrava": "As duas tools da ouvidoria e a Seção 7.3: a Ana passa a dar protocolo de verdade ao paciente.",
-        "gesto": "Sentar comigo numa sessão com o MCP da fazer.ai conectado (30 a 45 min): criar as tools, costurar a Seção 7.3 e provar no playground."
-      },
-      "prompt": "Quero fechar a OV2: implementar as ferramentas do protocolo da ouvidoria decidido no ADR-0010. A tabela 5_Ouvidoria_Protocolos já existe (id m5wgie504yzylk4, fumaça ok em 12/ago) e a credencial nocodb-base-ana-token já está no vault (header xc-token). Crie as duas tools da spec do ADR docs/adr/0010-protocolo-ouvidoria.md (registrar_ouvidoria e consultar_protocolo_ouvidoria, formato compacto nativo de input_schema, TABLE_ID m5wgie504yzylk4) com dry_run e diff, aplique com a minha aprovação, costure a Seção 7.3 do prompt (gravar, ler o protocolo e só então informar; falha cai na Regra Híbrida sem citar número; atenção ao teto de 50k do R1: sobram 647 caracteres, proponha a dieta necessária antes do apply) e prove no playground com um relato de teste, conferindo a linha nova na tabela. No final, atualize o TODO.md e o os/dados/roadmap.json (OV2 concluída) e rode a re-validação do Mapa do SOP (regra da V13)."
-    },
-    {
       "id": "GH19",
       "titulo": "Massa de homologação publicada pela Global Health (a GH-19)",
       "deps": [],
-      "canal": "dispare",
+      "canal": "aguardando",
       "canal_desde": "2026-08-12",
       "mesa": {
         "destrava": "A vitrine de horários da V15, a Cadeia D da demo e o caminho feliz da P6; também o primeiro teste real das tools 9 e 10.",
-        "gesto": "Colar a versão WhatsApp pronta (ana/api-mv/cobranca-massa-homolog.md, seção 'Versão WhatsApp') na conversa com a Dácilla ou contato equivalente, e marcar 'disparado' aqui."
+        "gesto": "Cobrar a resposta da Global Health se passar 1 semana sem retorno (a mensagem foi enviada em 12/ago, com as 4 perguntas de arquitetura)."
       },
-      "nota": "Pedida em 07/jul/2026 e nunca cobrada formalmente; virou card em 11/ago/2026 (ADR-0011). 12/ago: a cobrança ganhou versão WhatsApp pronta para enviar, com 4 perguntas de arquitetura novas (origem do catálogo, sincronização com o MV/GH-18, painel da homolog, sentido inverso MV->API). Evidência re-testada em 12/ago: catálogo 100% vazio nos GETs, /agendas/v2 com 500, escrita OK (paciente de teste id 1696). Não existe POST de catálogo na API: publicar é ato do lado GH/hospital. O canal vira 'aguardando' no dia do envio.",
+      "nota": "Pedida em 07/jul/2026; cobranca formal ENVIADA em 12/ago/2026 via WhatsApp (versao em ana/api-mv/cobranca-massa-homolog.md), com as 4 perguntas de arquitetura (origem do catalogo, sincronizacao com o MV/GH-18, painel da homolog, sentido inverso MV->API). Evidencia de 12/ago: catalogo 100% vazio, /agendas/v2 com 500, escrita OK (id 1696). Destrava sozinha quando o smoke sair de VAZIO para OK.",
       "prompt": "Quero disparar a cobrança da massa de homologação da Global Health (o card GH19). Abra ana/api-mv/cobranca-massa-homolog.md e revise o texto comigo: confira se a evidência segue atual (rode python3 ana/api-mv/scripts/smoke-gh.py e me mostre o catálogo vazio), ajuste as datas, me pergunte por qual via vou enviar (o diretor endossa ou eu envio direto em nome do hospital) e me entregue a versão final pronta para colar. Depois do envio, eu marco o card como disparado na home do Ana OS; se eu esquecer, marque você: canal 'aguardando' com canal_desde de hoje no os/dados/roadmap.json e o registro no TODO.md."
     }
   ],
@@ -577,19 +577,6 @@
       },
       "prompt": "Quero fechar o report V10 para a fazer.ai. Leia a nota do V10 no os/dados/roadmap.json e redija comigo um bug report consolidado, num arquivo local, com os 4 achados: (1) mensagem final descartada em turno com resolve_conversation, (2) input_schema em JSON Schema padrão gravado cru vira campo-fantasma (a instância exige o formato compacto nativo), (3) o body de tool HTTP só interpola quando o nome do campo é idêntico à chave do JSON, (4) o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Cada um com passos de reprodução, comportamento esperado e observado e a versão da instância. Some o pedido de build novo do chatwoot-pro (o hotfix V8). Me entregue o texto pronto para colar no canal deles; depois do envio, mova o canal do V10 para 'aguardando' e registre no TODO.md.",
       "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado. Somar também (achados da V14, 07/ago): o body de tool só interpola quando o nome do campo do input_schema é idêntico à chave do JSON enviado; e o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Somar ao report (12/ago): expor reasoning_effort no modelConfig (bloqueia o gpt-5.6-luna com tools, ADR-0013); e re-testar na 1.4.1 os achados antigos (normalização de input_schema e interpolação do body), que podem já ter sido corrigidos na atualização da imagem."
-    },
-    {
-      "id": "P2",
-      "titulo": "Religar a VPN da Base TST (caída desde 13/jul)",
-      "prioridade": 5,
-      "canal": "dispare",
-      "canal_desde": "2026-08-11",
-      "mesa": {
-        "destrava": "A Conexão TST verde, a Prova no banco (P3) e, atrás dela, a P6.",
-        "gesto": "Enviar à TI do hospital o pedido de restabelecimento (texto pronto em roadmap/arquivo/)."
-      },
-      "nota": "Movida das propostas para o radar em 06/ago por decisão do Pedro: religar fica para outro momento. Escopo confirmado: é só restabelecer e checar a conexão com o banco (SELECT 1 via query-mv.py, execução assistida de copiar e colar), nenhuma ação agêntica sobre o banco (o script recusa tudo que não for SELECT/WITH; Oracle TST é somente leitura por regra do programa). Enquanto caída, a Prova no banco (P3/GH-18) fica em espera; textos prontos para a TI em roadmap/arquivo/. Evidência fresca de 12/ago/2026 (check): ORA-12170, timeout TCP de 20s para 10.100.66.170:1521, mesmo quadro de 06/ago.",
-      "prompt": "Quero religar a VPN de acesso à Base TST (o Oracle de teste do MV), caída desde 13/jul. Escopo: só restabelecer e checar a conexão, nada de ação agêntica no banco (eu executo os passos, você me assiste). Primeiro rode python3 ana/api-mv/scripts/query-mv.py \"SELECT 1 FROM DUAL\" e interprete o erro comigo em linguagem simples. Depois me ajude a escrever a mensagem para o analista de TI do hospital pedindo o restabelecimento do acesso (o histórico e os textos prontos estão em roadmap/arquivo/; aproveite o que já existe). Quando a TI responder que voltou, rode o teste de novo e confirme comigo no Ana OS que a Conexão TST está verde. No final, atualize o TODO.md e o os/dados/roadmap.json (P2 sai do radar)."
     },
     {
       "id": "V7",
