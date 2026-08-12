@@ -65,9 +65,17 @@ _Avoid_: voltar a ler valores do Google Sheets; expor tabela com dado pessoal em
 O critério de pronto dos testes de viabilidade: cerca de 10 cenários (urgência, particular com valor vindo do Sheets, convênio, ouvidoria, fora de escopo) rodados no bot do Telegram, conferindo no Chatwoot a etapa/tag correta e no Langfuse as ferramentas chamadas.
 _Avoid_: declarar teste concluído por conversa livre sem roteiro.
 
-**Modos da Ana**:
-A Ana é um único agente com três modos de comportamento (atendimento, comercial, ouvidoria), não subagentes. Decisão fechada no briefing do diretor (jun/2026). Quando a tag `ouvidoria` é aplicada, o modo comercial morre para aquela thread (regra de exclusão).
-_Avoid_: subagentes, agentes especializados
+**Trio lógico da Ana**:
+Desde 12/ago/2026 (ADR-0012, supera os "Modos da Ana" de jun/2026) a Ana se organiza em três agentes lógicos: a **orquestradora** (triagem de urgência, identificação, convênio, prontuário, dúvidas, encerramento), o **Particular** (comercial, valores, ancoragem, agendamento de consultas e exames, tools GH e a P6 quando acender) e a **Ouvidoria**. Como a plataforma não tem transferência entre agentes de IA, o trio vive como fonte compilada num agente físico único (a [[compilacao-de-prompt]]); vira três agentes físicos quando o supervisor router da fazer.ai existir. Semântica: o especialista devolve à orquestradora entre assuntos; a triagem de urgência é Regra Global replicada nos três; thread com tag `ouvidoria` nunca roteia para o Particular (a antiga regra de exclusão, agora regra de roteamento).
+_Avoid_: "modos da Ana" (termo superado); transferência no meio da jornada de venda (comercial e agendamento são o mesmo bloco); workaround de um agente chamar o playground do outro.
+
+**Compilação de prompt**:
+A fonte da verdade dos prompts do trio (ADR-0012): núcleo comum (persona, tom, Regras Globais, princípios) + um arquivo por agente lógico, morando no repo. Uma sessão Claude compila cada prompt final (podendo aparar o núcleo por agente) e publica via `prompt_set`, carimbando versão. O Mapa do SOP lê os mesmos arquivos. A plataforma deixa de ser onde o prompt nasce e passa a ser onde ele roda.
+_Avoid_: editar prompt direto na plataforma sem passar pela fonte; Regra Global divergindo entre blocos.
+
+**Modelo padrão do tenant (gpt-5.6-luna)**:
+Desde 12/ago/2026 (ADR-0013) todo agente do tenant roda `gpt-5.6-luna` (tier econômico da família GPT-5.6 da OpenAI; preço cortado em 80% em 30/jul: $0,20/$1,20 por 1M tokens). A plataforma não expõe `reasoning_effort` (feature request aberto); rollback documentado é voltar a `gpt-5-mini`.
+_Avoid_: usar o alias `gpt-5.6` (aponta para o Sol, tier caro); citar o gpt-5-mini como modelo atual (é histórico).
 
 **Canal principal (WhatsApp oficial)**:
 O número de WhatsApp do hospital que concentra o volume real de pacientes (~20 mil mensagens/mês e a fila de não respondidas do baseline). Hoje está conectado ao Kommo e é atendido só por humanos; a Ana ainda não passa por ele. Levar a Ana para este canal é a entrega que ataca a fila e realiza o valor do programa.

@@ -1,6 +1,6 @@
 {
   "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
-  "atualizado": "2026-08-11",
+  "atualizado": "2026-08-12",
   "tarefas": [
     {
       "id": "V1",
@@ -395,6 +395,21 @@
       }
     },
     {
+      "id": "OS14",
+      "titulo": "Ana OS: setas do Mapa do SOP organizadas (ortogonal para vizinhança, conector nomeado para salto longo)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS13"
+      ],
+      "nota": "Feita em 11/ago/2026, a pedido do Pedro na sequência da OS13, em duas iterações: o roteamento ortogonal com troncos por destino em corredores laterais resolveu o embolo (25 curvas no mesmo x, 8 setas entrando no mesmo ponto do S4), mas as linhas seguiam ocupando espaço demais à direita. Escolha do Pedro entre 3 opções: conectores nomeados (o off-page connector de Visio/BPMN). Regra final em os/sop.html: linha desenhada é só vizinhança (ortogonal, canais com slots nos vãos, portas escalonadas); salto de 2+ fileiras vira conector clicável dentro do cartão (33 saltos = 66 chips com →/←/↩ + seção), com tooltip do alvo e clique que fixa o destino, rola até ele e acende o par. Corredores eliminados: largura de 1204px para 940px. Dados intactos; o painel segue listando todas as ligações.",
+      "ficha": {
+        "fez": "As setas do Mapa do SOP foram organizadas de vez: linha ortogonal só para vizinhança, e salto de seção virou conector nomeado clicável dentro do cartão (→ vai para, ← vem de, ↩ retorno).",
+        "mudou": "Só o os/sop.html: os corredores laterais sumiram, os cartões esticam para abrigar os chips e o clique num conector rola até o destino e acende o par; dados e painel intactos.",
+        "valor": "O mapa ficou 260px mais estreito e sem nenhuma linha longa: o destino de cada salto agora está escrito no próprio cartão, em vez de exigir seguir uma linha de 3000px com o olho."
+      }
+    },
+    {
       "id": "V16",
       "titulo": "Mini-roteiro GH no canal de teste: identificação, cadastro e caso vazio no Telegram",
       "dono": "C+P",
@@ -412,6 +427,67 @@
       },
       "nota": "Nasceu do grilling de 11/ago/2026 (ADR-0011): o testável sem dependência externa que faltava. Zero finalização: só leitura e um cadastro de teste.",
       "prompt": "Quero rodar o mini-roteiro GH no canal de teste (a tarefa V16): provar no Telegram, de ponta a ponta, os fluxos GH que até agora só rodaram no playground. Primeiro escreva comigo os 3 cenários no padrão do roadmap/roteiro-cenarios.md: (1) identificação do paciente-sonda por CPF no fluxo 2.4A, (2) cadastro de um paciente novo com prefixo TESTE (busca vazia, PASSO 3.6, confirmação explícita antes do POST), (3) pedido de horário de cardiologia caindo no caso vazio da Seção 2.3.1 com escalada correta. Depois eu rodo cada um no SaoMatheusBot enquanto você confere comigo a etapa e as tags no Chatwoot e as chamadas de tool no Langfuse ou nos logs da plataforma. Nenhuma finalização. No final, registre os resultados na tabela do roteiro e atualize o TODO.md e o os/dados/roadmap.json (V16)."
+    },
+    {
+      "id": "V17",
+      "titulo": "Trio lógico compilado: fonte do prompt em ana/prompt/ e v6.0 publicada (ADR-0012)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "V15"
+      ],
+      "nota": "Feita em 12/ago/2026, na sessão do grilling dos ADRs 0012/0013. Backup agent_export da v5.3 arquivado (ana/plataforma/), imagem agents-pro atualizada (29/jul -> 1.4.1, teto do prompt a 100.000 via default novo; Chatwoot e hotfix V8 intocados), fonte criada (nucleo-comum + bloco-orquestradora + bloco-particular com P6 gated + bloco-ouvidoria + compilar.py), prompt v6.0 compilado (50.816 chars, fidelidade verbatim 100% com a v5.3) e publicado via prompt_set. Smoke tests dos 3 blocos no playground: ancoragem com tag no Particular, mensagem fixa e escalada imediata na urgência, acolhimento com tag na ouvidoria.",
+      "ficha": {
+        "fez": "Grilling do ADR-0012 executado: fonte do prompt no repo (núcleo comum + 3 blocos de agente lógico + P6 gated), compilada por compilar.py e publicada como v6.0 (50.816 chars, verbatim com a v5.3; as 95 âncoras do Mapa do SOP seguem válidas).",
+        "mudou": "O prompt deixou de nascer na plataforma: nasce em ana/prompt/ e a plataforma recebe. A imagem agents-pro subiu para a 1.4.1 e o teto foi a 100k (o R1 saiu do radar).",
+        "valor": "A P6 tem onde caber, a Seção 7.3 da OV2 também, e o trio vira 3 agentes físicos sem redesenho quando o supervisor router da fazer.ai existir."
+      }
+    },
+    {
+      "id": "V18",
+      "titulo": "Modelo universal gpt-5.6-luna: troca bloqueada pela plataforma, rollback documentado (ADR-0013)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [],
+      "nota": "Feita em 12/ago/2026. O Luna é real ($0,20/$1,20 por 1M após corte de 80% em 30/jul) e a troca foi aplicada; o primeiro turno com tool devolveu o 400 literal \"Function tools with reasoning_effort are not supported... use /v1/responses or set reasoning_effort to none\". Rollback imediato para o gpt-5-mini, smoke test saudável. A plataforma não expõe reasoning_effort no modelConfig (verificado no código, schema zod): o pedido de expor o campo foi somado ao report V10.",
+      "ficha": {
+        "fez": "Pesquisa citada em fonte primária, troca aplicada e smoke test com tool: a API recusou function tools com reasoning_effort no chat/completions; rollback de um comando para o gpt-5-mini.",
+        "mudou": "ADR-0013 registra intenção mantida e execução bloqueada pela plataforma; o pedido de expor reasoning_effort entrou no report V10.",
+        "valor": "Decisão preservada com evidência empírica: quando a fazer.ai expor o campo, a troca universal é um agent_update."
+      }
+    },
+    {
+      "id": "OS15",
+      "titulo": "Ana OS: Mapa do SOP em 3 zonas de agente lógico com fichas de fronteira",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS14",
+        "V17"
+      ],
+      "nota": "Feita em 12/ago/2026, na sequência da V17. os/dados/sop-fluxo.json ganhou a chave zonas (espelhando os arquivos de ana/prompt/) e as raias foram reordenadas em grupos contíguos: ORQUESTRADORA (entrada, urgência, convênio, apoio), PARTICULAR (particular, exame), OUVIDORIA e NÚCLEO COMUM (a antiga raia de saída, transversal). os/sop.html desenha o trilho e o cabeçalho preto de cada zona; o clique no cabeçalho abre a ficha da fronteira (quem decide, com que critério, o que viaja, como volta). Carimbo v6.0/50.816; 95 âncoras 100% válidas contra o prompt publicado; conferência viva no Chrome (zonas, gutter alinhado, painel da fronteira).",
+      "ficha": {
+        "fez": "O Mapa do SOP ganhou a camada de zonas: cabeçalho preto clicável por agente lógico com a ficha da fronteira, gutter rotulado e o NÚCLEO COMUM como faixa transversal.",
+        "mudou": "sop-fluxo.json ganhou a chave zonas e reordenou as raias; o carimbo subiu para v6.0 sem invalidar nenhuma das 95 âncoras literais.",
+        "valor": "Funcionário novo lê o organismo inteiro e onde cada agente começa e termina, na mesma página que ancora cada passo no trecho literal do prompt."
+      }
+    },
+    {
+      "id": "V19",
+      "titulo": "Rodar o Roteiro de cenários v2 (critério de pronto do trio lógico)",
+      "dono": "C+P",
+      "status": "fazer",
+      "deps": [
+        "V17"
+      ],
+      "canal": "comigo",
+      "canal_desde": "2026-08-12",
+      "mesa": {
+        "destrava": "A confirmação de que o prompt v6.0 (trio lógico) não regrediu nada: regressão R1-R4 + os 5 cenários de fronteira entre blocos.",
+        "gesto": "Sentar comigo com o Telegram aberto e rodar os 9 cenários do roadmap/roteiro-cenarios-v2.md (uns 45 minutos; dá para emendar com a V16 na mesma sessão)."
+      },
+      "nota": "Nasceu em 12/ago/2026 (ADR-0012): o rollout foi substituir direto e ajustar no ar, e o Roteiro v2 é o critério de pronto a posteriori. Regressão (urgências, particular ponta a ponta, ouvidoria) + fronteiras novas (urgência no meio do agendamento, ouvidoria bloqueando comercial, assunto misto, agenda vazia GH-19, convênio no meio do particular). Sobrepõe parcialmente a V16: rodar juntas.",
+      "prompt": "Quero rodar o Roteiro de cenários v2 (a tarefa V19), o critério de pronto do trio lógico do ADR-0012. Abra roadmap/roteiro-cenarios-v2.md e me guie cenário a cenário no Telegram (bot SaoMatheusBot, cada conversa começa com /teste): primeiro a regressão R1-R4, depois os cenários de fronteira 13 a 17. Para cada um, me diga o que enviar, espere eu colar a resposta da Ana, e confira comigo a etapa e as tags no Chatwoot e as ferramentas chamadas no Langfuse ou nos logs da plataforma. Se der para emendar a V16 (mini-roteiro GH) na mesma sessão, emende. No final registre os resultados na tabela do roteiro v2 e atualize o TODO.md e o os/dados/roadmap.json (V19 e, se rodada, V16)."
     }
   ],
   "pendentes": [
@@ -419,20 +495,21 @@
       "id": "OV2",
       "titulo": "Implementar o protocolo da ouvidoria (tabela + token + tools + Seção 7.3)",
       "deps": [],
-      "canal": "dispare",
-      "canal_desde": "2026-08-11",
+      "canal": "comigo",
+      "canal_desde": "2026-08-12",
+      "nota": "12/ago: a tabela 5_Ouvidoria_Protocolos foi criada pela sessão operando o Chrome do Pedro (id m5wgie504yzylk4, 9 colunas e as 2 fórmulas do ADR-0010; fumaça ok: Protocolo 2026-0001, apagado; o primeiro real será 2026-0002) e o Pedro gerou o token e guardou no vault como nocodb-base-ana-token (header xc-token). Falta só a sessão: as duas tools + Seção 7.3. Requisitos da sessão: MCP da fazer.ai conectado e atenção ao R1 (647 chars de folga no prompt).",
       "mesa": {
-        "destrava": "As duas tools da ouvidoria e a Seção 7.3 (uma sessão comigo): a Ana passa a dar protocolo de verdade.",
-        "gesto": "Criar a tabela 5_Ouvidoria_Protocolos e o API token no NocoDB (10 a 15 min; specs prontas no ADR-0010)."
+        "destrava": "As duas tools da ouvidoria e a Seção 7.3: a Ana passa a dar protocolo de verdade ao paciente.",
+        "gesto": "Sentar comigo numa sessão com o MCP da fazer.ai conectado (30 a 45 min): criar as tools, costurar a Seção 7.3 e provar no playground."
       },
-      "prompt": "Quero implementar o protocolo da ouvidoria decidido no ADR-0010 (a pendente OV2). Primeiro me guie no que só eu posso fazer: criar a tabela 5_Ouvidoria_Protocolos na tela do NocoDB (as 9 colunas e as duas fórmulas estão prontas para colar na seção A tabela do ADR docs/adr/0010-protocolo-ouvidoria.md) e gerar um API token do NocoDB, guardando no vault da plataforma como nocodb-base-ana-token (tipo header, header xc-token), sem o segredo passar pelo chat. Depois, crie as duas tools da spec do ADR (registrar_ouvidoria e consultar_protocolo_ouvidoria, formato compacto nativo de input_schema) com dry_run e diff, aplique com a minha aprovação, costure a Seção 7.3 do prompt (gravar, ler o protocolo e só então informar; falha cai na Regra Híbrida sem citar número) e prove no playground com um relato de teste. No final, atualize o TODO.md e o os/dados/roadmap.json."
+      "prompt": "Quero fechar a OV2: implementar as ferramentas do protocolo da ouvidoria decidido no ADR-0010. A tabela 5_Ouvidoria_Protocolos já existe (id m5wgie504yzylk4, fumaça ok em 12/ago) e a credencial nocodb-base-ana-token já está no vault (header xc-token). Crie as duas tools da spec do ADR docs/adr/0010-protocolo-ouvidoria.md (registrar_ouvidoria e consultar_protocolo_ouvidoria, formato compacto nativo de input_schema, TABLE_ID m5wgie504yzylk4) com dry_run e diff, aplique com a minha aprovação, costure a Seção 7.3 do prompt (gravar, ler o protocolo e só então informar; falha cai na Regra Híbrida sem citar número; atenção ao teto de 50k do R1: sobram 647 caracteres, proponha a dieta necessária antes do apply) e prove no playground com um relato de teste, conferindo a linha nova na tabela. No final, atualize o TODO.md e o os/dados/roadmap.json (OV2 concluída) e rode a re-validação do Mapa do SOP (regra da V13)."
     },
     {
       "id": "GH19",
       "titulo": "Massa de homologação publicada pela Global Health (a GH-19)",
       "deps": [],
-      "canal": "dispare",
-      "canal_desde": "2026-08-11",
+      "canal": "aguardando",
+      "canal_desde": "2026-08-12",
       "mesa": {
         "destrava": "A vitrine de horários da V15, a Cadeia D da demo e o caminho feliz da P6; também o primeiro teste real das tools 9 e 10.",
         "gesto": "Enviar a cobrança pronta (ana/api-mv/cobranca-massa-homolog.md) ao diretor ou direto à Global Health, e marcar 'disparado' aqui."
@@ -485,7 +562,7 @@
         "destrava": "Segurança de que o bind de inbox e as tags da Ana sobrevivem a um redeploy do Chatwoot.",
         "gesto": "Sessão comigo quando houver redeploy ou resposta da fazer.ai; hoje está verificado e quieto."
       },
-      "nota": "A correção de 1 linha aplicada no container evapora num redeploy; se evaporar, quebram o bind de inbox e a aplicação de tags da Ana. Re-verificado em 06/ago/2026 (noite, sessão autônoma): hotfix intacto no container (linha 11 do base_controller.rb com current_account), zero 5xx em todo o log desde 29/jul, containers de pé há 8 dias sem restart. Ressalva: teste ponta a ponta por token não rodou (bloqueio de permissão do harness); evidência é a inspeção do arquivo + ausência de 5xx. Fix upstream não lançado; o bug é herdado do Chatwoot oficial (commit #14973). Tocar quando: houver redeploy do Chatwoot (reaplicar, detalhe na memória do projeto) ou resposta da fazer.ai (cobrar build novo).",
+      "nota": "A correção de 1 linha aplicada no container evapora num redeploy; se evaporar, quebram o bind de inbox e a aplicação de tags da Ana. Re-verificado em 06/ago/2026 (noite, sessão autônoma): hotfix intacto no container (linha 11 do base_controller.rb com current_account), zero 5xx em todo o log desde 29/jul, containers de pé há 8 dias sem restart. Ressalva: teste ponta a ponta por token não rodou (bloqueio de permissão do harness); evidência é a inspeção do arquivo + ausência de 5xx. Fix upstream não lançado; o bug é herdado do Chatwoot oficial (commit #14973). Tocar quando: houver redeploy do Chatwoot (reaplicar, detalhe na memória do projeto) ou resposta da fazer.ai (cobrar build novo). 12/ago: a atualização da imagem agents-pro (V17) não tocou o container do Chatwoot; hotfix segue intacto por construção.",
       "prompt": "Vamos resolver o hotfix temporário do Chatwoot. Primeiro leia a ficha da V8 no roadmap/TODO.md e a memória do projeto (fazer-ai-agents-instancia) para relembrar o caso (regressão da versão .111: 500 em /agent_bots e /labels via token; a correção de 1 linha em app/controllers/api/v1/accounts/base_controller.rb, aplicada no container, evapora a cada redeploy). Depois: verifique se o 500 voltou (teste você mesmo pelas ferramentas, me mostrando o resultado), confira se o fix upstream já foi lançado, e me recomende o caminho. Se for preciso reaplicar a correção no container, me explique cada comando antes de rodar e rode só com a minha aprovação. No final, atualize o TODO.md e o os/dados/roadmap.json (V8)."
     },
     {
@@ -495,11 +572,11 @@
       "canal": "comigo",
       "canal_desde": "2026-08-11",
       "mesa": {
-        "destrava": "Os fixes upstream da fazer.ai (resolve_conversation, input_schema, interpolação do body, teto de 50k) sem gambiarras nossas.",
+        "destrava": "Os fixes upstream da fazer.ai (resolve_conversation, input_schema, interpolação do body, reasoning_effort no modelConfig) sem gambiarras nossas.",
         "gesto": "Sessão comigo de 20 min: eu redijo o report consolidado e você envia no canal da fazer.ai."
       },
       "prompt": "Quero fechar o report V10 para a fazer.ai. Leia a nota do V10 no os/dados/roadmap.json e redija comigo um bug report consolidado, num arquivo local, com os 4 achados: (1) mensagem final descartada em turno com resolve_conversation, (2) input_schema em JSON Schema padrão gravado cru vira campo-fantasma (a instância exige o formato compacto nativo), (3) o body de tool HTTP só interpola quando o nome do campo é idêntico à chave do JSON, (4) o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Cada um com passos de reprodução, comportamento esperado e observado e a versão da instância. Some o pedido de build novo do chatwoot-pro (o hotfix V8). Me entregue o texto pronto para colar no canal deles; depois do envio, mova o canal do V10 para 'aguardando' e registre no TODO.md.",
-      "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado. Somar também (achados da V14, 07/ago): o body de tool só interpola quando o nome do campo do input_schema é idêntico à chave do JSON enviado; e o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply)."
+      "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado. Somar também (achados da V14, 07/ago): o body de tool só interpola quando o nome do campo do input_schema é idêntico à chave do JSON enviado; e o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Somar ao report (12/ago): expor reasoning_effort no modelConfig (bloqueia o gpt-5.6-luna com tools, ADR-0013); e re-testar na 1.4.1 os achados antigos (normalização de input_schema e interpolação do body), que podem já ter sido corrigidos na atualização da imagem."
     },
     {
       "id": "P2",
@@ -513,19 +590,6 @@
       },
       "nota": "Movida das propostas para o radar em 06/ago por decisão do Pedro: religar fica para outro momento. Escopo confirmado: é só restabelecer e checar a conexão com o banco (SELECT 1 via query-mv.py, execução assistida de copiar e colar), nenhuma ação agêntica sobre o banco (o script recusa tudo que não for SELECT/WITH; Oracle TST é somente leitura por regra do programa). Enquanto caída, a Prova no banco (P3/GH-18) fica em espera; textos prontos para a TI em roadmap/arquivo/. Evidência fresca de 06/ago/2026 (sessão autônoma): ORA-12170, timeout TCP de 20s para 10.100.66.170:1521.",
       "prompt": "Quero religar a VPN de acesso à Base TST (o Oracle de teste do MV), caída desde 13/jul. Escopo: só restabelecer e checar a conexão, nada de ação agêntica no banco (eu executo os passos, você me assiste). Primeiro rode python3 ana/api-mv/scripts/query-mv.py \"SELECT 1 FROM DUAL\" e interprete o erro comigo em linguagem simples. Depois me ajude a escrever a mensagem para o analista de TI do hospital pedindo o restabelecimento do acesso (o histórico e os textos prontos estão em roadmap/arquivo/; aproveite o que já existe). Quando a TI responder que voltou, rode o teste de novo e confirme comigo no Ana OS que a Conexão TST está verde. No final, atualize o TODO.md e o os/dados/roadmap.json (P2 sai do radar)."
-    },
-    {
-      "id": "R1",
-      "titulo": "Teto de 50.000 caracteres do systemPrompt: prompt no limite",
-      "prioridade": 6,
-      "canal": "comigo",
-      "canal_desde": "2026-08-11",
-      "mesa": {
-        "destrava": "Espaço no prompt para a Seção 7.3 (OV2) e para a P6, sem sacrificar regra viva.",
-        "gesto": "Sessão comigo para desenhar a reestruturação (o que migra para a base de conhecimento) antes de precisar dela."
-      },
-      "prompt": "Quero atacar o R1: o systemPrompt da Ana está a 647 caracteres do teto de 50.000, e a Seção 7.3 (OV2) e a P6 não cabem nesse orçamento. Sem aplicar nada ainda: exporte o prompt v5.3 da plataforma (MCP fazer-ai), me apresente um inventário dos blocos por tamanho e proponha a reestruturação: o que pode migrar para a base de conhecimento (search_knowledge) sem perder força normativa, o que pode compactar, e o que é intocável (guardrails, scripts fixos). Estime a folga resultante em caracteres. A aplicação fica para outra sessão, com dry_run, hash e a re-validação do Mapa do SOP (a regra da V13).",
-      "nota": "Após a dieta da V15 sobram 647 caracteres de folga (49.353/50.000). A P6 (finalização) não cabe nesse orçamento: vai exigir reestruturação do prompt (ex.: mover blocos estáticos para a base de conhecimento). Achado da V14 (o teto existe e o dry_run do prompt_set não valida, recusa too_big só no apply; somado ao report V10); dieta feita na V15 (cortes documentados na ficha)."
     },
     {
       "id": "V7",

@@ -1,9 +1,9 @@
 {
   "meta": {
     "titulo": "Mapa do SOP da Ana",
-    "versao_prompt": "v5.3",
-    "prompt_exportado_em": "2026-08-07",
-    "prompt_caracteres": 49353,
+    "versao_prompt": "v6.1",
+    "prompt_exportado_em": "2026-08-12",
+    "prompt_caracteres": 52502,
     "origem": {
       "plataforma": "fazer.ai agents",
       "tenant": "vitta-tech",
@@ -16,6 +16,15 @@
       "regra": "Os trechos literais são a chave. Para revalidar, uma sessão Claude reexporta o systemPrompt do agente 1 pelo MCP fazer.ai e procura cada ancora.trechos[].texto como substring exata do prompt novo.",
       "resultado_esperado": "Todos os trechos encontrados significa que o mapa retrata o prompt vivo. Qualquer trecho ausente significa que o mapa está defasado naquele nó, e o campo meta.versao_prompt precisa subir junto com o trecho corrigido.",
       "observacao": "As faixas em cada trecho (campo linhas) são informativas: valem para o export da versão em meta.versao_prompt e deslocam quando o prompt muda. A página não consulta a plataforma ao vivo."
+    },
+    "fonte_compilada": {
+      "regra": "Desde o ADR-0012 o prompt nasce da fonte em ana/prompt/ (nucleo-comum.md + bloco-orquestradora.md + bloco-particular.md + bloco-ouvidoria.md), montada por ana/prompt/compilar.py e publicada via prompt_set. As zonas deste mapa espelham esses arquivos.",
+      "arquivos": [
+        "ana/prompt/nucleo-comum.md",
+        "ana/prompt/bloco-orquestradora.md",
+        "ana/prompt/bloco-particular.md",
+        "ana/prompt/bloco-ouvidoria.md"
+      ]
     }
   },
   "tipos": [
@@ -52,14 +61,19 @@
       "nota": "Prioridade absoluta: interrompe qualquer fluxo em andamento, em qualquer ponto da conversa."
     },
     {
-      "id": "particular",
-      "rotulo": "Particular: consultas e cirurgia",
-      "nota": "Seções 2, 6.A e 6.C. É a única jornada com ancoragem de valor."
-    },
-    {
       "id": "convenio",
       "rotulo": "Convênio",
       "nota": "Seções 3 e 4. Termina no portal de marcação, não em fila humana."
+    },
+    {
+      "id": "apoio",
+      "rotulo": "Prontuário e dúvidas gerais",
+      "nota": "Seções 8 e 9: os fluxos de apoio que não passam por agendamento."
+    },
+    {
+      "id": "particular",
+      "rotulo": "Particular: consultas e cirurgia",
+      "nota": "Seções 2, 6.A e 6.C. É a única jornada com ancoragem de valor."
     },
     {
       "id": "exame",
@@ -70,11 +84,6 @@
       "id": "ouvidoria",
       "rotulo": "Ouvidoria",
       "nota": "Seção 7. Desliga o modo comercial da conversa inteira (Regra 12)."
-    },
-    {
-      "id": "apoio",
-      "rotulo": "Prontuário e dúvidas gerais",
-      "nota": "Seções 8 e 9: os fluxos de apoio que não passam por agendamento."
     },
     {
       "id": "saida",
@@ -1345,17 +1354,17 @@
       "linha": 0,
       "tipo": "tool",
       "secao": "7.3",
-      "titulo": "private_note com o REGISTRO DE OUVIDORIA",
-      "resumo": "Nota interna estruturada com todos os campos coletados. Nunca inventar protocolo: o sistema ainda não está conectado.",
+      "titulo": "PASSO R1: private_note com o REGISTRO DE OUVIDORIA",
+      "resumo": "Dossiê interno com todos os campos coletados. A identificação fica aqui, nunca na tabela de protocolos.",
       "tools": [
         "private_note"
       ],
       "ancora": {
-        "id": "sop-7-3-registro",
+        "id": "sop-7-3-r1",
         "trechos": [
           {
-            "linhas": "655-665",
-            "texto": "Com todos os dados confirmados pelo paciente → registrar a manifestação com `private_note`, numa nota interna estruturada com o cabeçalho REGISTRO DE OUVIDORIA e todos os campos coletados (solicitante, CPF, paciente, data e hora do ocorrido, setor, categoria, descrição em linguagem de relato).\n\n**Nunca inventar número de protocolo.** O sistema de protocolo ainda não está conectado; a mensagem ao paciente não menciona protocolo.\n\n```\nObrigada por confiar isso a nós.\n\nSua manifestação foi registrada com todo o cuidado.\n\nNossa equipe entrará em contato em até 5 dias úteis.\n```"
+            "linhas": "792-794",
+            "texto": "Com todos os dados confirmados pelo paciente, executar em ordem:\n\n- PASSO R1 → registrar o dossiê interno com `private_note`: cabeçalho REGISTRO DE OUVIDORIA e todos os campos coletados (solicitante, CPF, paciente, data e hora do ocorrido, setor, categoria, descrição em linguagem de relato)."
           }
         ]
       }
@@ -1363,12 +1372,12 @@
     {
       "id": "O8",
       "raia": "ouvidoria",
-      "col": 10,
+      "col": 11,
       "linha": 0,
       "tipo": "tool",
       "secao": "7.3",
       "titulo": "FILA OUVIDORIA e handoff_to_human",
-      "resumo": "Depois de registrar, ou a qualquer momento em que o paciente pedir para falar com humano.",
+      "resumo": "Depois da mensagem (com ou sem protocolo), incluindo o protocolo no resumo da escalada quando existir.",
       "tools": [
         "kanban_move_card",
         "handoff_to_human"
@@ -1377,8 +1386,8 @@
         "id": "sop-7-3-escalada",
         "trechos": [
           {
-            "linhas": "667-669",
-            "texto": "Após registrar: `kanban_move_card` para `FILA OUVIDORIA` → executar `handoff_to_human`.\n\nSe paciente solicitar falar com humano em qualquer ponto do fluxo → executar `kanban_move_card` para `FILA OUVIDORIA` → executar `handoff_to_human`."
+            "linhas": "822-824",
+            "texto": "Após a mensagem (com ou sem protocolo): `kanban_move_card` para `FILA OUVIDORIA` → executar `handoff_to_human`, incluindo o protocolo no resumo interno da escalada quando existir.\n\nSe paciente solicitar falar com humano em qualquer ponto do fluxo → executar `kanban_move_card` para `FILA OUVIDORIA` → executar `handoff_to_human`."
           }
         ]
       }
@@ -1386,7 +1395,7 @@
     {
       "id": "O9",
       "raia": "ouvidoria",
-      "col": 10,
+      "col": 11,
       "linha": 1,
       "tipo": "etapa",
       "secao": "7.4",
@@ -1793,6 +1802,78 @@
           }
         ]
       }
+    },
+    {
+      "id": "O10",
+      "raia": "ouvidoria",
+      "col": 9,
+      "linha": 1,
+      "tipo": "tool",
+      "secao": "7.3",
+      "titulo": "PASSO R2: registrar_ouvidoria",
+      "resumo": "Grava categoria, setor e resumo sem identificação na tabela 5_Ouvidoria_Protocolos e devolve o Id. Uma gravação por conversa.",
+      "tools": [
+        "registrar_ouvidoria"
+      ],
+      "ancora": {
+        "id": "sop-7-3-r2",
+        "trechos": [
+          {
+            "linhas": "795",
+            "texto": "- PASSO R2 → executar `registrar_ouvidoria` com categoria, setor e resumo. O resumo é a `descricao_resumida` em linguagem de relato, SEM nome de solicitante, paciente ou profissional, sem CPF e sem dado clínico (a identificação já está na nota interna). A resposta devolve o campo Id."
+          },
+          {
+            "linhas": "808",
+            "texto": "- **Uma gravação por conversa.** Nunca repetir `registrar_ouvidoria` na mesma conversa; em dúvida se gravou, consultar pelo Id já devolvido, jamais gravar de novo."
+          }
+        ]
+      }
+    },
+    {
+      "id": "O11",
+      "raia": "ouvidoria",
+      "col": 10,
+      "linha": 0,
+      "tipo": "tool",
+      "secao": "7.3",
+      "titulo": "PASSO R3: consultar_protocolo_ouvidoria e informar",
+      "resumo": "Lê o campo Protocolo (ANO-NNNN) pelo Id e só então informa o número ao paciente. Nunca inventar nem completar.",
+      "tools": [
+        "consultar_protocolo_ouvidoria"
+      ],
+      "ancora": {
+        "id": "sop-7-3-r3",
+        "trechos": [
+          {
+            "linhas": "796-804",
+            "texto": "- PASSO R3 → executar `consultar_protocolo_ouvidoria` com esse Id. A resposta traz o campo Protocolo (formato ANO-NNNN). Somente depois de ler esse campo, informar o número:\n\n```\nObrigada por confiar isso a nós.\n\nSua manifestação foi registrada com o protocolo [Protocolo].\n\nNossa equipe entrará em contato em até 5 dias úteis.\n```"
+          },
+          {
+            "linhas": "809",
+            "texto": "- **O número vem exclusivamente do campo Protocolo** lido no PASSO R3. Nunca inventar, estimar, completar ou prometer protocolo, nem no condicional."
+          }
+        ]
+      }
+    },
+    {
+      "id": "O12",
+      "raia": "ouvidoria",
+      "col": 10,
+      "linha": 1,
+      "tipo": "mensagem",
+      "secao": "7.3",
+      "titulo": "Falha no registro: mensagem sem protocolo",
+      "resumo": "R2 ou R3 falhou: não citar número nenhum, nem prometer. Registro segue válido pela nota interna e pela escalada.",
+      "tools": [],
+      "ancora": {
+        "id": "sop-7-3-falha",
+        "trechos": [
+          {
+            "linhas": "810-818",
+            "texto": "- **Se o PASSO R2 ou o R3 falhar:** não citar número nenhum e usar a mensagem sem protocolo:\n\n```\nObrigada por confiar isso a nós.\n\nSua manifestação foi registrada com todo o cuidado.\n\nNossa equipe entrará em contato em até 5 dias úteis.\n```"
+          }
+        ]
+      }
     }
   ],
   "arestas": [
@@ -2177,11 +2258,6 @@
       "rotulo": "confirmado"
     },
     {
-      "de": "O7",
-      "para": "O8",
-      "rotulo": ""
-    },
-    {
       "de": "O8",
       "para": "O9",
       "rotulo": "quer agendar"
@@ -2325,6 +2401,95 @@
       "de": "P16",
       "para": "P7",
       "rotulo": "segue para a 2.4A"
+    },
+    {
+      "de": "O7",
+      "para": "O10",
+      "rotulo": ""
+    },
+    {
+      "de": "O10",
+      "para": "O11",
+      "rotulo": "Id"
+    },
+    {
+      "de": "O10",
+      "para": "O12",
+      "rotulo": "falha"
+    },
+    {
+      "de": "O11",
+      "para": "O12",
+      "rotulo": "falha"
+    },
+    {
+      "de": "O11",
+      "para": "O8",
+      "rotulo": "protocolo informado"
+    },
+    {
+      "de": "O12",
+      "para": "O8",
+      "rotulo": ""
+    }
+  ],
+  "zonas": [
+    {
+      "id": "orquestradora",
+      "rotulo": "ANA ORQUESTRADORA",
+      "agente": "Agente lógico 1 · bloco-orquestradora.md",
+      "nota": "Recebe toda mensagem: triagem de urgência, identificação do motivo, convênio, prontuário, dúvidas e confirmação. Decide para qual bloco a conversa vai e recebe de volta quando a jornada termina.",
+      "fronteira": {
+        "decide": "A orquestradora, na identificação do motivo (Seção 1.1)",
+        "criterio": "Toda mensagem passa antes pela triagem de urgência (Regra Global 1), em qualquer bloco",
+        "viaja": "Nada ainda: é a porta de entrada de toda conversa"
+      },
+      "raias": [
+        "entrada",
+        "urgencia",
+        "convenio",
+        "apoio"
+      ]
+    },
+    {
+      "id": "particular",
+      "rotulo": "PARTICULAR",
+      "agente": "Agente lógico 2 · bloco-particular.md",
+      "nota": "Valores, ancoragem com diferenciais, agendamento particular de consultas e exames, estimativas de cirurgia. É onde moram as tools GH de agenda e onde a P6 (finalização) vai acender.",
+      "fronteira": {
+        "decide": "A orquestradora, pelos sinais de paciente particular (Seção 2.1) ou pedido de valor (Seção 6)",
+        "criterio": "Perguntou preço, disse que não tem convênio, ou convênio não aceito e topou particular. Convênio aceito citado no meio devolve para a Seção 3",
+        "viaja": "Especialidade ou exame desejado e a via de pagamento; conversa com tag ouvidoria NUNCA entra aqui com discurso comercial (Regra 12)",
+        "volta": "Jornada concluída (encaminhado, agendado ou encerrado) devolve à orquestradora; assunto novo passa pela triagem de novo"
+      },
+      "raias": [
+        "particular",
+        "exame"
+      ]
+    },
+    {
+      "id": "ouvidoria",
+      "rotulo": "OUVIDORIA",
+      "agente": "Agente lógico 3 · bloco-ouvidoria.md",
+      "nota": "Acolhimento de manifestações com guardrails jurídicos, coleta estruturada e registro. O protocolo (OV2) entra aqui quando destravar.",
+      "fronteira": {
+        "decide": "A orquestradora, a qualquer sinal de reclamação ou insatisfação (Seção 7.0)",
+        "criterio": "A tag ouvidoria desliga o modo comercial para a conversa inteira (Regra Global 12)",
+        "viaja": "O relato do paciente; nome e CPF só na coleta estruturada",
+        "volta": "Registro feito, agendamento posterior é conduzido sem discurso comercial (Seção 7.4)"
+      },
+      "raias": [
+        "ouvidoria"
+      ]
+    },
+    {
+      "id": "nucleo",
+      "rotulo": "NÚCLEO COMUM",
+      "agente": "Transversal · nucleo-comum.md",
+      "nota": "Vale para os três blocos: Princípio de Coleta (nome + CPF, busca e cadastro no GH), PERÍODO_FDS antes de escalar e o encerramento. No prompt compilado, viaja com todo agente.",
+      "raias": [
+        "saida"
+      ]
     }
   ]
 }

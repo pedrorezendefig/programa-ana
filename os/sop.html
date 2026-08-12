@@ -52,6 +52,19 @@
   .faixa { fill: var(--cor-card-interno); }
   .faixa.apagada { opacity: .45; }
 
+  /* zonas de agente lógico (ADR-0012) */
+  .zona-trilho { fill: var(--cor-tinta); opacity: .85; }
+  .zona-cab { cursor: pointer; }
+  .zona-cab rect { fill: var(--cor-tinta); }
+  .zona-cab .z-rot { font: var(--peso-bold) 14px/1 var(--font-poppins); letter-spacing: .04em; fill: #ffffff; }
+  .zona-cab .z-agente { font: var(--peso-medio) 10.5px/1 var(--font-mono); fill: #b9b9b9; }
+  .zona-cab .z-front { font: var(--peso-semibold) 9.5px/1 var(--font-inter); letter-spacing: .06em; text-transform: uppercase; fill: #9a9a9a; }
+  .zona-cab:hover .z-front, .zona-cab:focus .z-front { fill: #ffffff; }
+  .zona-cab:focus { outline: none; }
+  .gutter .zona-g { display: flex; flex-direction: column; gap: 4px; justify-content: center; padding: 0 14px 0 2px; box-sizing: border-box; }
+  .gutter .zona-g .z-nome { font: var(--peso-bold) 12px/1.2 var(--font-poppins); letter-spacing: .05em; }
+  .gutter .zona-g .z-sub { font-size: 10px; color: var(--cor-mudo); font-family: var(--font-mono); }
+
   .no { cursor: pointer; }
   .no .corpo { fill: var(--cor-card); stroke: none; }
   .no.etapa .corpo { stroke: var(--cor-fio); stroke-width: 1; }
@@ -68,6 +81,23 @@
   .no:hover .halo, .no.ativo .halo, .no:focus .halo { opacity: 1; }
   .no:focus { outline: none; }
   .no.apagado { opacity: .28; }
+
+  /* conectores de salto (chips dentro do cartão) */
+  .chip-lig { cursor: pointer; }
+  .chip-lig rect { fill: var(--cor-card-interno); transition: fill .12s ease; }
+  .chip-lig text { font: var(--peso-semibold) 9.5px/1 var(--font-inter); fill: var(--cor-rotulo); transition: fill .12s ease; }
+  .chip-lig:hover rect, .chip-lig:focus rect, .chip-lig.acesa rect { fill: var(--cor-tinta); }
+  .chip-lig:hover text, .chip-lig:focus text, .chip-lig.acesa text { fill: #ffffff; }
+  .chip-lig:focus { outline: none; }
+  .no.tool .chip-lig rect { fill: rgba(255,255,255,.16); }
+  .no.tool .chip-lig text { fill: #eaeaea; }
+  .no.tool .chip-lig:hover rect, .no.tool .chip-lig.acesa rect { fill: #ffffff; }
+  .no.tool .chip-lig:hover text, .no.tool .chip-lig.acesa text { fill: var(--cor-tinta); }
+  .amostra-chip {
+    display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 9px;
+    background: var(--cor-card-interno); font: var(--peso-semibold) 10px/1 var(--font-inter);
+    color: var(--cor-rotulo); flex-shrink: 0;
+  }
 
   .aresta { fill: none; stroke: var(--cor-mudo); stroke-width: 1.4; opacity: .5; }
   .aresta.acesa { stroke: var(--cor-tinta); stroke-width: 1.8; opacity: 1; }
@@ -94,8 +124,12 @@
     transform: translateX(calc(100% + 32px));
     transition: transform .26s cubic-bezier(.2,.8,.25,1);
     z-index: 95;
+    /* no hover o painel só exibe: se ele capturar o mouse, cobre o card da direita,
+       dispara mouseleave e entra em loop de abre-fecha; interativo só quando fixado */
+    pointer-events: none;
   }
   .painel.aberto { transform: none; }
+  .painel.interativa { pointer-events: auto; }
   .painel .fechar { position: absolute; top: 18px; right: 18px; }
   .painel .titulo-no { font: var(--peso-bold) 19px/1.35 var(--font-poppins); letter-spacing: -0.3px; margin: 10px 42px 12px 0; }
   .painel .bloco { margin-top: 18px; }
@@ -125,7 +159,7 @@
     <div class="cabeca">
       <div>
         <h1>Mapa do SOP</h1>
-        <p class="lead" id="sub">O fluxo inteiro da Ana em raias por jornada, com cada nó ancorado no trecho literal do prompt que o define.</p>
+        <p class="lead" id="sub">O fluxo inteiro da Ana em três zonas de agente lógico (ADR-0012), com cada nó ancorado no trecho literal do prompt que o define.</p>
       </div>
       <div class="selos" id="selos"></div>
     </div>
@@ -159,6 +193,8 @@
       <span class="item"><span class="amostra tool"></span>Chamada de tool</span>
       <span class="item"><span class="amostra mensagem"></span>Script fixo ao paciente</span>
       <span class="item"><span class="amostra fim"></span>Encerramento</span>
+      <span class="item"><span class="amostra-chip">→ 2.3</span>Conector de salto: clique leva ao destino</span>
+      <span class="item"><span class="amostra tool"></span>Faixa preta larga: zona de agente lógico, clique abre a ficha da fronteira</span>
       <span class="item direita">Passe o mouse num nó para ver o trecho. Clique para fixar. Clique numa raia para isolá-la.</span>
     </div>
     <div class="card" style="padding: 22px 20px;">
@@ -168,9 +204,12 @@
       </div>
     </div>
     <p class="caption" style="margin-top: 12px;">
-      As raias transversais (entrada e saída) valem para todas as jornadas: a triagem de urgência abre toda mensagem,
-      e o Princípio de Coleta, o PERÍODO_FDS e o encerramento fecham todas elas. Dados:
-      <code>os/dados/sop-fluxo.json</code>.
+      As zonas espelham os arquivos-fonte do prompt (<code>ana/prompt/</code>, ADR-0012): a ANA ORQUESTRADORA recebe toda
+      mensagem e decide o bloco; PARTICULAR e OUVIDORIA são os agentes lógicos especialistas; o NÚCLEO COMUM (coleta,
+      PERÍODO_FDS, encerramento) viaja com os três. O cabeçalho preto de cada zona abre a ficha da fronteira: quem decide
+      a entrada, com que critério, o que viaja junto e como volta. Linha desenhada é só vizinhança; salto entre seções
+      distantes vira conector dentro do cartão (→ vai para, ← vem de, ↩ retorno), e o clique rola até o destino.
+      Dados: <code>os/dados/sop-fluxo.json</code>.
     </p>
   </section>
 </main>
@@ -183,7 +222,7 @@
 </aside>
 
 <footer class="os-rodape">
-  Mapa da proposta P7. O SOP em texto vive em <code>docs/04-sop-ana-reescrito.md</code>; o prompt vivo, na plataforma fazer.ai agents.
+  Mapa da proposta P7, em zonas desde o ADR-0012. A fonte do prompt vive em <code>ana/prompt/</code> (compilada por <code>compilar.py</code>); o prompt vivo, na plataforma fazer.ai agents.
 </footer>
 
 <script src="assets/nav.js" data-ambiente="local"></script>
@@ -192,13 +231,21 @@
 
 /* ---------- geometria ----------
    Layout vertical (OS13): a progressão (col) DESCE; os paralelos (linha) ficam lado a lado.
-   CORREDOR é a margem lateral por onde as arestas longas viajam sem cruzar cartões. */
-var NO_L = 200, NO_A = 70, HGAP = 30, VGAP = 30;
-var PASSO_X = NO_L + HGAP, PASSO_Y = NO_A + VGAP;
-var PAD_X = 14, CORREDOR = 40, FAIXA_TOPO = 26, FAIXA_BASE = 26, FAIXA_GAP = 18;
+   Roteamento ortogonal (OS14): as arestas andam em ângulo reto com cantos arredondados.
+   Linha desenhada só para vizinhança: salto de 2+ fileiras não vira linha, vira CONECTOR
+   nomeado dentro do cartão (→ vai para, ← vem de, ↩ retorno), clicável, que rola até o
+   destino. Os trechos horizontais curtos correm pelos vãos entre as fileiras, cada um no
+   seu próprio slot, sem cruzar cartões nem sobrepor outra aresta. */
+var NO_L = 200, NO_A = 70, HGAP = 36, VGAP = 44;
+var PASSO_X = NO_L + HGAP;
+var PAD_X = 16, FAIXA_TOPO = 26, FAIXA_BASE = 26, FAIXA_GAP = 22;
+/* zonas de agente lógico (ADR-0012): cabeçalho preto abre cada zona; vão maior separa zonas */
+var ZONA_CAB = 64, ZONA_GAP = 40;
+var R_CANTO = 10;
 var DIM_LARG = 0;
 
-var DADOS = null, POR_ID = {}, GEO = {}, FAIXAS = {};
+var DADOS = null, POR_ID = {}, GEO = {}, FAIXAS = {}, ROTAS = [], CHIPS = {}, LONGA = [];
+var ZONAS_GEO = {}, ZONA_DA_RAIA = {}, ABRE_ZONA = {};
 var FIXADO = null, RAIA_FOCO = null;
 
 function esc(s) {
@@ -256,7 +303,8 @@ async function carregar() {
   var m = DADOS.meta;
   document.getElementById("selos").innerHTML =
     '<span class="chip azul">prompt ' + esc(m.versao_prompt) + "</span>" +
-    '<span class="chip contorno">' + DADOS.nos.length + " nós · " + DADOS.raias.length + " raias</span>";
+    '<span class="chip contorno">' + ((DADOS.zonas || []).length ? (DADOS.zonas.length - 1) + " zonas + núcleo · " : "") +
+    DADOS.nos.length + " nós · " + DADOS.raias.length + " raias</span>";
   document.getElementById("aviso-versao").innerHTML =
     "Retrata o prompt <strong>" + esc(m.versao_prompt) + "</strong> do agente " + esc(m.origem.agente_nome) +
     ", exportado da plataforma em <strong>" + dataBR(m.prompt_exportado_em) + "</strong> pelo " + esc(m.origem.como) + ".";
@@ -271,14 +319,79 @@ function dataBR(iso) {
   return p[2] + "/" + meses[parseInt(p[1], 10) - 1] + "/" + p[0];
 }
 
+/* ---------- conectores (chips de salto) ---------- */
+function calcularChips() {
+  CHIPS = {};
+  /* fileira global lógica de cada nó, só para medir a distância do salto */
+  var ordem = {}, acc = 0;
+  DADOS.raias.forEach(function (r) {
+    var deles = DADOS.nos.filter(function (n) { return n.raia === r.id; });
+    var minCol = Infinity, maxCol = 0;
+    deles.forEach(function (n) {
+      if (n.col < minCol) minCol = n.col;
+      if (n.col > maxCol) maxCol = n.col;
+    });
+    deles.forEach(function (n) { ordem[n.id] = acc + n.col - minCol; });
+    acc += maxCol - minCol + 1;
+  });
+  LONGA = DADOS.arestas.map(function (a) { return Math.abs(ordem[a.para] - ordem[a.de]) >= 2; });
+
+  function add(id, chip) {
+    (CHIPS[id] = CHIPS[id] || { lista: [] }).lista.push(chip);
+  }
+  DADOS.arestas.forEach(function (a, i) {
+    if (!LONGA[i]) return;
+    var desce = ordem[a.para] > ordem[a.de];
+    add(a.de, { i: i, alvo: a.para, entrada: false, rot: (desce ? "→ " : "↩ ") + POR_ID[a.para].secao });
+    add(a.para, { i: i, alvo: a.de, entrada: true, rot: "← " + POR_ID[a.de].secao });
+  });
+
+  /* mede cada chip e empacota em linhas dentro da largura do cartão */
+  medidor.font = "600 9.5px Inter, sans-serif";
+  Object.keys(CHIPS).forEach(function (id) {
+    var c = CHIPS[id];
+    c.lista.sort(function (x, y2) { return (x.entrada ? 0 : 1) - (y2.entrada ? 0 : 1); });
+    var linhas = [[]], w = 0, maxW = NO_L - 22;
+    c.lista.forEach(function (ch) {
+      ch.w = Math.round(medidor.measureText(ch.rot).width) + 16;
+      if (w + ch.w > maxW && linhas[linhas.length - 1].length) { linhas.push([]); w = 0; }
+      linhas[linhas.length - 1].push(ch);
+      w += ch.w + 5;
+    });
+    c.linhas = linhas;
+  });
+}
+
+function alturaNo(id) {
+  var c = CHIPS[id];
+  return c ? 66 + c.linhas.length * 24 + 4 : NO_A;
+}
+
 /* ---------- layout ---------- */
 function calcular() {
+  calcularChips();
   var maxLinha = 0;
   DADOS.nos.forEach(function (n) { if (n.linha > maxLinha) maxLinha = n.linha; });
-  var largura = CORREDOR * 2 + PAD_X * 2 + (maxLinha + 1) * PASSO_X - HGAP;
+  var largura = PAD_X * 2 + (maxLinha + 1) * PASSO_X - HGAP;
+
+  /* mapa raia → zona e quais raias abrem zona */
+  ZONA_DA_RAIA = {}; ABRE_ZONA = {}; ZONAS_GEO = {};
+  (DADOS.zonas || []).forEach(function (z) {
+    z.raias.forEach(function (rid, i) {
+      ZONA_DA_RAIA[rid] = z.id;
+      if (i === 0) ABRE_ZONA[rid] = z.id;
+    });
+  });
 
   var y = 0;
   DADOS.raias.forEach(function (r) {
+    /* raia que abre zona: fecha a anterior, insere o vão e o cabeçalho da nova */
+    if (ABRE_ZONA[r.id]) {
+      var zid = ABRE_ZONA[r.id];
+      if (y > 0) y += ZONA_GAP - FAIXA_GAP;
+      ZONAS_GEO[zid] = { topo: y };
+      y += ZONA_CAB + 12;
+    }
     var deles = DADOS.nos.filter(function (n) { return n.raia === r.id; });
     /* col é alinhado ao progresso global (herança do desenho horizontal): normaliza por raia
        para a faixa começar no primeiro nó dela, sem vazio no topo */
@@ -288,17 +401,218 @@ function calcular() {
       if (n.col > maxCol) maxCol = n.col;
     });
     var fileiras = maxCol - minCol + 1;
-    var altura = FAIXA_TOPO + fileiras * PASSO_Y - VGAP + FAIXA_BASE;
+    /* altura por fileira: o cartão mais alto dela (chips esticam o cartão) */
+    var altF = [];
+    for (var k = 0; k < fileiras; k++) altF.push(NO_A);
+    deles.forEach(function (n) {
+      var h = alturaNo(n.id), k2 = n.col - minCol;
+      if (h > altF[k2]) altF[k2] = h;
+    });
+    var somas = [], s = 0;
+    altF.forEach(function (h) { somas.push(s); s += h + VGAP; });
+    var altura = FAIXA_TOPO + s - VGAP + FAIXA_BASE;
     FAIXAS[r.id] = { topo: y, altura: altura, linhas: fileiras, qtd: deles.length };
     deles.forEach(function (n) {
       GEO[n.id] = {
-        x: CORREDOR + PAD_X + n.linha * PASSO_X,
-        y: y + FAIXA_TOPO + (n.col - minCol) * PASSO_Y
+        x: PAD_X + n.linha * PASSO_X,
+        y: y + FAIXA_TOPO + somas[n.col - minCol],
+        h: alturaNo(n.id)
       };
     });
     y += altura + FAIXA_GAP;
   });
+
+  /* fecha a geometria de cada zona: do cabeçalho ao pé da última raia dela */
+  (DADOS.zonas || []).forEach(function (z) {
+    var ult = FAIXAS[z.raias[z.raias.length - 1]];
+    if (ZONAS_GEO[z.id] && ult) ZONAS_GEO[z.id].altura = ult.topo + ult.altura - ZONAS_GEO[z.id].topo;
+  });
+
+  tracarArestas();
   return { largura: largura, altura: y - FAIXA_GAP };
+}
+
+/* ---------- traçado das arestas curtas ---------- */
+function tracarArestas() {
+  ROTAS = [];
+
+  /* fileiras globais: os vãos entre elas são os canais horizontais */
+  var setTop = {}, altoRow = {};
+  DADOS.nos.forEach(function (n) {
+    var g = GEO[n.id];
+    setTop[g.y] = 1;
+    if (!altoRow[g.y] || g.h > altoRow[g.y]) altoRow[g.y] = g.h;
+  });
+  var ROWS = Object.keys(setTop).map(Number).sort(function (a, b) { return a - b; });
+  var IDXROW = {};
+  ROWS.forEach(function (v, i) { IDXROW[v] = i; });
+  /* banda(i): o vão logo abaixo da fileira i (abaixo do cartão mais alto dela) */
+  function banda(i) {
+    var t = ROWS[i] + altoRow[ROWS[i]];
+    return { topo: t, base: i + 1 < ROWS.length ? ROWS[i + 1] : t + FAIXA_BASE - 6 };
+  }
+
+  /* classificação por distância vertical em fileiras; salto de 2+ vira chip (sem linha) */
+  var tipos = DADOS.arestas.map(function (a, i) {
+    if (LONGA[i]) return "chip";
+    var o = GEO[a.de], d = GEO[a.para];
+    var drow = IDXROW[d.y] - IDXROW[o.y];
+    if (drow === 1) return "gapD";
+    if (drow === -1) return "gapU";
+    if (Math.abs(d.x - o.x) > PASSO_X * 1.5) return "skip";
+    return d.x > o.x ? "adjD" : "adjE";
+  });
+
+  /* portas: cada aresta que entra ou sai pelo topo/base de um cartão ganha um
+     ponto próprio na borda, para as setas não se empilharem no mesmo lugar */
+  var portas = {}, porLado = {};
+  function porta(noId, lado, key, farX) {
+    if (portas[key]) return;
+    portas[key] = { no: noId, farX: farX };
+    var pk = noId + ":" + lado;
+    (porLado[pk] = porLado[pk] || []).push(key);
+  }
+  DADOS.arestas.forEach(function (a, i) {
+    var o = GEO[a.de], d = GEO[a.para];
+    if (tipos[i] === "gapD") {
+      porta(a.de, "base", "e" + i + ":s", d.x + NO_L / 2);
+      porta(a.para, "topo", "e" + i + ":d", o.x + NO_L / 2);
+    } else if (tipos[i] === "gapU") {
+      porta(a.de, "topo", "e" + i + ":s", d.x + NO_L / 2);
+      porta(a.para, "base", "e" + i + ":d", o.x + NO_L / 2);
+    } else if (tipos[i] === "skip") {
+      porta(a.de, "base", "e" + i + ":s", d.x + NO_L / 2);
+      porta(a.para, "base", "e" + i + ":d", o.x + NO_L / 2);
+    }
+  });
+  Object.keys(porLado).forEach(function (pk) {
+    var keys = porLado[pk].sort(function (ka, kb) { return portas[ka].farX - portas[kb].farX; });
+    var g = GEO[portas[keys[0]].no];
+    var passo = keys.length > 1 ? Math.min(24, (NO_L - 44) / (keys.length - 1)) : 0;
+    keys.forEach(function (k, j) {
+      portas[k].x = g.x + NO_L / 2 + (j - (keys.length - 1) / 2) * passo;
+    });
+  });
+
+  /* canais: cada trecho horizontal que corre num vão registra o seu alcance em x;
+     trechos que se sobrepõem recebem alturas (slots) diferentes dentro do vão */
+  var canais = {};
+  function canal(key, bandaIdx, xs) {
+    var c = canais[key] || (canais[key] = { banda: bandaIdx, x1: Infinity, x2: -Infinity });
+    xs.forEach(function (x) {
+      if (x < c.x1) c.x1 = x;
+      if (x > c.x2) c.x2 = x;
+    });
+  }
+  DADOS.arestas.forEach(function (a, i) {
+    var o = GEO[a.de], d = GEO[a.para];
+    if (tipos[i] === "gapD" || tipos[i] === "skip") {
+      canal("e" + i, IDXROW[o.y], [portas["e" + i + ":s"].x, portas["e" + i + ":d"].x]);
+    } else if (tipos[i] === "gapU") {
+      canal("e" + i, IDXROW[d.y], [portas["e" + i + ":s"].x, portas["e" + i + ":d"].x]);
+    }
+  });
+  var porBanda = {};
+  Object.keys(canais).forEach(function (k) {
+    (porBanda[canais[k].banda] = porBanda[canais[k].banda] || []).push(k);
+  });
+  Object.keys(porBanda).forEach(function (bi) {
+    var keys = porBanda[bi].sort(function (ka, kb) { return canais[ka].x1 - canais[kb].x1; });
+    var slots = [];
+    keys.forEach(function (k) {
+      var c = canais[k];
+      for (var s = 0; s < slots.length; s++) {
+        var livre = slots[s].every(function (o2) { return c.x1 > o2.x2 + 12 || o2.x1 > c.x2 + 12; });
+        if (livre) { slots[s].push(c); c.slot = s; return; }
+      }
+      slots.push([c]);
+      c.slot = slots.length - 1;
+    });
+    var b = banda(+bi), K = slots.length;
+    var passo = K > 1 ? Math.min(11, (b.base - b.topo - 10) / (K - 1)) : 0;
+    keys.forEach(function (k) {
+      var c = canais[k];
+      c.y = (b.topo + b.base) / 2 + (c.slot - (K - 1) / 2) * passo;
+    });
+  });
+
+  /* pares recíprocos (A→B e B→A entre vizinhos) se afastam para não sobrepor */
+  var RECIP = {};
+  DADOS.arestas.forEach(function (a) { RECIP[a.de + ">" + a.para] = true; });
+
+  DADOS.arestas.forEach(function (a, i) {
+    var o = GEO[a.de], d = GEO[a.para], sx, dx, cA, off;
+    var oB = o.y + o.h, dT = d.y, dB = d.y + d.h;
+    var rt = null;
+    if (tipos[i] === "chip") {
+      ROTAS[i] = null;
+      return;
+    }
+    if (tipos[i] === "gapD") {
+      sx = portas["e" + i + ":s"].x; dx = portas["e" + i + ":d"].x; cA = canais["e" + i].y;
+      rt = {
+        pts: [[sx, oB], [sx, cA], [dx, cA], [dx, dT - 7]],
+        seta: { x: dx, y: dT - 7, ang: 90 },
+        rot: { x: (sx + dx) / 2, y: cA }
+      };
+    } else if (tipos[i] === "gapU") {
+      sx = portas["e" + i + ":s"].x; dx = portas["e" + i + ":d"].x; cA = canais["e" + i].y;
+      rt = {
+        pts: [[sx, o.y], [sx, cA], [dx, cA], [dx, dB + 7]],
+        seta: { x: dx, y: dB + 7, ang: -90 },
+        rot: { x: (sx + dx) / 2, y: cA }
+      };
+    } else if (tipos[i] === "skip") {
+      sx = portas["e" + i + ":s"].x; dx = portas["e" + i + ":d"].x; cA = canais["e" + i].y;
+      rt = {
+        pts: [[sx, oB], [sx, cA], [dx, cA], [dx, dB + 7]],
+        seta: { x: dx, y: dB + 7, ang: -90 },
+        rot: { x: (sx + dx) / 2, y: cA }
+      };
+    } else if (tipos[i] === "adjD") {
+      off = RECIP[a.para + ">" + a.de] ? (a.de < a.para ? -7 : 7) : 0;
+      rt = {
+        pts: [[o.x + NO_L, o.y + NO_A / 2 + off], [d.x - 7, d.y + NO_A / 2 + off]],
+        seta: { x: d.x - 7, y: d.y + NO_A / 2 + off, ang: 0 },
+        rot: { x: (o.x + NO_L + d.x) / 2, y: o.y + NO_A / 2 + off - 10 }
+      };
+    } else {
+      off = RECIP[a.para + ">" + a.de] ? (a.de < a.para ? -7 : 7) : 0;
+      rt = {
+        pts: [[o.x, o.y + NO_A / 2 + off], [d.x + NO_L + 7, d.y + NO_A / 2 + off]],
+        seta: { x: d.x + NO_L + 7, y: d.y + NO_A / 2 + off, ang: 180 },
+        rot: { x: (o.x + d.x + NO_L) / 2, y: o.y + NO_A / 2 + off - 10 }
+      };
+    }
+    ROTAS[i] = rt;
+  });
+}
+
+/* polilinha ortogonal com cantos arredondados */
+function caminhoOrto(pts, r) {
+  var p = [];
+  pts.forEach(function (q) {
+    var u = p[p.length - 1];
+    if (u && Math.abs(u[0] - q[0]) < 0.01 && Math.abs(u[1] - q[1]) < 0.01) return;
+    p.push([q[0], q[1]]);
+  });
+  for (var i = p.length - 2; i > 0; i--) {
+    if ((Math.abs(p[i - 1][0] - p[i][0]) < 0.01 && Math.abs(p[i][0] - p[i + 1][0]) < 0.01) ||
+        (Math.abs(p[i - 1][1] - p[i][1]) < 0.01 && Math.abs(p[i][1] - p[i + 1][1]) < 0.01)) p.splice(i, 1);
+  }
+  function xy(q) { return (Math.round(q[0] * 10) / 10) + "," + (Math.round(q[1] * 10) / 10); }
+  function rumo(de, para, dist) {
+    var vx = para[0] - de[0], vy = para[1] - de[1];
+    var n = Math.hypot(vx, vy) || 1;
+    return [de[0] + vx / n * dist, de[1] + vy / n * dist];
+  }
+  var d = "M" + xy(p[0]);
+  for (var j = 1; j < p.length - 1; j++) {
+    var a = p[j - 1], b = p[j], c = p[j + 1];
+    var rj = Math.min(r, Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, Math.hypot(c[0] - b[0], c[1] - b[1]) / 2);
+    d += " L" + xy(rumo(b, a, rj)) + " Q" + xy(b) + " " + xy(rumo(b, c, rj));
+  }
+  return d + " L" + xy(p[p.length - 1]);
 }
 
 /* ---------- desenho ---------- */
@@ -312,10 +626,29 @@ function desenhar() {
 
   var partes = [];
 
+  /* zonas de agente lógico: trilho na esquerda + cabeçalho preto clicável (ficha da fronteira) */
+  (DADOS.zonas || []).forEach(function (z) {
+    var zg = ZONAS_GEO[z.id];
+    if (!zg) return;
+    partes.push('<rect class="zona-trilho" data-zona="' + esc(z.id) + '" x="0" y="' + zg.topo +
+      '" width="4" height="' + zg.altura + '" rx="2"/>');
+    var linhaFront = z.fronteira
+      ? "FRONTEIRA · decide: " + z.fronteira.decide
+      : (z.nota || "");
+    partes.push('<g class="zona-cab" data-zona="' + esc(z.id) + '" tabindex="0" role="button" aria-label="Zona ' + esc(z.rotulo) + '">' +
+      '<title>' + esc(z.rotulo + " · " + (z.agente || "")) + '</title>' +
+      '<rect x="12" y="' + zg.topo + '" width="' + (dim.largura - 12) + '" height="' + ZONA_CAB + '" rx="14"/>' +
+      '<text class="z-rot" x="30" y="' + (zg.topo + 26) + '">' + esc(z.rotulo) + '</text>' +
+      '<text class="z-agente" x="30" y="' + (zg.topo + 44) + '">' + esc(z.agente || "") + '</text>' +
+      '<text class="z-front" x="' + (dim.largura - 20) + '" y="' + (zg.topo + 26) + '" text-anchor="end">' +
+        esc(z.fronteira ? "clique: quem decide, com que critério, o que viaja" : "transversal: vale para os três blocos") + '</text>' +
+      '</g>');
+  });
+
   DADOS.raias.forEach(function (r) {
     var f = FAIXAS[r.id];
-    partes.push('<rect class="faixa" data-raia="' + esc(r.id) + '" x="0" y="' + f.topo +
-      '" width="' + dim.largura + '" height="' + f.altura + '" rx="20"/>');
+    partes.push('<rect class="faixa" data-raia="' + esc(r.id) + '" x="12" y="' + f.topo +
+      '" width="' + (dim.largura - 12) + '" height="' + f.altura + '" rx="20"/>');
   });
 
   partes.push('<g id="camada-arestas">' + DADOS.arestas.map(aresta).join("") + "</g>");
@@ -326,70 +659,21 @@ function desenhar() {
   ligarEventos();
 }
 
-function centro(id) {
-  var g = GEO[id];
-  return { x: g.x + NO_L / 2, y: g.y + NO_A / 2, x1: g.x, x2: g.x + NO_L, y1: g.y, y2: g.y + NO_A };
-}
-
 function aresta(a, i) {
-  var o = centro(a.de), d = centro(a.para), caminho, fx, fy, ang, mx, my;
-  var LONGA = PASSO_Y * 2.4;
-  if (d.y1 > o.y2 + 8 && d.y1 - o.y2 > LONGA) {
-    /* descida longa: sai pela direita, viaja no corredor direito e entra pela direita do destino */
-    var bx = DIM_LARG - 22;
-    caminho = "M" + o.x2 + "," + o.y +
-      " C" + bx + "," + o.y + " " + bx + "," + (o.y + 50) + " " + bx + "," + (o.y + 110) +
-      " L" + bx + "," + (d.y - 110) +
-      " C" + bx + "," + (d.y - 50) + " " + bx + "," + d.y + " " + (d.x2 + 7) + "," + d.y;
-    fx = d.x2 + 7; fy = d.y; ang = 180;
-    mx = bx; my = (o.y + d.y) / 2;
-  } else if (d.y1 > o.y2 + 8) {
-    /* descida curta: vertical direta */
-    var folga = Math.max(24, (d.y1 - o.y2) * 0.45);
-    caminho = "M" + o.x + "," + o.y2 + " C" + o.x + "," + (o.y2 + folga) + " " +
-      d.x + "," + (d.y1 - folga) + " " + d.x + "," + (d.y1 - 7);
-    fx = d.x; fy = d.y1 - 7; ang = 90;
-    mx = (o.x + d.x) / 2; my = (o.y2 + d.y1) / 2;
-  } else if (d.y2 < o.y1 - 4 && o.y1 - d.y2 > LONGA) {
-    /* retorno longo: viaja no corredor esquerdo e entra pela esquerda do destino */
-    var be = 22;
-    caminho = "M" + o.x1 + "," + o.y +
-      " C" + be + "," + o.y + " " + be + "," + (o.y - 50) + " " + be + "," + (o.y - 110) +
-      " L" + be + "," + (d.y + 110) +
-      " C" + be + "," + (d.y + 50) + " " + be + "," + d.y + " " + (d.x1 - 7) + "," + d.y;
-    fx = d.x1 - 7; fy = d.y; ang = 0;
-    mx = be; my = (o.y + d.y) / 2;
-  } else if (d.y2 < o.y1 - 4) {
-    /* subida curta: vertical direta */
-    caminho = "M" + o.x + "," + o.y1 + " C" + o.x + "," + (o.y1 - 30) + " " +
-      d.x + "," + (d.y2 + 30) + " " + d.x + "," + (d.y2 + 7);
-    fx = d.x; fy = d.y2 + 7; ang = -90;
-    mx = (o.x + d.x) / 2; my = (o.y1 + d.y2) / 2;
-  } else if (d.x1 > o.x2 + 4) {
-    /* vizinho à direita, mesmo nível */
-    caminho = "M" + o.x2 + "," + o.y + " C" + (o.x2 + 30) + "," + o.y + " " +
-      (d.x1 - 30) + "," + d.y + " " + (d.x1 - 7) + "," + d.y;
-    fx = d.x1 - 7; fy = d.y; ang = 0;
-    mx = (o.x2 + d.x1) / 2; my = (o.y + d.y) / 2 - 7;
-  } else {
-    /* vizinho à esquerda, mesmo nível */
-    caminho = "M" + o.x1 + "," + o.y + " C" + (o.x1 - 30) + "," + o.y + " " +
-      (d.x2 + 30) + "," + d.y + " " + (d.x2 + 7) + "," + d.y;
-    fx = d.x2 + 7; fy = d.y; ang = 180;
-    mx = (o.x1 + d.x2) / 2; my = (o.y + d.y) / 2 - 7;
-  }
+  var rt = ROTAS[i];
+  if (!rt) return ""; /* salto longo: vira conector no cartão, não linha */
   var seta = '<path class="seta" data-i="' + i + '" d="M0,0 l-8,-4.5 v9 z" transform="translate(' +
-    fx + "," + fy + ") rotate(" + ang + ')"/>';
+    rt.seta.x + "," + rt.seta.y + ") rotate(" + rt.seta.ang + ')"/>';
   var rot = "";
-  if (a.rotulo) {
+  if (a.rotulo && rt.rot) {
     var larg = a.rotulo.length * 5.4 + 12;
-    mx = Math.min(Math.max(mx, larg / 2 + 6), DIM_LARG - larg / 2 - 6);
-    rot = '<rect class="rot-aresta-fundo" data-i="' + i + '" x="' + (mx - larg / 2) + '" y="' + (my - 9) +
+    var mx = Math.min(Math.max(rt.rot.x, larg / 2 + 6), DIM_LARG - larg / 2 - 6);
+    rot = '<rect class="rot-aresta-fundo" data-i="' + i + '" x="' + (mx - larg / 2) + '" y="' + (rt.rot.y - 9) +
       '" width="' + larg + '" height="15" rx="7"/>' +
-      '<text class="rot-aresta" data-i="' + i + '" x="' + mx + '" y="' + (my + 2) +
+      '<text class="rot-aresta" data-i="' + i + '" x="' + mx + '" y="' + (rt.rot.y + 2) +
       '" text-anchor="middle">' + esc(a.rotulo) + "</text>";
   }
-  return '<path class="aresta" data-i="' + i + '" d="' + caminho + '"/>' + seta + rot;
+  return '<path class="aresta" data-i="' + i + '" d="' + caminhoOrto(rt.pts, R_CANTO) + '"/>' + seta + rot;
 }
 
 function no(n) {
@@ -398,28 +682,56 @@ function no(n) {
   var linhas = quebrar(n.titulo, fonte, NO_L - 26, 3);
   var y0 = NO_A / 2 - (linhas.length - 1) * 7 + 7;
   var barra = (n.tipo === "mensagem" || n.tipo === "fim")
-    ? '<rect class="barra" x="0" y="14" width="3" height="' + (NO_A - 28) + '" rx="1.5"/>' : "";
+    ? '<rect class="barra" x="0" y="14" width="3" height="' + (g.h - 28) + '" rx="1.5"/>' : "";
+
+  /* conectores de salto dentro do cartão */
+  var chips = "";
+  var c = CHIPS[n.id];
+  if (c) c.linhas.forEach(function (linha, li) {
+    var cx = 12, cy = 64 + li * 24;
+    linha.forEach(function (ch) {
+      var alvo = POR_ID[ch.alvo];
+      chips += '<g class="chip-lig" data-i="' + ch.i + '" data-alvo="' + esc(ch.alvo) + '" tabindex="0" role="link">' +
+        "<title>" + esc((ch.entrada ? "vem de: " : "vai para: ") + alvo.secao + " " + alvo.titulo) + "</title>" +
+        '<rect x="' + cx + '" y="' + cy + '" width="' + ch.w + '" height="18" rx="9"/>' +
+        '<text x="' + (cx + ch.w / 2) + '" y="' + (cy + 12.5) + '" text-anchor="middle">' + esc(ch.rot) + "</text></g>";
+      cx += ch.w + 5;
+    });
+  });
+
   return '<g class="no ' + esc(n.tipo) + '" data-id="' + esc(n.id) + '" tabindex="0" role="button"' +
     ' aria-label="' + esc(n.secao + ": " + n.titulo) + '" transform="translate(' + g.x + "," + g.y + ')">' +
-    '<rect class="corpo" x="0" y="0" width="' + NO_L + '" height="' + NO_A + '" rx="14"/>' + barra +
+    '<rect class="corpo" x="0" y="0" width="' + NO_L + '" height="' + g.h + '" rx="14"/>' + barra +
     '<text class="rot" x="13" y="17">' + esc(n.secao) + "</text>" +
     linhas.map(function (t, i) {
       return '<text class="tit" x="13" y="' + (y0 + i * 14) + '">' + esc(t) + "</text>";
     }).join("") +
-    '<rect class="halo" x="-2" y="-2" width="' + (NO_L + 4) + '" height="' + (NO_A + 4) + '" rx="16"/>' +
+    chips +
+    '<rect class="halo" x="-2" y="-2" width="' + (NO_L + 4) + '" height="' + (g.h + 4) + '" rx="16"/>' +
     "</g>";
 }
 
 function montarGutter() {
   var g = document.getElementById("gutter");
-  g.innerHTML = DADOS.raias.map(function (r) {
+  var zonaPorId = {};
+  (DADOS.zonas || []).forEach(function (z) { zonaPorId[z.id] = z; });
+  var partes = [], primeira = true;
+  DADOS.raias.forEach(function (r) {
+    if (ABRE_ZONA[r.id]) {
+      var z = zonaPorId[ABRE_ZONA[r.id]];
+      partes.push('<div class="zona-g" style="height:' + (ZONA_CAB + 12) + "px" +
+        (primeira ? "" : ";margin-top:" + (ZONA_GAP - FAIXA_GAP) + "px") +
+        '"><span class="z-nome">' + esc(z.rotulo) + '</span><span class="z-sub">' + esc(z.agente || "") + "</span></div>");
+      primeira = false;
+    }
     var f = FAIXAS[r.id];
-    return '<div class="raia-rot" data-raia="' + esc(r.id) + '" style="height:' + f.altura +
+    partes.push('<div class="raia-rot" data-raia="' + esc(r.id) + '" style="height:' + f.altura +
       "px;margin-bottom:" + FAIXA_GAP + 'px" tabindex="0" role="button"><div class="fixo">' +
       '<span class="conta">' + f.qtd + " nós</span>" +
       '<span class="nome">' + esc(r.rotulo) + "</span>" +
-      '<span class="nota">' + esc(r.nota) + "</span></div></div>";
-  }).join("");
+      '<span class="nota">' + esc(r.nota) + "</span></div></div>");
+  });
+  g.innerHTML = partes.join("");
 }
 
 /* ---------- interação ---------- */
@@ -440,10 +752,34 @@ function ligarEventos() {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); focarRaia(el.dataset.raia); }
     });
   });
+  document.querySelectorAll(".zona-cab").forEach(function (el) {
+    el.addEventListener("click", function () { mostrarZona(el.dataset.zona); });
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); mostrarZona(el.dataset.zona); }
+    });
+  });
+  document.querySelectorAll(".chip-lig").forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.stopPropagation();
+      irAte(el.dataset.alvo);
+    });
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); irAte(el.dataset.alvo); }
+    });
+  });
+}
+
+/* clique num conector: fixa o destino e rola até ele (scrollIntoView não vale para <g> de SVG) */
+function irAte(id) {
+  if (FIXADO !== id) fixar(id);
+  var el = document.querySelector('.no[data-id="' + id + '"]');
+  if (!el) return;
+  var r = el.getBoundingClientRect();
+  window.scrollTo(0, window.scrollY + r.top + r.height / 2 - window.innerHeight / 2);
 }
 
 function acender(id) {
-  document.querySelectorAll(".aresta, .seta, .rot-aresta, .rot-aresta-fundo").forEach(function (el) {
+  document.querySelectorAll(".aresta, .seta, .rot-aresta, .rot-aresta-fundo, .chip-lig").forEach(function (el) {
     el.classList.remove("acesa");
   });
   document.querySelectorAll(".no.ativo").forEach(function (el) { el.classList.remove("ativo"); });
@@ -504,12 +840,49 @@ function mostrar(id, fixando) {
     copiar(n.ancora.trechos.map(function (t) { return t.texto; }).join("\n\n"), btn, "Copiar trecho");
   };
 
-  document.getElementById("painel").classList.add("aberto");
+  var painel = document.getElementById("painel");
+  painel.classList.toggle("interativa", !!fixando);
+  painel.classList.add("aberto");
 }
 
 function rotuloTipo(t) {
   var achado = DADOS.tipos.filter(function (x) { return x.id === t; })[0];
   return achado ? achado.rotulo : t;
+}
+
+/* ficha da zona (fronteira do agente lógico) no painel lateral */
+function mostrarZona(zid) {
+  var z = (DADOS.zonas || []).filter(function (x) { return x.id === zid; })[0];
+  if (!z) return;
+  FIXADO = "zona:" + zid;
+  acender(null);
+  var f = z.fronteira || null;
+  function campo(rotulo, valor) {
+    return valor ? '<div class="bloco"><span class="micro">' + rotulo + '</span>' +
+      '<div class="card-interno" style="margin-top:7px;"><div class="linha-dado"><span>' + esc(valor) + "</span></div></div></div>" : "";
+  }
+  var raias = z.raias.map(function (rid) {
+    var r = DADOS.raias.filter(function (x) { return x.id === rid; })[0];
+    return '<span class="chip contorno">' + esc(r ? r.rotulo : rid) + "</span>";
+  }).join("");
+  document.getElementById("painel-corpo").innerHTML =
+    '<div class="linha"><span class="chip bloqueada">Zona de agente lógico</span>' +
+    '<span class="caption" style="font-family:var(--font-mono);">' + esc(z.agente || "") + "</span></div>" +
+    '<div class="titulo-no">' + esc(z.rotulo) + "</div>" +
+    '<div class="card-interno"><div class="linha-dado"><span>' + esc(z.nota || "") + "</span></div></div>" +
+    (f
+      ? campo("Quem decide a entrada", f.decide) +
+        campo("Com que critério", f.criterio) +
+        campo("O que viaja junto", f.viaja) +
+        campo("Como volta", f.volta)
+      : campo("Transversal", "Este conteúdo viaja com os três blocos no prompt compilado: não há fronteira, há regra comum.")) +
+    '<div class="bloco"><span class="micro">Raias desta zona</span><div class="linha" style="margin-top:7px;">' + raias + "</div></div>" +
+    '<div class="bloco"><span class="micro">Fonte</span><div class="lista-lig"><div>' +
+    esc((DADOS.meta.fonte_compilada && DADOS.meta.fonte_compilada.regra) || "ana/prompt/") + "</div></div></div>" +
+    '<p class="fixado">Ficha fixada. Esc ou o X fecham.</p>';
+  var painel = document.getElementById("painel");
+  painel.classList.add("interativa");
+  painel.classList.add("aberto");
 }
 
 function fixar(id) {
@@ -522,7 +895,9 @@ function fixar(id) {
 
 function limpar() {
   acender(null);
-  document.getElementById("painel").classList.remove("aberto");
+  var painel = document.getElementById("painel");
+  painel.classList.remove("aberto");
+  painel.classList.remove("interativa");
 }
 
 function limparFixo() {
