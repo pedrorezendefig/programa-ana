@@ -497,6 +497,21 @@
         "mudou": "A promessa de protocolo saiu do limbo: a Ana grava a manifestação sem dado pessoal na Base Ana e informa o número real lido do banco; falha cai na Regra Híbrida sem citar número.",
         "valor": "Provado no playground pelos dois caminhos: protocolo 2026-0001/0002 informado ao paciente, e a mensagem sem protocolo quando as tools não estavam disponíveis."
       }
+    },
+    {
+      "id": "V20",
+      "titulo": "Fluxo humano v6.3 (ADR-0014): cadastro sai do bot, split off, roteiro v3 13/13",
+      "dono": "C+P",
+      "status": "feito",
+      "deps": [
+        "V19"
+      ],
+      "nota": "Concluída em 12/ago/2026 (noite), no grilling sobre os achados da bateria v2. Prompt v6.3.2 publicado (50.111 chars): nome+CPF único bloco cadastral (nascimento/telefone nunca são pedidos; cadastrar_paciente fora do grant, volta com P6), preço direto sem diferencial na abertura, agenda pós-dados com vazio transparente, ouvidoria com protocolo obrigatório na mensagem final e pergunta pendente respondida, tag emergencia oficializada (catálogo fechado de 8). Split de mensagens desligado nas settings. Roteiro v3: 13/13 rodados passando (27 gated pela GH-19), com 2 iterações de correção pegas pela própria bateria (MENSAGEM_FDS em dia útil). Pesquisa: {{contact_phone}} funciona no body de HTTP tool (ana/plataforma/pesquisa-contact-phone-http-tools.md).",
+      "ficha": {
+        "fez": "Grilling de 7 decisões sobre os achados da bateria v2, prompt v6.3.2 publicado da fonte, split desligado, grant do cadastro removido, roteiro v3 escrito e rodado 13/13 na bateria automatizada.",
+        "mudou": "A Ana fala como gente (mensagem única, preço direto, sem formulário) e não cadastra mais paciente: nome+CPF é o único dado pedido; ouvidoria sempre entrega o protocolo e nenhuma pergunta fica sem resposta; tag emergencia sinaliza urgência no CRM.",
+        "valor": "O caminho quente do particular ficou curto e humano, o canal de ouvidoria ganhou prova auditável, e a bateria noturna virou rede de segurança que pega bug de prompt antes do paciente ver."
+      }
     }
   ],
   "pendentes": [
