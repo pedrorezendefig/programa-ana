@@ -1,6 +1,6 @@
 {
   "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
-  "atualizado": "2026-08-14",
+  "atualizado": "2026-08-17",
   "tarefas": [
     {
       "id": "V1",
@@ -512,6 +512,102 @@
         "mudou": "A Ana fala como gente (mensagem única, preço direto, sem formulário) e não cadastra mais paciente: nome+CPF é o único dado pedido; ouvidoria sempre entrega o protocolo e nenhuma pergunta fica sem resposta; tag emergencia sinaliza urgência no CRM.",
         "valor": "O caminho quente do particular ficou curto e humano, o canal de ouvidoria ganhou prova auditável, e a bateria noturna virou rede de segurança que pega bug de prompt antes do paciente ver."
       }
+    },
+    {
+      "id": "V21",
+      "titulo": "P9 fatia 1: tool de consultas particulares na API do Hospital Reuniões (ADR-0015 fase 1)",
+      "dono": "C+P",
+      "status": "feito",
+      "deps": [
+        "V20"
+      ],
+      "nota": "Concluída em 14/ago/2026, no dia em que o Hospital publicou o primeiro endpoint /api/ana/* (prod v0.54.0, PR #299 e ADR 0031 de lá). Credencial hospital-ana-api-key criada no vault (vault:6, kind header, X-API-Key) pelo fluxo pendente + deeplink (o segredo nunca passou pela sessão). Validação por comparação ANTES da virada: 9 especialidades ativas idênticas nos dois lados, Ginecologia (Ativo = N) corretamente ausente da API, zero divergência de conteúdo após normalização de formato (R$ x numérico, S/N x boolean, data dd/mm x aaaa-mm-dd, travessão sanitizado); 401 sem chave conferido. Tool 1 apontada para https://api.hospitalsaomatheus.cloud/api/ana/consultas-particulares (credencial do vault, query limit removida, Accept json, descrição nova com os formatos); prompt v6.3.2 INTACTO (ajustes de leitura moram na descrição da tool; a regra Ativo = N do núcleo segue para as tools 2-4). Regressão no playground: preço direto (Cardiologia R$ 380, formato correto, tag particular-aquecido), diferencial único na hesitação, Ginecologia não ofertada sem número inventado, e Regra Híbrida provada com 401 REAL (credencial removida e restaurada, janela de 1 min em modo teste). ACHADO que limita a fatia: a plataforma corta o output de toda HTTP tool em 4.000 chars (default fixo de src/graph/tools/http.ts na 1.4.1; maxResponseChars não é exposto em env nem config): a resposta de 5,4 KB em ordem alfabética deixa Pediatria e Urologia invisíveis ao modelo, que entra em loop de re-chamadas (10 por turno) sem responder. Bug LATENTE pré-existente: no NocoDB (5,8 KB, ordem de criação) Urologia, Oftalmologia e Dermatologia já eram invisíveis e nenhuma bateria perguntou por elas. Decisão do Pedro: MANTER a virada (modo teste protege; rollback é 1 chamada) e consertar na fatia 1.1 do Hospital (resposta enxuta ou filtro ?especialidade=, com vazio tratado como sem filtro por causa da interpolação silenciosa). Achado somado ao report V10.",
+      "ficha": {
+        "fez": "Credencial hospital-ana-api-key no vault e tool 1 apontada para /api/ana/consultas-particulares, com diff campo a campo zerado antes da virada e regressão de preço, hesitação, inativa e Regra Híbrida (401 real) no playground.",
+        "mudou": "A primeira tool da Ana saiu do NocoDB para a API do Hospital Reuniões com API key de escopo restrito; o prompt v6.3.2 ficou intacto (o formato novo mora na descrição da tool).",
+        "valor": "A fase 1 do ADR-0015 começou com prova, e o truncamento de 4.000 chars da plataforma saiu de latente para diagnosticado na fonte, com o conserto desenhado (fatia 1.1 no Hospital)."
+      }
+    },
+    {
+      "id": "V22",
+      "titulo": "Filtro server-side nos endpoints da Ana (a fatia 1.1 no Hospital): resposta que cabe no que o modelo lê",
+      "dono": "P",
+      "status": "fazer",
+      "deps": [],
+      "canal": "dispare",
+      "canal_desde": "2026-08-17",
+      "mesa": {
+        "destrava": "As tools 2 e 4 (exames e convênios) e a correção da tool 1: hoje a Ana não enxerga Pediatria, Urologia, Raio-X, Tomografia nem 3 linhas de Unimed, porque a resposta passa do teto de 4.000 chars da plataforma.",
+        "gesto": "Abrir a issue no repo Hospital (o PRD #287 é o pai) e desenvolver por lá: filtro por termo nos 4 GETs de /api/ana/* e resposta resumida quando vier sem filtro. Rodar smoke-hospital.py no fim para conferir que tudo cabe."
+      },
+      "nota": "Medido em 17/ago/2026 por ana/api-hospital/scripts/smoke-hospital.py: exames 7.418 chars (perde MAPA 24h, Raio-X, Tomografia e Ultrassonografia Abdominal), consultas 5.410 (perde Pediatria e Urologia), convênios 4.730 (perde Unimed/Obstetrícia, Ortopedia e Pediatria); só cirurgias cabe (3.269), e com margem frágil (~1.115 chars por linha: a 4ª cirurgia estoura). O teto é da plataforma, fixo em 4.000 chars e não configurável (achado da V21, somado ao report V10). Desenho proposto: (a) filtro por termo (?especialidade=, ?exame=, ?convenio=), tratando string vazia como sem filtro por causa da interpolação silenciosa da plataforma; (b) sem filtro, devolver só os campos de vitrine (nome + valor), que cabem folgado e atendem a pergunta de catálogo. Nada disso existe hoje: o router não tem nenhum query param (app/routers/ana.py) e a issue ainda não foi aberta.",
+      "prompt": "Quero implementar a fatia 1.1 da API da Ana no Hospital Reuniões: fazer as respostas de /api/ana/* caberem no que o modelo consegue ler. Contexto que vem do repo da Ana (ADR-0015, tarefa V21): a plataforma fazer.ai corta o corpo de toda HTTP tool em 4.000 caracteres, fixo e não configurável, então hoje a Ana não enxerga o fim de 3 das 4 tabelas. Proposta a validar comigo antes de codar: (1) filtro por termo em cada GET (?especialidade=, ?exame=, ?convenio=), com string vazia tratada como 'sem filtro' porque a plataforma interpola variável ausente como string vazia em silêncio; (2) sem filtro, devolver uma versão resumida (só os campos de vitrine: nome e valor), que cabe folgado e responde a pergunta 'o que vocês atendem'; com filtro, o registro completo. Siga o workflow de fatias do repo (issue + PR), inclua testes de tamanho de resposta e, no fim, me diga o que preciso ajustar do lado da Ana (input_schema das tools e possivelmente uma linha na descrição de cada uma)."
+    },
+    {
+      "id": "V23",
+      "titulo": "Tools 2-4 na API do Hospital: exames, cirurgias e convênios saem do NocoDB",
+      "dono": "C+P",
+      "status": "fazer",
+      "deps": [
+        "V22"
+      ],
+      "canal": "comigo",
+      "canal_desde": "2026-08-17",
+      "mesa": {
+        "destrava": "Três quartos da Base Ana mudando de casa: o hospital passa a editar exames, cirurgias e convênios na tela do próprio app, com login e auditoria.",
+        "gesto": "Sessão comigo, uma tool por vez na liturgia da V21: comparação campo a campo antes, diff da tool aprovado, regressão no playground depois. A tool 3 (cirurgias) já cabe no teto e pode ir antes das outras duas."
+      },
+      "nota": "Endpoints prontos em produção desde 15/ago (v0.55.0, PR #289/#303): GET /api/ana/exames, /api/ana/cirurgias-estimativas e /api/ana/convenios-especialidade, mesma chave X-API-Key da tool 1 (o vault já tem, vault:6). Mudanças de formato iguais às da V21: envelope com o nome da tabela, valores numéricos, booleanos no lugar de S/N, datas AAAA-MM-DD, coluna ativo não vem (filtro server-side). Nomes de campo mudam: Valor_Particular_RS vira valor_particular_rs, Cobre_SN vira cobre (booleano), Estimativa_Total_RS vira estimativa_total_rs. Bloqueada pela V22 nas tools 2 e 4 (exames e convênios estouram o teto); a tool 3 cabe hoje e pode virar antes, com a ressalva de que a 4ª cirurgia cadastrada estoura.",
+      "prompt": "Quero virar as tools 2, 3 e 4 da Ana (exames, cirurgias e convênios) para a API do Hospital Reuniões, seguindo a mesma liturgia da V21. Antes de qualquer coisa, rode python3 ana/api-hospital/scripts/smoke-hospital.py: se alguma tabela ainda aparecer como CORTA, essa tool NÃO vira (a Ana ficaria cega para o fim da lista) e a V22 é o pré-requisito. Para cada tool que passar: (1) comparação campo a campo da resposta do NocoDB com a da API, normalizando os formatos, e me mostre o diff; (2) o diff da definição da tool para eu aprovar (URL, allowed_hosts, credencial hospital-ana-api-key, query, descrição com os formatos novos); (3) aplicar e rodar a regressão no playground, incluindo o primeiro E o último item da tabela (o cenário C1 do roteiro de integração, que é o que pega o truncamento). Avalie se o prompt precisa mudar: na V21 não precisou, porque os formatos moram na descrição da tool. Registre nos dois arquivos do roadmap ao terminar."
+    },
+    {
+      "id": "V24",
+      "titulo": "Ouvidoria na API do Hospital (fase 2): tools 11-12 e a decisão da Seção 7.3",
+      "dono": "C+P",
+      "status": "fazer",
+      "deps": [],
+      "canal": "comigo",
+      "canal_desde": "2026-08-17",
+      "mesa": {
+        "destrava": "O painel de ouvidoria para a diretoria (já no ar em /ouvidoria) passa a receber as manifestações de verdade, e o xc-token de base inteira do ADR-0010 morre.",
+        "gesto": "Sessão comigo: decidir primeiro se a Seção 7.3 continua com duas chamadas ou passa a usar o protocolo que o POST já devolve, porque isso muda o prompt (o primeiro da migração a mudar)."
+      },
+      "nota": "Pronto em produção desde 16/ago (v0.56.0/v0.57.0, PR #290/#302 e o painel #292): POST /api/ana/ouvidoria/protocolos (201) e GET /api/ana/ouvidoria/protocolos/{protocolo}. Três diferenças que MUDAM o desenho atual: (1) o POST já devolve o campo protocolo no corpo, então a segunda chamada deixa de ser necessária para saber o número (a trava dura da v6.2 exige as duas: decisão do Pedro); (2) o GET consulta por ANO-NNNN, não pelo Id, e não existe consulta por id nem listagem em /api/ana/*, então a tool 12 muda de assinatura e de papel (passa a servir o paciente que volta perguntando pelo protocolo); (3) o payload é fechado em categoria, setor, resumo e conversa_id, com validação anti-vazio no servidor (rejeita 422 em branco ou só travessão), o que é a defesa do lado deles contra a falha silenciosa de interpolação da plataforma. Atenção: conversa_id é opcional e aceita vazio, e {{conversation_id}} não interpolava no body na 1.4.1 (achado da V19), então o elo índice-dossiê pode se perder em silêncio: conferir em conversa real. Protocolo ANO-NNNN por sequence do Postgres, contínuo, com o NNNN alargando depois de 9999.",
+      "prompt": "Quero virar as tools 11 e 12 da ouvidoria para a API do Hospital Reuniões (fase 2 do ADR-0015). Comece pela decisão de desenho, que muda o prompt: o POST /api/ana/ouvidoria/protocolos já devolve o número do protocolo na resposta, enquanto a Seção 7.3 da v6.3.2 tem a trava dura de só citar o número após DUAS chamadas (R2 grava, R3 lê). Me apresente as opções (manter as duas chamadas por segurança e paridade, ou passar a usar o número do POST e reescrever a Seção 7.3, com a tool 12 virando consulta por ANO-NNNN para o paciente que volta) com sua recomendação, e só depois execute. Confira também: se há protocolos no NocoDB a migrar e se a continuidade da numeração está garantida (a sequence do Postgres deve nascer do último número já informado a paciente), e se o Conversa_Id chega preenchido numa conversa REAL (no playground nunca chega). Prove pelos dois caminhos como na OV2: protocolo real informado ao paciente e visível no painel /ouvidoria do app, e o caminho de falha sem citar número. Se o prompt mudar, publique pela fonte em ana/prompt/ com compilar.py e re-rode a bateria."
+    },
+    {
+      "id": "V25",
+      "titulo": "Bancada de cenários da integração: editar no app e provar na conversa da Ana",
+      "dono": "C+P",
+      "status": "fazer",
+      "deps": [],
+      "canal": "comigo",
+      "canal_desde": "2026-08-17",
+      "mesa": {
+        "destrava": "A prova que o hospital vai querer ver: mudo o preço na minha tela e a Ana passa a falar isso, com o caminho inverso (a queixa do paciente virando protocolo no painel) provado junto.",
+        "gesto": "Sessão comigo: rodar o roteiro de integração (roadmap/roteiro-integracao-hospital.md) nos três níveis e versionar o runner da bateria E2E no repo, que hoje não existe mais."
+      },
+      "nota": "Roteiro escrito em 17/ago/2026 (roadmap/roteiro-integracao-hospital.md): cinco famílias, sendo A (espelho da edição) e D (ouvidoria) bloqueantes, e C (cobertura da tabela inteira) o cenário que teria pego o bug da V21 antes dele existir, porque obriga a perguntar pelo primeiro E pelo último item de cada tabela. Nível 1 já existe e roda hoje: ana/api-hospital/scripts/smoke-hospital.py. Falta o nível 2 (edição humana no admin com medição antes e depois) e o nível 3 (bateria pela inbox de API). Dívida a pagar aqui: o runner e2e.py que rodou as baterias v2 e v3 vivia num scratchpad de sessão e NÃO EXISTE MAIS, então a bateria automatizada não é reproduzível hoje; nesta tarefa ele nasce versionado no repo. Tudo já está em produção do lado do Hospital (v0.58.0): a tela de edição /admin/dados-atendimento (secretárias e super admins editam, facilitadores leem, sem DELETE: desativar é ativo=false) e o painel /ouvidoria com status aberto/respondido.",
+      "prompt": "Quero montar e rodar a bancada de cenários da integração da Ana com o app do Hospital. O roteiro já está escrito em roadmap/roteiro-integracao-hospital.md: leia primeiro. Comece rodando o nível 1 (python3 ana/api-hospital/scripts/smoke-hospital.py) e me diga o que está apto a testar. Depois: (1) recrie o runner da bateria E2E pela inbox de API do Chatwoot e VERSIONE no repo desta vez (o e2e.py antigo era de scratchpad e se perdeu; as credenciais ficam no .env, nunca no código); (2) me conduza no nível 2, o espelho: eu edito o valor de uma especialidade em /admin/dados-atendimento do app e você mede antes e depois na API e na conversa da Ana, com reversão ao final; (3) rode o nível 3 nos cenários das famílias já possíveis. Anote o resultado cenário a cenário no roteiro (passou, falhou, não rodado, com a data e a versão do prompt no ar) e registre a ficha nos dois arquivos do roadmap."
+    },
+    {
+      "id": "V26",
+      "titulo": "Desligar o NocoDB no Coolify: a Base Ana termina a mudança de casa",
+      "dono": "C+P",
+      "status": "fazer",
+      "deps": [
+        "V23",
+        "V24",
+        "V25"
+      ],
+      "canal": "comigo",
+      "canal_desde": "2026-08-17",
+      "mesa": {
+        "destrava": "Um dono só para os dados, o fim do risco do xc-token de base inteira (ADR-0010) e uma aplicação a menos consumindo a VPS.",
+        "gesto": "Sessão comigo, depois das outras: conferir a paridade das 5 tabelas, esperar o sinal verde da issue #293 do Hospital, exportar o backup e só então parar o serviço."
+      },
+      "nota": "Último passo do ADR-0015, e o único irreversível: o NocoDB só desliga com as 6 tools viradas e a bancada de integração aprovada. Do lado do Hospital, a issue #293 (aberta, ready-for-human) é o cutover formal e pede paridade registro a registro das 5 tabelas, a sequence do protocolo conferida, as variáveis ANA_READONLY_* removidas do ambiente (o usuário Postgres read-only que o ADR-0015 deixou obsoleto) e o sinal verde comentado na issue para a P9. Antes de parar o serviço: exportar as 5 tabelas do NocoDB para backup fora do git e guardar o export do agente. Parar não é apagar: o serviço fica parado no Coolify por um tempo antes de qualquer remoção definitiva.",
+      "prompt": "Chegou a hora de desligar o NocoDB (o último passo do ADR-0015). Antes de tocar no Coolify, confira comigo, nesta ordem: (1) as 6 tools da Ana estão na API do Hospital e nenhuma aponta mais para o NocoDB (tool_list); (2) a bancada de integração (V25) passou nas famílias bloqueantes; (3) a paridade das 5 tabelas entre NocoDB e app está registrada e a issue #293 do Hospital deu o sinal verde; (4) existe backup das 5 tabelas fora do git. Só com os quatro conferidos, me conduza para PARAR (não remover) o serviço nocodb-base-ana no Coolify, e depois rode a regressão para provar que a Ana continua respondendo tudo com o NocoDB fora do ar. Registre nos dois arquivos do roadmap e atualize o CONTEXT.md (o termo Base Ana deixa de ser NocoDB e passa a ser o app)."
     }
   ],
   "pendentes": [
@@ -586,8 +682,8 @@
         "destrava": "Os fixes upstream da fazer.ai (resolve_conversation, input_schema, interpolação do body, reasoning_effort no modelConfig) sem gambiarras nossas.",
         "gesto": "Sessão comigo de 20 min: eu redijo o report consolidado e você envia no canal da fazer.ai."
       },
-      "prompt": "Quero fechar o report V10 para a fazer.ai. Leia a nota do V10 no os/dados/roadmap.json e redija comigo um bug report consolidado, num arquivo local, com os 4 achados: (1) mensagem final descartada em turno com resolve_conversation, (2) input_schema em JSON Schema padrão gravado cru vira campo-fantasma (a instância exige o formato compacto nativo), (3) o body de tool HTTP só interpola quando o nome do campo é idêntico à chave do JSON, (4) o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Cada um com passos de reprodução, comportamento esperado e observado e a versão da instância. Some o pedido de build novo do chatwoot-pro (o hotfix V8). Me entregue o texto pronto para colar no canal deles; depois do envio, mova o canal do V10 para 'aguardando' e registre no TODO.md.",
-      "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado. Somar também (achados da V14, 07/ago): o body de tool só interpola quando o nome do campo do input_schema é idêntico à chave do JSON enviado; e o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Somar ao report (12/ago): expor reasoning_effort no modelConfig (bloqueia o gpt-5.6-luna com tools, ADR-0013); e re-testar na 1.4.1 os achados antigos (normalização de input_schema e interpolação do body), que podem já ter sido corrigidos na atualização da imagem. 12/ago (tarde): a interpolação do body foi RE-TESTADA na 1.4.1 e o bug PERSISTE (nome do campo do input_schema precisa ser idêntico à chave do JSON; com API que aceita campo ausente, como o NocoDB, a falha é silenciosa: linha criada vazia com HTTP 200). A normalização de input_schema em JSON Schema padrão segue sem re-teste."
+      "prompt": "Quero fechar o report V10 para a fazer.ai. Leia a nota do V10 no os/dados/roadmap.json e redija comigo um bug report consolidado, num arquivo local, com os 4 achados: (1) mensagem final descartada em turno com resolve_conversation, (2) input_schema em JSON Schema padrão gravado cru vira campo-fantasma (a instância exige o formato compacto nativo), (3) o body de tool HTTP só interpola quando o nome do campo é idêntico à chave do JSON, (4) o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply), (5) o output de HTTP tool é truncado em 4.000 caracteres fixos (maxResponseChars de src/graph/tools/http.ts sem exposição em env ou config; pedir limite configurável por tool), o que esconde o fim de respostas maiores do modelo e causa loop de re-chamadas. Cada um com passos de reprodução, comportamento esperado e observado e a versão da instância. Some o pedido de build novo do chatwoot-pro (o hotfix V8). Me entregue o texto pronto para colar no canal deles; depois do envio, mova o canal do V10 para 'aguardando' e registre no TODO.md.",
+      "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado. Somar também (achados da V14, 07/ago): o body de tool só interpola quando o nome do campo do input_schema é idêntico à chave do JSON enviado; e o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Somar ao report (12/ago): expor reasoning_effort no modelConfig (bloqueia o gpt-5.6-luna com tools, ADR-0013); e re-testar na 1.4.1 os achados antigos (normalização de input_schema e interpolação do body), que podem já ter sido corrigidos na atualização da imagem. 12/ago (tarde): a interpolação do body foi RE-TESTADA na 1.4.1 e o bug PERSISTE (nome do campo do input_schema precisa ser idêntico à chave do JSON; com API que aceita campo ausente, como o NocoDB, a falha é silenciosa: linha criada vazia com HTTP 200). A normalização de input_schema em JSON Schema padrão segue sem re-teste. Somar (14/ago, achado da V21): o output de toda HTTP tool é TRUNCADO em 4.000 chars fixos (default de maxResponseChars em src/graph/tools/http.ts da 1.4.1; prepare.ts não passa o valor e não há env var): com resposta maior o modelo não vê o fim, entra em loop de re-chamadas (10 por turno observadas) e não responde; pedir o limite configurável (env ou por tool)."
     },
     {
       "id": "V7",
