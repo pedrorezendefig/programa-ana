@@ -13,7 +13,7 @@
   .palco { overflow-x: auto; padding-bottom: 8px; }
   .grafo {
     position: relative;
-    display: flex; align-items: flex-start; gap: 56px;
+    display: flex; flex-direction: column; gap: 8px;
     padding: 10px 6px 24px;
     min-width: max-content;
   }
@@ -27,6 +27,57 @@
     letter-spacing: var(--tracking-micro); text-transform: uppercase;
     color: var(--cor-rotulo); padding: 0 4px 2px;
   }
+
+  /* ---- faixas por tema (OS16): cada área do programa é uma faixa nomeada ---- */
+  .faixa {
+    position: relative; z-index: 1;
+    padding: 20px 0 24px;
+    border-top: 1px solid var(--cor-mudo);
+  }
+  .faixa:first-of-type { border-top: none; padding-top: 6px; }
+  .faixa.sem-aberto { opacity: .62; }
+  .faixa.sem-aberto:hover { opacity: 1; }
+  /* faixa concluida nasce recolhida: o foco da pagina e o que ainda falta */
+  .faixa.recolhida .faixa-colunas { display: none; }
+  .faixa-cabeca .alternar {
+    background: none; border: none; cursor: pointer; padding: 4px 8px;
+    font: var(--peso-semibold) 11.5px/1 var(--font-inter); color: var(--cor-rotulo);
+    border-radius: 8px;
+  }
+  .faixa-cabeca .alternar:hover { background: var(--cor-card-interno); color: var(--cor-tinta); }
+  .faixa-cabeca {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 16px; padding: 0 4px;
+    /* o grafo rola na horizontal; o cabeçalho fica ancorado e não estica junto */
+    position: sticky; left: 0; width: fit-content; max-width: 940px;
+  }
+  .faixa-cabeca h2 {
+    font: var(--peso-bold) 17px/1.3 var(--font-poppins);
+    letter-spacing: -0.3px; color: var(--cor-tinta); margin: 0;
+  }
+  .faixa-cabeca .faixa-sub { font-size: 12.5px; color: var(--cor-rotulo); flex: 1 1 240px; }
+  .faixa-cabeca .contador {
+    font: var(--peso-semibold) 12px/1 var(--font-mono);
+    padding: 6px 11px; border-radius: 999px;
+    background: var(--cor-tinta); color: #fff; white-space: nowrap;
+  }
+  .faixa-cabeca .contador.zerado { background: transparent; color: var(--cor-rotulo); box-shadow: inset 0 0 0 1.5px var(--cor-mudo); }
+  .faixa-colunas { display: flex; align-items: flex-start; gap: 56px; }
+  .faixa-vazia { font-size: 12.5px; color: var(--cor-rotulo); padding: 4px; }
+
+  /* placar do que falta, acima do grafo */
+  .placar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .placar .peca {
+    background: var(--cor-card); border-radius: 14px; padding: 14px 18px;
+    min-width: 150px; cursor: pointer; border: none; text-align: left;
+    font-family: var(--font-inter); transition: transform .14s ease, box-shadow .14s ease;
+  }
+  .placar .peca:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--cor-mudo); }
+  .placar .peca .n { display: block; font: var(--peso-bold) 26px/1.1 var(--font-poppins); color: var(--cor-tinta); }
+  .placar .peca .rot { display: block; font-size: 12px; color: var(--cor-rotulo); margin-top: 3px; }
+  .placar .peca.destaque { background: var(--cor-tinta); }
+  .placar .peca.destaque .n { color: #fff; }
+  .placar .peca.destaque .rot { color: #b9b9b9; }
 
   .no {
     background: var(--cor-card);
@@ -93,7 +144,8 @@
 
   /* tooltip de ficha no hover (OS9) */
   .tooltip-ficha {
-    position: fixed; z-index: 120; width: 330px;
+    position: fixed; z-index: 120; width: 352px;
+    max-height: calc(100vh - 24px); overflow: hidden;
     background: var(--cor-tinta); color: #ffffff;
     border-radius: 14px; padding: 16px 18px;
     pointer-events: none; opacity: 0; transition: opacity .12s ease;
@@ -107,6 +159,15 @@
   }
   .tooltip-ficha .tt-rot:first-child { margin-top: 0; }
   .tooltip-ficha .tt-txt { font-size: 12.5px; line-height: 1.5; }
+  /* prévia do prompt no hover de nó aberto (OS16) */
+  .tooltip-ficha .tt-prompt {
+    background: rgba(255,255,255,.08); border-radius: 9px;
+    padding: 9px 11px; font-size: 11.5px; line-height: 1.5; color: #e4e4e4;
+  }
+  .tooltip-ficha .tt-acao {
+    margin-top: 9px; padding-top: 9px; border-top: 1px solid rgba(255,255,255,.14);
+    font-size: 11px; color: #9a9a9a;
+  }
 
   /* ficha por extenso no painel (OS9) */
   .painel .ficha-bloco { background: var(--cor-card-interno); border-radius: var(--raio-interno); padding: 14px 16px; margin-top: 14px; }
@@ -157,6 +218,7 @@
         <p class="lead" id="sub">O caminho inteiro do programa, das tarefas feitas ao horizonte GH/MV. Clique num nó para ver a ficha e copiar o prompt do passo.</p>
       </div>
     </div>
+    <div class="placar" id="placar" aria-label="O que falta, por tema"></div>
     <div class="filtros" id="filtros" aria-label="Filtros do grafo"></div>
     <div class="card" style="padding: 26px 22px;">
       <div class="palco">
@@ -166,11 +228,16 @@
       </div>
     </div>
     <p class="caption" style="margin-top: 12px;">
+      O grafo é dividido em <strong>faixas por tema</strong>, uma por área do programa, e dentro de cada faixa as
+      colunas separam o que já foi feito, o que está liberado para fazer agora e o que espera dependência. O contador
+      de cada faixa (e o placar acima) diz quantas tarefas ainda faltam ali.
+      <strong>Passe o mouse</strong> num cartão aberto para ver o que ele é, o que destrava, qual o seu gesto e a
+      prévia do prompt; num cartão concluído, a ficha do que ele entregou. O <strong>clique</strong> abre a ficha por
+      extenso com o prompt inteiro e o botão de copiar.
       Propostas (tracejadas) são recomendações das sessões: não têm dono nem status até serem puxadas para o estágio
       (aí viram tarefa no <code>roadmap/TODO.md</code>). O bloqueio é derivado das dependências, nunca escrito à mão.
-      Os filtros combinam: um nó aparece se o status dele está ligado e (tendo dono) algum dono dele está ligado;
-      propostas e pendentes não têm dono e ignoram esse grupo. Passe o mouse num nó concluído para ver a ficha
-      (o que fez, o que mudou, o valor); o clique abre a ficha por extenso.
+      As setas ligam dependências dentro da mesma faixa; quando a dependência mora em outro tema, ela aparece no
+      cartão e na ficha, sem risco atravessando o desenho.
     </p>
   </section>
 </main>
@@ -197,8 +264,23 @@ function esc(s) {
 
 const CADEADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>';
 
-let NOS = [];        /* [{id, titulo, tipo, estado, dono, nota, resumo, ficha, prompt, deps, travas}] */
+let NOS = [];        /* [{id, titulo, tipo, estado, dono, nota, resumo, ficha, prompt, deps, travas, tema, mesa, canal}] */
 let FRONTEIRA = null;
+
+/* ---- temas (OS16): as áreas do programa, na ordem em que importam hoje.
+   O tema de cada item vive no os/dados/roadmap.json (campo "tema"). ---- */
+const TEMAS = [
+  ["base",      "Base Ana no Hospital",   "A fonte dos dados que a Ana consulta, migrando do NocoDB para o app do hospital (ADR-0015)."],
+  ["agenda",    "Agenda Global Health",   "A integração com o MV pela API da Global Health: identificação, disponibilidade e marcação."],
+  ["ouvidoria", "Ouvidoria",              "O canal de manifestações e o protocolo ANO-NNNN que a Ana informa ao paciente."],
+  ["cerebro",   "Cérebro da Ana",         "Qual motor responde e como ele pensa: modelo, prompt e os roteiros que provam o comportamento."],
+  ["os",        "Ana OS (cockpit)",       "O painel do programa: roadmap, mapas, circuito e a documentação viva."]
+];
+const OUTRO_TEMA = ["outro", "Sem tema", "Itens ainda não classificados por área."];
+function infoTema(chave) {
+  for (const t of TEMAS) if (t[0] === chave) return t;
+  return OUTRO_TEMA;
+}
 
 /* ---- filtros (OS9): categoria exibida e donos ---- */
 const FILTRO = {
@@ -256,6 +338,33 @@ function renderFiltros() {
   });
 }
 
+/* ---- placar: quantas faltam, por tema (OS16) ---- */
+function abertosDe(chave) {
+  return NOS.filter(n => n.tema === chave && n.estado !== "feito").length;
+}
+function renderPlacar() {
+  const total = NOS.filter(n => n.estado !== "feito").length;
+  const pecas = ['<button class="peca destaque" data-ir="topo"><span class="n">' + total +
+    '</span><span class="rot">abertas no total</span></button>'];
+  TEMAS.forEach(function (t) {
+    const n = abertosDe(t[0]);
+    if (!n) return;
+    pecas.push('<button class="peca" data-ir="faixa-' + t[0] + '"><span class="n">' + n +
+      '</span><span class="rot">' + esc(t[1]) + "</span></button>");
+  });
+  const feitas = NOS.filter(n => n.estado === "feito").length;
+  pecas.push('<button class="peca" data-ir="topo"><span class="n">' + feitas +
+    '</span><span class="rot">já concluídas</span></button>');
+  const alvo = document.getElementById("placar");
+  alvo.innerHTML = pecas.join("");
+  alvo.querySelectorAll(".peca").forEach(function (b) {
+    b.addEventListener("click", function () {
+      const el = document.getElementById(b.dataset.ir);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+}
+
 function aplicarFiltros() {
   esconderTip();
   NOS.forEach(function (n) {
@@ -266,6 +375,11 @@ function aplicarFiltros() {
     const temVivo = col.querySelector(".no:not(.oculto)");
     col.style.display = temVivo ? "" : "none";
   });
+  /* faixa sem nenhum nó visível sai inteira, com o cabeçalho junto (OS16) */
+  document.querySelectorAll("#grafo .faixa").forEach(function (fx) {
+    const temVivo = fx.querySelector(".no:not(.oculto)");
+    fx.style.display = temVivo ? "" : "none";
+  });
   requestAnimationFrame(desenharArestas);
 }
 
@@ -274,12 +388,39 @@ const TIP = document.createElement("div");
 TIP.className = "tooltip-ficha";
 document.body.appendChild(TIP);
 
+const ROT_CANAL = { dispare: "Dispare você", comigo: "Sente comigo", aguardando: "Aguardando terceiros" };
+
+function corta(txt, max) {
+  const s = String(txt || "");
+  return s.length > max ? s.slice(0, max - 1).trimEnd() + "…" : s;
+}
+
 function mostrarTip(n, el) {
   let html = "";
-  if (n.ficha) {
+  if (n.estado === "feito" && n.ficha) {
+    /* nó concluído: a ficha do que entregou */
     html = '<div class="tt-rot">O que fez</div><div class="tt-txt">' + esc(n.ficha.fez) + "</div>" +
       '<div class="tt-rot">O que mudou</div><div class="tt-txt">' + esc(n.ficha.mudou) + "</div>" +
       '<div class="tt-rot">O valor</div><div class="tt-txt">' + esc(n.ficha.valor) + "</div>";
+  } else if (n.estado !== "feito") {
+    /* nó aberto: o que é, o que destrava, qual o gesto e o prompt para executar (OS16) */
+    html = '<div class="tt-rot">' + esc(n.id) + " · o que é</div><div class=\"tt-txt\">" +
+      esc(corta(n.resumo || n.nota || n.titulo, 210)) + "</div>";
+    if (n.mesa && n.mesa.destrava) {
+      html += '<div class="tt-rot">O que destrava</div><div class="tt-txt">' + esc(corta(n.mesa.destrava, 165)) + "</div>";
+    }
+    if (n.mesa && n.mesa.gesto) {
+      html += '<div class="tt-rot">Seu gesto' + (n.canal && ROT_CANAL[n.canal] ? " · " + ROT_CANAL[n.canal] : "") +
+        '</div><div class="tt-txt">' + esc(corta(n.mesa.gesto, 165)) + "</div>";
+    }
+    if (n.travas && n.travas.length) {
+      html += '<div class="tt-rot">Espera</div><div class="tt-txt">' + esc(n.travas.join(", ")) + "</div>";
+    }
+    if (n.prompt) {
+      html += '<div class="tt-rot">Prompt para executar</div><div class="tt-txt tt-prompt">' +
+        esc(corta(n.prompt, 165)) + "</div>" +
+        '<div class="tt-acao">Clique no cartão para ler o prompt inteiro e copiar</div>';
+    }
   } else if (n.resumo || n.nota) {
     html = '<div class="tt-rot">Resumo</div><div class="tt-txt">' + esc(n.resumo || n.nota) + "</div>";
   } else return;
@@ -287,10 +428,12 @@ function mostrarTip(n, el) {
   TIP.classList.add("visivel");
   const r = el.getBoundingClientRect();
   let x = r.right + 12;
-  if (x + 342 > window.innerWidth) x = Math.max(8, r.left - 342);
-  let y = Math.min(r.top, window.innerHeight - TIP.offsetHeight - 12);
+  if (x + 364 > window.innerWidth) x = Math.max(8, r.left - 364);
+  /* mede a altura ja renderizada: com o prompt o tooltip fica alto e precisa subir */
+  const alt = TIP.getBoundingClientRect().height;
+  const y = Math.max(12, Math.min(r.top, window.innerHeight - alt - 12));
   TIP.style.left = x + "px";
-  TIP.style.top = Math.max(8, y) + "px";
+  TIP.style.top = y + "px";
 }
 function esconderTip() { TIP.classList.remove("visivel"); }
 document.addEventListener("scroll", esconderTip, true);
@@ -308,7 +451,8 @@ async function carregar() {
     const estado = (tipo === "tarefa" && no.status === "feito") ? "feito" : (travas.length ? "bloqueada" : "fazer");
     return { id: no.id, titulo: no.titulo, tipo: tipo, estado: estado, dono: no.dono || null,
              nota: no.nota || null, resumo: no.resumo || null, ficha: no.ficha || null,
-             prompt: no.prompt || null, deps: deps, travas: travas };
+             prompt: no.prompt || null, deps: deps, travas: travas,
+             tema: no.tema || "outro", mesa: no.mesa || null, canal: no.canal || null };
   }
   NOS = [].concat(
     d.tarefas.map(t => montar(t, "tarefa")),
@@ -317,67 +461,80 @@ async function carregar() {
   );
   FRONTEIRA = NOS.find(n => n.tipo === "tarefa" && n.estado === "fazer") || null;
   renderFiltros();
+  renderPlacar();
   desenhar();
   aplicarFiltros();
   if (location.hash) abrirFicha(location.hash.slice(1));
 }
 
-/* ---- layout: colunas da esquerda para a direita ----
-   0 = feitas · 1 = estágio ativo · 2.. = pendentes/propostas por profundidade
-   entre elas (dependência de tarefa não empurra coluna: tarefa mora à esquerda). */
-function colunaDe(no, porId, memo) {
-  if (no.tipo === "tarefa") return no.estado === "feito" ? 0 : 1;
-  if (memo[no.id] != null) return memo[no.id];
-  memo[no.id] = 2; /* corta ciclo acidental */
-  let prof = 2;
-  no.deps.forEach(function (dep) {
-    const d = porId[dep];
-    if (d && d.tipo !== "tarefa") prof = Math.max(prof, colunaDe(d, porId, memo) + 1);
-  });
-  memo[no.id] = prof;
-  return prof;
+/* ---- layout (OS16): uma faixa por tema; dentro dela, colunas por estado ----
+   Feito (o que ja andou) - A fazer (destravado) - Bloqueado (espera dependencia). */
+const COLUNAS_FAIXA = [
+  ["feito",     "Feito"],
+  ["fazer",     "A fazer agora"],
+  ["bloqueada", "Bloqueado por dependencia"]
+];
+
+function cartaoHtml(n, atraso) {
+  const ehFronteira = FRONTEIRA && n.id === FRONTEIRA.id;
+  const classes = ["no", n.estado === "feito" ? "feito" : "", n.estado === "bloqueada" ? "bloqueada" : "",
+    n.tipo === "proposta" ? "proposta" : "", n.tipo === "pendente" ? "pendente-no" : "",
+    ehFronteira ? "fronteira" : ""].filter(Boolean).join(" ");
+  const chip = n.estado === "feito" ? '<span class="chip feito">feito</span>'
+    : n.estado === "bloqueada" ? '<span class="chip bloqueada">bloqueada</span>'
+    : n.tipo === "pendente" ? '<span class="chip pendente">pendente</span>'
+    : n.tipo === "proposta" ? '<span class="chip proposta">proposta</span>'
+    : '<span class="chip fazer">a fazer</span>';
+  const trava = n.estado === "bloqueada"
+    ? '<div class="trava">' + CADEADO + "aguarda " + n.travas.map(esc).join(", ") + "</div>" : "";
+  return '<div class="' + classes + '" data-id="' + esc(n.id) + '" id="no-' + esc(n.id) + '"' +
+    ' style="animation-delay:' + atraso + 'ms" tabindex="0" role="button"' +
+    ' aria-label="' + esc(n.id + ": " + n.titulo) + '">' +
+    '<div class="topo-no"><span class="id">' + esc(n.id) + "</span>" + chip + "</div>" +
+    '<div class="titulo">' + esc(n.titulo) + "</div>" + trava + "</div>";
 }
 
-const TITULOS_COL = ["Feito", "Estágio ativo", "Horizonte GH/MV"];
-
 function desenhar() {
-  const porId = {};
-  NOS.forEach(n => { porId[n.id] = n; });
-  const memo = {};
-  const colunas = [];
-  NOS.forEach(function (n) {
-    const c = colunaDe(n, porId, memo);
-    (colunas[c] = colunas[c] || []).push(n);
-  });
-
   const grafo = document.getElementById("grafo");
-  grafo.querySelectorAll(".coluna").forEach(el => el.remove());
+  grafo.querySelectorAll(".faixa").forEach(el => el.remove());
 
-  colunas.forEach(function (nos, ci) {
-    if (!nos) return;
-    const col = document.createElement("div");
-    col.className = "coluna";
-    const titulo = ci < 2 ? TITULOS_COL[ci] : (ci === 2 ? TITULOS_COL[2] : " ");
-    col.innerHTML = '<div class="titulo-col">' + titulo + "</div>" +
-      nos.map(function (n, i) {
-        const ehFronteira = FRONTEIRA && n.id === FRONTEIRA.id;
-        const classes = ["no", n.estado === "feito" ? "feito" : "", n.estado === "bloqueada" ? "bloqueada" : "",
-          n.tipo === "proposta" ? "proposta" : "", n.tipo === "pendente" ? "pendente-no" : "",
-          ehFronteira ? "fronteira" : ""].filter(Boolean).join(" ");
-        const chip = n.estado === "feito" ? '<span class="chip feito">feito</span>'
-          : n.estado === "bloqueada" ? '<span class="chip bloqueada">bloqueada</span>'
-          : n.tipo === "pendente" ? '<span class="chip pendente">pendente</span>'
-          : n.tipo === "proposta" ? '<span class="chip proposta">proposta</span>'
-          : '<span class="chip fazer">a fazer</span>';
-        const trava = n.estado === "bloqueada"
-          ? '<div class="trava">' + CADEADO + "aguarda " + n.travas.map(esc).join(", ") + "</div>" : "";
-        return '<div class="' + classes + '" data-id="' + esc(n.id) + '" id="no-' + esc(n.id) + '"' +
-          ' style="animation-delay:' + (ci * 90 + i * 45) + 'ms" tabindex="0" role="button"' +
-          ' aria-label="' + esc(n.id + ": " + n.titulo) + '">' +
-          '<div class="topo-no"><span class="id">' + esc(n.id) + "</span>" + chip + "</div>" +
-          '<div class="titulo">' + esc(n.titulo) + "</div>" + trava + "</div>";
-      }).join("");
-    grafo.appendChild(col);
+  const ordem = TEMAS.slice();
+  if (NOS.some(n => !TEMAS.some(t => t[0] === n.tema))) ordem.push(OUTRO_TEMA);
+
+  ordem.forEach(function (tema, ti) {
+    const doTema = NOS.filter(n => infoTema(n.tema)[0] === tema[0]);
+    if (!doTema.length) return;
+    const abertos = doTema.filter(n => n.estado !== "feito").length;
+
+    const faixa = document.createElement("section");
+    faixa.className = "faixa" + (abertos ? "" : " sem-aberto recolhida");
+    faixa.id = "faixa-" + tema[0];
+
+    const colunas = COLUNAS_FAIXA.map(function (par) {
+      const nos = doTema.filter(n => n.estado === par[0]);
+      if (!nos.length) return "";
+      return '<div class="coluna" data-col="' + par[0] + '"><div class="titulo-col">' + par[1] +
+        " - " + nos.length + "</div>" +
+        nos.map((n, i) => cartaoHtml(n, ti * 60 + i * 40)).join("") + "</div>";
+    }).join("");
+
+    faixa.innerHTML =
+      '<div class="faixa-cabeca">' +
+        "<h2>" + esc(tema[1]) + "</h2>" +
+        '<span class="faixa-sub">' + esc(tema[2]) + "</span>" +
+        '<span class="contador' + (abertos ? "" : " zerado") + '">' +
+          (abertos ? abertos + (abertos > 1 ? " abertas" : " aberta") : "tudo feito") +
+        "</span>" +
+        (abertos ? "" : '<button class="alternar" type="button">mostrar as ' + doTema.length + " concluídas</button>") +
+      "</div>" +
+      '<div class="faixa-colunas">' + colunas + "</div>";
+    const btnAlt = faixa.querySelector(".alternar");
+    if (btnAlt) btnAlt.addEventListener("click", function () {
+      const fechada = faixa.classList.toggle("recolhida");
+      btnAlt.textContent = fechada ? "mostrar as " + doTema.length + " concluídas" : "recolher";
+      requestAnimationFrame(desenharArestas);
+    });
+    grafo.appendChild(faixa);
   });
 
   const porIdNos = {};
@@ -410,6 +567,10 @@ function desenharArestas() {
     const alvoEl = document.getElementById("no-" + n.id);
     if (!alvoEl || alvoEl.offsetParent === null) return; /* nó filtrado: sem aresta */
     n.deps.forEach(function (dep) {
+      const origem = porId[dep];
+      /* aresta só dentro da faixa: dependência que cruza tema aparece no cartão
+         (chip "aguarda X") e na ficha, sem risco atravessando o desenho (OS16). */
+      if (!origem || infoTema(origem.tema)[0] !== infoTema(n.tema)[0]) return;
       const origemEl = document.getElementById("no-" + dep);
       if (!origemEl || origemEl.offsetParent === null) return;
       const a = origemEl.getBoundingClientRect(), b = alvoEl.getBoundingClientRect();

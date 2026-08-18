@@ -1,6 +1,6 @@
 {
   "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
-  "atualizado": "2026-08-17",
+  "atualizado": "2026-08-18",
   "tarefas": [
     {
       "id": "V1",
@@ -13,7 +13,8 @@
         "fez": "Workflows Ana e Desliga Ana desativados via API; em 31/jul o serviço n8n inteiro foi parado no Coolify.",
         "mudou": "O fazer.ai agents virou o único cérebro respondendo o bot do Telegram; a URL do n8n devolve 503 proposital.",
         "valor": "Elimina o risco de resposta dupla e libera RAM na VPS; religar é um start no Coolify."
-      }
+      },
+      "tema": "cerebro"
     },
     {
       "id": "V2",
@@ -25,7 +26,8 @@
         "fez": "Modelo do agente trocado de gpt-5.2 para gpt-5-mini (temperature 1, exigência do mini).",
         "mudou": "Custo por 1M de tokens caiu de $1.75/$14.00 para $0.25/$2.00 (input/output).",
         "valor": "Viabiliza testar barato em volume; se o mini degradar, voltar é uma linha."
-      }
+      },
+      "tema": "cerebro"
     },
     {
       "id": "V3",
@@ -38,7 +40,8 @@
         "fez": "NocoDB no ar no Coolify com HTTPS e as 4 tabelas do negócio importadas (consultas, exames, cirurgias, convênios).",
         "mudou": "O Google Sheets saiu da equação (ADR-0006): a base editável ganhou tela própria com login, sem planilha pública.",
         "valor": "O negócio edita preço numa tela segura e a Ana lê o dado vivo."
-      }
+      },
+      "tema": "base"
     },
     {
       "id": "V4",
@@ -53,7 +56,8 @@
         "fez": "Quatro tools HTTP na plataforma lendo shared views públicas somente leitura do NocoDB; prompt ganhou a seção Tabelas Oficiais.",
         "mudou": "A Ana responde preço com dado vivo da base, com precedência sobre a base de conhecimento.",
         "valor": "Prova no playground: cardiologia R$ 380 com diferenciais, no script exato da Seção 2.3."
-      }
+      },
+      "tema": "base"
     },
     {
       "id": "V5",
@@ -66,7 +70,8 @@
         "fez": "Roteiro de cenários escrito (roadmap/roteiro-cenarios.md): 10 principais + 2 condicionais.",
         "mudou": "O critério de pronto do estágio virou executável: cada cenário com etapa/tag esperada no Chatwoot e tools esperadas no Langfuse.",
         "valor": "Transforma a pergunta 'a Ana funciona?' em checklist verificável."
-      }
+      },
+      "tema": "cerebro"
     },
     {
       "id": "V6",
@@ -82,7 +87,8 @@
         "fez": "Roteiro rodado nos dois canais (Telegram e inbox de API): 10 principais passando, o 12 passou, o 11 condicional não rodado.",
         "mudou": "Prompt foi à v4 no caminho: handoff só às filas humanas, despedida antes de encerrar, resolve_conversation fora dos grants.",
         "valor": "Estágio de viabilidade fechado com evidência; o dia inteiro de testes custou perto de US$ 0,22."
-      }
+      },
+      "tema": "cerebro"
     },
     {
       "id": "V9",
@@ -97,7 +103,8 @@
         "fez": "Guia de edição de meia página (docs/07) e ciclo fechado com o Pedro no papel do usuário de negócio.",
         "mudou": "Cardiologia editada para R$ 395 no NocoDB e a Ana respondeu o valor novo na resposta seguinte, sem redeploy (depois revertido).",
         "valor": "Prova que o negócio muda preço sozinho e a Ana acompanha na hora."
-      }
+      },
+      "tema": "base"
     },
     {
       "id": "OS1",
@@ -110,7 +117,8 @@
         "fez": "Fundação do cockpit: pasta os/, server estendido (roadmap RW, biblioteca com allowlist), design system e dados em JSON.",
         "mudou": "O programa ganhou porta única local (localhost:8777) com regras duras: GH só homolog, TST só SELECT, dado pessoal nunca servido.",
         "valor": "A base segura sobre a qual todas as páginas do OS nasceram."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS2",
@@ -125,7 +133,8 @@
         "fez": "Páginas novas: home com Ideias editáveis pela UI, Mapa das APIs com selos de testabilidade, Arquitetura e Biblioteca.",
         "mudou": "Roadmap, catálogo de APIs e documentação passaram a ser navegáveis num lugar só.",
         "valor": "O estado do programa visível sem abrir arquivo."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS3",
@@ -140,7 +149,8 @@
         "fez": "As 6 páginas do playground portadas para o OS por agentes paralelos (bancada, roteiro, atlas, absorção, insights, tst).",
         "mudou": "Catálogos e queries preservados verbatim dentro do visual novo.",
         "valor": "Uma casa só para explorar a API GH e o retrato da produção."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS4",
@@ -156,7 +166,8 @@
         "fez": "Fumaça por página: rotas, allowlist, escrita do roadmap com backup e visual conferidos no Chrome.",
         "mudou": "Defeitos de rota e validação corrigidos antes do uso real.",
         "valor": "Confiança de que o cockpit não mente nem vaza."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS5",
@@ -171,7 +182,8 @@
         "fez": "Arquivamento: mapa.html e playground antigos movidos para arquivo/, CLAUDE.md e /check apontando para o OS.",
         "mudou": "Uma fonte só de estado (TODO.md + roadmap.json); o acervo antigo preservado intacto para consulta.",
         "valor": "Zero ambiguidade sobre onde mora a verdade do programa."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS6",
@@ -184,7 +196,8 @@
         "fez": "Redesign completo no design Ledger (referência refero): DESIGN.md novo, tokens e navegação reescritos, 11 páginas portadas.",
         "mudou": "A home virou dashboard com indicadores funcionais, destaque da fronteira e sparkline de progresso.",
         "valor": "O cockpit lê como produto, não como protótipo."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS7",
@@ -199,7 +212,8 @@
         "fez": "Página Roadmap com o grafo de execução: colunas Feito, Estágio ativo e Horizonte, propostas P1..P6 e prompts copiáveis.",
         "mudou": "roadmap.json ganhou a camada de propostas, o server valida e o /check preserva.",
         "valor": "O caminho inteiro do programa virou mapa clicável com o próximo passo pronto para colar."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS8",
@@ -214,7 +228,8 @@
         "fez": "Página Cadeias: a API GH contada em 6 histórias encadeadas cobrindo os 22 endpoints, rodando ao vivo pelo proxy /api/gh.",
         "mudou": "Payload enviado e resposta crua expansíveis por elo; dados de escrita regenerados a cada execução com prefixo TESTE DEMO ANA VITTA.",
         "valor": "A tela oficial da demo ao diretor; provou ao vivo a API funcional e o catálogo vazio (GH-19)."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "V11",
@@ -229,7 +244,8 @@
         "fez": "Cadeias rodadas pelo Pedro e re-certificadas pela sessão: API funcional, catálogo 100% vazio, bloqueio da Cadeia D real e externo.",
         "mudou": "O pronto quando foi relaxado por decisão: a apresentação ao diretor e o envio da cobrança ficam com o Pedro, fora do roadmap.",
         "valor": "Demo pronta na prateleira e o argumento da cobrança da massa provado ao vivo."
-      }
+      },
+      "tema": "agenda"
     },
     {
       "id": "GH1",
@@ -244,7 +260,8 @@
         "fez": "ADR-0009 escrito: a fachada de agenda. As 7 ferramentas do SOP encapsulando os 22 endpoints GH, nenhum órfão, fases P4/P5/P6.",
         "mudou": "A Ana não ganha 22 tools, ganha 7 ferramentas do fluxo real; token só no vault, sanitização na fachada, 417 vira Regra Híbrida.",
         "valor": "O desenho que evita um agente colcha de retalhos: cada tool nasce do SOP, não do catálogo."
-      }
+      },
+      "tema": "agenda"
     },
     {
       "id": "V13",
@@ -259,7 +276,8 @@
         "fez": "Página Mapa do SOP (os/sop.html): 8 raias, 77 nós e 106 arestas, cada nó ancorado em trecho literal do prompt.",
         "mudou": "O SOP saiu do texto corrido para um mapa clicável, re-validado contra a v5.3 (95 trechos, 0 ausentes).",
         "valor": "Dá para ver o comportamento prometido da Ana e auditá-lo contra o prompt vivo."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "V15",
@@ -274,7 +292,8 @@
         "fez": "Três tools de disponibilidade (especialidades, horários livres, prestadores) e prompt v5.3 com a Seção 2.3.1 + dieta de 2.004 caracteres.",
         "mudou": "Desvio consciente do ADR-0009: tools diretas, sem proxy. Caso vazio provado: indisponibilidade honesta, zero horário inventado.",
         "valor": "A mecânica da vitrine de horários pronta; destrava sozinha quando a GH publicar a massa (GH-19)."
-      }
+      },
+      "tema": "agenda"
     },
     {
       "id": "V14",
@@ -289,7 +308,8 @@
         "fez": "Tool cadastrar_paciente (POST /pessoas, primeira escrita da Ana) e prompt v5.2 com o PASSO 3.6, verificado por hash.",
         "mudou": "A Ana cria cadastro na homolog após busca vazia e confirmação explícita; provado com TESTE FOXTROT LIMA (id 1693), 417 tratado.",
         "valor": "Fecha a fase P4 do ADR-0009: identificação e cadastro completos na conversa."
-      }
+      },
+      "tema": "agenda"
     },
     {
       "id": "OV1",
@@ -302,7 +322,8 @@
         "fez": "ADR-0010 decidido: protocolo sequencial ANO-NNNN na tabela 5_Ouvidoria_Protocolos, numerado pelo autoincremento do banco.",
         "mudou": "A tabela é índice, não dossiê: sem dado pessoal e sem shared view pública. A implementação virou a pendente OV2.",
         "valor": "Devolve auditabilidade à ouvidoria: o número que o prompt promete passa a existir de verdade."
-      }
+      },
+      "tema": "ouvidoria"
     },
     {
       "id": "V12",
@@ -317,7 +338,8 @@
         "fez": "Duas tools GH de identificação (busca por CPF e por telefone, GET /pessoas) com credencial do vault; prompt v5.1 com o PASSO 3.5.",
         "mudou": "A Ana reconhece paciente cadastrado sozinha, com guardrail de LGPD (confirma no máximo o primeiro nome).",
         "valor": "A primeira conexão real Ana x Global Health, provada com o paciente-sonda no playground."
-      }
+      },
+      "tema": "agenda"
     },
     {
       "id": "OS9",
@@ -332,7 +354,8 @@
         "fez": "Filtros por status e por dono no grafo (chips com contagem), tooltip de hover com a ficha e a ficha por extenso no painel lateral.",
         "mudou": "roadmap.json ganhou o campo ficha (fez / mudou / valor) em todo nó concluído; a regra de atualizar os dois arquivos passa a cobrir o campo novo.",
         "valor": "O grafo responde na hora o que cada passo entregou e por que importou, sem abrir o TODO.md."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS10",
@@ -347,7 +370,8 @@
         "fez": "Página Circuito da Ana: o circuito de execução por raias com os 3 caminhos de ferramenta, o catálogo das 19 tools e a anatomia do prompt, cruzados por clique.",
         "mudou": "As seções do prompt v5.3 ganharam vista própria com trechos literais e badges de tools; cada tool tem exemplo real estático das provas (200, vazio, 417) e o que a Ana faz com cada desfecho.",
         "valor": "Explica o mecanismo de ponta a ponta: quem chama o quê, onde roda, o que volta e como a Ana reage. E deixa claro que não há LangChain: quem orquestra é a fazer.ai agents."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS11",
@@ -362,7 +386,8 @@
         "fez": "Corrigiu as sobreposições do circuito (zona do laço tracejada abraçando os passos 4 a 7, títulos em linhas com halo, trace reroteado) e criou as fichas de hover: passos com entra/acontece/sai por caminho, raias, laço com exemplos reais, fios e chips.",
         "mudou": "circuito.json ganhou as fichas curadas das provas (e perdeu o campo detalhe); circuito.html ganhou o tooltip padrão OS9 com clique para fixar, e a lista abaixo do desenho virou a versão narrativa do turno.",
         "valor": "Um funcional entende o que entra, o que acontece e o que sai em cada fase do turno sem sair do desenho."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS12",
@@ -377,7 +402,8 @@
         "fez": "A home ganhou a Mesa de ação: os itens abertos das 4 faixas agrupados por canal, hover com a ficha destrava/gesto, clique com painel, prompt rotulado pelo canal e o gesto 'marquei: disparado'.",
         "mudou": "roadmap.json ganhou canal/canal_desde/mesa em todo item aberto (validados pelo server), os prompts que faltavam (V10, R1) e os cards GH19 e V16; a UI passou a mover canal (ADR-0011 reescreve a regra do ADR-0007).",
         "valor": "A home responde 'o que eu toco agora e o que está na mão de quem', com a idade das esperas à vista (a P3 já mostra os 29 dias da VPN)."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS13",
@@ -392,7 +418,8 @@
         "fez": "O Mapa do SOP virou de cabeça para baixo: o fluxo desce e a página rola só na vertical, com as arestas longas viajando por corredores laterais.",
         "mudou": "Só a geometria do os/sop.html: colunas normalizadas por raia (sem vazios), nó maior, rótulo de raia fixo no scroll; dados e interação intactos.",
         "valor": "Nada mais passa por cima dos cartões: dá para ler o SOP inteiro descendo a página, raia por raia."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "OS14",
@@ -407,7 +434,8 @@
         "fez": "As setas do Mapa do SOP foram organizadas de vez: linha ortogonal só para vizinhança, e salto de seção virou conector nomeado clicável dentro do cartão (→ vai para, ← vem de, ↩ retorno).",
         "mudou": "Só o os/sop.html: os corredores laterais sumiram, os cartões esticam para abrigar os chips e o clique num conector rola até o destino e acende o par; dados e painel intactos.",
         "valor": "O mapa ficou 260px mais estreito e sem nenhuma linha longa: o destino de cada salto agora está escrito no próprio cartão, em vez de exigir seguir uma linha de 3000px com o olho."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "V16",
@@ -424,7 +452,8 @@
         "fez": "Os 3 cenários GH rodaram de ponta a ponta num canal Chatwoot real (inbox de API): sonda identificado, paciente novo cadastrado na homolog (id 1697) e caso vazio tratado com honestidade.",
         "mudou": "O fluxo GH saiu do playground e foi provado no canal, com tags, filas e handoff conferidos nos logs; nasceu o runner E2E reutilizável (e2e.py + token do Chatwoot no .env).",
         "valor": "A fachada de agenda está validada no caminho que o paciente real vai usar; qualquer regressão futura se re-testa em minutos com a bateria automatizada."
-      }
+      },
+      "tema": "agenda"
     },
     {
       "id": "V17",
@@ -439,7 +468,8 @@
         "fez": "Grilling do ADR-0012 executado: fonte do prompt no repo (núcleo comum + 3 blocos de agente lógico + P6 gated), compilada por compilar.py e publicada como v6.0 (52.502 chars, verbatim com a v5.3; as 95 âncoras do Mapa do SOP seguem válidas).",
         "mudou": "O prompt deixou de nascer na plataforma: nasce em ana/prompt/ e a plataforma recebe. A imagem agents-pro subiu para a 1.4.1 e o teto foi a 100k (o R1 saiu do radar).",
         "valor": "A P6 tem onde caber, a Seção 7.3 da OV2 também, e o trio vira 3 agentes físicos sem redesenho quando o supervisor router da fazer.ai existir."
-      }
+      },
+      "tema": "cerebro"
     },
     {
       "id": "V18",
@@ -452,7 +482,8 @@
         "fez": "Pesquisa citada em fonte primária, troca aplicada e smoke test com tool: a API recusou function tools com reasoning_effort no chat/completions; rollback de um comando para o gpt-5-mini.",
         "mudou": "ADR-0013 registra intenção mantida e execução bloqueada pela plataforma; o pedido de expor reasoning_effort entrou no report V10.",
         "valor": "Decisão preservada com evidência empírica: quando a fazer.ai expor o campo, a troca universal é um agent_update."
-      }
+      },
+      "tema": "cerebro"
     },
     {
       "id": "OS15",
@@ -468,7 +499,8 @@
         "fez": "O Mapa do SOP ganhou a camada de zonas: cabeçalho preto clicável por agente lógico com a ficha da fronteira, gutter rotulado e o NÚCLEO COMUM como faixa transversal.",
         "mudou": "sop-fluxo.json ganhou a chave zonas e reordenou as raias; o carimbo subiu para v6.0 sem invalidar nenhuma das 95 âncoras literais.",
         "valor": "Funcionário novo lê o organismo inteiro e onde cada agente começa e termina, na mesma página que ancora cada passo no trecho literal do prompt."
-      }
+      },
+      "tema": "os"
     },
     {
       "id": "V19",
@@ -483,7 +515,8 @@
         "fez": "O Roteiro v2 inteiro (regressão R1-R4 + fronteiras 13-17) rodou automatizado num canal real, com cada veredito conferido nos logs de ferramenta da plataforma.",
         "mudou": "O trio lógico v6.2 saiu de publicado para validado: urgência interrompe qualquer bloco, ouvidoria dá protocolo do banco, a Regra 12 segura o comercial e o caso vazio da GH-19 não alucina.",
         "valor": "O critério de pronto do ADR-0012 está cumprido com evidência; sobram dois ajustes finos propostos, não bloqueantes, para o Pedro decidir."
-      }
+      },
+      "tema": "cerebro"
     },
     {
       "id": "OV2",
@@ -496,7 +529,8 @@
         "fez": "Tabela de protocolos, token no vault, as duas tools da ouvidoria (com Conversa_Id automático) e a Seção 7.3 nova (R1/R2/R3) publicada no prompt v6.1 pelo pipeline do trio.",
         "mudou": "A promessa de protocolo saiu do limbo: a Ana grava a manifestação sem dado pessoal na Base Ana e informa o número real lido do banco; falha cai na Regra Híbrida sem citar número.",
         "valor": "Provado no playground pelos dois caminhos: protocolo 2026-0001/0002 informado ao paciente, e a mensagem sem protocolo quando as tools não estavam disponíveis."
-      }
+      },
+      "tema": "ouvidoria"
     },
     {
       "id": "V20",
@@ -511,7 +545,8 @@
         "fez": "Grilling de 7 decisões sobre os achados da bateria v2, prompt v6.3.2 publicado da fonte, split desligado, grant do cadastro removido, roteiro v3 escrito e rodado 13/13 na bateria automatizada.",
         "mudou": "A Ana fala como gente (mensagem única, preço direto, sem formulário) e não cadastra mais paciente: nome+CPF é o único dado pedido; ouvidoria sempre entrega o protocolo e nenhuma pergunta fica sem resposta; tag emergencia sinaliza urgência no CRM.",
         "valor": "O caminho quente do particular ficou curto e humano, o canal de ouvidoria ganhou prova auditável, e a bateria noturna virou rede de segurança que pega bug de prompt antes do paciente ver."
-      }
+      },
+      "tema": "cerebro"
     },
     {
       "id": "V21",
@@ -526,7 +561,8 @@
         "fez": "Credencial hospital-ana-api-key no vault e tool 1 apontada para /api/ana/consultas-particulares, com diff campo a campo zerado antes da virada e regressão de preço, hesitação, inativa e Regra Híbrida (401 real) no playground.",
         "mudou": "A primeira tool da Ana saiu do NocoDB para a API do Hospital Reuniões com API key de escopo restrito; o prompt v6.3.2 ficou intacto (o formato novo mora na descrição da tool).",
         "valor": "A fase 1 do ADR-0015 começou com prova, e o truncamento de 4.000 chars da plataforma saiu de latente para diagnosticado na fonte, com o conserto desenhado (fatia 1.1 no Hospital)."
-      }
+      },
+      "tema": "base"
     },
     {
       "id": "V22",
@@ -541,7 +577,8 @@
         "gesto": "Abrir a issue no repo Hospital (o PRD #287 é o pai) e desenvolver por lá: filtro por termo nos 4 GETs de /api/ana/* e resposta resumida quando vier sem filtro. Rodar smoke-hospital.py no fim para conferir que tudo cabe."
       },
       "nota": "Medido em 17/ago/2026 por ana/api-hospital/scripts/smoke-hospital.py: exames 7.418 chars (perde MAPA 24h, Raio-X, Tomografia e Ultrassonografia Abdominal), consultas 5.410 (perde Pediatria e Urologia), convênios 4.730 (perde Unimed/Obstetrícia, Ortopedia e Pediatria); só cirurgias cabe (3.269), e com margem frágil (~1.115 chars por linha: a 4ª cirurgia estoura). O teto é da plataforma, fixo em 4.000 chars e não configurável (achado da V21, somado ao report V10). Desenho proposto: (a) filtro por termo (?especialidade=, ?exame=, ?convenio=), tratando string vazia como sem filtro por causa da interpolação silenciosa da plataforma; (b) sem filtro, devolver só os campos de vitrine (nome + valor), que cabem folgado e atendem a pergunta de catálogo. Nada disso existe hoje: o router não tem nenhum query param (app/routers/ana.py) e a issue ainda não foi aberta.",
-      "prompt": "Quero implementar a fatia 1.1 da API da Ana no Hospital Reuniões: fazer as respostas de /api/ana/* caberem no que o modelo consegue ler. Contexto que vem do repo da Ana (ADR-0015, tarefa V21): a plataforma fazer.ai corta o corpo de toda HTTP tool em 4.000 caracteres, fixo e não configurável, então hoje a Ana não enxerga o fim de 3 das 4 tabelas. Proposta a validar comigo antes de codar: (1) filtro por termo em cada GET (?especialidade=, ?exame=, ?convenio=), com string vazia tratada como 'sem filtro' porque a plataforma interpola variável ausente como string vazia em silêncio; (2) sem filtro, devolver uma versão resumida (só os campos de vitrine: nome e valor), que cabe folgado e responde a pergunta 'o que vocês atendem'; com filtro, o registro completo. Siga o workflow de fatias do repo (issue + PR), inclua testes de tamanho de resposta e, no fim, me diga o que preciso ajustar do lado da Ana (input_schema das tools e possivelmente uma linha na descrição de cada uma)."
+      "prompt": "Quero implementar a fatia 1.1 da API da Ana no Hospital Reuniões: fazer as respostas de /api/ana/* caberem no que o modelo consegue ler. Contexto que vem do repo da Ana (ADR-0015, tarefa V21): a plataforma fazer.ai corta o corpo de toda HTTP tool em 4.000 caracteres, fixo e não configurável, então hoje a Ana não enxerga o fim de 3 das 4 tabelas. Proposta a validar comigo antes de codar: (1) filtro por termo em cada GET (?especialidade=, ?exame=, ?convenio=), com string vazia tratada como 'sem filtro' porque a plataforma interpola variável ausente como string vazia em silêncio; (2) sem filtro, devolver uma versão resumida (só os campos de vitrine: nome e valor), que cabe folgado e responde a pergunta 'o que vocês atendem'; com filtro, o registro completo. Siga o workflow de fatias do repo (issue + PR), inclua testes de tamanho de resposta e, no fim, me diga o que preciso ajustar do lado da Ana (input_schema das tools e possivelmente uma linha na descrição de cada uma).",
+      "tema": "base"
     },
     {
       "id": "V23",
@@ -558,7 +595,8 @@
         "gesto": "Sessão comigo, uma tool por vez na liturgia da V21: comparação campo a campo antes, diff da tool aprovado, regressão no playground depois. A tool 3 (cirurgias) já cabe no teto e pode ir antes das outras duas."
       },
       "nota": "Endpoints prontos em produção desde 15/ago (v0.55.0, PR #289/#303): GET /api/ana/exames, /api/ana/cirurgias-estimativas e /api/ana/convenios-especialidade, mesma chave X-API-Key da tool 1 (o vault já tem, vault:6). Mudanças de formato iguais às da V21: envelope com o nome da tabela, valores numéricos, booleanos no lugar de S/N, datas AAAA-MM-DD, coluna ativo não vem (filtro server-side). Nomes de campo mudam: Valor_Particular_RS vira valor_particular_rs, Cobre_SN vira cobre (booleano), Estimativa_Total_RS vira estimativa_total_rs. Bloqueada pela V22 nas tools 2 e 4 (exames e convênios estouram o teto); a tool 3 cabe hoje e pode virar antes, com a ressalva de que a 4ª cirurgia cadastrada estoura.",
-      "prompt": "Quero virar as tools 2, 3 e 4 da Ana (exames, cirurgias e convênios) para a API do Hospital Reuniões, seguindo a mesma liturgia da V21. Antes de qualquer coisa, rode python3 ana/api-hospital/scripts/smoke-hospital.py: se alguma tabela ainda aparecer como CORTA, essa tool NÃO vira (a Ana ficaria cega para o fim da lista) e a V22 é o pré-requisito. Para cada tool que passar: (1) comparação campo a campo da resposta do NocoDB com a da API, normalizando os formatos, e me mostre o diff; (2) o diff da definição da tool para eu aprovar (URL, allowed_hosts, credencial hospital-ana-api-key, query, descrição com os formatos novos); (3) aplicar e rodar a regressão no playground, incluindo o primeiro E o último item da tabela (o cenário C1 do roteiro de integração, que é o que pega o truncamento). Avalie se o prompt precisa mudar: na V21 não precisou, porque os formatos moram na descrição da tool. Registre nos dois arquivos do roadmap ao terminar."
+      "prompt": "Quero virar as tools 2, 3 e 4 da Ana (exames, cirurgias e convênios) para a API do Hospital Reuniões, seguindo a mesma liturgia da V21. Antes de qualquer coisa, rode python3 ana/api-hospital/scripts/smoke-hospital.py: se alguma tabela ainda aparecer como CORTA, essa tool NÃO vira (a Ana ficaria cega para o fim da lista) e a V22 é o pré-requisito. Para cada tool que passar: (1) comparação campo a campo da resposta do NocoDB com a da API, normalizando os formatos, e me mostre o diff; (2) o diff da definição da tool para eu aprovar (URL, allowed_hosts, credencial hospital-ana-api-key, query, descrição com os formatos novos); (3) aplicar e rodar a regressão no playground, incluindo o primeiro E o último item da tabela (o cenário C1 do roteiro de integração, que é o que pega o truncamento). Avalie se o prompt precisa mudar: na V21 não precisou, porque os formatos moram na descrição da tool. Registre nos dois arquivos do roadmap ao terminar.",
+      "tema": "base"
     },
     {
       "id": "V24",
@@ -573,7 +611,8 @@
         "gesto": "Sessão comigo: decidir primeiro se a Seção 7.3 continua com duas chamadas ou passa a usar o protocolo que o POST já devolve, porque isso muda o prompt (o primeiro da migração a mudar)."
       },
       "nota": "Pronto em produção desde 16/ago (v0.56.0/v0.57.0, PR #290/#302 e o painel #292): POST /api/ana/ouvidoria/protocolos (201) e GET /api/ana/ouvidoria/protocolos/{protocolo}. Três diferenças que MUDAM o desenho atual: (1) o POST já devolve o campo protocolo no corpo, então a segunda chamada deixa de ser necessária para saber o número (a trava dura da v6.2 exige as duas: decisão do Pedro); (2) o GET consulta por ANO-NNNN, não pelo Id, e não existe consulta por id nem listagem em /api/ana/*, então a tool 12 muda de assinatura e de papel (passa a servir o paciente que volta perguntando pelo protocolo); (3) o payload é fechado em categoria, setor, resumo e conversa_id, com validação anti-vazio no servidor (rejeita 422 em branco ou só travessão), o que é a defesa do lado deles contra a falha silenciosa de interpolação da plataforma. Atenção: conversa_id é opcional e aceita vazio, e {{conversation_id}} não interpolava no body na 1.4.1 (achado da V19), então o elo índice-dossiê pode se perder em silêncio: conferir em conversa real. Protocolo ANO-NNNN por sequence do Postgres, contínuo, com o NNNN alargando depois de 9999.",
-      "prompt": "Quero virar as tools 11 e 12 da ouvidoria para a API do Hospital Reuniões (fase 2 do ADR-0015). Comece pela decisão de desenho, que muda o prompt: o POST /api/ana/ouvidoria/protocolos já devolve o número do protocolo na resposta, enquanto a Seção 7.3 da v6.3.2 tem a trava dura de só citar o número após DUAS chamadas (R2 grava, R3 lê). Me apresente as opções (manter as duas chamadas por segurança e paridade, ou passar a usar o número do POST e reescrever a Seção 7.3, com a tool 12 virando consulta por ANO-NNNN para o paciente que volta) com sua recomendação, e só depois execute. Confira também: se há protocolos no NocoDB a migrar e se a continuidade da numeração está garantida (a sequence do Postgres deve nascer do último número já informado a paciente), e se o Conversa_Id chega preenchido numa conversa REAL (no playground nunca chega). Prove pelos dois caminhos como na OV2: protocolo real informado ao paciente e visível no painel /ouvidoria do app, e o caminho de falha sem citar número. Se o prompt mudar, publique pela fonte em ana/prompt/ com compilar.py e re-rode a bateria."
+      "prompt": "Quero virar as tools 11 e 12 da ouvidoria para a API do Hospital Reuniões (fase 2 do ADR-0015). Comece pela decisão de desenho, que muda o prompt: o POST /api/ana/ouvidoria/protocolos já devolve o número do protocolo na resposta, enquanto a Seção 7.3 da v6.3.2 tem a trava dura de só citar o número após DUAS chamadas (R2 grava, R3 lê). Me apresente as opções (manter as duas chamadas por segurança e paridade, ou passar a usar o número do POST e reescrever a Seção 7.3, com a tool 12 virando consulta por ANO-NNNN para o paciente que volta) com sua recomendação, e só depois execute. Confira também: se há protocolos no NocoDB a migrar e se a continuidade da numeração está garantida (a sequence do Postgres deve nascer do último número já informado a paciente), e se o Conversa_Id chega preenchido numa conversa REAL (no playground nunca chega). Prove pelos dois caminhos como na OV2: protocolo real informado ao paciente e visível no painel /ouvidoria do app, e o caminho de falha sem citar número. Se o prompt mudar, publique pela fonte em ana/prompt/ com compilar.py e re-rode a bateria.",
+      "tema": "base"
     },
     {
       "id": "V25",
@@ -587,8 +626,9 @@
         "destrava": "A prova que o hospital vai querer ver: mudo o preço na minha tela e a Ana passa a falar isso, com o caminho inverso (a queixa do paciente virando protocolo no painel) provado junto.",
         "gesto": "Sessão comigo: rodar o roteiro de integração (roadmap/roteiro-integracao-hospital.md) nos três níveis e versionar o runner da bateria E2E no repo, que hoje não existe mais."
       },
-      "nota": "Roteiro escrito em 17/ago/2026 (roadmap/roteiro-integracao-hospital.md): cinco famílias, sendo A (espelho da edição) e D (ouvidoria) bloqueantes, e C (cobertura da tabela inteira) o cenário que teria pego o bug da V21 antes dele existir, porque obriga a perguntar pelo primeiro E pelo último item de cada tabela. Nível 1 já existe e roda hoje: ana/api-hospital/scripts/smoke-hospital.py. Falta o nível 2 (edição humana no admin com medição antes e depois) e o nível 3 (bateria pela inbox de API). Dívida a pagar aqui: o runner e2e.py que rodou as baterias v2 e v3 vivia num scratchpad de sessão e NÃO EXISTE MAIS, então a bateria automatizada não é reproduzível hoje; nesta tarefa ele nasce versionado no repo. Tudo já está em produção do lado do Hospital (v0.58.0): a tela de edição /admin/dados-atendimento (secretárias e super admins editam, facilitadores leem, sem DELETE: desativar é ativo=false) e o painel /ouvidoria com status aberto/respondido.",
-      "prompt": "Quero montar e rodar a bancada de cenários da integração da Ana com o app do Hospital. O roteiro já está escrito em roadmap/roteiro-integracao-hospital.md: leia primeiro. Comece rodando o nível 1 (python3 ana/api-hospital/scripts/smoke-hospital.py) e me diga o que está apto a testar. Depois: (1) recrie o runner da bateria E2E pela inbox de API do Chatwoot e VERSIONE no repo desta vez (o e2e.py antigo era de scratchpad e se perdeu; as credenciais ficam no .env, nunca no código); (2) me conduza no nível 2, o espelho: eu edito o valor de uma especialidade em /admin/dados-atendimento do app e você mede antes e depois na API e na conversa da Ana, com reversão ao final; (3) rode o nível 3 nos cenários das famílias já possíveis. Anote o resultado cenário a cenário no roteiro (passou, falhou, não rodado, com a data e a versão do prompt no ar) e registre a ficha nos dois arquivos do roadmap."
+      "nota": "Roteiro escrito em 17/ago/2026 (roadmap/roteiro-integracao-hospital.md): cinco famílias, sendo A (espelho da edição) e D (ouvidoria) bloqueantes, e C (cobertura da tabela inteira) o cenário que teria pego o bug da V21 antes dele existir, porque obriga a perguntar pelo primeiro E pelo último item de cada tabela. Nível 1 já existe e roda hoje: ana/api-hospital/scripts/smoke-hospital.py. A rodada 1 do nível 2 rodou em 18/ago/2026 com o Pedro editando no app: A1, A2 e B1 PASSARAM (Cardiologia 380 para 395 refletiu na API e na fala da Ana com carimbo de data em BRT; Dermatologia desativada sumiu da API e a Ana recusou o preço sem inventar e sem dizer que o hospital não atende; tudo revertido). Achado da rodada: desativar a Dermatologia encolheu a resposta e fez a Pediatria voltar a ser visível ao modelo, ou seja, mexer num item muda quais OUTROS a Ana enxerga enquanto a V22 não entrar. Falta o resto do nível 2 (A3, A4) e o nível 3 inteiro (bateria pela inbox de API). Dívida a pagar aqui: o runner e2e.py que rodou as baterias v2 e v3 vivia num scratchpad de sessão e NÃO EXISTE MAIS, então a bateria automatizada não é reproduzível hoje; nesta tarefa ele nasce versionado no repo. Tudo já está em produção do lado do Hospital (v0.58.0): a tela de edição /admin/dados-atendimento (secretárias e super admins editam, facilitadores leem, sem DELETE: desativar é ativo=false) e o painel /ouvidoria com status aberto/respondido.",
+      "prompt": "Quero montar e rodar a bancada de cenários da integração da Ana com o app do Hospital. O roteiro já está escrito em roadmap/roteiro-integracao-hospital.md: leia primeiro. Comece rodando o nível 1 (python3 ana/api-hospital/scripts/smoke-hospital.py) e me diga o que está apto a testar. Depois: (1) recrie o runner da bateria E2E pela inbox de API do Chatwoot e VERSIONE no repo desta vez (o e2e.py antigo era de scratchpad e se perdeu; as credenciais ficam no .env, nunca no código); (2) me conduza no nível 2, o espelho: eu edito o valor de uma especialidade em /admin/dados-atendimento do app e você mede antes e depois na API e na conversa da Ana, com reversão ao final; (3) rode o nível 3 nos cenários das famílias já possíveis. Anote o resultado cenário a cenário no roteiro (passou, falhou, não rodado, com a data e a versão do prompt no ar) e registre a ficha nos dois arquivos do roadmap.",
+      "tema": "base"
     },
     {
       "id": "V26",
@@ -607,7 +647,24 @@
         "gesto": "Sessão comigo, depois das outras: conferir a paridade das 5 tabelas, esperar o sinal verde da issue #293 do Hospital, exportar o backup e só então parar o serviço."
       },
       "nota": "Último passo do ADR-0015, e o único irreversível: o NocoDB só desliga com as 6 tools viradas e a bancada de integração aprovada. Do lado do Hospital, a issue #293 (aberta, ready-for-human) é o cutover formal e pede paridade registro a registro das 5 tabelas, a sequence do protocolo conferida, as variáveis ANA_READONLY_* removidas do ambiente (o usuário Postgres read-only que o ADR-0015 deixou obsoleto) e o sinal verde comentado na issue para a P9. Antes de parar o serviço: exportar as 5 tabelas do NocoDB para backup fora do git e guardar o export do agente. Parar não é apagar: o serviço fica parado no Coolify por um tempo antes de qualquer remoção definitiva.",
-      "prompt": "Chegou a hora de desligar o NocoDB (o último passo do ADR-0015). Antes de tocar no Coolify, confira comigo, nesta ordem: (1) as 6 tools da Ana estão na API do Hospital e nenhuma aponta mais para o NocoDB (tool_list); (2) a bancada de integração (V25) passou nas famílias bloqueantes; (3) a paridade das 5 tabelas entre NocoDB e app está registrada e a issue #293 do Hospital deu o sinal verde; (4) existe backup das 5 tabelas fora do git. Só com os quatro conferidos, me conduza para PARAR (não remover) o serviço nocodb-base-ana no Coolify, e depois rode a regressão para provar que a Ana continua respondendo tudo com o NocoDB fora do ar. Registre nos dois arquivos do roadmap e atualize o CONTEXT.md (o termo Base Ana deixa de ser NocoDB e passa a ser o app)."
+      "prompt": "Chegou a hora de desligar o NocoDB (o último passo do ADR-0015). Antes de tocar no Coolify, confira comigo, nesta ordem: (1) as 6 tools da Ana estão na API do Hospital e nenhuma aponta mais para o NocoDB (tool_list); (2) a bancada de integração (V25) passou nas famílias bloqueantes; (3) a paridade das 5 tabelas entre NocoDB e app está registrada e a issue #293 do Hospital deu o sinal verde; (4) existe backup das 5 tabelas fora do git. Só com os quatro conferidos, me conduza para PARAR (não remover) o serviço nocodb-base-ana no Coolify, e depois rode a regressão para provar que a Ana continua respondendo tudo com o NocoDB fora do ar. Registre nos dois arquivos do roadmap e atualize o CONTEXT.md (o termo Base Ana deixa de ser NocoDB e passa a ser o app).",
+      "tema": "base"
+    },
+    {
+      "id": "OS16",
+      "titulo": "Ana OS: grafo por temas, placar do que falta e hover com o prompt",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS9"
+      ],
+      "tema": "os",
+      "nota": "Feita em 18/ago/2026 a pedido do Pedro (\"quantas tarefas faltam? organize por tema, com hover mostrando os detalhes e o prompt\"). O grafo deixou de ser 3 colunas globais (Feito / Estágio ativo / Horizonte) e virou uma FAIXA POR TEMA, cada uma com nome, uma linha do que é a área e o contador de abertas; dentro da faixa, as colunas separam Feito, A fazer agora e Bloqueado por dependência. O tema de cada item vive no roadmap.json (campo tema novo: base, agenda, ouvidoria, cerebro, os) e a ordem das faixas está na página. Acima do grafo nasceu o PLACAR: total de abertas, quantas por tema e quantas já concluídas, cada peça rolando até a faixa. O hover, que só servia nó concluído (ficha fez/mudou/valor), passou a servir também nó ABERTO: o que é, o que destrava, o gesto com o canal, o que ele espera e a prévia do prompt, com a dica de que o clique abre o prompt inteiro para copiar. Faixa sem nenhuma tarefa aberta nasce recolhida (botão 'mostrar as N concluídas'), para a página responder de cara o que falta. As arestas passaram a ser desenhadas só dentro da mesma faixa: dependência que cruza tema aparece no cartão e na ficha, sem risco atravessando o desenho.",
+      "ficha": {
+        "fez": "O grafo virou faixas por tema (Base Ana, Agenda GH, Ouvidoria, Cérebro, Ana OS) com contador de abertas, ganhou um placar do que falta no topo e passou a mostrar no hover de tarefa aberta o que destrava, o gesto e a prévia do prompt.",
+        "mudou": "roadmap.json ganhou o campo tema em todo item do grafo; faixa concluída nasce recolhida e as arestas ficam dentro da própria faixa, com a dependência entre temas aparecendo no cartão.",
+        "valor": "A pergunta 'o que falta e por onde começo' se responde na primeira tela: 8 abertas, 5 na migração da Base Ana e 3 esperando a Global Health, cada uma com o prompt a um hover de distância."
+      }
     }
   ],
   "pendentes": [
@@ -622,7 +679,8 @@
         "gesto": "Cobrar a resposta da Global Health se passar 1 semana sem retorno (a mensagem foi enviada em 12/ago, com as 4 perguntas de arquitetura)."
       },
       "nota": "Pedida em 07/jul/2026; cobranca formal ENVIADA em 12/ago/2026 via WhatsApp (versao em ana/api-mv/cobranca-massa-homolog.md), com as 4 perguntas de arquitetura (origem do catalogo, sincronizacao com o MV/GH-18, painel da homolog, sentido inverso MV->API). Evidencia de 12/ago: catalogo 100% vazio, /agendas/v2 com 500, escrita OK (id 1696). Destrava sozinha quando o smoke sair de VAZIO para OK.",
-      "prompt": "Quero disparar a cobrança da massa de homologação da Global Health (o card GH19). Abra ana/api-mv/cobranca-massa-homolog.md e revise o texto comigo: confira se a evidência segue atual (rode python3 ana/api-mv/scripts/smoke-gh.py e me mostre o catálogo vazio), ajuste as datas, me pergunte por qual via vou enviar (o diretor endossa ou eu envio direto em nome do hospital) e me entregue a versão final pronta para colar. Depois do envio, eu marco o card como disparado na home do Ana OS; se eu esquecer, marque você: canal 'aguardando' com canal_desde de hoje no os/dados/roadmap.json e o registro no TODO.md."
+      "prompt": "Quero disparar a cobrança da massa de homologação da Global Health (o card GH19). Abra ana/api-mv/cobranca-massa-homolog.md e revise o texto comigo: confira se a evidência segue atual (rode python3 ana/api-mv/scripts/smoke-gh.py e me mostre o catálogo vazio), ajuste as datas, me pergunte por qual via vou enviar (o diretor endossa ou eu envio direto em nome do hospital) e me entregue a versão final pronta para colar. Depois do envio, eu marco o card como disparado na home do Ana OS; se eu esquecer, marque você: canal 'aguardando' com canal_desde de hoje no os/dados/roadmap.json e o registro no TODO.md.",
+      "tema": "agenda"
     }
   ],
   "propostas": [
@@ -638,7 +696,8 @@
         "destrava": "A resposta da GH-18 e o gate da P6: sem a Prova no banco a Ana não promete protocolo de agendamento.",
         "gesto": "Nada seu por ora: espera a VPN da TST voltar (o pedido à TI é o card P2, esse sim dispare)."
       },
-      "prompt": "Com a VPN da TST ativa, quero responder a pergunta GH-18: a homologação da Global Health grava na Base TST na finalização do agendamento? Me conduza passo a passo na Bancada do Ana OS: (1) buscar o paciente-sonda (CPF 66301102770) no GET /pessoas; (2) listar horários livres no GET /agendas/v2; (3) preparar o POST /horarios/agendar de teste. Antes da chamada de escrita, fotografe o resultado da query de conferência na TST; depois dela, rode a query de novo e me mostre a diferença (a Prova no banco). Se o agendamento aparecer no Oracle, a GH-18 está respondida: registre a evidência no CONTEXT.md e nos docs do api-mv. Se não aparecer, registre o que vimos e escreva comigo a pergunta objetiva para a MV/Global Health."
+      "prompt": "Com a VPN da TST ativa, quero responder a pergunta GH-18: a homologação da Global Health grava na Base TST na finalização do agendamento? Me conduza passo a passo na Bancada do Ana OS: (1) buscar o paciente-sonda (CPF 66301102770) no GET /pessoas; (2) listar horários livres no GET /agendas/v2; (3) preparar o POST /horarios/agendar de teste. Antes da chamada de escrita, fotografe o resultado da query de conferência na TST; depois dela, rode a query de novo e me mostre a diferença (a Prova no banco). Se o agendamento aparecer no Oracle, a GH-18 está respondida: registre a evidência no CONTEXT.md e nos docs do api-mv. Se não aparecer, registre o que vimos e escreva comigo a pergunta objetiva para a MV/Global Health.",
+      "tema": "agenda"
     },
     {
       "id": "P6",
@@ -655,7 +714,8 @@
         "destrava": "O Entregável funcional da Ana (a marcação fim a fim), que destrava +R$ 2.000/mês no contrato.",
         "gesto": "Nada seu por ora: destrava quando P3 (VPN) e GH19 (massa) fecharem. Nunca roda em modo autônomo."
       },
-      "prompt": "A prova final em homologação: quero que a Ana agende fim a fim pela conversa. Me conduza cenário por cenário no playground: identificação do paciente (paciente-sonda), escolha de especialidade e horário real, e a finalização com o POST /horarios/agendar, conferindo cada chamada no Langfuse. Depois da finalização, faça a Prova no banco na Base TST (como na P3) para confirmar que a marcação chegou ao Oracle. No final, escreva comigo o relatório da prova: o que funciona, o que falta para produção (canal principal, cadastros reais, LGPD), e registre nos docs, no TODO.md e no os/dados/roadmap.json."
+      "prompt": "A prova final em homologação: quero que a Ana agende fim a fim pela conversa. Me conduza cenário por cenário no playground: identificação do paciente (paciente-sonda), escolha de especialidade e horário real, e a finalização com o POST /horarios/agendar, conferindo cada chamada no Langfuse. Depois da finalização, faça a Prova no banco na Base TST (como na P3) para confirmar que a marcação chegou ao Oracle. No final, escreva comigo o relatório da prova: o que funciona, o que falta para produção (canal principal, cadastros reais, LGPD), e registre nos docs, no TODO.md e no os/dados/roadmap.json.",
+      "tema": "agenda"
     }
   ],
   "radar": [

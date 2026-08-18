@@ -143,3 +143,19 @@ O cenário que teria pego o bug da V21 antes de ele existir.
 ## Registro do resultado
 
 Cada rodada anota, por cenário: **passou / falhou / não rodado**, a data, a versão do prompt no ar e o veredito do `smoke-hospital.py` do dia. Falha bloqueante volta para ajuste antes de qualquer virada de tool nova. O resultado consolidado vira ficha da tarefa no `roadmap/TODO.md` e no `os/dados/roadmap.json`, como manda a regra da casa.
+
+### Rodada 1: 18/ago/2026 (prompt v6.3.2, só a tool 1 na API)
+
+Primeira prova do espelho, com o Pedro editando no app e a sessão medindo as três camadas.
+
+| Cenário | Veredito | Evidência |
+|---|---|---|
+| A1 valor alterado | **passou** | Cardiologia 380 → 395 no admin: a API devolveu `395.0` na chamada seguinte, `ultima_atualizacao` carimbou `2026-08-18` (hoje em BRT, com o container em UTC) e a Ana passou a responder "R$ 395" numa conversa nova. Revertido para 380 e reconferido. |
+| A2 especialidade desativada | **passou** | Dermatologia desativada: sumiu da API (8 ativas) e a Ana respondeu "não tenho o preço da consulta de Dermatologia na nossa tabela oficial. Quer que eu encaminhe para a equipe confirmar?", sem inventar valor e **sem afirmar que o hospital não atende** (a distinção que o E2 exige). Reativada em seguida. |
+| B1 formato do número | **passou** | `395.0` virou "R$ 395" na fala, sem vazar o formato do JSON. |
+| A3, A4 | não rodados | ficam para a rodada da V25. |
+| C, D, E | não rodados | C e E dependem das tools 2-4 (V23); D depende da ouvidoria virada (V24). |
+
+**Achado da rodada (registra o quanto o teto é frágil):** com a Dermatologia desativada, a resposta caiu de 5.410 para 4.848 chars e a **Pediatria voltou a ser visível** ao modelo, sobrando só a Urologia fora. Ou seja, desativar um item no app **muda quais outros itens a Ana enxerga**, sem ninguém perceber. Reforça que a V22 (filtro server-side) é pré-requisito, não melhoria.
+
+**Ponto de atenção, não bloqueante:** nas duas perguntas por item ausente a Ana chamou `consultar_precos_consultas` de 2 a 5 vezes no mesmo turno antes de responder. Ela conclui certo, mas o padrão de re-chamada é o mesmo sintoma do truncamento; vale reavaliar depois da V22, quando a resposta couber inteira.
