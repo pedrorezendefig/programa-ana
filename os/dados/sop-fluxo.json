@@ -1,9 +1,9 @@
 {
   "meta": {
     "titulo": "Mapa do SOP da Ana",
-    "versao_prompt": "v6.3.2",
-    "prompt_exportado_em": "2026-08-12",
-    "prompt_caracteres": 50111,
+    "versao_prompt": "v6.4",
+    "prompt_exportado_em": "2026-08-18",
+    "prompt_caracteres": 53251,
     "origem": {
       "plataforma": "fazer.ai agents",
       "tenant": "vitta-tech",
@@ -1837,7 +1837,7 @@
       "tipo": "tool",
       "secao": "7.3",
       "titulo": "PASSO R2: registrar_ouvidoria",
-      "resumo": "Grava categoria, setor e resumo sem identificação na tabela 5_Ouvidoria_Protocolos e devolve o Id. Uma gravação por conversa.",
+      "resumo": "Grava categoria, setor e resumo sem identificação na API do Hospital e devolve na mesma resposta o campo protocolo (ANO-NNNN). Uma gravação por conversa.",
       "tools": [
         "registrar_ouvidoria"
       ],
@@ -1845,12 +1845,12 @@
         "id": "sop-7-3-r2",
         "trechos": [
           {
-            "linhas": "709",
-            "texto": "- PASSO R2 → executar `registrar_ouvidoria` com categoria, setor e resumo. O resumo é a `descricao_resumida` em linguagem de relato, SEM nome de solicitante, paciente ou profissional, sem CPF e sem dado clínico (a identificação já está na nota interna). A resposta devolve o campo Id."
+            "linhas": "707",
+            "texto": "- PASSO R2 → executar `registrar_ouvidoria` com categoria, setor e resumo. O resumo é a `descricao_resumida` em linguagem de relato, SEM nome de solicitante, paciente ou profissional, sem CPF e sem dado clínico (a identificação já está na nota interna). A resposta devolve o campo `protocolo`, no formato ANO-NNNN: é o número, já pronto, e nenhuma outra ferramenta precisa ser chamada para obtê-lo."
           },
           {
-            "linhas": "722",
-            "texto": "- **Uma gravação por conversa.** Nunca repetir `registrar_ouvidoria` na mesma conversa; em dúvida se gravou, consultar pelo Id já devolvido, jamais gravar de novo."
+            "linhas": "723",
+            "texto": "- **Uma gravação por conversa.** Nunca repetir `registrar_ouvidoria` na mesma conversa; em dúvida se gravou, consultar com `consultar_protocolo_ouvidoria` o número já devolvido, jamais gravar de novo."
           }
         ]
       }
@@ -1862,25 +1862,29 @@
       "linha": 0,
       "tipo": "tool",
       "secao": "7.3",
-      "titulo": "PASSO R3: consultar_protocolo_ouvidoria e informar",
-      "resumo": "Lê o campo Protocolo (ANO-NNNN) pelo Id e só então informa o número. Protocolo em mãos = protocolo comunicado: registrar e não dizer o número é falha grave.",
+      "titulo": "PASSO R3 e R4: nota com o número e informar ao paciente",
+      "resumo": "O número já veio do R2: grava a nota interna PROTOCOLO ANO-NNNN (a ponte painel-conversa) e informa o paciente. Protocolo em mãos = protocolo comunicado.",
       "tools": [
-        "consultar_protocolo_ouvidoria"
+        "private_note"
       ],
       "ancora": {
-        "id": "sop-7-3-r3",
+        "id": "sop-7-3-r3-r4",
         "trechos": [
           {
-            "linhas": "710-718",
-            "texto": "- PASSO R3 → executar `consultar_protocolo_ouvidoria` com esse Id. A resposta traz o campo Protocolo (formato ANO-NNNN). Somente depois de ler esse campo, informar o número:\n\n```\nObrigada por confiar isso a nós.\n\nSua manifestação foi registrada com o protocolo [Protocolo].\n\nNossa equipe entrará em contato em até 5 dias úteis.\n```"
+            "linhas": "708",
+            "texto": "- PASSO R3 → executar `private_note` com uma única linha: `PROTOCOLO [protocolo]`. Esta nota é a ponte entre o painel da ouvidoria e esta conversa: quem lê o número no painel encontra o atendimento buscando por ele no histórico. Nunca pular este passo quando o PASSO R2 devolveu o campo `protocolo`."
           },
           {
-            "linhas": "723",
-            "texto": "- **O número vem exclusivamente do campo Protocolo** lido no PASSO R3. Nunca inventar, estimar, completar ou prometer protocolo, nem no condicional."
+            "linhas": "709-717",
+            "texto": "- PASSO R4 → somente depois de ler o campo `protocolo` no PASSO R2, informar o número:\n\n```\nObrigada por confiar isso a nós.\n\nSua manifestação foi registrada com o protocolo [protocolo].\n\nNossa equipe entrará em contato em até 5 dias úteis.\n```"
           },
           {
             "linhas": "724",
-            "texto": "- **Protocolo em mãos = protocolo comunicado.** Se o PASSO R3 devolveu o campo Protocolo, a mensagem final ao paciente DEVE conter esse número, e o resumo interno da escalada também. Registrar com sucesso e responder ao paciente sem o número é falha grave: o protocolo é a prova de que a manifestação existe."
+            "texto": "- **O número vem exclusivamente do campo `protocolo`** devolvido por `registrar_ouvidoria` no PASSO R2. Nunca inventar, estimar, completar ou prometer protocolo, nem no condicional."
+          },
+          {
+            "linhas": "725",
+            "texto": "- **Protocolo em mãos = protocolo comunicado.** Se o PASSO R2 devolveu o campo `protocolo`, a mensagem final ao paciente DEVE conter esse número, e a nota do PASSO R3 e o resumo interno da escalada também. Registrar com sucesso e responder ao paciente sem o número é falha grave: o protocolo é a prova de que a manifestação existe."
           }
         ]
       }
@@ -1893,14 +1897,40 @@
       "tipo": "mensagem",
       "secao": "7.3",
       "titulo": "Falha no registro: mensagem sem protocolo",
-      "resumo": "R2 ou R3 falhou: não citar número nenhum, nem prometer. Registro segue válido pela nota interna e pela escalada.",
+      "resumo": "A gravação do R2 falhou ou veio sem o campo protocolo: não citar número nenhum, nem prometer. O registro segue pela nota interna e pela escalada.",
       "tools": [],
       "ancora": {
         "id": "sop-7-3-falha",
         "trechos": [
           {
-            "linhas": "726-734",
-            "texto": "- **Se o PASSO R2 ou o R3 falhar:** não citar número nenhum e usar a mensagem sem protocolo:\n\n```\nObrigada por confiar isso a nós.\n\nSua manifestação foi registrada com todo o cuidado.\n\nNossa equipe entrará em contato em até 5 dias úteis.\n```"
+            "linhas": "727-735",
+            "texto": "- **Se o PASSO R2 falhar** (erro, recusa ou resposta sem o campo `protocolo`): não citar número nenhum e usar a mensagem sem protocolo:\n\n```\nObrigada por confiar isso a nós.\n\nSua manifestação foi registrada com todo o cuidado.\n\nNossa equipe entrará em contato em até 5 dias úteis.\n```"
+          }
+        ]
+      }
+    },
+    {
+      "id": "O19",
+      "raia": "ouvidoria",
+      "col": 12,
+      "linha": 0,
+      "tipo": "tool",
+      "secao": "7.5",
+      "titulo": "Paciente que volta com um protocolo",
+      "resumo": "Consulta por ANO-NNNN e informa só data e prazo, nunca o status nem o resumo, e escala. Não encontrado: não afirmar que não existe.",
+      "tools": [
+        "consultar_protocolo_ouvidoria"
+      ],
+      "ancora": {
+        "id": "sop-7-5-retorno",
+        "trechos": [
+          {
+            "linhas": "753",
+            "texto": "Quando o paciente citar um número de protocolo de ouvidoria (formato ANO-NNNN, ex.: 2026-0004) perguntando pelo andamento da manifestação dele, executar `assign_label` com tag `ouvidoria` e então `consultar_protocolo_ouvidoria` com esse número, exatamente como o paciente escreveu, sem completar dígitos e sem corrigir o ano."
+          },
+          {
+            "linhas": "765",
+            "texto": "> **Nunca ler o campo `status` para o paciente, nem traduzi-lo.** No painel interno, \"respondido\" significa que a equipe fechou o caso, e não que o paciente foi contatado. Dizer \"sua manifestação já foi respondida\" a quem nunca recebeu retorno é dano grave e mina a legitimidade do canal. Quem dá posição de andamento é a equipe humana, sempre."
           }
         ]
       }
@@ -2425,15 +2455,10 @@
     {
       "de": "O10",
       "para": "O11",
-      "rotulo": "Id"
+      "rotulo": "protocolo"
     },
     {
       "de": "O10",
-      "para": "O12",
-      "rotulo": "falha"
-    },
-    {
-      "de": "O11",
       "para": "O12",
       "rotulo": "falha"
     },
@@ -2456,6 +2481,16 @@
       "de": "P16",
       "para": "P10",
       "rotulo": "PASSO 4"
+    },
+    {
+      "de": "E4",
+      "para": "O19",
+      "rotulo": "volta com protocolo"
+    },
+    {
+      "de": "O19",
+      "para": "O8",
+      "rotulo": ""
     }
   ],
   "zonas": [

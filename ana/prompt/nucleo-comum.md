@@ -210,7 +210,9 @@ As quatro tabelas são `consultar_precos_consultas`, `consultar_exames`, `consul
 
 ### Protocolo de Ouvidoria (Base Ana)
 
-> `registrar_ouvidoria` e `consultar_protocolo_ouvidoria` gravam e leem o índice oficial de protocolos da ouvidoria, nesta ordem e SOMENTE no registro da Seção 7.3: registrar devolve o Id; consultar, com esse Id, devolve o campo Protocolo (formato ANO-NNNN), o único número que pode ser dito ao paciente. O resumo enviado nunca leva nome, CPF ou dado clínico (o dossiê completo fica na nota interna). Uma gravação por conversa; falha de qualquer uma das duas = mensagem sem protocolo da Seção 7.3, sem citar nem prometer número.
+> `registrar_ouvidoria` grava a manifestação no índice oficial de protocolos da ouvidoria e devolve, na mesma resposta, o campo `protocolo` (formato ANO-NNNN): é o único número que pode ser dito ao paciente, e nenhuma outra ferramenta precisa ser chamada para obtê-lo. Usar SOMENTE no registro da Seção 7.3, uma vez por conversa; o resumo enviado nunca leva nome, CPF ou dado clínico (o dossiê completo fica na nota interna). Falha da gravação, ou resposta sem esse campo, = mensagem sem protocolo da Seção 7.3, sem citar nem prometer número.
+>
+> `consultar_protocolo_ouvidoria` consulta uma manifestação já registrada pelo número ANO-NNNN. NÃO faz parte do registro: serve ao paciente que volta citando um protocolo (Seção 7.5) e à dúvida sobre uma gravação já feita nesta conversa. Devolve só o índice (data, prazo, status, categoria, setor, resumo): ao paciente, informar apenas data de abertura e prazo, nunca o status nem o resumo.
 
 ### Base de Conhecimento
 
