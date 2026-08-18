@@ -1,0 +1,57 @@
+# Bancada de cenários da Ana
+
+O aparato que prova, contra o canal real, o que a Ana fala e de onde vem o que ela fala.
+Termo no `CONTEXT.md`: **Bancada de cenários** (não confundir com a *bancada da API*, que é
+página do Ana OS).
+
+## Os três scripts
+
+| Nível | Script | O que prova |
+|---|---|---|
+| 1. Contrato | `ana/api-hospital/scripts/smoke-hospital.py` | a API responde, o formato bate e cabe nos 4.000 chars |
+| 1.5. Divergímetro | `ana/bancada/divergimetro.py` | API do app e NocoDB dizem a mesma coisa (paridade da V26) |
+| 3. Conversa | `ana/bancada/e2e.py` | os cenários ponta a ponta, pela inbox de API do Chatwoot |
+
+O nível 2 (espelho) é semi-manual: alguém edita no `/admin/dados-atendimento` e a sessão mede
+antes e depois. Os cenários A3 e A4 têm o campo `edicao_manual` dizendo o que editar.
+
+## Como rodar
+
+```bash
+python3 ana/bancada/divergimetro.py
+python3 ana/bancada/e2e.py cenarios/integracao.json
+python3 ana/bancada/e2e.py cenarios/integracao.json --so C1a,C1b
+python3 ana/bancada/e2e.py cenarios/integracao.json --familia D
+```
+
+O relatório completo de cada bateria fica em `ana/bancada/resultados/`, que é ignorado pelo git: o resultado **curado** de cada rodada vive no roteiro, cenário a cenário.
+
+## Credenciais
+
+Todas no `.env` da raiz do repo, nunca no código:
+
+| Variável | Para quê |
+|---|---|
+| `CHATWOOT_URL`, `CHATWOOT_ACCOUNT_ID`, `CHATWOOT_API_TOKEN` | conduzir a conversa e ler notas e etiquetas |
+| `AGENTS_API_TOKEN` | ler o trace das ferramentas (sem ela o runner roda, mas cego) |
+
+A chave da API do Hospital vem do mesmo lugar que o `smoke-hospital.py` já usa.
+
+## Armadilhas que custaram tempo (não repita)
+
+1. **`/teste` vai sozinho, numa mensagem só dele.** Colado no início do texto, a plataforma
+   não ativa o modo teste e responde com uma nota privada.
+2. **O filtro de logs é `conversationId`, camelCase.** A forma `conversation_id` é ignorada
+   em silêncio e devolve o tenant inteiro.
+3. **A plataforma numera as conversas por conta dela** (Chatwoot 83 = plataforma 68). O elo
+   confiável é o `threadId` do log, no formato `1:1:<id do Chatwoot>`.
+4. **Nome de item novo entra na ordem alfabética.** Um item de teste batizado com letra do
+   fim da lista reprova pelo teto de caracteres, não pelo que o cenário queria medir.
+5. **A Ana só registra ouvidoria depois de nome e CPF.** Cenário sem esses dados nunca chega
+   ao registro, e a reprovação é do cenário.
+
+## Escrita em produção
+
+O cenário `D1` grava uma manifestação de verdade no painel de ouvidoria do hospital, e a regra
+da casa é que linha de ouvidoria em produção **nunca se apaga** (encerrar é mudar o status).
+Rode uma vez, e avise quem cuida do painel qual protocolo ficou.

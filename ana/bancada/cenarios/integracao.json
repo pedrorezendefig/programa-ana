@@ -1,0 +1,306 @@
+{
+  "roteiro": "roadmap/roteiro-integracao-hospital.md",
+  "sobre": "Cenarios do roteiro de integracao Base Ana no Hospital Reunioes. So entram aqui os cenarios que a fonte nova ja sustenta: hoje a tool 1 (consultas particulares) e as tools 11 e 12 (ouvidoria) leem a API do app; exames, cirurgias e convenios seguem no NocoDB ate a V23. Os cenarios D4 e D5 vieram do runner da V24 (ana/testes/, consolidado aqui em 18/ago/2026): eles cobrem o caminho de falha da gravacao e o paciente que volta citando o numero.",
+  "cenarios": [
+    {
+      "id": "B1",
+      "familia": "B",
+      "titulo": "Numero vira moeda brasileira, nao vaza o formato do JSON",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de cardiologia?",
+          "contem": [
+            "380"
+          ],
+          "nao_contem": [
+            "380.0",
+            "380.00",
+            "reais reais",
+            "valor_rs"
+          ],
+          "tools": [
+            "consultar_precos_consultas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B2",
+      "familia": "B",
+      "titulo": "Booleano alta_demanda nao vira fala de campo de banco",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de cardiologia particular?",
+          "contem": [
+            "380"
+          ],
+          "nao_contem": [
+            "alta_demanda",
+            "alta demanda:",
+            "verdadeiro",
+            "booleano"
+          ],
+          "tools": [
+            "consultar_precos_consultas"
+          ]
+        },
+        {
+          "envie": "e a agenda de voces costuma ter vaga?",
+          "nao_contem": [
+            "alta_demanda",
+            "alta demanda:",
+            "verdadeiro",
+            "booleano",
+            "campo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C1a",
+      "familia": "C",
+      "titulo": "Primeiro item da tabela (Cardiologia) responde com o dado certo",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de cardiologia?",
+          "contem": [
+            "380"
+          ],
+          "tools": [
+            "consultar_precos_consultas"
+          ],
+          "tools_max_por_turno": 1
+        }
+      ]
+    },
+    {
+      "id": "C1b",
+      "familia": "C",
+      "titulo": "Ultimo item da tabela (Urologia) responde com o dado certo",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de urologia?",
+          "contem": [
+            "350"
+          ],
+          "tools": [
+            "consultar_precos_consultas"
+          ],
+          "tools_max_por_turno": 1
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "familia": "C",
+      "titulo": "Pergunta de catalogo traz a lista completa das ativas",
+      "turnos": [
+        {
+          "envie": "quais especialidades voces atendem em consulta particular?",
+          "contem": [
+            "cardiologia",
+            "cirurgia geral",
+            "dermatologia",
+            "ginecologia",
+            "neurologia",
+            "obstetr",
+            "oftalmologia",
+            "ortopedia",
+            "pediatria",
+            "urologia"
+          ],
+          "tools": [
+            "consultar_precos_consultas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E2",
+      "familia": "E",
+      "titulo": "Item ausente da tabela cai na Regra Global 13, sem negar o hospital",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de reumatologia?",
+          "contem_algum": [
+            "equipe",
+            "confirmar",
+            "verificar",
+            "encaminh"
+          ],
+          "nao_contem": [
+            "nao atendemos",
+            "não atendemos",
+            "nao atende",
+            "não atende",
+            "nao temos essa especialidade",
+            "não temos essa especialidade"
+          ],
+          "tools": [
+            "consultar_precos_consultas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "familia": "A",
+      "titulo": "Texto novo no diferencial_1 da Cardiologia aparece na hesitacao",
+      "edicao_manual": "No /admin/dados-atendimento, aba Consultas particulares, trocar o diferencial_1 da Cardiologia por: Resultado do eletrocardiograma no mesmo dia da consulta",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de cardiologia?",
+          "contem": [
+            "380"
+          ]
+        },
+        {
+          "envie": "nossa, achei caro",
+          "contem": [
+            "mesmo dia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A4",
+      "familia": "A",
+      "titulo": "Especialidade nova cadastrada no app passa a ser ofertada",
+      "edicao_manual": "No /admin/dados-atendimento, aba Consultas particulares, criar a especialidade AAA TESTE INTEGRACAO ANA com valor 1.00 e ativa. O nome comeca com AAA de proposito: a API ordena por nome, e so um item no comeco da lista cabe dentro do teto de 4.000 chars. Nome no fim da lista faria o cenario reprovar pelo teto, nao pelo espelho. Apagar ou desativar ao final.",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de AAA TESTE INTEGRACAO ANA?",
+          "contem_algum": [
+            "1,00",
+            "r$ 1",
+            "1 real"
+          ],
+          "tools": [
+            "consultar_precos_consultas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D1",
+      "familia": "D",
+      "titulo": "Manifestacao registrada devolve protocolo real e deixa a ponte no Chatwoot",
+      "atencao": "GRAVA LINHA DE VERDADE no painel de ouvidoria do hospital. Rodar UMA vez. A regra da casa e que linha de ouvidoria em producao nunca se apaga: encerrar pelo status.",
+      "contato": "TESTE BANCADA ANA D1",
+      "turnos": [
+        {
+          "envie": "TESTE BANCADA ANA 18/08: quero fazer uma reclamacao, esperei tres horas na recepcao ontem e fui muito mal atendido"
+        },
+        {
+          "envie": "foi comigo mesmo, ontem por volta das 14h, na recepcao do ambulatorio"
+        },
+        {
+          "envie": "meu nome e Teste Bancada Ana, CPF 663.011.027-70"
+        },
+        {
+          "envie": "isso mesmo, pode registrar por favor",
+          "contem": [
+            "protocolo",
+            "2026-"
+          ],
+          "tools": [
+            "registrar_ouvidoria"
+          ]
+        }
+      ],
+      "notas_contem": [
+        "PROTOCOLO"
+      ],
+      "etiquetas": [
+        "ouvidoria"
+      ],
+      "nota": "A Ana so registra depois de nome e CPF confirmados (bloco cadastral do ADR-0014). Cenario sem esses dados nao chega no registro: a reprovacao e do cenario, nao dela. Achado da rodada 2."
+    },
+    {
+      "id": "E1",
+      "familia": "E",
+      "titulo": "API indisponivel nao vira invencao de valor",
+      "atencao": "QUEBRA A CREDENCIAL vault:6 de proposito, e ela serve as tools 1, 11 e 12 ao mesmo tempo. So rodar com as outras sessoes paradas, e restaurar logo em seguida.",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de cardiologia?",
+          "contem_algum": [
+            "nao consegui",
+            "não consegui",
+            "equipe",
+            "confirmar",
+            "encaminh"
+          ],
+          "nao_contem": [
+            "380",
+            "350",
+            "320",
+            "340",
+            "360"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D4",
+      "familia": "D",
+      "titulo": "Gravacao quebrada nao vira numero inventado",
+      "montagem_manual": "Apontar a tool 11 registrar_ouvidoria para uma rota inexistente da mesma API (404) antes de rodar, e RESTAURAR logo depois. Mexe em tool de producao: so com as sessoes paralelas paradas.",
+      "origem": "portado do runner da V24 (ana/testes/cenarios/ouvidoria.json, cenario D2)",
+      "contato": "TESTE BANCADA ANA D4",
+      "turnos": [
+        {
+          "envie": "TESTE BANCADA ANA: quero fazer uma reclamacao"
+        },
+        {
+          "envie": "a cobranca da minha internacao veio com um valor que ninguem soube me explicar no faturamento"
+        },
+        {
+          "envie": "meu nome e Teste Bancada Ana, CPF 663.011.027-70, foi comigo"
+        },
+        {
+          "envie": "foi na segunda de manha, no faturamento"
+        },
+        {
+          "envie": "pode registrar",
+          "contem_algum": [
+            "cuidado",
+            "registrada"
+          ],
+          "nao_contem": [
+            "2026-0",
+            "protocolo 2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D5",
+      "familia": "D",
+      "titulo": "Paciente volta com o numero: consulta por ANO-NNNN, sem status e sem resumo",
+      "origem": "portado do runner da V24 (ana/testes/cenarios/ouvidoria.json, cenario D3)",
+      "nota": "O numero abaixo tem que existir de verdade. 2026-0005 e o que a rodada 2 gerou no D1. Trocar quando um registro novo virar a referencia.",
+      "contato": "TESTE BANCADA ANA D5",
+      "turnos": [
+        {
+          "envie": "oi, eu registrei uma reclamacao com voces, o protocolo e 2026-0005. tem alguma novidade?",
+          "contem": [
+            "2026-0005"
+          ],
+          "nao_contem": [
+            "respondid",
+            "encerrad",
+            "tres horas",
+            "mal atendido"
+          ],
+          "tools": [
+            "consultar_protocolo_ouvidoria"
+          ]
+        }
+      ],
+      "etiquetas": [
+        "ouvidoria"
+      ]
+    }
+  ]
+}

@@ -11,3 +11,6 @@ ana/api-mv/absorcao-producao/resultados/amostras/
 # Backups de runtime do Ana OS (a rota de escrita gera .bak/.tmp)
 os/dados/*.bak
 os/dados/*.tmp
+
+# Relatorios crus de cada bateria da bancada (o resultado curado vive no roteiro)
+ana/bancada/resultados/
