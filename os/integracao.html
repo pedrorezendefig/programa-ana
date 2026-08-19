@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana OS · Mapa da Integração</title>
+<link rel="stylesheet" href="assets/os.css">
+<style>
+  /* ---- exclusivo do Mapa da Integração (ADR-0017) ---- */
+  .cabeca { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
+  .selos { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+
+  .placar { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: var(--gap-cards); margin: 18px 0 26px; }
+  .placar .card { cursor: default; }
+  .placar .num-indicador { display: block; margin: 2px 0 4px; }
+  .placar .nomes { font-size: 12.5px; line-height: 1.5; color: var(--cor-rotulo); }
+
+  .faixa { margin-bottom: 26px; }
+  .faixa-cab { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin: 0 0 12px; }
+  .faixa-cab h2 { margin: 0; }
+  .faixa-cab .resumo { font-size: 13.5px; line-height: 1.55; color: var(--cor-rotulo); flex: 1; min-width: 300px; }
+
+  .quadro { position: relative; background: var(--cor-card); border-radius: var(--raio-card); padding: 18px 20px; overflow-x: auto; }
+  .grade-mapa { position: relative; display: grid; gap: 9px 34px; align-items: center; min-width: 820px; }
+  .arestas { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+  .arestas path { fill: none; stroke: var(--cor-mudo); stroke-width: 1.5; }
+  .arestas line.guia { stroke: var(--cor-fio); stroke-width: 1; stroke-dasharray: 3 5; }
+  .arestas path.acesa { stroke: var(--cor-tinta); stroke-width: 2; }
+  .arestas text { font: 500 10px var(--font-inter); fill: var(--cor-rotulo); stroke: var(--cor-card); stroke-width: 3.5; paint-order: stroke; stroke-linejoin: round; }
+
+  /* rótulo da raia: ocupa a coluna 1 da grade, alinhado com as linhas daquela raia */
+  .raia-rot { align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding-right: 8px; border-right: 2px solid var(--cor-fio); }
+  .raia-rot .nome { font: var(--peso-bold) 13px/1.25 var(--font-poppins); letter-spacing: -0.2px; }
+  .raia-rot .nota { font-size: 10.5px; line-height: 1.38; color: var(--cor-rotulo); }
+
+  .no {
+    position: relative; z-index: 2; text-align: left;
+    background: var(--cor-card); border: 1px solid var(--cor-fio); border-radius: 16px;
+    padding: 9px 12px; cursor: pointer; font-family: inherit;
+    display: flex; flex-direction: column; gap: 4px; min-width: 138px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .no:hover, .no.ativo { border-color: var(--cor-tinta); transform: translateY(-1px); }
+  .no .tipo { font: var(--peso-semibold) 9.5px/1 var(--font-inter); letter-spacing: .09em; text-transform: uppercase; color: var(--cor-mudo); }
+  .no .titulo { font: var(--peso-semibold) 13px/1.28 var(--font-inter); letter-spacing: -0.1px; }
+  .no .selo {
+    align-self: flex-start; border-radius: var(--raio-pill); padding: 3px 9px;
+    font: var(--peso-medio) 11px/1.35 var(--font-inter);
+  }
+  .no .selo.migrada { background: var(--cor-verde-tinta); color: var(--cor-verde); }
+  .no .selo.a-migrar { background: var(--cor-areia); color: #6b6862; }
+  .no .selo.aguardando { background: var(--cor-fio); color: var(--cor-rotulo); }
+  .no .selo.desconhecido { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); }
+  .no .selo.sem-leitura { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); }
+  .no .selo.fora { background: transparent; box-shadow: inset 0 0 0 1px var(--cor-mudo); color: var(--cor-rotulo); }
+  .no .medida { font-size: 10.5px; line-height: 1.35; color: var(--cor-rotulo); }
+  .no .medida.ruim { color: var(--cor-vermelho); font-weight: var(--peso-semibold); }
+  .no .medida.velha { color: var(--cor-mudo); }
+  .no .defeito { font-size: 10.5px; line-height: 1.35; color: var(--cor-vermelho); font-weight: var(--peso-semibold); }
+  .no .etiqueta-tarefa { font: var(--peso-semibold) 10px/1 var(--font-inter); letter-spacing: .06em; color: var(--cor-mudo); }
+  .no.tipo-tool { border-color: var(--cor-mudo); }
+  .no.tipo-fala { border-left: 3px solid var(--cor-mudo); }
+
+  .legenda { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; margin: 0 0 16px; }
+  .legenda .item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--cor-rotulo); }
+
+  /* painel lateral: hover exibe, clique fixa (mesma gramática do Mapa do SOP) */
+  .painel {
+    position: fixed; top: 16px; right: 16px; bottom: 16px;
+    width: min(430px, calc(100vw - 32px));
+    background: var(--cor-card); border-radius: var(--raio-card);
+    box-shadow: 0 16px 44px -16px rgba(0,0,0,.3);
+    padding: 26px; overflow-y: auto;
+    transform: translateX(calc(100% + 32px));
+    transition: transform .26s cubic-bezier(.2,.8,.25,1);
+    z-index: 95; pointer-events: none;
+  }
+  .painel.aberto { transform: none; }
+  .painel.interativa { pointer-events: auto; }
+  .painel .fechar { position: absolute; top: 18px; right: 18px; }
+  .painel .titulo-no { font: var(--peso-bold) 19px/1.35 var(--font-poppins); letter-spacing: -0.3px; margin: 10px 42px 10px 0; }
+  .painel .bloco { margin-top: 17px; }
+  .painel .bloco p { font-size: 13.5px; line-height: 1.55; margin-top: 5px; }
+  .painel ul { margin: 5px 0 0; padding-left: 17px; }
+  .painel li { font-size: 13px; line-height: 1.55; margin-bottom: 5px; }
+  .painel .vivo { background: var(--cor-card-interno); border-radius: var(--raio-interno); padding: 13px 15px; margin-top: 7px; }
+  .painel .vivo .linha { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 4px 0; border-bottom: 1px solid var(--cor-fio); }
+  .painel .vivo .linha:last-child { border-bottom: none; }
+  .painel .vivo .linha .r { color: var(--cor-rotulo); flex-shrink: 0; }
+  .painel .vivo .linha .v { font-weight: var(--peso-semibold); text-align: right; word-break: break-all; }
+  .painel .acoes { display: flex; gap: 9px; margin-top: 12px; flex-wrap: wrap; }
+  .painel .fixado { font-size: 12px; color: var(--cor-mudo); margin-top: 18px; }
+  .painel .alerta-no { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); border-radius: var(--raio-interno); padding: 11px 14px; font-size: 12.5px; line-height: 1.5; margin-top: 12px; }
+
+  .aviso-vivo { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); border-radius: var(--raio-card); padding: 16px 20px; margin-bottom: 20px; font-size: 13.5px; line-height: 1.55; }
+  .nota-regra { font-size: 12.5px; line-height: 1.6; color: var(--cor-rotulo); }
+
+  @media (max-width: 820px) {
+    .grade-mapa { min-width: 700px; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="cabeca">
+    <div>
+      <h1>Mapa da Integração</h1>
+      <p class="lead" id="subtitulo"></p>
+    </div>
+    <div class="selos" id="selos"></div>
+  </div>
+
+  <div id="aviso-vivo"></div>
+
+  <div class="placar" id="placar"></div>
+
+  <div class="legenda">
+    <span class="item"><span class="chip feito">na API do Hospital</span> já migrou</span>
+    <span class="item"><span class="chip" style="background:var(--cor-areia);color:#6b6862">ainda no NocoDB</span> falta migrar (V23)</span>
+    <span class="item"><span class="chip bloqueada">esperando a GH</span> travado por terceiros</span>
+    <span class="item">passe o mouse num cartão para a ficha; clique para fixar e poder clicar nos links</span>
+  </div>
+
+  <div id="faixas"></div>
+
+  <section class="card" style="padding:22px 26px;">
+    <h3>Por que esta página não envelhece</h3>
+    <p class="nota-regra" id="nota-regra"></p>
+    <h3 style="margin-top:18px;">O que fica de fora, de propósito</h3>
+    <ul id="fora-do-recorte" style="margin:6px 0 0;padding-left:18px;"></ul>
+  </section>
+</main>
+
+<aside class="painel" id="painel" aria-label="Ficha do elo da integração">
+  <button class="btn claro fechar" type="button" id="btn-fechar">fechar</button>
+  <div id="painel-corpo"></div>
+</aside>
+
+<script src="assets/nav.js" data-ambiente="local"></script>
+<script>
+"use strict";
+
+var DADOS = null, MEDIDA = null, VIVO = null, FIXADO = null;
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+
+function hoje() { return new Date(); }
+
+function diasDesde(iso) {
+  if (!iso) return null;
+  var p = String(iso).split("-");
+  if (p.length !== 3) return null;
+  var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  return Math.floor((hoje() - d) / 86400000);
+}
+
+function dataBr(iso) {
+  var p = String(iso || "").split("-");
+  return p.length === 3 ? p[2] + "/" + p[1] : String(iso || "");
+}
+
+/* ------------------------------------------------------------------ o vivo
+   Regra do ADR-0017: o estado NAO esta escrito no JSON. Ele sai do host da URL
+   que a plataforma declara agora. Host que nao bate com nenhum destino conhecido
+   aparece em vermelho: e destino novo, e o mapa precisa aprender sobre ele. */
+
+function toolViva(nome) {
+  if (!VIVO || !VIVO.ok) return null;
+  for (var i = 0; i < VIVO.tools.length; i++) {
+    if (VIVO.tools[i].name === nome) return VIVO.tools[i];
+  }
+  return null;
+}
+
+function destinoDaUrl(url) {
+  if (!url) return null;
+  for (var i = 0; i < DADOS.destinos.length; i++) {
+    if (url.indexOf(DADOS.destinos[i].host) !== -1) return DADOS.destinos[i];
+  }
+  return null;
+}
+
+function estadoDoNo(no) {
+  if (!no.tool) return null;
+  if (!VIVO || !VIVO.ok) {
+    return { classe: "sem-leitura", rotulo: "não consegui ler a instância", destino: null, tool: null };
+  }
+  var t = toolViva(no.tool);
+  if (!t) {
+    return { classe: "desconhecido", rotulo: "ferramenta não existe mais na plataforma", destino: null, tool: null };
+  }
+  var d = destinoDaUrl(t.urlTemplate);
+  if (!d) {
+    return { classe: "desconhecido", rotulo: "destino novo, não mapeado", destino: null, tool: t };
+  }
+  return { classe: d.estado, rotulo: d.estado_rotulo, destino: d, tool: t };
+}
+
+/* --------------------------------------------------------------- a medida
+   O Ana OS nao chama a producao do Hospital: quem mede e o smoke-hospital.py.
+   Todo numero aparece com a data ao lado, e medida velha muda de cor. */
+
+/* A medida e do endpoint da API do Hospital. Mostra-la no cartao de uma tool que ainda
+   le do NocoDB seria mentir: aquele numero nao e o que a Ana recebe hoje. Nesses casos a
+   medida vira previsao, e so aparece no painel, dita como previsao. */
+function medidaDoNo(no, soVigente) {
+  if (!no.medida || !MEDIDA || !MEDIDA.tabelas) return null;
+  var m = MEDIDA.tabelas[no.medida];
+  if (!m) return null;
+  var est = estadoDoNo(no);
+  var vigente = !est || (est.destino && est.destino.id === "hospital");
+  if (soVigente && !vigente) return null;
+  var dias = diasDesde(MEDIDA.medido_em);
+  return {
+    m: m,
+    dias: dias,
+    velha: dias != null && dias > 7,
+    vigente: vigente,
+    texto: m.chars.toLocaleString("pt-BR") + " chars"
+      + (m.modo ? ", modo " + m.modo : "")
+      + (m.cabe ? "" : ", " + m.invisiveis.length + " invisíveis")
+      + " · medido em " + dataBr(MEDIDA.medido_em),
+  };
+}
+
+/* ---------------------------------------------------------------- desenho */
+
+function cartao(no) {
+  var est = estadoDoNo(no);
+  var med = medidaDoNo(no, true);
+  var html = '<button class="no tipo-' + esc(no.tipo) + '" data-no="' + esc(no.id) + '" type="button">';
+  html += '<span class="tipo">' + esc(no.tipo) + "</span>";
+  html += '<span class="titulo">' + esc(no.titulo) + "</span>";
+  if (est) html += '<span class="selo ' + est.classe + '">' + esc(est.rotulo) + "</span>";
+  if (no.tipo === "tool" && !est) html += "";
+  if (med) {
+    var cls = med.velha ? "velha" : (med.m.cabe ? "" : "ruim");
+    html += '<span class="medida ' + cls + '">' + esc(med.texto)
+      + (med.velha ? " (rode o smoke)" : "") + "</span>";
+  }
+  if (no.alerta) html += '<span class="defeito">' + esc(no.alerta) + "</span>";
+  if (no.tarefa) html += '<span class="etiqueta-tarefa">' + esc(no.tarefa) + "</span>";
+  html += "</button>";
+  return html;
+}
+
+function montarFaixa(faixa) {
+  var nos = DADOS.nos.filter(function (n) { return n.faixa === faixa.id; });
+  if (!nos.length) return "";
+
+  // raias presentes, na ordem canonica
+  var raias = DADOS.raias.filter(function (r) {
+    return nos.some(function (n) { return n.raia === r.id; });
+  });
+
+  // cada (raia, linha) vira uma linha da grade; a raia sabe onde comeca e onde acaba
+  var linhaDe = {}, prox = 1, faixaDaRaia = {};
+  raias.forEach(function (r) {
+    var linhas = [];
+    nos.forEach(function (n) {
+      if (n.raia === r.id && linhas.indexOf(n.linha) === -1) linhas.push(n.linha);
+    });
+    linhas.sort(function (a, b) { return a - b; });
+    faixaDaRaia[r.id] = { de: prox, ate: prox + linhas.length };
+    linhas.forEach(function (l) { linhaDe[r.id + ":" + l] = prox++; });
+  });
+
+  var maxCol = 0;
+  nos.forEach(function (n) { if (n.col > maxCol) maxCol = n.col; });
+
+  var css = "grid-template-columns: 132px repeat(" + (maxCol + 1) + ", minmax(140px, 1fr));";
+  var html = '<section class="faixa">';
+  html += '<div class="faixa-cab"><h2>' + esc(faixa.rotulo) + "</h2>";
+  html += '<p class="resumo">' + esc(faixa.resumo) + "</p></div>";
+  html += '<div class="quadro"><div class="grade-mapa" data-faixa="' + esc(faixa.id) + '" style="' + css + '">';
+  html += '<svg class="arestas" aria-hidden="true"></svg>';
+
+  raias.forEach(function (r) {
+    var f = faixaDaRaia[r.id];
+    html += '<div class="raia-rot" style="grid-column:1;grid-row:' + f.de + " / " + f.ate + '">'
+      + '<span class="nome">' + esc(r.rotulo) + "</span>"
+      + '<span class="nota">' + esc(r.nota) + "</span></div>";
+  });
+
+  nos.forEach(function (n) {
+    var linha = linhaDe[n.raia + ":" + n.linha];
+    html += '<div style="grid-column:' + (n.col + 2) + ";grid-row:" + linha + '">' + cartao(n) + "</div>";
+  });
+
+  html += "</div></div></section>";
+  return html;
+}
+
+function desenharArestas() {
+  document.querySelectorAll(".grade-mapa").forEach(function (grade) {
+    var svg = grade.querySelector(".arestas");
+    var base = grade.getBoundingClientRect();
+    svg.setAttribute("viewBox", "0 0 " + grade.scrollWidth + " " + grade.scrollHeight);
+    svg.setAttribute("width", grade.scrollWidth);
+    svg.setAttribute("height", grade.scrollHeight);
+    var partes = "";
+    grade.querySelectorAll(".raia-rot").forEach(function (rot) {
+      var r = rot.getBoundingClientRect();
+      var y = r.top + r.height / 2 - base.top;
+      partes += '<line class="guia" x1="' + (r.right - base.left + 10) + '" y1="' + y
+        + '" x2="' + grade.scrollWidth + '" y2="' + y + '"/>';
+    });
+    DADOS.arestas.forEach(function (a) {
+      var de = grade.querySelector('[data-no="' + a.de + '"]');
+      var para = grade.querySelector('[data-no="' + a.para + '"]');
+      if (!de || !para) return;
+      var rd = de.getBoundingClientRect(), rp = para.getBoundingClientRect();
+      var x1 = rd.right - base.left, y1 = rd.top + rd.height / 2 - base.top;
+      var x2 = rp.left - base.left, y2 = rp.top + rp.height / 2 - base.top;
+      var meio = (x1 + x2) / 2;
+      partes += '<path d="M ' + x1 + " " + y1 + " C " + meio + " " + y1 + ", " + meio + " " + y2
+        + ", " + (x2 - 6) + " " + y2 + '" data-de="' + esc(a.de) + '" data-para="' + esc(a.para) + '"/>';
+      // ponta da seta
+      partes += '<path d="M ' + (x2 - 7) + " " + (y2 - 4) + " L " + x2 + " " + y2 + " L "
+        + (x2 - 7) + " " + (y2 + 4) + '" data-de="' + esc(a.de) + '" data-para="' + esc(a.para) + '"/>';
+      if (a.rotulo && x2 - x1 > 52) {
+        partes += '<text x="' + meio + '" y="' + ((y1 + y2) / 2 - 5) + '" text-anchor="middle">'
+          + esc(a.rotulo) + "</text>";
+      }
+    });
+    svg.innerHTML = partes;
+  });
+}
+
+function acenderArestas(id) {
+  document.querySelectorAll(".arestas path").forEach(function (p) {
+    var liga = id && (p.dataset.de === id || p.dataset.para === id);
+    p.classList.toggle("acesa", !!liga);
+  });
+}
+
+/* ---------------------------------------------------------------- o painel */
+
+function linhaVivo(rotulo, valor) {
+  return '<div class="linha"><span class="r">' + esc(rotulo) + '</span><span class="v">' + esc(valor) + "</span></div>";
+}
+
+function corpoPainel(no) {
+  var est = estadoDoNo(no), med = medidaDoNo(no, false), f = no.ficha || {};
+  var h = "";
+  if (est) h += '<span class="chip ' + (est.classe === "migrada" ? "feito" : "bloqueada") + '">' + esc(est.rotulo) + "</span>";
+  h += '<div class="titulo-no">' + esc(no.titulo) + "</div>";
+  if (no.alerta) h += '<div class="alerta-no">' + esc(no.alerta) + "</div>";
+
+  if (f.serve_para) h += '<div class="bloco"><span class="micro">para que serve</span><p>' + esc(f.serve_para) + "</p></div>";
+  if (f.quando) h += '<div class="bloco"><span class="micro">quando a Ana chama</span><p>' + esc(f.quando) + "</p></div>";
+  if (f.devolve) h += '<div class="bloco"><span class="micro">o que devolve</span><p>' + esc(f.devolve) + "</p></div>";
+  if (f.limites && f.limites.length) {
+    h += '<div class="bloco"><span class="micro">limites</span><ul>';
+    f.limites.forEach(function (l) { h += "<li>" + esc(l) + "</li>"; });
+    h += "</ul></div>";
+  }
+  if (f.quando_falha) h += '<div class="bloco"><span class="micro">quando falha</span><p>' + esc(f.quando_falha) + "</p></div>";
+
+  // o vivo: lido agora da plataforma, nunca guardado neste repo
+  if (no.tool) {
+    h += '<div class="bloco"><span class="micro">a definição na plataforma, lida agora</span>';
+    if (est && est.tool) {
+      h += '<div class="vivo">'
+        + linhaVivo("nome", est.tool.name)
+        + linhaVivo("id", "#" + est.tool.id)
+        + linhaVivo("método", est.tool.method)
+        + linhaVivo("URL", est.tool.urlTemplate)
+        + linhaVivo("credencial", est.tool.credentialRef || "nenhuma")
+        + linhaVivo("ligada", est.tool.enabled ? "sim" : "NÃO")
+        + "</div>";
+    } else {
+      h += '<div class="vivo"><div class="linha"><span class="r">'
+        + esc((VIVO && VIVO.erro) || "a ferramenta não apareceu na leitura")
+        + "</span></div></div>";
+    }
+    h += "</div>";
+  }
+
+  if (med) {
+    h += '<div class="bloco"><span class="micro">' + (med.vigente ? "medido pelo smoke" : "previsão: como a API do Hospital responde hoje, para quando esta tool virar") + '</span><div class="vivo">'
+      + linhaVivo("tamanho", med.m.chars.toLocaleString("pt-BR") + " chars, de um teto de " + MEDIDA.teto_plataforma.toLocaleString("pt-BR"))
+      + linhaVivo("itens", med.m.itens)
+      + linhaVivo("modo", med.m.modo || "não declarado")
+      + linhaVivo("cabe?", med.m.cabe ? "sim" : "NÃO: " + med.m.invisiveis.join(", "))
+      + linhaVivo("medido em", dataBr(MEDIDA.medido_em) + (med.velha ? " (velha, rode o smoke)" : ""))
+      + "</div></div>";
+  }
+
+  if (no.prova) {
+    h += '<div class="bloco"><span class="micro">quem prova este elo</span><p>'
+      + esc(no.prova.veredito) + "</p>";
+    h += '<p class="caption" style="margin-top:5px;">Cenários: ' + esc(no.prova.cenarios.join(", "))
+      + ". Roteiro completo em <code>roadmap/roteiro-integracao-hospital.md</code>.</p></div>";
+  }
+
+  h += '<div class="acoes">';
+  if (no.ancora) {
+    h += '<a class="btn claro" href="sop.html#' + esc(no.ancora.no) + '">o trecho do prompt (Seção '
+      + esc(no.ancora.secao) + ")</a>";
+  }
+  if (no.tool) {
+    h += '<a class="btn claro" href="' + esc(DADOS.meta.console) + '" target="_blank" rel="noopener">abrir o console</a>';
+  }
+  if (no.tarefa) {
+    h += '<a class="btn claro" href="roadmap.html">a tarefa ' + esc(no.tarefa) + "</a>";
+  }
+  h += "</div>";
+  h += '<p class="fixado">' + (FIXADO === no.id ? "fixado: clique no cartão de novo para soltar" : "clique no cartão para fixar e poder clicar nos links") + "</p>";
+  return h;
+}
+
+function mostrar(id, fixar) {
+  var no = DADOS.nos.find(function (n) { return n.id === id; });
+  if (!no) return;
+  document.getElementById("painel-corpo").innerHTML = corpoPainel(no);
+  var p = document.getElementById("painel");
+  p.classList.add("aberto");
+  p.classList.toggle("interativa", !!fixar);
+  document.querySelectorAll(".no").forEach(function (b) {
+    b.classList.toggle("ativo", b.dataset.no === id);
+  });
+  acenderArestas(id);
+}
+
+function esconder() {
+  if (FIXADO) return;
+  var p = document.getElementById("painel");
+  p.classList.remove("aberto", "interativa");
+  document.querySelectorAll(".no").forEach(function (b) { b.classList.remove("ativo"); });
+  acenderArestas(null);
+}
+
+/* ---------------------------------------------------------------- o placar */
+
+function montarPlacar() {
+  var conta = {};
+  DADOS.destinos.forEach(function (d) { conta[d.id] = []; });
+  var semLeitura = 0, desconhecidos = 0;
+
+  DADOS.nos.forEach(function (n) {
+    if (!n.tool) return;
+    var e = estadoDoNo(n);
+    if (e.classe === "sem-leitura") { semLeitura++; return; }
+    if (!e.destino) { desconhecidos++; return; }
+    conta[e.destino.id].push(n.titulo);
+  });
+
+  var h = "";
+  DADOS.destinos.forEach(function (d) {
+    h += '<div class="card stat"><span class="rotulo">' + esc(d.rotulo) + "</span>"
+      + '<span class="num-indicador">' + conta[d.id].length + "</span>"
+      + '<span class="micro">' + esc(d.estado_rotulo) + "</span>"
+      + '<span class="nomes">' + esc(conta[d.id].join(" · ") || "nenhuma") + "</span></div>";
+  });
+  if (semLeitura) {
+    h += '<div class="card stat"><span class="rotulo">sem leitura</span>'
+      + '<span class="num-indicador" style="color:var(--cor-vermelho)">' + semLeitura + "</span>"
+      + '<span class="nomes">a página não conseguiu perguntar à plataforma onde estas ferramentas apontam.</span></div>';
+  }
+  if (desconhecidos) {
+    h += '<div class="card stat"><span class="rotulo">destino novo</span>'
+      + '<span class="num-indicador" style="color:var(--cor-vermelho)">' + desconhecidos + "</span>"
+      + '<span class="nomes">apontam para um host que este mapa ainda não conhece. Vale somar aos destinos do integracao.json.</span></div>';
+  }
+  document.getElementById("placar").innerHTML = h;
+}
+
+/* ------------------------------------------------------------------ start */
+
+function ligarEventos() {
+  document.querySelectorAll(".no").forEach(function (b) {
+    b.addEventListener("mouseenter", function () { if (!FIXADO) mostrar(b.dataset.no, false); });
+    b.addEventListener("focus", function () { if (!FIXADO) mostrar(b.dataset.no, false); });
+    b.addEventListener("mouseleave", esconder);
+    b.addEventListener("click", function () {
+      if (FIXADO === b.dataset.no) { FIXADO = null; esconder(); }
+      else { FIXADO = b.dataset.no; mostrar(FIXADO, true); }
+    });
+  });
+  document.getElementById("btn-fechar").addEventListener("click", function () {
+    FIXADO = null; esconder();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { FIXADO = null; esconder(); }
+  });
+  window.addEventListener("resize", desenharArestas);
+}
+
+async function carregar() {
+  DADOS = await fetch("dados/integracao.json").then(function (r) { return r.json(); });
+
+  try {
+    MEDIDA = await fetch("dados/integracao-medida.json").then(function (r) {
+      if (!r.ok) throw new Error("sem medida");
+      return r.json();
+    });
+  } catch (e) { MEDIDA = null; }
+
+  try {
+    VIVO = await fetch("/api/tools").then(function (r) { return r.json(); });
+  } catch (e) {
+    VIVO = { ok: false, erro: "o servidor do Ana OS não respondeu (o OS está rodando?)" };
+  }
+
+  document.getElementById("subtitulo").textContent = DADOS.meta.subtitulo;
+  document.getElementById("nota-regra").textContent = DADOS.meta.regra + " " + DADOS.meta.medida;
+  document.getElementById("fora-do-recorte").innerHTML = DADOS.meta.fora_do_recorte.map(function (x) {
+    return '<li class="caption">' + esc(x) + "</li>";
+  }).join("");
+
+  var selos = "";
+  if (VIVO && VIVO.ok) {
+    selos += '<span class="chip feito">definições lidas ao vivo</span>';
+  } else {
+    selos += '<span class="chip tag">sem leitura da plataforma</span>';
+  }
+  if (MEDIDA) {
+    var d = diasDesde(MEDIDA.medido_em);
+    selos += '<span class="chip ' + (d > 7 ? "bloqueada" : "azul") + '">medida de ' + dataBr(MEDIDA.medido_em) + "</span>";
+  } else {
+    selos += '<span class="chip bloqueada">sem medida: rode o smoke</span>';
+  }
+  document.getElementById("selos").innerHTML = selos;
+
+  if (!VIVO || !VIVO.ok) {
+    document.getElementById("aviso-vivo").innerHTML =
+      '<div class="aviso-vivo"><strong>Não consegui perguntar à plataforma onde as ferramentas apontam.</strong> '
+      + esc((VIVO && VIVO.erro) || "erro desconhecido")
+      + ". Esta página não guarda essas respostas de propósito (ADR-0017), então prefere dizer que não sabe a mostrar um valor velho como se fosse de agora. "
+      + "Suba o Ana OS com <code>python3 os/server.py</code> e confira o <code>AGENTS_API_TOKEN</code> no <code>.env</code>.</div>";
+  }
+
+  montarPlacar();
+  document.getElementById("faixas").innerHTML = DADOS.faixas.map(montarFaixa).join("");
+  ligarEventos();
+  requestAnimationFrame(desenharArestas);
+}
+
+carregar();
+</script>
+
+</body>
+</html>

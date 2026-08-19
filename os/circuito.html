@@ -259,10 +259,39 @@ let CAMINHO = "http";
 
 const ROT_TIPO = { http: "HTTP", nativa: "nativa", rag: "RAG" };
 const CHIP_TIPO = { http: "chip azul", nativa: "chip pendente", rag: "chip selo-saas" };
-const ROT_BACKEND = { nocodb: "NocoDB · Base Ana", gh: "API GH · homolog", plataforma: "plataforma / Chatwoot", kb: "base de conhecimento" };
+/* ADR-0017: o destino de cada ferramenta HTTP nao se declara mais no circuito.json.
+   Ele vem ao vivo da plataforma, pela rota /api/tools do Ana OS. O campo declarado
+   apodreceu em silencio quando a V21 virou a tool 1, e ficou cinco dias mentindo. */
+let VIVO = null;
+const DESTINOS = [
+  { host: "api.hospitalsaomatheus.cloud", rotulo: "API do Hospital", chip: "feito" },
+  { host: "31.97.29.32.sslip.io", rotulo: "NocoDB (casa velha)", chip: "bloqueada" },
+  { host: "dem.agenda.globalhealth.mv", rotulo: "API GH · homolog", chip: "azul" },
+];
+function toolViva(nome) {
+  if (!VIVO || !VIVO.ok) return null;
+  return VIVO.tools.find(function (x) { return x.name === nome; }) || null;
+}
+function chamadaDe(t) {
+  if (t.tipo !== "http") return t.chamada || "";
+  const v = toolViva(t.id);
+  if (!v) return (VIVO && VIVO.erro) || "não consegui ler a definição na plataforma";
+  return v.method + " " + v.urlTemplate;
+}
+function destinoVivo(nome) {
+  const v = toolViva(nome);
+  if (!v) return { rotulo: "não consegui ler a instância", chip: "tag" };
+  const d = DESTINOS.find(function (x) { return v.urlTemplate.indexOf(x.host) !== -1; });
+  return d || { rotulo: "destino novo, não mapeado", chip: "tag" };
+}
 
 async function carregar() {
   D = await fetch("/dados/circuito.json").then(function (r) { return r.json(); });
+  try {
+    VIVO = await fetch("/api/tools").then(function (r) { return r.json(); });
+  } catch (e) {
+    VIVO = { ok: false, erro: "o servidor do Ana OS não respondeu" };
+  }
   document.getElementById("sub").textContent =
     "Prompt " + D.meta.versao_prompt + " (" + D.meta.prompt_caracteres.toLocaleString("pt-BR") +
     " caracteres, exportado em " + D.meta.prompt_exportado_em + "). " +
@@ -547,23 +576,22 @@ function renderCircuito() {
 /* ---------- ferramentas ---------- */
 
 const GRUPOS = [
-  ["gh", "API Global Health (homolog) · credencial gh-homolog-token no vault"],
-  ["nocodb", "NocoDB Base Ana · shared views públicas somente leitura, sem segredo"],
-  ["plataforma", "Nativas · efeito dentro da plataforma e do Chatwoot"],
-  ["kb", "RAG · base de conhecimento"],
+  ["http", "Ferramentas HTTP · o destino de cada uma é lido ao vivo da plataforma (ADR-0017); o desenho dos dois lados dessa fronteira está no Mapa da Integração"],
+  ["nativa", "Nativas · efeito dentro da plataforma e do Chatwoot"],
+  ["rag", "RAG · base de conhecimento"],
 ];
 
 function renderTools() {
   const alvo = document.getElementById("grupos-tools");
   alvo.innerHTML = GRUPOS.map(function (g) {
-    const doGrupo = D.tools.filter(function (t) { return t.backend === g[0]; });
+    const doGrupo = D.tools.filter(function (t) { return t.tipo === g[0]; });
     let cards = doGrupo.map(function (t) {
       return '<div class="tool-card" data-tool="' + esc(t.id) + '" id="tool-' + esc(t.id) + '" tabindex="0" role="button" aria-label="' + esc(t.id) + '">' +
         '<div class="topo"><span class="nome">' + esc(t.id) + "</span>" +
         '<span class="' + CHIP_TIPO[t.tipo] + '">' + ROT_TIPO[t.tipo] + "</span></div>" +
         '<div class="faz">' + esc(t.faz) + "</div></div>";
     }).join("");
-    if (g[0] === "plataforma") {
+    if (g[0] === "nativa") {
       cards += '<div class="tool-card fantasma"><div class="topo"><span class="nome">+ 3 nativas</span></div>' +
         '<div class="faz">' + esc(D.meta.grants.observacao) + "</div></div>";
     }
@@ -585,7 +613,7 @@ function abrirTool(id) {
   history.replaceState(null, "", "#tool-" + id);
 
   const chips = '<span class="' + CHIP_TIPO[t.tipo] + '">' + ROT_TIPO[t.tipo] + "</span>" +
-    '<span class="chip bloqueada">' + esc(ROT_BACKEND[t.backend]) + "</span>" +
+    (t.tipo === "http" ? '<span class="chip ' + destinoVivo(t.id).chip + '">' + esc(destinoVivo(t.id).rotulo) + "</span>" : "") +
     (t.risco ? '<span class="chip ' + (t.risco === "medium" ? "tag" : "feito") + '">risco ' + esc(t.risco) + "</span>" : "") +
     (t.plataforma_id ? '<span class="chip contorno">tool id ' + t.plataforma_id + "</span>" : "");
 
@@ -616,7 +644,7 @@ function abrirTool(id) {
     '<div class="linha">' + chips + "</div>" +
     '<div class="nome-tool">' + esc(t.id) + "</div>" +
     '<p style="font-size:14px;">' + esc(t.faz) + "</p>" +
-    '<div class="bloco"><span class="micro">Chamada</span><code>' + esc(t.chamada) + "</code></div>" +
+    '<div class="bloco"><span class="micro">Chamada</span><code>' + esc(chamadaDe(t)) + "</code></div>" +
     exemplo + desfechos + secoes +
     '<div class="bloco caption">Quer ver ao vivo? A página <a href="cadeias.html">Cadeias</a> roda a API GH elo a elo e a <a href="bancada.html">Bancada</a> chama endpoint a endpoint.</div>';
 

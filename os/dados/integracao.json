@@ -1,0 +1,794 @@
+{
+  "meta": {
+    "titulo": "Mapa da Integração",
+    "subtitulo": "Tudo o que a Ana fala com o mundo fora dela, nos dois sentidos",
+    "regra": "ADR-0017: este arquivo guarda só o que só gente sabe. URL, método, credencial, se a ferramenta está ligada e o estado de migração NÃO ficam aqui: vêm ao vivo de /api/tools, que o os/server.py busca em /api/v1/tools da plataforma. Estado é derivado do host da URL viva, nunca escrito. Se a leitura falhar, a página diz que não sabe, e nunca mostra valor guardado como se fosse de agora.",
+    "medida": "Os números medidos (tamanho da resposta, itens invisíveis) vêm de os/dados/integracao-medida.json, gravado pelo ana/api-hospital/scripts/smoke-hospital.py. Aparecem sempre com a data ao lado, porque o Ana OS não chama a produção do Hospital.",
+    "fora_do_recorte": [
+      "O trecho literal do prompt: fica no Mapa do SOP, e cada nó linka para o nó de lá.",
+      "O catálogo endpoint a endpoint da API GH: fica no Mapa das APIs.",
+      "O passo a passo de um turno da Ana: fica no Circuito da Ana.",
+      "O modelo de dados do MV: fica no Atlas.",
+      "A série histórica das rodadas da bancada: fica no roteiro; aqui só o último veredito."
+    ],
+    "console": "https://agents.hospitalsaomatheus.cloud"
+  },
+  "destinos": [
+    {
+      "id": "hospital",
+      "host": "api.hospitalsaomatheus.cloud",
+      "rotulo": "App do Hospital",
+      "estado": "migrada",
+      "estado_rotulo": "na API do Hospital",
+      "nota": "Postgres do Hospital Reuniões, em produção. Editável por gente, com login e papéis, na tela /admin/dados-atendimento."
+    },
+    {
+      "id": "nocodb",
+      "host": "31.97.29.32.sslip.io",
+      "rotulo": "NocoDB",
+      "estado": "a-migrar",
+      "estado_rotulo": "ainda no NocoDB",
+      "nota": "A casa velha da Base Ana: shared view pública, sem credencial, sem login. Sai de cena na V26."
+    },
+    {
+      "id": "gh",
+      "host": "dem.agenda.globalhealth.mv",
+      "rotulo": "Global Health",
+      "estado": "aguardando",
+      "estado_rotulo": "esperando a Global Health",
+      "nota": "Homologação. O catálogo está vazio desde julho: a massa de teste é a pendência GH19, pedida em 07/jul/2026."
+    }
+  ],
+  "faixas": [
+    {
+      "id": "ida",
+      "rotulo": "A ida: o dado do hospital vira fala da Ana",
+      "resumo": "Alguém do hospital edita um valor na tela do app. Sem redeploy e sem cache, a próxima conversa já usa o dado novo. Provado ao vivo na rodada 1 da bancada, com o Pedro editando e a sessão medindo as três camadas."
+    },
+    {
+      "id": "volta",
+      "rotulo": "A volta: a queixa do paciente vira protocolo",
+      "resumo": "O paciente relata uma queixa, a Ana grava pela API e o número ANO-NNNN nasce da sequence do Postgres, nunca do modelo. A manifestação aparece no painel do hospital com o mesmo número."
+    },
+    {
+      "id": "parada",
+      "rotulo": "A fronteira parada: a agenda da Global Health",
+      "resumo": "Seis ferramentas prontas e provadas contra a homologação, esperando a massa de teste. O detalhe endpoint a endpoint mora no Mapa das APIs."
+    }
+  ],
+  "raias": [
+    {
+      "id": "hospital",
+      "rotulo": "App do Hospital Reuniões",
+      "nota": "FastAPI, Next.js e Postgres, no mesmo VPS. É o produto que a diretoria e as secretárias já usam."
+    },
+    {
+      "id": "nocodb",
+      "rotulo": "NocoDB (a casa velha)",
+      "nota": "Base Ana original (ADR-0006). Ninguém do hospital visita. Aposenta na V26."
+    },
+    {
+      "id": "ana",
+      "rotulo": "Ana (fazer.ai agents)",
+      "nota": "Agente 1 do tenant vitta-tech. Prompt do SOP, ferramentas HTTP e nativas, credenciais no vault."
+    },
+    {
+      "id": "gh",
+      "rotulo": "Global Health (homologação)",
+      "nota": "API de agendamento sobre o banco SaaS da GH, inacessível ao hospital."
+    }
+  ],
+  "nos": [
+    {
+      "id": "H1",
+      "faixa": "ida",
+      "raia": "hospital",
+      "col": 0,
+      "linha": 0,
+      "tipo": "tela",
+      "titulo": "Tela /admin/dados-atendimento",
+      "ficha": {
+        "serve_para": "Dar ao hospital o controle do que a Ana fala sobre valores, sem passar por ninguém de tecnologia.",
+        "quando": "Quando o hospital muda um preço, ativa ou desativa uma especialidade, corrige o preparo de um exame ou atualiza a cobertura de um convênio.",
+        "devolve": "Nada para a Ana diretamente: grava no Postgres do app. Super admins e secretárias editam, facilitadores só leem. Não existe apagar: desativar é ativo = false.",
+        "limites": [
+          "O topo da tela promete que a edição vale na resposta seguinte. Isso só é verdade na aba Consultas particulares.",
+          "Em Exames, Estimativas de cirurgias e Convênios por especialidade a Ana ainda lê o NocoDB: quem editar sai achando que resolveu e nada muda."
+        ],
+        "quando_falha": "Silenciosamente. Não existe sinal de erro em lugar nenhum: a pessoa edita, vê salvo, e a Ana continua falando o dado velho."
+      },
+      "alerta": "Promete o que não cumpre em 3 das 4 abas. A V28 avisa o hospital por escrito; a V23 conserta.",
+      "tarefa": "V23"
+    },
+    {
+      "id": "H2",
+      "faixa": "ida",
+      "raia": "hospital",
+      "col": 1,
+      "linha": 0,
+      "tipo": "banco",
+      "titulo": "Postgres do app",
+      "ficha": {
+        "serve_para": "Ser o dono único dos dados de atendimento, com auditoria e papéis, no produto que o hospital já paga.",
+        "quando": "Toda leitura da Ana bate aqui, sem cache em nenhum ponto da cadeia.",
+        "devolve": "As linhas ativas de cada tabela, mais um carimbo ultima_atualizacao por linha.",
+        "limites": [
+          "É produção. O Ana OS nunca consulta este banco: quem mede é o smoke-hospital.py, pelo terminal."
+        ],
+        "quando_falha": "A API devolve erro e a Ana cai na Regra Híbrida: diz que não conseguiu consultar e encaminha ao humano, sem citar valor nenhum."
+      }
+    },
+    {
+      "id": "H3",
+      "faixa": "ida",
+      "raia": "hospital",
+      "col": 2,
+      "linha": 0,
+      "tipo": "endpoint",
+      "titulo": "GET /api/ana/*",
+      "ficha": {
+        "serve_para": "Servir as quatro tabelas de valores à Ana, com escopo restrito e chave própria.",
+        "quando": "Sempre que uma ferramenta HTTP da Ana precisa de um valor oficial.",
+        "devolve": "A lista já filtrada (só linhas ativas), com o campo modo e uma dica de como pedir o detalhe. Desde a V22, o servidor escolhe o modo pelo tamanho: completo, resumo (nome e valor) ou indice (só nomes), e aceita filtro por termo.",
+        "limites": [
+          "Protegido por API key no header X-API-Key. Sem a chave, 401.",
+          "O filtro casa por trecho do nome: pedir urologia também traz Neurologia."
+        ],
+        "quando_falha": "401 se a chave venceu, 404 se a rota mudou. Nos dois casos a Ana não inventa valor: provado com 401 real na V21."
+      },
+      "prova": {
+        "cenarios": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "veredito": "A família A inteira passou na rodada 2: valor alterado, especialidade desativada, texto novo e item novo, todos refletidos na conversa seguinte sem redeploy."
+      }
+    },
+    {
+      "id": "N1",
+      "faixa": "ida",
+      "raia": "nocodb",
+      "col": 2,
+      "linha": 0,
+      "tipo": "banco",
+      "titulo": "NocoDB, shared views públicas",
+      "ficha": {
+        "serve_para": "Servir as três tabelas que ainda não mudaram de casa.",
+        "quando": "Toda vez que a Ana pergunta por exame, estimativa de cirurgia ou cobertura de convênio.",
+        "devolve": "As linhas cruas da tabela, com os nomes de campo antigos (Valor_Particular_RS, Cobre_SN, datas em dd/mm/aaaa).",
+        "limites": [
+          "A view é pública e read-only: qualquer um com a URL lê. Não tem credencial nenhuma.",
+          "Não filtra por Ativo: a regra de ignorar Ativo = N vive no prompt, não no servidor."
+        ],
+        "quando_falha": "O serviço cai no Coolify e as três tabelas somem de uma vez. É um dos motivos do ADR-0015."
+      },
+      "alerta": "Fonte velha. Some na V26, depois que a V23 virar as tools 2, 3 e 4.",
+      "tarefa": "V23"
+    },
+    {
+      "id": "T1",
+      "faixa": "ida",
+      "raia": "ana",
+      "col": 3,
+      "linha": 0,
+      "tipo": "tool",
+      "titulo": "Preços das consultas particulares",
+      "tool": "consultar_precos_consultas",
+      "medida": "consultas-particulares",
+      "ancora": {
+        "no": "P3",
+        "secao": "2.3",
+        "titulo": "consultar_precos_consultas"
+      },
+      "ficha": {
+        "serve_para": "Dar o valor oficial de uma consulta particular, e a lista das especialidades ofertadas.",
+        "quando": "Quando o paciente pergunta quanto custa uma consulta, se o hospital atende uma especialidade em particular, ou pede a lista inteira.",
+        "devolve": "Sem filtro: as ativas em modo resumo, só nome e valor, lista completa. Com o parâmetro especialidade: o modo completo, com descrição, diferenciais e alta_demanda, que a Seção 2.3 pede na hesitação.",
+        "limites": [
+          "O valor vem numérico (380.0). Virar R$ 380 na fala é trabalho do modelo, não do servidor.",
+          "O filtro casa por trecho: a descrição manda escolher o item cujo nome bate, nunca o primeiro por ser o primeiro."
+        ],
+        "quando_falha": "Regra Global 13: não afirma nem nega de memória, diz que não achou na tabela oficial e oferece encaminhar à equipe."
+      },
+      "prova": {
+        "cenarios": [
+          "C1a",
+          "C1b",
+          "C2",
+          "B1",
+          "B2",
+          "E2"
+        ],
+        "veredito": "6 de 6 na rodada 3 (19/ago/2026). A C1b e a C2, que eram as duas falhas da rodada 2, passaram: Urologia respondida com uma chamada só, e as 10 ativas listadas."
+      }
+    },
+    {
+      "id": "T2",
+      "faixa": "ida",
+      "raia": "ana",
+      "col": 3,
+      "linha": 1,
+      "tipo": "tool",
+      "titulo": "Tabela de exames",
+      "tool": "consultar_exames",
+      "medida": "exames",
+      "ancora": {
+        "no": "X9",
+        "secao": "6.B",
+        "titulo": "consultar_exames para o valor particular"
+      },
+      "ficha": {
+        "serve_para": "Dar valor particular, aceitação por convênio e, sobretudo, o preparo do exame.",
+        "quando": "Quando o paciente pergunta o preço de um exame (Seção 6.B) ou como se preparar para ele (Seção 5.D).",
+        "devolve": "Hoje, as linhas cruas do NocoDB, com os nomes de campo antigos.",
+        "limites": [
+          "O preparo sai literal, e resumir a ponto de perder um passo é falha clínica, não de estilo.",
+          "Quando esta tool virar para a API, ela precisa nascer com o campo de filtro: sem ele o servidor devolve o modo resumo e o preparo some."
+        ],
+        "quando_falha": "Setor responsável e handoff (Seção 5.D), nunca preparo inventado."
+      },
+      "tarefa": "V23"
+    },
+    {
+      "id": "T3",
+      "faixa": "ida",
+      "raia": "ana",
+      "col": 3,
+      "linha": 2,
+      "tipo": "tool",
+      "titulo": "Estimativas de cirurgias",
+      "tool": "consultar_cirurgias_estimativas",
+      "medida": "cirurgias-estimativas",
+      "ancora": {
+        "no": "P11",
+        "secao": "6.C",
+        "titulo": "consultar_cirurgias_estimativas"
+      },
+      "ficha": {
+        "serve_para": "Dar a estimativa de um procedimento cirúrgico, sempre com o caveat de avaliação médica.",
+        "quando": "Quando o paciente pergunta quanto custa uma cirurgia (Seção 6.C).",
+        "devolve": "Hoje, as linhas cruas do NocoDB. Do lado da API já cabe inteira no modo completo.",
+        "limites": [
+          "O caveat de avaliação médica é obrigatório em toda resposta: estimativa dita sem ele é erro.",
+          "É a tabela mais pesada por linha, então ela é a que mais rápido volta a apertar quando o hospital cadastrar procedimentos novos."
+        ],
+        "quando_falha": "Escala à fila humana com o resumo do pedido, sem estimativa de memória."
+      },
+      "tarefa": "V23"
+    },
+    {
+      "id": "T4",
+      "faixa": "ida",
+      "raia": "ana",
+      "col": 3,
+      "linha": 3,
+      "tipo": "tool",
+      "titulo": "Convênios por especialidade",
+      "tool": "consultar_convenios_especialidade",
+      "medida": "convenios-especialidade",
+      "ancora": {
+        "no": "C2",
+        "secao": "3.2",
+        "titulo": "consultar_convenios_especialidade"
+      },
+      "ficha": {
+        "serve_para": "Dizer se um convênio cobre uma especialidade, sem nunca afirmar nem negar de memória.",
+        "quando": "Sempre que o paciente menciona convênio e é preciso verificar cobertura (Seções 3 e 5.A).",
+        "devolve": "Hoje, as linhas cruas do NocoDB, com Cobre_SN em S ou N.",
+        "limites": [
+          "É a tabela que mais cresce: seis convênios por oito especialidades já dariam 48 linhas.",
+          "Combinação ausente da tabela não é negativa: cai na Regra Global 13."
+        ],
+        "quando_falha": "Oferece confirmação humana; jamais afirma que o convênio não cobre."
+      },
+      "tarefa": "V23"
+    },
+    {
+      "id": "A1",
+      "faixa": "ida",
+      "raia": "ana",
+      "col": 4,
+      "linha": 0,
+      "tipo": "fala",
+      "titulo": "A fala que o paciente lê",
+      "ficha": {
+        "serve_para": "Ser o único lugar onde o dado do hospital encontra o paciente.",
+        "quando": "Em toda resposta que cita valor, cobertura, preparo ou estimativa.",
+        "devolve": "O número no formato brasileiro, o diferencial em tom de conversa, o caveat quando é cirurgia.",
+        "limites": [
+          "O modelo pode distorcer o dado sem querer: é o que a família B da bancada mede.",
+          "Só o que o modelo enxerga chega aqui, e até a V22 o fim das tabelas não chegava."
+        ],
+        "quando_falha": "Vaza o formato do JSON (R$ 380.0) ou fala como campo de banco (alta demanda: verdadeiro)."
+      },
+      "prova": {
+        "cenarios": [
+          "B1",
+          "B2",
+          "B3"
+        ],
+        "veredito": "B1 e B2 passaram nas rodadas 2 e 3. B3 (preparo de exame) só roda depois da V23."
+      }
+    },
+    {
+      "id": "V1",
+      "faixa": "volta",
+      "raia": "ana",
+      "col": 0,
+      "linha": 0,
+      "tipo": "fala",
+      "titulo": "O paciente relata uma queixa",
+      "ficha": {
+        "serve_para": "Abrir o canal de ouvidoria dentro da mesma conversa, sem formulário e sem transferir antes de acolher.",
+        "quando": "Quando o paciente reclama de atendimento, demora, cobrança, higiene, conduta ou infraestrutura. Também vale para elogio.",
+        "devolve": "A tag ouvidoria na conversa, o que desliga o modo comercial para aquela conversa inteira (Regra Global 12).",
+        "limites": [
+          "A Ana só registra depois de nome e CPF: fluxo sem esses dados nunca chega ao registro."
+        ],
+        "quando_falha": "Nada é gravado, e é o comportamento correto: melhor não registrar do que registrar sem consentimento."
+      },
+      "ancora": {
+        "no": "O1",
+        "secao": "7.0",
+        "titulo": "assign_label: ouvidoria"
+      }
+    },
+    {
+      "id": "T11",
+      "faixa": "volta",
+      "raia": "ana",
+      "col": 1,
+      "linha": 0,
+      "tipo": "tool",
+      "titulo": "Registrar manifestação",
+      "tool": "registrar_ouvidoria",
+      "ancora": {
+        "no": "O10",
+        "secao": "7.3",
+        "titulo": "PASSO R2: registrar_ouvidoria"
+      },
+      "ficha": {
+        "serve_para": "Gravar a manifestação no índice oficial e receber de volta o número que se diz ao paciente.",
+        "quando": "No PASSO R2 da Seção 7.3, depois da coleta confirmada pelo paciente e da nota interna com o dossiê.",
+        "devolve": "A linha gravada, já com o campo protocolo no formato ANO-NNNN. Uma chamada só resolve (ADR-0016).",
+        "limites": [
+          "Índice, não dossiê: manda categoria, setor e resumo em linguagem de relato. Nunca nome, CPF ou dado clínico.",
+          "O campo conversa_id saiu do body: conversation_id não está na lista de 10 variáveis interpoláveis da plataforma, e chegava vazio em silêncio.",
+          "Nunca chamar duas vezes na mesma conversa."
+        ],
+        "quando_falha": "Trava dura do template: sem o campo protocolo na resposta, protocolo não existe. A Ana usa a mensagem de acolhimento sem número nenhum, nem no condicional."
+      },
+      "prova": {
+        "cenarios": [
+          "D1",
+          "D3",
+          "D4"
+        ],
+        "veredito": "D1 e D3 passaram na rodada 2 (protocolo real 2026-0005, uma chamada, sem dado pessoal no painel). D4 espera a janela da V29."
+      },
+      "tarefa": "V29"
+    },
+    {
+      "id": "H4",
+      "faixa": "volta",
+      "raia": "hospital",
+      "col": 2,
+      "linha": 0,
+      "tipo": "endpoint",
+      "titulo": "POST + sequence do Postgres",
+      "ficha": {
+        "serve_para": "Gerar o número do protocolo no banco, nunca no modelo.",
+        "quando": "A cada manifestação registrada.",
+        "devolve": "A linha inteira já gravada, com o protocolo pronto (sequence mais coluna gerada).",
+        "limites": [
+          "A numeração continua do último número usado no NocoDB: a sequence nasceu dele, então nada se repete.",
+          "As três linhas de teste do NocoDB (2026-0001 a 0003) não foram migradas: existem só lá."
+        ],
+        "quando_falha": "Recusa com o motivo. Sem o campo protocolo na resposta, a Ana não diz número nenhum."
+      },
+      "prova": {
+        "cenarios": [
+          "D2"
+        ],
+        "veredito": "Passou na rodada 2: o NocoDB termina em 0003 e o Postgres tem 0004 e 0005, sem reiniciar e sem repetir."
+      }
+    },
+    {
+      "id": "H5",
+      "faixa": "volta",
+      "raia": "hospital",
+      "col": 3,
+      "linha": 0,
+      "tipo": "painel",
+      "titulo": "Painel /ouvidoria do hospital",
+      "ficha": {
+        "serve_para": "Dar à diretoria e às secretárias a fila de manifestações, com status aberto ou respondido.",
+        "quando": "A manifestação aparece assim que a Ana grava.",
+        "devolve": "Categoria, setor, resumo, datas e status. Nenhum dado pessoal.",
+        "limites": [
+          "Respondido no painel significa que a equipe fechou o caso, e não que o paciente foi contatado. Por isso a Ana nunca lê esse campo de volta.",
+          "A ponte com a conversa é o número do protocolo, buscado no Chatwoot: a nota interna do PASSO R3 carrega PROTOCOLO ANO-NNNN.",
+          "Linha de ouvidoria em produção nunca se apaga: encerrar é mudar o status."
+        ],
+        "quando_falha": "Se o painel não mostra o número que a Ana disse, o elo se perdeu e a manifestação vira invisível para quem deveria responder."
+      }
+    },
+    {
+      "id": "V2",
+      "faixa": "volta",
+      "raia": "ana",
+      "col": 0,
+      "linha": 1,
+      "tipo": "fala",
+      "titulo": "O paciente volta com o número",
+      "ficha": {
+        "serve_para": "Atender quem já registrou e quer saber se andou.",
+        "quando": "Quando o paciente cita um número no formato ANO-NNNN perguntando pelo andamento.",
+        "devolve": "A tag ouvidoria de novo, e a consulta pelo número exatamente como ele escreveu.",
+        "limites": [
+          "Paciente que diz ter protocolo mas não sabe o número: nada de adivinhar, escala direto.",
+          "Número de agendamento (numérico, sem hífen) não se consulta aqui."
+        ],
+        "quando_falha": "Escala com o número citado no resumo interno."
+      },
+      "ancora": {
+        "no": "O19",
+        "secao": "7.5",
+        "titulo": "Paciente que volta com um protocolo"
+      }
+    },
+    {
+      "id": "T12",
+      "faixa": "volta",
+      "raia": "ana",
+      "col": 1,
+      "linha": 1,
+      "tipo": "tool",
+      "titulo": "Consultar protocolo",
+      "tool": "consultar_protocolo_ouvidoria",
+      "ancora": {
+        "no": "O19",
+        "secao": "7.5",
+        "titulo": "Paciente que volta com um protocolo"
+      },
+      "ficha": {
+        "serve_para": "Confirmar que a manifestação existe, e dizer ao paciente quando esperar retorno.",
+        "quando": "Na Seção 7.5, quando o paciente volta citando um protocolo. Não faz parte do registro: o número do registro novo vem da própria registrar_ouvidoria.",
+        "devolve": "Protocolo, data_abertura, prazo_resposta, status, categoria, setor e resumo. Ao paciente vão só os três primeiros.",
+        "limites": [
+          "Nunca ler o status: respondido é estado interno, e dizer isso a quem nunca recebeu retorno é dano grave.",
+          "Nunca ler o resumo de volta: a consulta confirma que o registro existe, não reabre o caso.",
+          "Os protocolos 2026-0001 a 0003 devolvem 404: vivem só no NocoDB."
+        ],
+        "quando_falha": "Não afirmar que o protocolo não existe. Mensagem de não localizado e escalada."
+      },
+      "alerta": "Encontra e não conta: na rodada 2 a Ana omitiu número, data e prazo. A proteção do status segurou. A V27 conserta.",
+      "prova": {
+        "cenarios": [
+          "D5"
+        ],
+        "veredito": "Falhou na rodada 2 (18/ago/2026): a consulta funcionou, mas a Ana informou só que encontrou. É a V27."
+      },
+      "tarefa": "V27"
+    },
+    {
+      "id": "H6",
+      "faixa": "volta",
+      "raia": "hospital",
+      "col": 2,
+      "linha": 1,
+      "tipo": "endpoint",
+      "titulo": "GET /ouvidoria/protocolos/{ANO-NNNN}",
+      "ficha": {
+        "serve_para": "Consultar uma manifestação pelo número, e só pelo número.",
+        "quando": "A cada paciente que volta citando um protocolo.",
+        "devolve": "A linha inteira do índice.",
+        "limites": [
+          "Não existe consulta por id nem listagem em /api/ana/*: só por ANO-NNNN.",
+          "Protocolo que só existe no NocoDB devolve 404. São os três de 12/ago, item do checklist da V26."
+        ],
+        "quando_falha": "404 tipado. A Ana trata como não localizado, sem negar a existência."
+      },
+      "tarefa": "V26"
+    },
+    {
+      "id": "V3",
+      "faixa": "volta",
+      "raia": "ana",
+      "col": 4,
+      "linha": 0,
+      "tipo": "fala",
+      "titulo": "O protocolo dito ao paciente",
+      "ficha": {
+        "serve_para": "Fechar o ciclo: o paciente sai da conversa com um número que existe de verdade.",
+        "quando": "Na mensagem do registro (Seção 7.3) e na do retorno (Seção 7.5).",
+        "devolve": "O número, e na Seção 7.5 também a data de abertura e o prazo de resposta.",
+        "limites": [
+          "O número tem que ser cópia literal do campo devolvido pela ferramenta. Número inventado é a violação mais grave da seção.",
+          "Na Seção 7.5 a Ana hoje engole a data e o prazo: é a V27."
+        ],
+        "quando_falha": "Mensagem de acolhimento sem número nenhum, e escalada."
+      },
+      "tarefa": "V27"
+    },
+    {
+      "id": "T5",
+      "faixa": "parada",
+      "raia": "ana",
+      "col": 0,
+      "linha": 0,
+      "tipo": "tool",
+      "titulo": "Buscar paciente por CPF",
+      "tool": "buscar_paciente_por_cpf",
+      "ancora": {
+        "no": "S2",
+        "secao": "Coleta",
+        "titulo": "PASSO 3: buscar_paciente_por_cpf, uso interno"
+      },
+      "ficha": {
+        "serve_para": "Achar o cadastro do paciente na agenda para seguir com agendamento.",
+        "quando": "Só quando o paciente vai agendar, consultar, remarcar ou cancelar, e depois do CPF validado.",
+        "devolve": "O cadastro, ou lista vazia se o paciente não existe.",
+        "limites": [
+          "Nunca serve para preço, cobertura ou preparo: isso vem das tabelas oficiais."
+        ],
+        "quando_falha": "Lista vazia não é erro: significa paciente sem cadastro."
+      }
+    },
+    {
+      "id": "T6",
+      "faixa": "parada",
+      "raia": "ana",
+      "col": 0,
+      "linha": 1,
+      "tipo": "tool",
+      "titulo": "Buscar paciente por telefone",
+      "tool": "buscar_paciente_por_telefone",
+      "ancora": {
+        "no": "S3",
+        "secao": "Coleta",
+        "titulo": "buscar_paciente_por_telefone, só sem CPF"
+      },
+      "ficha": {
+        "serve_para": "Segundo caminho de identificação, quando não há CPF.",
+        "quando": "Só na ausência de CPF: a busca por CPF é a preferencial.",
+        "devolve": "O cadastro, ou lista vazia.",
+        "limites": [
+          "Telefone só números, com DDD, sem o +55."
+        ],
+        "quando_falha": "Mesma leitura da busca por CPF."
+      }
+    },
+    {
+      "id": "T7",
+      "faixa": "parada",
+      "raia": "ana",
+      "col": 0,
+      "linha": 2,
+      "tipo": "tool",
+      "titulo": "Cadastrar paciente",
+      "tool": "cadastrar_paciente",
+      "ficha": {
+        "serve_para": "Criar o cadastro do paciente na agenda.",
+        "quando": "Hoje, nunca: o cadastro saiu do bot na V20.",
+        "devolve": "O id do cadastro, ou o motivo da recusa.",
+        "limites": [
+          "Fora dos grants do agente desde o ADR-0014: o cadastro voltou a ser trabalho humano.",
+          "Volta com a P6, e o achado do contact_phone desenha essa volta com uma pergunta a menos."
+        ],
+        "quando_falha": "Não se aplica: a Ana não chama."
+      },
+      "alerta": "Existe na plataforma, mas está fora dos grants do agente (ADR-0014). A Ana não pode chamá-la."
+    },
+    {
+      "id": "T8",
+      "faixa": "parada",
+      "raia": "ana",
+      "col": 1,
+      "linha": 0,
+      "tipo": "tool",
+      "titulo": "Especialidades da agenda",
+      "tool": "consultar_especialidades_agenda",
+      "ancora": {
+        "no": "P13",
+        "secao": "2.3.1",
+        "titulo": "PASSO A1: agenda consultada depois de nome e CPF"
+      },
+      "ficha": {
+        "serve_para": "Achar o item agendável e o id que a consulta de horários exige.",
+        "quando": "Primeiro elo da cadeia de horários, depois de nome e CPF coletados.",
+        "devolve": "Os itens agendáveis com o campo id.",
+        "limites": [
+          "Nome em CAIXA ALTA e sem acento.",
+          "Conteúdo vazio significa especialidade não publicada: pare a cadeia, não chame a próxima."
+        ],
+        "quando_falha": "PASSO A2 da Seção 2.3.1: informa que a agenda online está indisponível e encaminha."
+      }
+    },
+    {
+      "id": "T9",
+      "faixa": "parada",
+      "raia": "ana",
+      "col": 1,
+      "linha": 1,
+      "tipo": "tool",
+      "titulo": "Horários livres",
+      "tool": "consultar_horarios_livres",
+      "ancora": {
+        "no": "P13",
+        "secao": "2.3.1",
+        "titulo": "PASSO A1: agenda consultada depois de nome e CPF"
+      },
+      "ficha": {
+        "serve_para": "Mostrar horários reais ao paciente, no máximo cinco por mensagem.",
+        "quando": "Segundo elo da cadeia, só com o id que a anterior devolveu.",
+        "devolve": "Agendas, prestadores e horários, aninhados.",
+        "limites": [
+          "Nunca com id inventado ou adivinhado.",
+          "Esta ferramenta apenas consulta: não marca, não reserva e não garante horário nenhum."
+        ],
+        "quando_falha": "PASSO A2, sem repetir a chamada e sem sugerir horário de memória."
+      },
+      "alerta": "A vitrine desta cadeia está travada pela GH19: o catálogo da homologação está vazio desde julho."
+    },
+    {
+      "id": "T10",
+      "faixa": "parada",
+      "raia": "ana",
+      "col": 1,
+      "linha": 2,
+      "tipo": "tool",
+      "titulo": "Prestadores da agenda",
+      "tool": "consultar_prestadores_agenda",
+      "ancora": {
+        "no": "P13",
+        "secao": "2.3.1",
+        "titulo": "PASSO A1: agenda consultada depois de nome e CPF"
+      },
+      "ficha": {
+        "serve_para": "Dizer quem atende, quando o paciente pergunta por profissional.",
+        "quando": "Só quando o paciente pergunta quem atende ou pede alguém específico. Não é necessária para oferecer horários.",
+        "devolve": "Os profissionais publicados na agenda online.",
+        "limites": [
+          "Nome em CAIXA ALTA e sem acento."
+        ],
+        "quando_falha": "Não cita nome de médico de memória: informa que não consegue ver a agenda e segue o PASSO A2."
+      }
+    },
+    {
+      "id": "G1",
+      "faixa": "parada",
+      "raia": "gh",
+      "col": 2,
+      "linha": 0,
+      "tipo": "endpoint",
+      "titulo": "API Global Health (homologação)",
+      "ficha": {
+        "serve_para": "Ser a fachada de agenda do hospital: catálogo, horários e agendamento.",
+        "quando": "Em toda a cadeia de agendamento, quando ela existir de verdade.",
+        "devolve": "Hoje, catálogo vazio nos quatro GETs. A escrita funciona e grava no banco SaaS da GH.",
+        "limites": [
+          "Roda sobre o banco SaaS da Global Health, inacessível ao hospital: só a finalização chega ao Soul e ao Oracle do MV.",
+          "Produção é proibida nas ferramentas locais: só homologação."
+        ],
+        "quando_falha": "A Regra Híbrida vale igual: nada de horário de memória."
+      },
+      "alerta": "Catálogo vazio desde 07/jul/2026. A massa de teste é a pendência GH19, cobrada em 12/ago.",
+      "tarefa": "GH19"
+    }
+  ],
+  "arestas": [
+    {
+      "de": "H1",
+      "para": "H2",
+      "rotulo": "grava"
+    },
+    {
+      "de": "H2",
+      "para": "H3",
+      "rotulo": "sem cache"
+    },
+    {
+      "de": "H3",
+      "para": "T1",
+      "rotulo": "X-API-Key"
+    },
+    {
+      "de": "N1",
+      "para": "T2",
+      "rotulo": ""
+    },
+    {
+      "de": "N1",
+      "para": "T3",
+      "rotulo": ""
+    },
+    {
+      "de": "N1",
+      "para": "T4",
+      "rotulo": ""
+    },
+    {
+      "de": "T1",
+      "para": "A1",
+      "rotulo": ""
+    },
+    {
+      "de": "T2",
+      "para": "A1",
+      "rotulo": ""
+    },
+    {
+      "de": "T3",
+      "para": "A1",
+      "rotulo": ""
+    },
+    {
+      "de": "T4",
+      "para": "A1",
+      "rotulo": ""
+    },
+    {
+      "de": "V1",
+      "para": "T11",
+      "rotulo": "após a coleta"
+    },
+    {
+      "de": "T11",
+      "para": "H4",
+      "rotulo": "POST"
+    },
+    {
+      "de": "H4",
+      "para": "H5",
+      "rotulo": "entra na fila"
+    },
+    {
+      "de": "H4",
+      "para": "V3",
+      "rotulo": "devolve o número"
+    },
+    {
+      "de": "V2",
+      "para": "T12",
+      "rotulo": "ANO-NNNN"
+    },
+    {
+      "de": "T12",
+      "para": "H6",
+      "rotulo": "GET"
+    },
+    {
+      "de": "H6",
+      "para": "V3",
+      "rotulo": "data e prazo"
+    },
+    {
+      "de": "T5",
+      "para": "G1",
+      "rotulo": ""
+    },
+    {
+      "de": "T6",
+      "para": "G1",
+      "rotulo": ""
+    },
+    {
+      "de": "T8",
+      "para": "G1",
+      "rotulo": ""
+    },
+    {
+      "de": "T9",
+      "para": "G1",
+      "rotulo": ""
+    },
+    {
+      "de": "T10",
+      "para": "G1",
+      "rotulo": ""
+    }
+  ]
+}

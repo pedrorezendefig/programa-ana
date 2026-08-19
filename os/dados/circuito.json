@@ -10,8 +10,9 @@
       "nativas": 8,
       "rag": 1,
       "http": 10,
-      "observacao": "Das 8 nativas concedidas, 5 são citadas no prompt e aparecem aqui nomeadas; as 3 restantes serão carimbadas quando o MCP da fazer.ai estiver conectado numa sessão."
-    }
+      "observacao": "Das 8 nativas concedidas, 5 são citadas no prompt e aparecem aqui nomeadas; as 3 restantes serão carimbadas quando o MCP da fazer.ai estiver conectado numa sessão. O número de ferramentas HTTP e o destino de cada uma se leem ao vivo aqui e no Mapa da Integração, nunca neste arquivo."
+    },
+    "destino_das_tools": "ADR-0017: este arquivo não declara mais para onde cada ferramenta HTTP aponta. Método, URL, credencial e se está ligada vêm ao vivo da rota /api/tools do Ana OS, que lê /api/v1/tools na plataforma. O campo declarado apodreceu em silêncio quando a V21 virou a tool 1 para a API do Hospital: ficou cinco dias dizendo NocoDB. O desenho dos dois lados dessa fronteira vive na página Mapa da Integração."
   },
   "raias": [
     {
@@ -208,9 +209,7 @@
     {
       "id": "consultar_precos_consultas",
       "tipo": "http",
-      "backend": "nocodb",
       "plataforma_id": 1,
-      "chamada": "GET shared view · 1_Consultas_Particulares",
       "faz": "Lê preços e diferenciais das consultas particulares na Base Ana (NocoDB).",
       "exemplo": {
         "pedido": "GET (shared view pública read-only da tabela 1_Consultas_Particulares)",
@@ -235,9 +234,7 @@
     {
       "id": "consultar_exames",
       "tipo": "http",
-      "backend": "nocodb",
       "plataforma_id": 2,
-      "chamada": "GET shared view · 2_Exames",
       "faz": "Lê valor particular e preparo dos exames na Base Ana.",
       "exemplo": {
         "pedido": "GET (shared view pública read-only da tabela 2_Exames)",
@@ -263,9 +260,7 @@
     {
       "id": "consultar_cirurgias_estimativas",
       "tipo": "http",
-      "backend": "nocodb",
       "plataforma_id": 3,
-      "chamada": "GET shared view · 3_Cirurgias_Estimativas",
       "faz": "Lê as estimativas de cirurgia na Base Ana.",
       "exemplo": {
         "pedido": "GET (shared view pública read-only da tabela 3_Cirurgias_Estimativas)",
@@ -289,9 +284,7 @@
     {
       "id": "consultar_convenios_especialidade",
       "tipo": "http",
-      "backend": "nocodb",
       "plataforma_id": 4,
-      "chamada": "GET shared view · 4_Convenios_Especialidade",
       "faz": "Lê a cobertura convênio x especialidade (coluna Cobre_SN) na Base Ana.",
       "exemplo": {
         "pedido": "GET (shared view pública read-only da tabela 4_Convenios_Especialidade)",
@@ -316,10 +309,8 @@
     {
       "id": "buscar_paciente_por_cpf",
       "tipo": "http",
-      "backend": "gh",
       "plataforma_id": 5,
       "risco": "low",
-      "chamada": "GET /rest/whatsapp/pessoas?cpf=...",
       "faz": "Busca o cadastro do paciente na GH pelo CPF (11 dígitos), no PASSO 3.5 da Coleta.",
       "exemplo": {
         "pedido": "GET /pessoas?cpf=66301102770 (header Token injetado pelo vault; o segredo nunca passa pelo prompt)",
@@ -347,10 +338,8 @@
     {
       "id": "buscar_paciente_por_telefone",
       "tipo": "http",
-      "backend": "gh",
       "plataforma_id": 6,
       "risco": "low",
-      "chamada": "GET /rest/whatsapp/pessoas?telefone=...",
       "faz": "Busca o cadastro pelo telefone (DDD, sem +55); só quando não há CPF.",
       "exemplo": {
         "pedido": "GET /pessoas?telefone=21999990000",
@@ -374,10 +363,8 @@
     {
       "id": "cadastrar_paciente",
       "tipo": "http",
-      "backend": "gh",
       "plataforma_id": 7,
       "risco": "medium",
-      "chamada": "POST /rest/whatsapp/pessoas",
       "faz": "Cria o cadastro do paciente na homolog GH (a primeira tool de escrita da Ana). Quatro campos obrigatórios: nome, cpf, dataNascimento, telefone. Só roda após busca vazia e confirmação explícita (PASSO 3.6).",
       "exemplo": {
         "pedido": "POST /pessoas · body com nome, cpf, dataNascimento (aaaa-mm-dd) e telefone",
@@ -405,10 +392,8 @@
     {
       "id": "consultar_especialidades_agenda",
       "tipo": "http",
-      "backend": "gh",
       "plataforma_id": 8,
       "risco": "low",
-      "chamada": "GET /rest/whatsapp/consultas",
       "faz": "Elo 1 da cadeia de disponibilidade: lista as especialidades com agenda na GH.",
       "exemplo": {
         "pedido": "GET /consultas",
@@ -432,10 +417,8 @@
     {
       "id": "consultar_horarios_livres",
       "tipo": "http",
-      "backend": "gh",
       "plataforma_id": 9,
       "risco": "low",
-      "chamada": "GET /rest/whatsapp/agendas/v2?idItemAgendamento=...",
       "faz": "Elo 2 da cadeia: lista os horários livres do item de agendamento escolhido.",
       "exemplo": {
         "pedido": "GET /agendas/v2?idItemAgendamento=<id do elo 1>",
@@ -459,10 +442,8 @@
     {
       "id": "consultar_prestadores_agenda",
       "tipo": "http",
-      "backend": "gh",
       "plataforma_id": 10,
       "risco": "low",
-      "chamada": "GET /rest/whatsapp/prestadores",
       "faz": "Apoio informativo da cadeia: o nome do prestador (médico) da agenda.",
       "exemplo": {
         "pedido": "GET /prestadores",
@@ -486,7 +467,6 @@
     {
       "id": "search_knowledge",
       "tipo": "rag",
-      "backend": "kb",
       "chamada": "busca semântica · KB Base Hospital São Matheus",
       "faz": "Busca na base de conhecimento (5 docs, convênios do MV). As Tabelas Oficiais têm precedência sobre ela.",
       "exemplo": {
@@ -511,7 +491,6 @@
     {
       "id": "kanban_move_card",
       "tipo": "nativa",
-      "backend": "plataforma",
       "chamada": "ação nativa · funil do Chatwoot",
       "faz": "Move o card da conversa entre as etapas do funil (EM ATENDIMENTO, FILA COMERCIAL, AGENDADO...).",
       "secoes": [
@@ -537,7 +516,6 @@
     {
       "id": "assign_label",
       "tipo": "nativa",
-      "backend": "plataforma",
       "chamada": "ação nativa · tags do Chatwoot",
       "faz": "Aplica tag na conversa (particular-aquecido, ouvidoria, prontuario, exame-resultado, fora-horario...).",
       "secoes": [
@@ -555,7 +533,6 @@
     {
       "id": "handoff_to_human",
       "tipo": "nativa",
-      "backend": "plataforma",
       "chamada": "ação nativa · transferência de fila",
       "faz": "Transfere a conversa para uma fila humana com o resumo interno; depois do handoff o bot silencia por design.",
       "secoes": [
@@ -577,7 +554,6 @@
     {
       "id": "private_note",
       "tipo": "nativa",
-      "backend": "plataforma",
       "chamada": "ação nativa · nota privada",
       "faz": "Grava nota privada na conversa (ex.: o REGISTRO DE OUVIDORIA da Seção 7.3); o paciente não vê.",
       "secoes": [
@@ -588,11 +564,60 @@
     {
       "id": "get_current_time",
       "tipo": "nativa",
-      "backend": "plataforma",
       "chamada": "ação nativa · relógio",
       "faz": "Hora atual para as regras de horário (Regra 9, Seção 10: fora de horário e PERÍODO_FDS).",
       "secoes": [
         "Regra 9"
+      ]
+    },
+    {
+      "id": "registrar_ouvidoria",
+      "tipo": "http",
+      "plataforma_id": 11,
+      "risco": "medium",
+      "faz": "Grava a manifestação de ouvidoria no índice oficial e devolve, na mesma resposta, o protocolo ANO-NNNN que se diz ao paciente.",
+      "exemplo": {
+        "pedido": "POST com categoria, setor e resumo em linguagem de relato, sem nome, CPF nem dado clínico",
+        "resposta": "HTTP 200 com a linha gravada e o campo protocolo pronto (ex.: 2026-0005)",
+        "fonte": "Prova da V25, rodada 2 (18/ago/2026): protocolo 2026-0005 dito ao paciente e presente no Postgres, com uma chamada só."
+      },
+      "desfechos": [
+        {
+          "rotulo": "Devolveu o protocolo",
+          "ana": "Informa o número na mensagem do registro (Seção 7.3), move para FILA OUVIDORIA e escala."
+        },
+        {
+          "rotulo": "Erro ou resposta sem o campo protocolo",
+          "ana": "Trava dura: protocolo não existe. Mensagem de acolhimento sem número nenhum, nem no condicional."
+        }
+      ],
+      "secoes": [
+        "7.3"
+      ]
+    },
+    {
+      "id": "consultar_protocolo_ouvidoria",
+      "tipo": "http",
+      "plataforma_id": 12,
+      "risco": "low",
+      "faz": "Consulta uma manifestação já registrada pelo número ANO-NNNN, para o paciente que volta perguntando pelo andamento.",
+      "exemplo": {
+        "pedido": "GET com o protocolo no caminho, exatamente como o paciente escreveu",
+        "resposta": "HTTP 200 com protocolo, data_abertura, prazo_resposta, status, categoria, setor e resumo",
+        "fonte": "Prova da V25, rodada 2: a consulta funcionou ponta a ponta; o que falhou foi a fala (a V27)."
+      },
+      "desfechos": [
+        {
+          "rotulo": "Encontrou",
+          "ana": "Informa SÓ o protocolo, a data de abertura e o prazo, e escala. Nunca lê o status nem o resumo de volta."
+        },
+        {
+          "rotulo": "Nao encontrou ou erro",
+          "ana": "Não afirma que o protocolo não existe: mensagem de não localizado e escalada (Seção 7.5)."
+        }
+      ],
+      "secoes": [
+        "7.5"
       ]
     }
   ],

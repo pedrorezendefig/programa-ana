@@ -20,6 +20,8 @@
       svg: icone('<path d="M3.5 6.5h5M15.5 6.5h5M3.5 17.5h5M15.5 17.5h5"/><circle cx="12" cy="6.5" r="2.2"/><circle cx="12" cy="17.5" r="2.2"/><path d="M12 8.7v6.6"/>') },
     { arquivo: "circuito.html", rotulo: "Circuito da Ana",
       svg: icone('<rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9.5 7V3.5M14.5 7V3.5M9.5 20.5V17M14.5 20.5V17M7 9.5H3.5M7 14.5H3.5M20.5 9.5H17M20.5 14.5H17"/>') },
+    { arquivo: "integracao.html", rotulo: "Mapa da Integração",
+      svg: icone('<rect x="2.5" y="6" width="6.5" height="12" rx="2"/><rect x="15" y="6" width="6.5" height="12" rx="2"/><path d="M9.5 9.8h5M12.8 7.9l2 1.9-2 1.9"/><path d="M14.5 14.2h-5M11.7 12.3l-2 1.9 2 1.9"/>') },
     { arquivo: "apis.html", rotulo: "Mapa das APIs",
       svg: icone('<circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>') },
     { arquivo: "bancada.html", rotulo: "Bancada",
