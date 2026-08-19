@@ -582,19 +582,17 @@
       "id": "V23",
       "titulo": "Tools 2-4 na API do Hospital: exames, cirurgias e convênios saem do NocoDB",
       "dono": "C+P",
-      "status": "fazer",
+      "status": "feito",
       "deps": [
         "V22"
       ],
-      "canal": "comigo",
-      "canal_desde": "2026-08-17",
-      "mesa": {
-        "destrava": "Três quartos da Base Ana mudando de casa: o hospital passa a editar exames, cirurgias e convênios na tela do próprio app, com login e auditoria.",
-        "gesto": "Sessão comigo, uma tool por vez na liturgia da V21: comparação campo a campo antes, diff da tool aprovado, regressão no playground depois. A tool 3 (cirurgias) já cabe no teto e pode ir antes das outras duas."
-      },
-      "nota": "Endpoints prontos em produção desde 15/ago (v0.55.0, PR #289/#303): GET /api/ana/exames, /api/ana/cirurgias-estimativas e /api/ana/convenios-especialidade, mesma chave X-API-Key da tool 1 (o vault já tem, vault:6). Mudanças de formato iguais às da V21: envelope com o nome da tabela, valores numéricos, booleanos no lugar de S/N, datas AAAA-MM-DD, coluna ativo não vem (filtro server-side). Nomes de campo mudam: Valor_Particular_RS vira valor_particular_rs, Cobre_SN vira cobre (booleano), Estimativa_Total_RS vira estimativa_total_rs. Bloqueada pela V22 nas tools 2 e 4 (exames e convênios estouram o teto); a tool 3 cabe hoje e pode virar antes, com a ressalva de que a 4ª cirurgia cadastrada estoura. ARMADILHA LIGADA EM PRODUÇÃO ATÉ ESTA TAREFA ENTRAR (achado da rodada 2, 18/ago/2026): o topo da tela /admin/dados-atendimento diz \"Editou, valeu: a resposta seguinte já usa o dado novo\", e isso só é verdade na aba Consultas particulares. Em Exames, Estimativas de cirurgias e Convênios por especialidade a Ana ainda lê o NocoDB: quem editar ali sai achando que resolveu e a Ana segue falando o dado velho. A V28 avisa o hospital por escrito enquanto esta tarefa não entra.",
-      "prompt": "Quero virar as tools 2, 3 e 4 da Ana (exames, cirurgias e convênios) para a API do Hospital Reuniões, seguindo a mesma liturgia da V21. Antes de qualquer coisa, rode python3 ana/api-hospital/scripts/smoke-hospital.py: se alguma tabela ainda aparecer como CORTA, essa tool NÃO vira (a Ana ficaria cega para o fim da lista) e a V22 é o pré-requisito. Para cada tool que passar: (1) comparação campo a campo da resposta do NocoDB com a da API, normalizando os formatos, e me mostre o diff; (2) o diff da definição da tool para eu aprovar (URL, allowed_hosts, credencial hospital-ana-api-key, query, descrição com os formatos novos); (3) aplicar e rodar a regressão no playground, incluindo o primeiro E o último item da tabela (o cenário C1 do roteiro de integração, que é o que pega o truncamento). Avalie se o prompt precisa mudar: na V21 não precisou, porque os formatos moram na descrição da tool. Registre nos dois arquivos do roadmap ao terminar.",
-      "tema": "base"
+      "nota": "Endpoints prontos em produção desde 15/ago (v0.55.0, PR #289/#303): GET /api/ana/exames, /api/ana/cirurgias-estimativas e /api/ana/convenios-especialidade, mesma chave X-API-Key da tool 1 (o vault já tem, vault:6). Mudanças de formato iguais às da V21: envelope com o nome da tabela, valores numéricos, booleanos no lugar de S/N, datas AAAA-MM-DD, coluna ativo não vem (filtro server-side). Nomes de campo mudam: Valor_Particular_RS vira valor_particular_rs, Cobre_SN vira cobre (booleano), Estimativa_Total_RS vira estimativa_total_rs. Bloqueada pela V22 nas tools 2 e 4 (exames e convênios estouram o teto); a tool 3 cabe hoje e pode virar antes, com a ressalva de que a 4ª cirurgia cadastrada estoura. ARMADILHA LIGADA EM PRODUÇÃO ATÉ ESTA TAREFA ENTRAR (achado da rodada 2, 18/ago/2026): o topo da tela /admin/dados-atendimento diz \"Editou, valeu: a resposta seguinte já usa o dado novo\", e isso só é verdade na aba Consultas particulares. Em Exames, Estimativas de cirurgias e Convênios por especialidade a Ana ainda lê o NocoDB: quem editar ali sai achando que resolveu e a Ana segue falando o dado velho. A V28 avisa o hospital por escrito enquanto esta tarefa não entra. CONCLUÍDA EM 19/ago/2026, na liturgia da V21, com as três tools viradas na mesma sessão. (1) Smoke antes: 10 checks OK, zero CORTA, nenhuma tabela passa do teto (exames 777 chars no modo resumo, convênios 1.555, cirurgias 3.378 no completo). (2) Comparação campo a campo item a item, no modo completo: exames 10x10, cirurgias 3x3, convênios 20x20, ZERO divergência de conteúdo; só 16 diferenças de pontuação (travessão virou vírgula, alinhado com a regra da casa). O divergímetro sozinho não servia para isso: ele chama a API sem filtro e hoje recebe o modo resumo, então comparava só nome e valor; a comparação item a item foi feita pedindo o detalhe de cada linha. (3) As três tools apontadas para api.hospitalsaomatheus.cloud com credencial hospital-ana-api-key (vault:6), Accept json, query limit removida e o campo opcional de filtro no inputSchema (exame, procedimento, convenio + especialidade na tool 4). Descrições reescritas com os nomes e formatos novos, os dois modos e a trava do resumo (nunca falar preparo, caveat ou ressalva a partir do modo resumo, porque esses campos não vêm nele). ACHADO DA PLATAFORMA: a descrição de tool tem teto de 2.000 caracteres, e a primeira versão das descrições estourou; o texto foi comprimido, e comprimir custou duas regressões (ver abaixo). PROMPT v6.4 INTACTO, como na V21. Sobram três referências mortas nele (Cobre_SN no bloco-orquestradora, 'Ignorar linhas com Ativo = N' no núcleo-comum e o template [Estimativa_Total_RS] no bloco-particular): nenhuma atrapalha, porque os formatos moram na descrição da tool. Decisão do Pedro: deixar intacto e limpar numa versão futura.",
+      "tema": "base",
+      "ficha": {
+        "fez": "As tools 2, 3 e 4 saíram do NocoDB para a API do app do hospital, com comparação campo a campo item a item zerada antes da virada (10x10 exames, 3x3 cirurgias, 20x20 convênios) e regressão de 9 cenários no playground: o primeiro item, o último item e o E2 da Regra Global 13 de cada tabela.",
+        "mudou": "A Base Ana inteira mudou de casa: as quatro tabelas agora vêm da API do hospital, e editar qualquer aba do /admin/dados-atendimento passa a mudar a fala da Ana na resposta seguinte. A armadilha das 3 abas que não valiam morreu na fonte, e com ela a V28.",
+        "valor": "A regressão pagou o próprio preço: pegou a Ana mandando a frase inteira do paciente como filtro e desistindo do valor que existia, e depois negando um convênio que o hospital atende. As duas viraram regra escrita na descrição da tool e foram re-provadas. A V26 (desligar o NocoDB) ficou com todas as dependências fechadas."
+      }
     },
     {
       "id": "V24",
@@ -680,17 +678,15 @@
       "id": "V28",
       "titulo": "Avisar o hospital que 3 das 4 abas da tela admin ainda não valem",
       "dono": "P",
-      "status": "fazer",
+      "status": "feito",
       "deps": [],
-      "canal": "dispare",
-      "canal_desde": "2026-08-18",
-      "mesa": {
-        "destrava": "Tira do ar uma armadilha silenciosa: hoje quem edita Exames, Estimativas de cirurgias ou Convênios na tela admin sai achando que resolveu, e a Ana continua falando o dado velho, sem sinal de erro em lugar nenhum.",
-        "gesto": "Mensagem curta e por escrito a quem opera a tela: só a aba Consultas particulares vale hoje; as outras três passam a valer quando a V23 entrar. Anote aqui a data e o destinatário."
-      },
-      "nota": "Achado 2 da rodada 2 da bancada (18/ago/2026). O topo do /admin/dados-atendimento promete \"Editou, valeu: a resposta seguinte já usa o dado novo\", e isso só é verdade em Consultas particulares, porque só a tool 1 virou para a API. Em Exames, Estimativas de cirurgias e Convênios por especialidade a Ana ainda lê o NocoDB. É uma tarefa de comunicação, não de código, e some quando a V23 entrar.",
-      "prompt": "Preciso avisar o hospital que a tela /admin/dados-atendimento só cumpre a promessa dela numa das quatro abas. Me ajude a escrever a mensagem curta: quem edita Consultas particulares muda a fala da Ana na resposta seguinte; quem edita Exames, Estimativas de cirurgias ou Convênios por especialidade NÃO muda nada ainda, porque essas três tabelas continuam sendo lidas do NocoDB até a tarefa V23 entrar. Tom de aviso operacional, sem jargão, dizendo o que fazer nesse meio-tempo. Depois de eu enviar, registre a data e o destinatário na ficha da V28 nos dois lados do roadmap.",
-      "tema": "base"
+      "nota": "Achado 2 da rodada 2 da bancada (18/ago/2026). O topo do /admin/dados-atendimento promete \"Editou, valeu: a resposta seguinte já usa o dado novo\", e isso só é verdade em Consultas particulares, porque só a tool 1 virou para a API. Em Exames, Estimativas de cirurgias e Convênios por especialidade a Ana ainda lê o NocoDB. É uma tarefa de comunicação, não de código, e some quando a V23 entrar. DISPENSADA EM 19/ago/2026: a V23 entrou no mesmo dia e a armadilha sumiu na fonte. As quatro abas do /admin/dados-atendimento agora valem, e a promessa do topo da tela passou a ser verdade. Nenhuma mensagem foi enviada, porque não havia mais o que avisar. Se o hospital precisar saber de alguma coisa, é a boa notícia: a edição de exames, cirurgias e convênios agora muda a fala da Ana na resposta seguinte.",
+      "tema": "base",
+      "ficha": {
+        "fez": "Nada foi enviado. A tarefa era avisar sobre uma armadilha temporária, e a V23 fechou no mesmo dia.",
+        "mudou": "O aviso perdeu o objeto: as quatro abas da tela admin passaram a valer de verdade.",
+        "valor": "Uma mensagem a menos para o hospital digerir, e a promessa do topo da tela virou verdade em vez de virar ressalva."
+      }
     },
     {
       "id": "V29",
