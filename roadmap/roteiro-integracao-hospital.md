@@ -25,18 +25,26 @@ O runtime do fazer.ai agents corta o corpo de resposta de **toda** HTTP tool em 
 
 Isso derrubou a Pediatria e a Urologia na virada da tool 1 (V21) e é o motivo de a família C existir. **Regra para todo cenário novo: pergunte pelo primeiro E pelo último item da tabela** (na ordem em que a API devolve). Perguntar só pelo começo da lista é o erro que deixou o bug passar por três baterias.
 
-Estado medido em 18/ago/2026, noite (`smoke-hospital.py`):
-
-| Tabela | chars | itens | cabe? |
-|---|---|---|---|
-| cirurgias-estimativas | 3.269 | 3 | sim (folga de 731) |
-| convenios-especialidade | 4.730 | 20 | não: perde Unimed/Obstetrícia, Ortopedia e Pediatria |
-| consultas-particulares | 5.959 | 10 | não: perde Ortopedia, Pediatria e Urologia |
-| exames | 7.418 | 10 | não: perde MAPA 24h, Raio-X, Tomografia e Ultrassonografia Abdominal |
-
 As consultas pioraram de 17 para 18/ago (de 2 para 3 invisíveis) só porque a Ginecologia foi
 ativada no app. Ninguém mexeu na Ana. **É a demonstração mais limpa do problema: uma decisão
 de negócio numa tela de admin muda, sem aviso, quais outros itens a Ana consegue enxergar.**
+
+**Resolvido em 19/ago/2026 pela V22.** A API passou a escolher o modo da resposta pelo tamanho
+(`completo`, `resumo`, `indice`), com o modo e uma dica declarados no corpo, e ganhou filtro por
+termo nos quatro GETs. Nenhuma tabela passa mais do teto. A comparação fica registrada porque ela
+é a medida do que a V22 resolveu.
+
+| Tabela | chars em 18/ago | chars em 19/ago | modo | cabe? |
+|---|---|---|---|---|
+| cirurgias-estimativas | 3.269 | 3.378 | completo | sim (folga de 622) |
+| convenios-especialidade | 4.730, 3 invisíveis | 1.555 | resumo | sim (folga de 2.445) |
+| consultas-particulares | 5.959, 3 invisíveis | 667 | resumo | sim (folga de 3.333) |
+| exames | 7.418, 4 invisíveis | 777 | resumo | sim (folga de 3.223) |
+
+O detalhe de um item vem por filtro, e aí a resposta volta em modo `completo`:
+`?especialidade=`, `?exame=`, `?procedimento=`, `?convenio=`. A regra de escrever cenário
+continua valendo: pergunte pelo primeiro E pelo último item, porque o degrau protege do corte
+mas não protege de um filtro mal escrito.
 
 ---
 
@@ -245,3 +253,54 @@ bancada não cobria foram portados e viraram o **D4** e o **D5** deste roteiro.
 C2, 6 na E2. Nos cenários em que a resposta cabe (C1a, B1, B2, A3, A4), a tool é chamada **uma
 vez só**. Isso fecha o diagnóstico: a re-chamada não é manha do modelo, é ele procurando o que
 o teto escondeu. A V22 resolve as duas coisas de uma vez.
+
+
+### Rodada 3: 19/ago/2026 (a V22 no ar dos dois lados)
+
+Rodada curta, disparada por um susto: o `smoke-hospital.py` começou a acusar falha de contrato do
+nada. Investigando, a causa era boa notícia disfarçada: **o lado Hospital publicou a V22** (os três
+degraus do ADR 0032, com `modo`, `dica` e o filtro por termo nos quatro GETs), e o smoke ainda
+cobrava campos que só existem no modo `completo`. O instrumento é que estava velho, não a API.
+
+**O que a publicação quebrou, por algumas horas.** A tool 1 chamava o endpoint pelado e passou a
+receber o modo `resumo`, que traz só `especialidade` e `valor_rs`. Sumiram `diferencial_1`,
+`descricao_servico` e `alta_demanda`. O `inputSchema` da tool estava vazio, então ela não tinha
+como pedir o detalhe. A Seção 2.3 manda usar um diferencial na hesitação do paciente
+(`ana/prompt/bloco-particular.md`, linha 76): por algumas horas, em produção, a Ana não tinha esse
+dado. As tools 2, 3 e 4 não sofreram, porque ainda leem o NocoDB.
+
+**O conserto do lado Ana** foi o que a ficha da V22 já previa: campo opcional `especialidade` no
+`inputSchema` da tool 1, o parâmetro na URL e a descrição reescrita com os dois modos. Sem tool
+nova, sem grant novo, **prompt v6.4 intacto**.
+
+| Cenário | Veredito | Evidência |
+|---|---|---|
+| **C1b último item** | **passou** (era falha) | "A consulta de Urologia é R$ 350", com **1** chamada da tool. Na rodada 2 foram 10 chamadas e um "não tenho o valor". |
+| **C2 catálogo** | **passou** (era falha) | as **10** ativas listadas, com valor. Na rodada 2 foram 7 de 10. |
+| C1a primeiro item | passou | Cardiologia R$ 380, 1 chamada. |
+| B1 formato do número | passou | "R$ 380", sem vazar o formato do JSON. |
+| B2 booleano | passou | "Nossa agenda de Cardiologia costuma ter alta demanda": **é a prova de que o modo `completo` chega**, porque `alta_demanda` só existe nele, e chegou com **1** chamada. |
+| E2 item inexistente | **falhou e foi corrigido na mesma sessão** | ver abaixo. |
+
+**O achado da rodada, e ele é meu.** Com o filtro no ar, a pergunta por Reumatologia passou a
+mandar `?especialidade=reumatologia`, o termo não casou, e o servidor devolveu o campo
+`disponiveis` com os 10 nomes. A Ana ficou confiante demais: disse *"Não encontrei Reumatologia na
+nossa lista de consultas particulares. As especialidades atendidas como particular são: [as 10].
+Quer que eu consulte o preço de alguma dessas?"*. O conteúdo melhorou e ela **não** disse que o
+hospital não atende, que era o erro grave. Mas ela deixou de oferecer a confirmação humana, que é o
+que a Regra Global 13 manda. **Uma lista mais completa vinda da ferramenta empurrou o modelo para
+mais confiança do que o SOP autoriza.** Corrigido com um parágrafo na descrição da tool: a lista
+`disponiveis` é a tabela de particular e não o catálogo do hospital, e sugerir outra especialidade
+não substitui o encaminhamento. Re-rodado: *"não encontrei o valor da consulta de reumatologia na
+nossa tabela de particular. Quer que eu encaminhe para a equipe confirmar...?"*. Passou.
+
+**Placar final: 6 de 6 nos cenários rodáveis.** Ficaram de fora A3 e A4 (precisam de edição manual
+no admin), B3 e D1 a D5 (não afetados por esta mudança), e E1, E3 e D4, que seguem esperando a
+janela da V29.
+
+**O que o smoke virou.** Ele agora entende os três modos, cobra o contrato do modo que veio, e
+**prova o caminho do detalhe**: para cada tabela ele chama com o filtro e exige modo `completo`
+com os campos que a Ana precisa para falar. Sem esse segundo check, o modo `resumo` tiraria da Ana
+o que o SOP manda dizer, e o smoke aplaudiria. Ele também passou a gravar
+`os/dados/integracao-medida.json`, a medida carimbada que o Mapa da Integração mostra (ADR-0017).
+Veredito de 19/ago: **10 checks, 10 OK, zero CORTA**.

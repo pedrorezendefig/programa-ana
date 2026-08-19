@@ -130,6 +130,44 @@ def call_gh(method, path, query=None, body=None):
     return {"status": status, "latencia_ms": latencia, "corpo_cru": corpo, "json": parsed}
 
 
+# ---------------------------------------------------------------- tools ao vivo
+
+PLATAFORMA_URL = "https://agents.hospitalsaomatheus.cloud"
+
+# Campos que a pagina pode mostrar. credentialRef e uma REFERENCIA (ex.: "vault:6"),
+# nunca o segredo. Nada alem disto sai daqui.
+TOOL_CAMPOS = ("id", "name", "label", "method", "urlTemplate", "credentialRef", "enabled")
+
+
+def ler_tools():
+    """Le as definicoes de ferramentas na plataforma (ADR-0017).
+
+    O Ana OS nao guarda URL, credencial nem estado de ferramenta em arquivo: quando a
+    pagina precisa disso, ela pergunta a fonte. O token fica aqui no server, lido do
+    .env, e nunca chega ao navegador.
+
+    Devolve {ok: true, tools: [...], lido_em: ...} ou {ok: false, erro: "..."}: a pagina
+    mostra o erro em vez de um valor guardado antes, que seria mentira com cara de fato.
+    """
+    token = ENV.get("AGENTS_API_TOKEN", "")
+    if not token:
+        return {"ok": False, "erro": "AGENTS_API_TOKEN ausente no .env"}
+    req = urllib.request.Request(
+        PLATAFORMA_URL + "/api/v1/tools",
+        headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
+            doc = json.loads(resp.read().decode("utf-8", "replace"))
+    except urllib.error.HTTPError as e:
+        return {"ok": False, "erro": "a plataforma respondeu HTTP %s" % e.code}
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        return {"ok": False, "erro": "nao alcancou a plataforma: %s" % getattr(e, "reason", e)}
+    brutas = doc.get("tools", doc if isinstance(doc, list) else [])
+    tools = [{c: t.get(c) for c in TOOL_CAMPOS} for t in brutas]
+    return {"ok": True, "tools": tools, "lido_em": time.strftime("%Y-%m-%dT%H:%M:%S")}
+
+
 _oracle_iniciado = False
 
 
@@ -486,6 +524,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(listar_absorcao())
         elif path == "/api/docs":
             self._json(listar_docs())
+        elif path == "/api/tools":
+            self._json(ler_tools())
         elif path == "/api/roadmap":
             try:
                 self._json({"ok": True, "roadmap": ler_roadmap()})
