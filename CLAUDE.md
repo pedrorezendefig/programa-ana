@@ -4,7 +4,7 @@ Programa Ana (Hospital São Matheus): agente de IA de atendimento/agendamento vi
 
 ## Ana OS (o cockpit) e o roadmap vivo (vale para toda sessão, não só o /check)
 
-O **Ana OS** (`os/` na raiz, ADR-0007) é o cockpit único do programa: `python3 os/server.py` e abrir `http://localhost:8777`. Home com roadmap e painel de aplicações, Mapa das APIs, diagrama de arquitetura, bancada e roteiro da API GH (homolog), Atlas da produção, Biblioteca de docs. Visual: `os/DESIGN.md` (tema claro, sem travessões). Regras do server: GH só homologação, Oracle TST só SELECT, `dados-locais/` e `amostras/` jamais servidos, produção jamais chamada.
+O **Ana OS** (`os/` na raiz, ADR-0007) é o cockpit único do programa: `python3 os/server.py` e abrir `http://localhost:8777`. Onze páginas (ADR-0019, ADR-0020 e ADR-0022): Cockpit (home com roadmap e mesa de ação), Roadmap (grafo), Arquitetura, Mapa do SOP, Circuito da Ana, Mapa da Integração, Comparação, Testes manuais (lê a Comparação e os cenários da bancada; não guarda teste próprio), Famílias da bancada (explica os cenários A a E por dentro; lê `os/dados/familias.json`, curado do roteiro de integração), Bancada da API GH (homolog) e Cadeias. Páginas antigas (Absorção, Insights, Atlas, Roteiro, Mapa das APIs, Conexão TST, Biblioteca) vivem intactas em `os/arquivo/`, fora do menu. Visual: `os/DESIGN.md` (tema claro, sem travessões). Regras do server: GH só homologação, Oracle TST só SELECT, `dados-locais/` e `amostras/` jamais servidos, produção jamais chamada.
 
 O estado do programa mora em dois lugares que precisam concordar sempre:
 - `roadmap/TODO.md`: a verdade **narrativa** do estágio atual (estado, fichas curtas com "pronto quando", log). IDs estáveis V1../OS1.. e pendentes GH1/OV1, donos P/C/E.

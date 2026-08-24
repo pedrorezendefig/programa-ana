@@ -304,3 +304,92 @@ com os campos que a Ana precisa para falar. Sem esse segundo check, o modo `resu
 o que o SOP manda dizer, e o smoke aplaudiria. Ele também passou a gravar
 `os/dados/integracao-medida.json`, a medida carimbada que o Mapa da Integração mostra (ADR-0017).
 Veredito de 19/ago: **10 checks, 10 OK, zero CORTA**.
+
+### Rodada 4: 20/ago/2026 (a V30, as tools 2, 3 e 4 ganham cenário)
+
+Rodada de cobertura, não de conserto. Até aqui a bancada provava a tool 1 por sete ângulos e as
+tools 2, 3 e 4 por nenhum, mesmo com a V23 tendo virado as três. Esta rodada dá a cada tabela
+virada o mesmo quarteto que a tool 1 já tinha: **primeiro item, último item, pergunta de catálogo
+e item ausente caindo na Regra Global 13**, mais o B3 do preparo, que estava parado como "não
+rodado" desde a rodada 2 por uma condição que deixou de valer.
+
+**Chão medido antes de conversar:** `smoke-hospital.py` de 20/ago com **10 checks, 10 OK, zero
+CORTA**. O primeiro e o último item de cada tabela vieram da ordem que a própria API devolve, não
+de memória: consultas Cardiologia a Urologia, exames Colonoscopia a Ultrassonografia Abdominal,
+cirurgias Apendicectomia a Herniorrafia, convênios Amil/Cardiologia a Unimed/Pediatria.
+
+**O que não rodou, de propósito:** o arquivo inteiro não foi disparado. O D1 grava manifestação
+de verdade no painel de ouvidoria do hospital, e o E1 e o D4 quebram credencial e tool em
+produção. Rodaram só os 14 cenários novos.
+
+| Cenário | Veredito | Evidência |
+|---|---|---|
+| **B3** preparo da colonoscopia | **passou** (era não rodado) | os três passos clínicos saíram inteiros: dieta sem resíduos 2 dias antes, laxativo prescrito e jejum de 8h, com **1** chamada da tool. Prova junto que a tool 2 pediu o detalhe com `?exame=`, porque o preparo só existe no modo `completo`. |
+| **B4** ressalva do convênio | **falhou** | ver o achado abaixo. |
+| **C1c** exames, primeiro item | **passou** | Colonoscopia R$ 580, 1 chamada. |
+| **C1d** exames, último item | **passou** | Ultrassonografia Abdominal R$ 220, 1 chamada. É o teste do fim da lista, o que derrubou a tool 1 na V21. |
+| **C1e** cirurgias, primeiro item | **passou** | Apendicectomia R$ 8.300 **com o caveat de avaliação médica**, 1 chamada. O cenário cobra os dois: valor de cirurgia sem caveat é falha mesmo com o número certo. |
+| **C1f** cirurgias, último item | **passou** | Herniorrafia R$ 7.500, com caveat, 1 chamada. |
+| **C1g** convênios, primeiro par | **passou** | Amil / Cardiologia: "Atendemos pelo Amil em Cardiologia. Cobre consultas e exames cardiológicos. Cirurgias estão sujeitas à autorização." |
+| **C1h** convênios, último par | **passou** | Unimed / Pediatria, com a observação da tabela junto. |
+| **C2b** catálogo de exames | **passou** | os **10** exames listados com valor, do primeiro ao último, 1 chamada. |
+| **C2c** catálogo de estimativas de cirurgia | **passou** | as **3** estimativas cadastradas, 1 chamada. |
+| **C2d** cobertura de um convênio | **passou** (reescrito na rodada) | as **5** especialidades da Unimed, de Cardiologia a Pediatria, cada uma com a observação. Ver o achado 2. |
+| **E2b** exame ausente | **passou** | ressonância magnética: "não encontrei na tabela oficial... posso encaminhar para a equipe confirmar", **sem dizer que o hospital não faz**. |
+| **E2c** cirurgia ausente | **passou** | bariátrica: não achou a estimativa, ofereceu a equipe comercial, **sem dizer que o hospital não opera**. |
+| **E2d** convênio ausente | **passou** | Porto Seguro / Dermatologia: "Atendemos o convênio Porto Seguro, mas não encontrei na tabela interna se ele cobre Dermatologia. Quer que eu confirme com a equipe?" Não disse "não consta" nem empurrou para o particular, que é o erro grave específico da tool 4. |
+
+**Placar: 13 de 14.** A família C fechou verde nas quatro tabelas, do primeiro ao último item, e
+**toda resposta de dado saiu com 1 chamada de tool**: nenhum sinal do loop de truncamento que a
+rodada 2 mediu na tool 1. A única falha é de redação, na família B, que o roteiro trata como item
+de ajuste.
+
+**Achado 1, a ressalva do convênio sai ou não sai, e ninguém sabe qual das duas vem.** A mesma
+pergunta ("meu convênio é a Amil, vocês cobrem cardiologia?") foi feita três vezes, em conversas
+separadas. Em duas delas a Ana respondeu só "Atendemos pelo Amil em Cardiologia" e engoliu a
+observação da tabela: *"Cobre consultas e exames cardiológicos. Cirurgias sujeitas a autorização."*
+Na terceira ela disse a frase inteira. O par Unimed / Pediatria trouxe a observação nas duas vezes
+em que foi perguntado. Não é o teto de caracteres, não é a fonte, não é o modo: o dado chega, e a
+fala escolhe. O que se perde é justamente a ressalva que mais importa ao paciente com cirurgia
+marcada. É item de ajuste da Seção 3 / 5.A, não defeito da migração, e o **B4** fica no arquivo
+como a prova executável que cobra a correção.
+
+**Achado 2, convênio tem duas fontes, e isso é de propósito.** O cenário C2d nasceu perguntando
+"quais convênios vocês atendem?" e reprovou sem sequer tocar na tool 4: a Ana respondeu pela base
+de conhecimento, listando os **40 e poucos convênios aceitos pelo hospital**. A tabela da API tem
+6. As duas estão certas, porque respondem coisas diferentes: a base de conhecimento diz **quais
+convênios o hospital aceita**, a tabela diz **quais pares convênio + especialidade já têm cobertura
+mapeada**. Quem escrever cenário novo de convênio precisa saber disso, senão mede a fonte errada e
+acusa um defeito que não existe. O C2d foi reescrito para a pergunta que exige a tabela ("tenho
+Unimed, quais especialidades vocês cobrem por ela?") e passou. Fica registrado porque a
+distinção não estava escrita em lugar nenhum.
+
+**Achado 3, o quarteto da família C virou um molde.** Cada tabela nova que entrar na Base Ana já
+tem a forma do teste pronta: primeiro item, último item, catálogo e ausente. O arquivo saiu de 12
+para 26 cenários, e a tool 1 deixou de ser a única com prova.
+
+---
+
+## Rodada da V27 (21/ago/2026): o D5 fecha, e a causa não era o prompt
+
+**O que rodou:** só o D5 (e o B4 de carona), com o prompt indo de v6.4 para **v6.5**.
+
+| Cenário | Veredito | Evidência |
+|---|---|---|
+| **D5** protocolo consultado e contado | **passou, 3 de 3** | "Encontrei sua manifestação, registrada em 18/08/2026 com o protocolo 2026-0005. O prazo de retorno da nossa equipe vai até 25/08/2026." Idêntico nas três rodadas. |
+| **B4** ressalva do convênio | **passou** | a Seção 3.2 nova (a `observacao` obrigatória, que estava na fonte sem publicar) subiu junto: "Atendemos pelo Amil em Cardiologia. Cobre consultas e exames cardiológicos. Cirurgias sujeitas a autorização." |
+
+**O achado que a V27 deixou: depois do `handoff_to_human`, a mensagem final do modelo morre.**
+A primeira trava dura (a mesma receita da Seção 7.3) não segurou: o D5 oscilava e chegou a falhar
+3 vezes seguidas. O flowlog da plataforma mostrou o porquê: **a mensagem que o paciente recebe na
+escalada é o campo `customerMessage` do `handoff_to_human`**, e o modelo escrevia ali uma frase
+curta de transferência. O texto completo que ele geraria depois nunca chega, porque o handoff
+silencia o bot. Ou seja: em fluxo que termina em escalada, trava de template que mira "a mensagem
+final" mira o lugar errado. O conserto da v6.5 tem três pernas: a Seção 7.5 virou passos P1 a P4
+(o molde da 7.3), a trava manda o template preenchido ser a `customerMessage` da escalada, e a
+descrição da tool 12 repete a obrigação dos três campos. Depois disso, 3 de 3 com resposta
+idêntica.
+
+**O D5 ficou mais duro.** O cenário só cobrava o número do protocolo, e por isso a rodada 2 tinha
+dado "passou" numa resposta que engolia data e prazo. Agora ele cobra os três: `2026-0005`,
+`18/08/2026` e `25/08/2026`.

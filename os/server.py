@@ -41,6 +41,9 @@ OS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(OS_DIR)
 ABSORCAO_DIR = os.path.join(REPO_DIR, "ana", "api-mv", "absorcao-producao", "resultados")
 ROADMAP_JSON = os.path.join(OS_DIR, "dados", "roadmap.json")
+# Cenarios da bancada (ADR-0020): a pagina Testes manuais le o arquivo que vive
+# fora de os/. Leitura de UM arquivo fixo, nunca de uma pasta.
+CENARIOS_JSON = os.path.join(REPO_DIR, "ana", "bancada", "cenarios", "integracao.json")
 
 ESTATICOS = {
     ".html": "text/html; charset=utf-8",
@@ -498,6 +501,9 @@ class Handler(BaseHTTPRequestHandler):
         partes = rel.split("/")
         if len(partes) == 1:
             permitido = os.path.splitext(rel)[1].lower() == ".html"
+        elif len(partes) == 2 and partes[0] == "arquivo":
+            # paginas arquivadas (ADR-0019): fora do menu, mas abrem por URL direta
+            permitido = os.path.splitext(rel)[1].lower() == ".html"
         elif len(partes) == 2 and partes[0] in ("assets", "dados"):
             permitido = os.path.splitext(rel)[1].lower() in ESTATICOS
         elif len(partes) == 3 and partes[0] == "assets" and partes[1] == "fonts":
@@ -526,6 +532,12 @@ class Handler(BaseHTTPRequestHandler):
             self._json(listar_docs())
         elif path == "/api/tools":
             self._json(ler_tools())
+        elif path == "/api/cenarios":
+            try:
+                with open(CENARIOS_JSON, encoding="utf-8") as f:
+                    self._json({"ok": True, "cenarios": json.load(f)})
+            except (OSError, ValueError) as e:
+                self._json({"ok": False, "erro": str(e)}, 500)
         elif path == "/api/roadmap":
             try:
                 self._json({"ok": True, "roadmap": ler_roadmap()})

@@ -333,6 +333,7 @@
 <main>
   <section class="hero compacta">
     <span class="chip azul">Homologação · dem.agenda</span>
+    <span class="selo-origem gh" title="Página de origem única (ADR-0020): nenhum card repete este selo.">tudo nesta página é Global Health · homolog</span>
     <h1>Bancada da <span class="destaque">API Global Health</span></h1>
     <p class="subtitulo">Aperte os botões e leia a resposta crua da homolog da Global Health. Cada chamada mostra ao lado as queries de conferência, prontas para copiar no DBeaver.</p>
   </section>
@@ -451,7 +452,7 @@
 
 <footer class="os-rodape">
   <span class="chip tag">Só homolog</span>
-  <span>Esta bancada fala SOMENTE com a homologação da Global Health: não há seletor de ambiente de propósito. O token nunca chega ao navegador (fica no backend local, lido do .env). As queries de conferência não rodam aqui: copie e rode no DBeaver (<a href="tst.html">Conexão TST</a>). Latência típica da API: 500 a 800ms; timeout de 30s.</span>
+  <span>Esta bancada fala SOMENTE com a homologação da Global Health: não há seletor de ambiente de propósito. O token nunca chega ao navegador (fica no backend local, lido do .env). As queries de conferência não rodam aqui: copie e rode no DBeaver (detalhes da conexão em <code>ana/api-mv/conexao-oracle.md</code>). Latência típica da API: 500 a 800ms; timeout de 30s.</span>
 </footer>
 
 <div class="tooltip" id="tooltip" role="tooltip"><div class="tooltip-seta"></div><div class="tooltip-corpo"></div></div>
@@ -492,6 +493,14 @@ FROM   DBAMV.IT_AGENDA_CENTRAL ic
 JOIN   DBAMV.PACIENTE p ON p.CD_PACIENTE = ic.CD_PACIENTE
 WHERE  p.NR_CPF = '${sv(cpf, "<cpf>")}'
 ORDER  BY ic.DT_GRAVACAO DESC;`;
+// As colunas *_INTEGRA da IT_AGENDA_CENTRAL estao 100% vazias hoje: qualquer
+// linha preenchida e o detector de que a escrita externa chegou neste banco (GH-18).
+const Q_DETECTOR_INTEGRA = () => `SELECT CD_IT_AGENDA_CENTRAL, CD_IT_AGENDA_CENTRAL_INTEGRA,
+       CD_SEQ_INTEGRA, DT_INTEGRA, CD_PACIENTE, DT_GRAVACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  DT_INTEGRA IS NOT NULL
+   OR  CD_SEQ_INTEGRA IS NOT NULL
+   OR  CD_IT_AGENDA_CENTRAL_INTEGRA IS NOT NULL;`;
 
 // Cada card descreve um endpoint da doc oficial (v1.10).
 // where: query | body | path. num: converte para numero no body (ids). CPF fica string sempre.
@@ -875,7 +884,8 @@ WHERE  CD_ITEM_AGENDAMENTO = ${sv(v.idItemAgendamento, "<idItemAgendamento>")};`
           queries: [
             { t: "Marcações gravadas nas últimas 24h:", sql: Q_SLOT_RECENTES() },
             { t: "Agendamentos do SEU paciente (via CPF):", sql: Q_AGENDA_POR_CPF(v.cpf) },
-            { t: "A tabela de interface da GH ganhou linhas? (CPF é NUMBER: por isso o LPAD)", sql: Q_INTERFACE_GH(v.cpf) }
+            { t: "A tabela de interface da GH ganhou linhas? (CPF é NUMBER: por isso o LPAD)", sql: Q_INTERFACE_GH(v.cpf) },
+            { t: "Detector de integração (colunas *_INTEGRA; hoje: zero linhas):", sql: Q_DETECTOR_INTEGRA() }
           ],
           prova: "Linha aqui = a API grava neste banco: é a resposta da GH-18."
         })
@@ -908,6 +918,11 @@ WHERE  CD_ITEM_AGENDAMENTO = ${sv(v.idItemAgendamento, "<idItemAgendamento>")};`
        NM_PACIENTE, TP_SITUACAO, DT_GRAVACAO
 FROM   DBAMV.IT_AGENDA_CENTRAL
 WHERE  CD_IT_AGENDA_CENTRAL = ${sv(v.id, "<id>")};` },
+            { t: "O id da GH ficou na coluna de integração?", sql:
+`SELECT CD_IT_AGENDA_CENTRAL, CD_IT_AGENDA_CENTRAL_INTEGRA,
+       CD_SEQ_INTEGRA, DT_INTEGRA, HR_AGENDA, CD_PACIENTE, TP_SITUACAO
+FROM   DBAMV.IT_AGENDA_CENTRAL
+WHERE  CD_IT_AGENDA_CENTRAL_INTEGRA = '${sv(v.id, "<id>")}';` },
             { t: "Plano B: gravações recentes:", sql: Q_SLOT_RECENTES() }
           ]
         })
@@ -1382,8 +1397,8 @@ function renderResposta(card, cardId, r) {
 }
 
 // ---------- conferencia manual (DBeaver) ----------
-// A Base TST esta inalcancavel por rede desde 13/jul (bloqueio do lado do MV):
-// toda query e copiada e rodada a mao no DBeaver. Diagnostico: pagina Conexao TST.
+// Toda query e copiada e rodada a mao no DBeaver: esta pagina nunca executa SQL.
+// Detalhes da conexao TST: ana/api-mv/conexao-oracle.md.
 const horaChamada = {};
 
 // tabela -> coluna de data de gravacao + colunas uteis para achar a linha nova
@@ -1427,7 +1442,7 @@ function renderBanco(card, cardId, valores) {
   let html = card.write
     ? `<div class="banco-titulo">Conferir no banco · antes / depois</div>`
     : `<div class="banco-titulo">No banco · Base TST (Oracle MV)</div>`;
-  html += `<p class="banco-dbeaver">Rodar no DBeaver. TST bloqueada no momento: detalhes em <a href="tst.html">Conexão TST</a>.</p>`;
+  html += `<p class="banco-dbeaver">Rodar no DBeaver (conexão: <code>ana/api-mv/conexao-oracle.md</code>).</p>`;
   if (card.write) html += renderRoteiro(card, cardId, valores, d);
   html += `<p class="banco-intro">${esc(d.intro)}</p>`;
   if (d.tabelas && d.tabelas.length) {

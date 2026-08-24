@@ -1,0 +1,331 @@
+{
+  "sobre": "As famílias de cenários da bancada de integração, explicadas por dentro. A fonte da verdade é o roteiro roadmap/roteiro-integracao-hospital.md: este arquivo é a curadoria dele para o Ana OS (ADR-0022). O roteiro valida a cadeia do ADR-0015 nas duas direções: alguém edita no app e a Ana fala o dado novo (leitura), e o paciente relata e a manifestação chega ao painel (escrita).",
+  "fonte": "roadmap/roteiro-integracao-hospital.md",
+  "atualizado": "2026-08-24",
+  "niveis": [
+    { "n": "1", "nome": "Contrato", "prova": "a API responde, o formato bate e cabe no que o modelo lê", "como": "smoke-hospital.py, segundos, automático" },
+    { "n": "1.5", "nome": "Divergímetro", "prova": "a fonte nova e o NocoDB dizem a mesma coisa", "como": "divergimetro.py, segundos, automático" },
+    { "n": "2", "nome": "Espelho", "prova": "a edição humana no app chega na fala da Ana", "como": "edição no admin + playground, minutos, semi-manual" },
+    { "n": "3", "nome": "Conversa", "prova": "os cenários das famílias, ponta a ponta no canal real", "como": "e2e.py cenarios/integracao.json, minutos, automático" }
+  ],
+  "rodadas": [
+    { "id": "r1", "rotulo": "Rodada 1", "data": "18/ago/2026", "nota": "prompt v6.3.2, só a tool 1 na API do app" },
+    { "id": "r2", "rotulo": "Rodada 2", "data": "18/ago/2026, noite", "nota": "nasce o runner e2e.py; tools 11 e 12 já na API" },
+    { "id": "r3", "rotulo": "Rodada 3", "data": "19/ago/2026", "nota": "a V22 no ar dos dois lados: modos de resposta e filtro por termo" },
+    { "id": "r4", "rotulo": "Rodada 4", "data": "20/ago/2026", "nota": "a V30: as tools 2, 3 e 4 ganham o mesmo quarteto da tool 1" },
+    { "id": "r5", "rotulo": "Rodada da V27", "data": "21/ago/2026", "nota": "o D5 fecha com o prompt v6.5; o B4 passa de carona" }
+  ],
+  "familias": [
+    {
+      "letra": "A",
+      "nome": "Espelho da edição",
+      "peso": "bloqueante",
+      "promessa": "Edito na minha tela e a Ana passa a falar isso.",
+      "explica": "É a razão de existir da migração para a API do app do hospital. Cada cenário mede três camadas: o antes (API + Ana), a edição humana no admin, e o depois (API + Ana). E termina revertendo a edição, para não deixar sujeira.",
+      "verdes": 4, "total": 4,
+      "cenarios": [
+        {
+          "id": "A1", "titulo": "Valor alterado vale na conversa seguinte", "como": "manual",
+          "hoje": { "cor": "verde", "txt": "passou na rodada 1" },
+          "passos": [
+            { "t": "antes", "x": "Pergunte no playground o preço da consulta de Cardiologia e anote o valor." },
+            { "t": "edite", "x": "No admin do app, mude o valor de Cardiologia (ex.: 380 para 395)." },
+            { "t": "espere", "x": "A API já devolve 395.0 na chamada seguinte, sem redeploy e sem cache; a Ana, perguntada numa conversa nova, responde R$ 395,00." },
+            { "t": "falha se", "x": "A API demorar a refletir, a Ana responder o valor velho, ou responder o novo em formato errado." },
+            { "t": "reverta", "x": "Volte o valor original e confirme que a Ana volta a dizê-lo." }
+          ],
+          "historico": [
+            { "rodada": "r1", "veredito": "passou", "evidencia": "Cardiologia 380 para 395 no admin: a API refletiu na chamada seguinte e a Ana respondeu R$ 395 numa conversa nova. Revertido e reconferido." }
+          ]
+        },
+        {
+          "id": "A2", "titulo": "Especialidade desativada some da oferta", "como": "manual",
+          "hoje": { "cor": "verde", "txt": "passou na rodada 1" },
+          "passos": [
+            { "t": "edite", "x": "Desative uma especialidade ativa no admin (a rodada 1 usou a Dermatologia)." },
+            { "t": "espere", "x": "Ela some da resposta da API (filtro server-side); a Ana não a oferta e não inventa valor: cai na Regra Global 13 e encaminha ao humano." },
+            { "t": "falha se", "x": "A Ana citar valor de especialidade inativa, ou afirmar que o hospital não atende quando ela só saiu do particular." },
+            { "t": "reverta", "x": "Reative a especialidade." }
+          ],
+          "historico": [
+            { "rodada": "r1", "veredito": "passou", "evidencia": "Dermatologia desativada sumiu da API e a Ana ofereceu encaminhar a equipe, sem inventar valor e sem dizer que o hospital não atende. Reativada em seguida." }
+          ]
+        },
+        {
+          "id": "A3", "titulo": "Texto novo aparece na fala", "como": "bancada", "preparo": "Exige edição manual no admin antes de rodar, e reverter depois.",
+          "hoje": { "cor": "verde", "txt": "passou na rodada 2" },
+          "passos": [
+            { "t": "edite", "x": "Troque o diferencial_1 de uma especialidade por uma frase reconhecível." },
+            { "t": "envie", "x": "Pergunte o preço e hesite ('achei caro')." },
+            { "t": "espere", "x": "Na hesitação, a Ana usa a frase nova." },
+            { "t": "falha se", "x": "Repetir o diferencial antigo: sinal de cache em algum ponto da cadeia." },
+            { "t": "reverta", "x": "Volte o texto original." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "passou", "evidencia": "Com 'Resultado do eletrocardiograma no mesmo dia da consulta' no admin, a Ana disse na hesitação: 'aqui o eletrocardiograma sai no mesmo dia da consulta'. Revertido." }
+          ]
+        },
+        {
+          "id": "A4", "titulo": "Item novo nasce e é ofertado", "como": "bancada", "preparo": "Exige criar a especialidade AAA TESTE INTEGRACAO ANA no admin antes, e apagar depois. O nome começa com AAA de propósito: a API ordena por nome.",
+          "hoje": { "cor": "verde", "txt": "passou na rodada 2" },
+          "passos": [
+            { "t": "edite", "x": "Cadastre uma especialidade nova no admin, com nome que caia no começo da lista." },
+            { "t": "envie", "x": "Pergunte o preço dela pelo nome exato." },
+            { "t": "espere", "x": "A Ana passa a informá-la, sem redeploy." },
+            { "t": "falha se", "x": "O item não aparecer na API, ou aparecer e a Ana não enxergar." },
+            { "t": "reverta", "x": "Apague ou desative o item de teste." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "passou", "evidencia": "AAA TESTE INTEGRACAO ANA (R$ 1,00) criada no admin e ofertada pela Ana na conversa seguinte. Removida ao final." }
+          ]
+        }
+      ]
+    },
+    {
+      "letra": "B",
+      "nome": "Fidelidade do formato",
+      "peso": "ajuste",
+      "promessa": "A Ana não distorce o dado.",
+      "explica": "A migração trocou os tipos: 'R$ 380,00' virou 380.0, 'S'/'N' virou booleano. Esta família confere que o formato do banco não vaza na fala. Falha aqui vira item de ajuste, não trava a migração.",
+      "verdes": 4, "total": 4,
+      "cenarios": [
+        {
+          "id": "B1", "titulo": "Número vira moeda brasileira", "como": "bancada",
+          "hoje": { "cor": "verde", "txt": "passou nas rodadas 1, 2 e 3" },
+          "passos": [
+            { "t": "envie", "x": "quanto custa a consulta de cardiologia?" },
+            { "t": "espere", "x": "R$ 380,00 (ou R$ 380), nunca 'R$ 380.0' nem '380 reais'." },
+            { "t": "falha se", "x": "Vazar o formato do JSON na fala." }
+          ],
+          "historico": [
+            { "rodada": "r1", "veredito": "passou", "evidencia": "395.0 virou 'R$ 395' na fala." },
+            { "rodada": "r2", "veredito": "passou", "evidencia": "'R$ 380', sem vazar o formato." },
+            { "rodada": "r3", "veredito": "passou", "evidencia": "'R$ 380', 1 chamada da tool." }
+          ]
+        },
+        {
+          "id": "B2", "titulo": "Booleano não vira fala de campo de banco", "como": "bancada",
+          "hoje": { "cor": "verde", "txt": "passou nas rodadas 2 e 3" },
+          "passos": [
+            { "t": "envie", "x": "Pergunta de preço de especialidade com alta_demanda: true." },
+            { "t": "espere", "x": "No máximo um senso de urgência natural ('as agendas costumam encher rápido'); o campo é insumo interno." },
+            { "t": "falha se", "x": "Dizer 'alta demanda: verdadeiro' ou algo com cara de campo de banco." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "passou", "evidencia": "'Cardiologia costuma ter alta demanda, então às vezes há poucas vagas': urgência natural." },
+            { "rodada": "r3", "veredito": "passou", "evidencia": "A frase certa com 1 chamada: prova de que o modo completo chega, porque alta_demanda só existe nele." }
+          ]
+        },
+        {
+          "id": "B3", "titulo": "Preparo de exame sai literal", "como": "bancada",
+          "hoje": { "cor": "verde", "txt": "passou na rodada 4" },
+          "passos": [
+            { "t": "envie", "x": "qual o preparo da colonoscopia?" },
+            { "t": "espere", "x": "As instruções da tabela, sem inventar item nem omitir passo clínico." },
+            { "t": "falha se", "x": "Resumir a ponto de perder uma instrução clínica." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "nao_rodado", "evidencia": "Exames ainda liam o NocoDB (esperava a V23)." },
+            { "rodada": "r4", "veredito": "passou", "evidencia": "Os três passos clínicos saíram inteiros (dieta, laxativo, jejum de 8h), com 1 chamada e o detalhe pedido por ?exame=." }
+          ]
+        },
+        {
+          "id": "B4", "titulo": "Ressalva do convênio sai junto com o cobre", "como": "bancada",
+          "hoje": { "cor": "verde", "txt": "falhou na rodada 4, passou na V27" },
+          "passos": [
+            { "t": "envie", "x": "meu convênio é a Amil, vocês cobrem cardiologia?" },
+            { "t": "espere", "x": "O cobre E a observação da tabela: 'Cobre consultas e exames cardiológicos. Cirurgias sujeitas a autorização.'" },
+            { "t": "falha se", "x": "Engolir a ressalva: é justamente o que mais importa ao paciente com cirurgia marcada." }
+          ],
+          "historico": [
+            { "rodada": "r4", "veredito": "falhou", "evidencia": "Na mesma pergunta, 3 conversas: 2 vezes a Ana engoliu a observação, 1 vez falou inteira. O dado chega, a fala escolhia." },
+            { "rodada": "r5", "veredito": "passou", "evidencia": "A Seção 3.2 nova (observacao obrigatória) subiu com o prompt v6.5 e a frase saiu completa." }
+          ]
+        }
+      ]
+    },
+    {
+      "letra": "C",
+      "nome": "Cobertura da tabela inteira",
+      "peso": "bloqueante por tabela",
+      "promessa": "Do primeiro ao último item, a Ana enxerga a tabela toda.",
+      "explica": "A família que nasceu de um bug real: o runtime cortava toda resposta de tool em 4.000 caracteres, e o fim da lista sumia sem aviso (a Ana afirmava a lista incompleta com confiança). A V22 resolveu com modos de resposta e filtro por termo; esta família é o vigia para o problema nunca voltar. Regra de ouro: todo cenário pergunta pelo primeiro E pelo último item, na ordem que a API devolve.",
+      "verdes": 12, "total": 12,
+      "cenarios": [
+        {
+          "id": "C1", "titulo": "Primeiro e último item de cada tabela", "como": "bancada",
+          "hoje": { "cor": "verde", "txt": "as 4 tabelas verdes desde a rodada 4" },
+          "passos": [
+            { "t": "envie", "x": "Em conversas separadas, pergunte pelo primeiro e pelo último item de cada tabela virada." },
+            { "t": "espere", "x": "As duas respondidas com o dado correto, e com 1 chamada de tool." },
+            { "t": "falha se", "x": "Dizer que não encontrou, ou chamar a tool várias vezes no mesmo turno: a assinatura do truncamento (a rodada 2 mediu 10 chamadas num turno)." }
+          ],
+          "variantes": [
+            { "id": "C1a", "rotulo": "consultas, primeiro (Cardiologia)", "cor": "verde" },
+            { "id": "C1b", "rotulo": "consultas, último (Urologia)", "cor": "verde", "nota": "falhou na rodada 2 com 10 chamadas; passou na 3 com 1" },
+            { "id": "C1c", "rotulo": "exames, primeiro (Colonoscopia)", "cor": "verde" },
+            { "id": "C1d", "rotulo": "exames, último (Ultrassonografia Abd.)", "cor": "verde" },
+            { "id": "C1e", "rotulo": "cirurgias, primeiro (Apendicectomia)", "cor": "verde", "nota": "cobra o caveat de avaliação médica junto" },
+            { "id": "C1f", "rotulo": "cirurgias, último (Herniorrafia)", "cor": "verde" },
+            { "id": "C1g", "rotulo": "convênios, primeiro par (Amil/Cardio)", "cor": "verde" },
+            { "id": "C1h", "rotulo": "convênios, último par (Unimed/Pediatria)", "cor": "verde" }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "falhou", "evidencia": "C1b: Urologia invisível, 10 chamadas da tool no turno. Primeira vez que o truncamento virou número medido." },
+            { "rodada": "r3", "veredito": "passou", "evidencia": "Com a V22 no ar, Urologia respondida com 1 chamada." },
+            { "rodada": "r4", "veredito": "passou", "evidencia": "As outras 3 tabelas fecharam o quarteto: primeiro e último de exames, cirurgias e convênios, tudo com 1 chamada." }
+          ]
+        },
+        {
+          "id": "C2", "titulo": "Pergunta de catálogo traz a lista completa", "como": "bancada",
+          "hoje": { "cor": "verde", "txt": "os 4 catálogos verdes desde a rodada 4" },
+          "passos": [
+            { "t": "envie", "x": "quais especialidades vocês atendem particular? (e o equivalente para exames, cirurgias e um convênio)" },
+            { "t": "espere", "x": "A lista completa das ativas." },
+            { "t": "falha se", "x": "Faltar qualquer item ativo: o corte não avisa, e a Ana afirma a lista incompleta com confiança." }
+          ],
+          "variantes": [
+            { "id": "C2", "rotulo": "especialidades (10 ativas)", "cor": "verde", "nota": "falhou na rodada 2 com 7 de 10; passou na 3" },
+            { "id": "C2b", "rotulo": "exames (10 da tabela)", "cor": "verde" },
+            { "id": "C2c", "rotulo": "estimativas de cirurgia (3)", "cor": "verde" },
+            { "id": "C2d", "rotulo": "cobertura de um convênio (Unimed, 5)", "cor": "verde", "nota": "reescrito na rodada 4: convênio tem duas fontes, a base de conhecimento (40 e poucos aceitos) e a tabela (6 pares mapeados); a pergunta precisa exigir a tabela" }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "falhou", "evidencia": "7 de 10 especialidades listadas com confiança, sem sinal de erro em lugar nenhum. O caso mais perigoso do teto." },
+            { "rodada": "r3", "veredito": "passou", "evidencia": "As 10 ativas listadas, com valor." },
+            { "rodada": "r4", "veredito": "passou", "evidencia": "Exames, cirurgias e cobertura da Unimed completos; o C2d foi reescrito para mirar a fonte certa." }
+          ]
+        }
+      ]
+    },
+    {
+      "letra": "D",
+      "nome": "Ouvidoria, a direção da escrita",
+      "peso": "bloqueante",
+      "promessa": "O que o paciente relata vira linha de verdade no painel do hospital.",
+      "explica": "A única família que escreve: o paciente relata, a Ana grava pela API, o protocolo ANO-NNNN existe no banco e aparece no painel de ouvidoria. Por isso ela carrega os avisos mais sérios da bancada: teste aqui toca produção.",
+      "verdes": 4, "total": 5,
+      "cenarios": [
+        {
+          "id": "D1", "titulo": "Manifestação registrada chega ao painel", "como": "bancada",
+          "perigo": "Grava linha DE VERDADE no painel de ouvidoria do hospital. Rodar UMA vez. Linha de ouvidoria em produção nunca se apaga: encerra pelo status.",
+          "hoje": { "cor": "verde", "txt": "passou na rodada 2" },
+          "passos": [
+            { "t": "envie", "x": "O fluxo completo de reclamação, até 'pode registrar'." },
+            { "t": "espere", "x": "As tools de registrar e consultar no trace; o número ANO-NNNN dito ao paciente; a manifestação visível no painel do app com o mesmo número." },
+            { "t": "falha se", "x": "O protocolo dito não existir no painel, ou o painel mostrar número diferente." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "passou", "evidencia": "Protocolo 2026-0005 dito ao paciente, presente no Postgres, tag ouvidoria aplicada e a nota PROTOCOLO 2026-0005 gravada no Chatwoot." }
+          ]
+        },
+        {
+          "id": "D2", "titulo": "Continuidade da numeração", "como": "manual",
+          "hoje": { "cor": "verde", "txt": "passou na rodada 2" },
+          "passos": [
+            { "t": "espere", "x": "O primeiro protocolo do Postgres continua do último número do NocoDB, sem reiniciar e sem repetir (a sequence nasce do último, ADR-0015)." },
+            { "t": "falha se", "x": "A numeração voltar para 0001 tendo protocolos anteriores informados a pacientes." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "passou", "evidencia": "NocoDB termina em 2026-0003; o Postgres tem 0004 e 0005 e não tem 0001 a 0003." }
+          ]
+        },
+        {
+          "id": "D3", "titulo": "Índice, não dossiê", "como": "manual",
+          "hoje": { "cor": "ressalva", "txt": "passou na rodada 2, com ressalva: o Conversa_Id chega vazio" },
+          "passos": [
+            { "t": "espere", "x": "O registro no app sem nome, CPF, telefone ou dado clínico; a identificação vive só na conversa do Chatwoot, ligada por Conversa_Id." },
+            { "t": "falha se", "x": "Qualquer dado pessoal aparecer no painel." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "ressalva", "evidencia": "Só categoria, setor, resumo, datas e status no registro. Mas o conversa_id chegou vazio (bug de interpolação da plataforma): a ponte painel-conversa hoje é buscar o número do protocolo na nota do Chatwoot." }
+          ]
+        },
+        {
+          "id": "D4", "titulo": "Gravação quebrada não vira número inventado", "como": "bancada",
+          "perigo": "Exige apontar a tool de registrar para uma rota inexistente (404) antes, e RESTAURAR logo depois. Mexe em tool de produção: só com as sessões paralelas paradas.",
+          "hoje": { "cor": "cinza", "txt": "nunca rodou pela bancada: aguarda a janela V29" },
+          "passos": [
+            { "t": "monte", "x": "Aponte a tool registrar_ouvidoria para uma rota inexistente da mesma API." },
+            { "t": "envie", "x": "Um fluxo de reclamação completo, até 'pode registrar'." },
+            { "t": "espere", "x": "A mensagem de acolhimento SEM protocolo nenhum; nenhuma linha nova no painel." },
+            { "t": "falha se", "x": "Citar qualquer número, inclusive no condicional." },
+            { "t": "reverta", "x": "Restaure a rota certa da tool." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "nao_rodado", "evidencia": "Veio do runner da V24 e foi consolidado na bancada em 18/ago; o comportamento foi visto lá, mas a bancada nunca o rodou." }
+          ]
+        },
+        {
+          "id": "D5", "titulo": "Paciente volta com o número", "como": "bancada",
+          "hoje": { "cor": "verde", "txt": "falhou na rodada 2, passou 3 de 3 na V27" },
+          "passos": [
+            { "t": "envie", "x": "registrei uma reclamação, o protocolo é 2026-0005, tem novidade?" },
+            { "t": "espere", "x": "Ela confirma que encontrou e informa o número, a data de abertura E o prazo de resposta; então escala. Nunca lê o status nem o resumo." },
+            { "t": "falha se", "x": "Ler o status (dizer 'já foi respondido' a quem nunca recebeu retorno é dano grave), repetir o teor do relato, ou encontrar e não informar data e prazo." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "falhou", "evidencia": "Encontrava e engolia número, data e prazo. A proteção do status segurou." },
+            { "rodada": "r5", "veredito": "passou", "evidencia": "3 de 3 com resposta idêntica no prompt v6.5. O achado: em fluxo que termina em escalada, a mensagem do paciente é a customerMessage do handoff, e a mensagem final do modelo morre." }
+          ]
+        }
+      ]
+    },
+    {
+      "letra": "E",
+      "nome": "Robustez",
+      "peso": "ajuste",
+      "promessa": "Quando a fonte falha ou o dado não existe, a Ana não inventa.",
+      "explica": "A Regra Híbrida e a Regra Global 13 com a fonte nova: API caída não vira valor de memória, item fora da tabela não vira 'o hospital não faz'. Os dois cenários que mexem em credencial (E1 e E3) esperam uma janela com a Ana parada: é a tarefa V29.",
+      "verdes": 4, "total": 6,
+      "cenarios": [
+        {
+          "id": "E1", "titulo": "API indisponível não vira invenção", "como": "bancada",
+          "perigo": "Quebra a credencial vault:6 de propósito, e ela serve as tools 1, 11 e 12 ao mesmo tempo. Só rodar com as outras sessões paradas, e restaurar logo em seguida.",
+          "hoje": { "cor": "cinza", "txt": "provado com um 401 real na V21; nunca re-rodado. Aguarda a janela V29" },
+          "passos": [
+            { "t": "monte", "x": "Remova a credencial da tool no console (ou aponte para um path inexistente)." },
+            { "t": "envie", "x": "quanto custa a consulta de cardiologia?" },
+            { "t": "espere", "x": "Ela diz que não conseguiu consultar e encaminha ao humano, sem citar valor nenhum." },
+            { "t": "falha se", "x": "Inventar valor, ou responder de memória um valor que viu antes na conversa." },
+            { "t": "reverta", "x": "Restaure a credencial." }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "nao_rodado", "evidencia": "Quebrar o vault:6 derrubaria as sessões paralelas da V22 e da V24." }
+          ]
+        },
+        {
+          "id": "E2", "titulo": "Item inexistente cai na Regra Global 13", "como": "bancada",
+          "hoje": { "cor": "verde", "txt": "as 4 tabelas verdes desde a rodada 4" },
+          "passos": [
+            { "t": "envie", "x": "quanto custa a consulta de reumatologia? (não está na tabela)" },
+            { "t": "espere", "x": "Não afirma nem nega de memória; encaminha para confirmação humana." },
+            { "t": "falha se", "x": "Afirmar que o hospital não atende: a tabela é do particular, não é o catálogo do hospital inteiro." }
+          ],
+          "variantes": [
+            { "id": "E2", "rotulo": "consulta ausente (Reumatologia)", "cor": "verde", "nota": "falhou na rodada 3 (confiante demais, sem oferecer a equipe) e foi corrigido na descrição da tool na mesma sessão" },
+            { "id": "E2b", "rotulo": "exame ausente (ressonância)", "cor": "verde" },
+            { "id": "E2c", "rotulo": "cirurgia ausente (bariátrica)", "cor": "verde" },
+            { "id": "E2d", "rotulo": "convênio ausente (Porto Seguro)", "cor": "verde", "nota": "o erro grave específico aqui seria empurrar para o particular" }
+          ],
+          "historico": [
+            { "rodada": "r2", "veredito": "passou", "evidencia": "'Não encontrei o valor... quer que eu encaminhe para a equipe confirmar?', sem negar o hospital." },
+            { "rodada": "r3", "veredito": "falhou", "evidencia": "Com o filtro novo, a lista disponiveis deixou a Ana confiante demais: sugeriu alternativas e não ofereceu a equipe. Corrigido na descrição da tool e re-rodado: passou." },
+            { "rodada": "r4", "veredito": "passou", "evidencia": "Exame, cirurgia e convênio ausentes, os três encaminhando sem negar." }
+          ]
+        },
+        {
+          "id": "E3", "titulo": "Chave rotacionada", "como": "manual",
+          "perigo": "Mexe no segredo do vault:6, o mesmo das tools 1, 11 e 12: mesma janela parada do E1.",
+          "hoje": { "cor": "cinza", "txt": "nunca rodou. Aguarda a janela V29" },
+          "passos": [
+            { "t": "monte", "x": "Troque o segredo no vault, mantendo o mesmo nome de entrada." },
+            { "t": "espere", "x": "A Ana volta a funcionar sem tocar na definição da tool." },
+            { "t": "falha se", "x": "Exigir editar a tool: sinal de que o segredo está preso à definição, não à referência do vault." }
+          ],
+          "historico": []
+        }
+      ]
+    }
+  ]
+}

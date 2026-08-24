@@ -22,24 +22,16 @@
       svg: icone('<rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9.5 7V3.5M14.5 7V3.5M9.5 20.5V17M14.5 20.5V17M7 9.5H3.5M7 14.5H3.5M20.5 9.5H17M20.5 14.5H17"/>') },
     { arquivo: "integracao.html", rotulo: "Mapa da Integração",
       svg: icone('<rect x="2.5" y="6" width="6.5" height="12" rx="2"/><rect x="15" y="6" width="6.5" height="12" rx="2"/><path d="M9.5 9.8h5M12.8 7.9l2 1.9-2 1.9"/><path d="M14.5 14.2h-5M11.7 12.3l-2 1.9 2 1.9"/>') },
-    { arquivo: "apis.html", rotulo: "Mapa das APIs",
-      svg: icone('<circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>') },
+    { arquivo: "comparacao.html", rotulo: "Comparação",
+      svg: icone('<path d="M12 3v18"/><path d="M6.5 7.5H4a1 1 0 0 0-.94 1.34L5 14a2.6 2.6 0 0 0 4.9 0l1.96-5.16A1 1 0 0 0 10.92 7.5H8.5"/><path d="M15.5 7.5H13a1 1 0 0 0-.94 1.34"/><path d="M20 7.5h-2.5"/><path d="M14 14l1.96-5.16A1 1 0 0 1 16.9 7.5"/><path d="M14 14a2.6 2.6 0 0 0 4.9 0l1.96-5.16A1 1 0 0 0 19.92 7.5"/>') },
+    { arquivo: "testes.html", rotulo: "Testes manuais",
+      svg: icone('<rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="M8.5 3.5v2.5h7V3.5"/><path d="M8 11l2.2 2.2L14.5 9"/><path d="M8.5 17h7"/>') },
+    { arquivo: "familias.html", rotulo: "Famílias da bancada",
+      svg: icone('<path d="M9.5 3.5h5M10.5 3.5v4.8L5.6 16.6a2.6 2.6 0 0 0 2.3 3.9h8.2a2.6 2.6 0 0 0 2.3-3.9L13.5 8.3V3.5"/><path d="M7.5 14.5h9"/>') },
     { arquivo: "bancada.html", rotulo: "Bancada",
       svg: icone('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7.5 9.5l3 2.5-3 2.5M13 15h3.5"/>') },
-    { arquivo: "roteiro.html", rotulo: "Roteiro",
-      svg: icone('<path d="M4 6.5l1.5 1.5L8.5 5M4 12.5l1.5 1.5L8.5 11M4 18.5L5.5 20 8.5 17"/><path d="M12 6.5h8M12 12.5h8M12 18.5h8"/>') },
     { arquivo: "cadeias.html", rotulo: "Cadeias",
       svg: icone('<circle cx="5" cy="12" r="2.6"/><circle cx="12" cy="5" r="2.6"/><circle cx="12" cy="19" r="2.6"/><circle cx="19" cy="12" r="2.6"/><path d="M7 10.2 10 6.8M14 6.8l3 3.4M7 13.8l3 3.4M14 17.2l3-3.4"/>') },
-    { arquivo: "atlas.html", rotulo: "Atlas",
-      svg: icone('<ellipse cx="12" cy="5.5" rx="8" ry="2.8"/><path d="M4 5.5v13c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8v-13"/><path d="M4 12c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8"/>') },
-    { arquivo: "absorcao.html", rotulo: "Absorção",
-      svg: icone('<path d="M12 3v10.5M8.5 10L12 13.5 15.5 10"/><path d="M3.5 14v3.5A2.5 2.5 0 0 0 6 20h12a2.5 2.5 0 0 0 2.5-2.5V14"/>') },
-    { arquivo: "insights.html", rotulo: "Insights",
-      svg: icone('<path d="M4 20V10M10 20V4M16 20v-7M21.5 20H3"/>') },
-    { arquivo: "tst.html", rotulo: "Conexão TST",
-      svg: icone('<path d="M9 7V3M15 7V3"/><path d="M6.5 7h11v4a5.5 5.5 0 0 1-11 0V7z"/><path d="M12 16.5V21"/>') },
-    { arquivo: "biblioteca.html", rotulo: "Biblioteca",
-      svg: icone('<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17.5H6.5A2.5 2.5 0 0 0 4 22V4.5z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>') },
   ];
   const AMBIENTES = {
     homolog: { classe: "homolog", texto: "homolog GH · Oracle TST" },
@@ -50,17 +42,20 @@
   const scriptTag = document.currentScript;
   const ambiente = AMBIENTES[(scriptTag && scriptTag.dataset.ambiente) || "local"] || AMBIENTES.local;
   const atual = (location.pathname.split("/").pop() || "index.html");
+  // Paginas arquivadas (ADR-0019) vivem em os/arquivo/: os links do menu sobem um nivel.
+  const noArquivo = location.pathname.indexOf("/arquivo/") !== -1;
+  const prefixo = noArquivo ? "../" : "";
   const paginaAtual = PAGINAS.find(function (p) { return p.arquivo === atual; });
 
   const side = document.createElement("nav");
   side.className = "os-sidebar";
   side.setAttribute("aria-label", "Navegação do Ana OS");
   side.innerHTML =
-    '<a class="logo" href="index.html" aria-label="Ana OS">A</a>' +
+    '<a class="logo" href="' + prefixo + 'index.html" aria-label="Ana OS">A</a>' +
     '<div class="paginas">' +
     PAGINAS.map(function (p) {
       const ativo = p.arquivo === atual ? " ativo" : "";
-      return '<a class="item' + ativo + '" href="' + p.arquivo + '" aria-label="' + p.rotulo + '">' +
+      return '<a class="item' + ativo + '" href="' + prefixo + p.arquivo + '" aria-label="' + p.rotulo + '">' +
         p.svg + '<span class="dica">' + p.rotulo + "</span></a>";
     }).join("") +
     "</div>";
@@ -69,6 +64,7 @@
   topo.className = "os-topo";
   topo.innerHTML =
     '<span class="trilha"><strong>Ana OS</strong> · ' +
+    (noArquivo ? "arquivo · " : "") +
     (paginaAtual ? paginaAtual.rotulo : atual) + "</span>" +
     '<span class="ambiente ' + ambiente.classe + '">' + ambiente.texto + "</span>";
 

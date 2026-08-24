@@ -96,13 +96,9 @@
   .lista-passos .item.variavel .num-lista { background: var(--cor-azul); }
   .lista-passos .corpo-item { flex: 1; }
   .lista-passos .corpo-item strong { display: block; }
-  .lista-passos .fx { display: grid; grid-template-columns: 82px 1fr; gap: 3px 12px; margin-top: 7px; }
-  .lista-passos .fx .k {
-    font: var(--peso-semibold) 10px/1.7 var(--font-inter);
-    letter-spacing: .07em; text-transform: uppercase; color: var(--cor-rotulo);
-  }
-  .lista-passos .fx .v { font-size: 13px; line-height: 1.55; color: var(--cor-rotulo); }
-  .lista-passos .fx .v strong { display: inline; color: var(--cor-tinta); font-weight: var(--peso-semibold); }
+  /* a ficha entra/acontece/sai vive no hover (ADR-0020); a lista é só o sumário */
+  .lista-passos .item { cursor: pointer; border-radius: 10px; }
+  .lista-passos .item:hover { background: var(--cor-card-interno); }
   .lista-passos .chip { padding: 4px 10px; font-size: 11px; align-self: flex-start; margin-top: 4px; flex-shrink: 0; }
 
   /* grid de ferramentas */
@@ -125,12 +121,30 @@
   }
   .tool-card.fantasma:hover { transform: none; box-shadow: none; }
 
-  /* anatomia do prompt */
+  /* anatomia do prompt: navegador com índice lateral e acordeão de 2 níveis (ADR-0020) */
+  .controles-anatomia { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 0 0 14px; }
+  .anatomia-grid { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 18px; align-items: start; }
+  .indice-prompt {
+    position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto;
+    background: var(--cor-card); border-radius: 16px; padding: 10px 8px;
+  }
+  .indice-prompt a {
+    display: block; padding: 6px 10px; border-radius: 8px;
+    font: var(--peso-medio) 12px/1.4 var(--font-inter);
+    color: var(--cor-rotulo); text-decoration: none;
+  }
+  .indice-prompt a:hover { color: var(--cor-tinta); background: var(--cor-card-interno); }
+  .indice-prompt a.atual { color: #ffffff; background: var(--cor-tinta); }
+  @media (max-width: 900px) {
+    .anatomia-grid { grid-template-columns: 1fr; }
+    .indice-prompt { position: static; max-height: 240px; }
+  }
   .secao-prompt { background: var(--cor-card); border-radius: 16px; padding: 18px 20px; margin-bottom: 12px; }
-  .secao-prompt .cab { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .secao-prompt > .cab { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; cursor: pointer; list-style: none; }
+  .secao-prompt > .cab::-webkit-details-marker { display: none; }
   .secao-prompt h3 { margin: 0; font-size: 15.5px; }
   .secao-prompt .conta-trechos { font-size: 12px; color: var(--cor-rotulo); margin-left: auto; white-space: nowrap; }
-  .secao-prompt .papel { font-size: 13.5px; color: var(--cor-rotulo); margin-top: 4px; }
+  .secao-prompt .papel { font-size: 13.5px; color: var(--cor-rotulo); margin-top: 10px; }
   .secao-prompt .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
   button.badge-tool {
     cursor: pointer; border: none; border-radius: var(--raio-pill);
@@ -139,21 +153,21 @@
     transition: transform .12s ease;
   }
   button.badge-tool:hover { transform: translateY(-1px); }
-  .secao-prompt details { margin-top: 12px; }
-  .secao-prompt summary {
+  .det-trecho { margin-top: 10px; }
+  .det-trecho summary {
     cursor: pointer; font: var(--peso-medio) 13px/1.4 var(--font-inter); color: var(--cor-tinta);
     list-style: none; display: flex; align-items: center; gap: 7px;
   }
-  .secao-prompt summary::-webkit-details-marker { display: none; }
-  .secao-prompt summary .zig { transition: transform .15s ease; font-size: 11px; }
-  .secao-prompt details[open] summary .zig { transform: rotate(90deg); }
+  .det-trecho summary::-webkit-details-marker { display: none; }
+  .zig { transition: transform .15s ease; font-size: 11px; display: inline-block; }
+  .secao-prompt[open] > .cab .zig { transform: rotate(90deg); }
+  .det-trecho[open] > summary .zig { transform: rotate(90deg); }
   .trecho {
     background: var(--cor-card-interno); border-left: 3px solid var(--cor-mudo);
     border-radius: 0 var(--raio-interno) var(--raio-interno) 0;
     padding: 12px 16px; margin-top: 10px;
     font-size: 12.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word;
   }
-  .trecho .linhas { display: block; font: var(--peso-semibold) 10px/1 var(--font-mono); color: var(--cor-rotulo); margin-bottom: 7px; }
   .secao-prompt.acesa { box-shadow: inset 0 0 0 1.5px var(--cor-tinta); }
 
   /* painel lateral da ferramenta */
@@ -217,6 +231,7 @@
       <p class="caption" id="resumo-caminho" style="margin-top: 10px;"></p>
     </div>
     <div class="card" style="margin-top: 14px; padding: 18px 22px;">
+      <p class="caption" style="margin-bottom: 4px;">Passe o mouse num passo para ver o que entra, o que acontece e o que sai; o clique fixa a ficha.</p>
       <div class="lista-passos" id="lista-passos"></div>
     </div>
   </section>
@@ -229,8 +244,16 @@
 
   <section class="compacta">
     <h2>A anatomia do prompt</h2>
-    <p class="lead" id="lead-anatomia" style="margin-bottom: 16px;"></p>
-    <div id="secoes-prompt"></div>
+    <p class="lead" id="lead-anatomia" style="margin-bottom: 12px;"></p>
+    <div class="controles-anatomia">
+      <button class="btn claro mini" id="btn-abrir-tudo" type="button">abrir tudo</button>
+      <button class="btn claro mini" id="btn-fechar-tudo" type="button">fechar tudo</button>
+      <span class="caption">tudo começa fechado: navegue pelo índice ou abra seção por seção</span>
+    </div>
+    <div class="anatomia-grid">
+      <nav class="indice-prompt" id="indice-prompt" aria-label="Índice das seções do prompt"></nav>
+      <div id="secoes-prompt"></div>
+    </div>
   </section>
 </main>
 
@@ -246,6 +269,8 @@
 </footer>
 
 <script src="assets/nav.js" data-ambiente="local"></script>
+<script src="assets/origem.js"></script>
+<script src="assets/md.js"></script>
 <script>
 "use strict";
 function esc(s) {
@@ -265,7 +290,6 @@ const CHIP_TIPO = { http: "chip azul", nativa: "chip pendente", rag: "chip selo-
 let VIVO = null;
 const DESTINOS = [
   { host: "api.hospitalsaomatheus.cloud", rotulo: "API do Hospital", chip: "feito" },
-  { host: "31.97.29.32.sslip.io", rotulo: "NocoDB (casa velha)", chip: "bloqueada" },
   { host: "dem.agenda.globalhealth.mv", rotulo: "API GH · homolog", chip: "azul" },
 ];
 function toolViva(nome) {
@@ -285,13 +309,34 @@ function destinoVivo(nome) {
   return d || { rotulo: "destino novo, não mapeado", chip: "tag" };
 }
 
+/* Enriquecimento da OS19: prosa e trechos renderizam em mini-Markdown (assets/md.js)
+   e as referencias viram navegacao interna: tool abre a ficha, "Secao N" rola ate a
+   secao, "Regra Global N" cai no bloco de regras quando nao ha secao propria. */
+const SEC_POR_CHAVE = {};
+const MD_RESOLVE = {
+  tool: function (nome) { return D && D.tools.some(function (t) { return t.id === nome; }) ? "#tool-" + nome : null; },
+  secao: function (n) { return SEC_POR_CHAVE[n] ? "#sec-" + SEC_POR_CHAVE[n] : null; },
+  regra: function (n) {
+    const alvo = SEC_POR_CHAVE["Regra " + n] || SEC_POR_CHAVE["Regras"];
+    return alvo ? "#sec-" + alvo : null;
+  }
+};
+
+document.addEventListener("click", function (e) {
+  const a = e.target.closest ? e.target.closest("a.md-tool, a.md-sec, a.md-regra") : null;
+  if (!a) return;
+  const hash = (a.getAttribute("href") || "");
+  if (hash.charAt(0) !== "#") return;
+  e.preventDefault();
+  irPara(hash.slice(1));
+});
+
 async function carregar() {
   D = await fetch("/dados/circuito.json").then(function (r) { return r.json(); });
-  try {
-    VIVO = await fetch("/api/tools").then(function (r) { return r.json(); });
-  } catch (e) {
-    VIVO = { ok: false, erro: "o servidor do Ana OS não respondeu" };
-  }
+  D.secoes.forEach(function (s) { SEC_POR_CHAVE[s.chave] = s.id; });
+  /* Uma leitura so, no assets/origem.js, para as tres paginas falarem a mesma lingua (ADR-0018) */
+  await OrigemDaFerramenta.carregar();
+  VIVO = OrigemDaFerramenta.vivo() || { ok: false, erro: "o servidor do Ana OS não respondeu" };
   document.getElementById("sub").textContent =
     "Prompt " + D.meta.versao_prompt + " (" + D.meta.prompt_caracteres.toLocaleString("pt-BR") +
     " caracteres, exportado em " + D.meta.prompt_exportado_em + "). " +
@@ -317,9 +362,9 @@ document.body.appendChild(TIP);
 let TIP_FIXADA = false;
 
 function blocosFicha(f) {
-  return '<div class="tt-rot">O que entra</div><div class="tt-txt">' + esc(f.entra) + "</div>" +
-    '<div class="tt-rot">O que acontece</div><div class="tt-txt">' + esc(f.acontece) + "</div>" +
-    '<div class="tt-rot">O que sai</div><div class="tt-txt">' + esc(f.sai) + "</div>";
+  return '<div class="tt-rot">O que entra</div><div class="tt-txt">' + MdProsa.inline(f.entra, MD_RESOLVE) + "</div>" +
+    '<div class="tt-rot">O que acontece</div><div class="tt-txt">' + MdProsa.inline(f.acontece, MD_RESOLVE) + "</div>" +
+    '<div class="tt-rot">O que sai</div><div class="tt-txt">' + MdProsa.inline(f.sai, MD_RESOLVE) + "</div>";
 }
 
 function posicionarTip(el) {
@@ -390,7 +435,7 @@ function renderCaminhos() {
     btn.textContent = D.caminhos[chave].rotulo;
     btn.addEventListener("mouseenter", function () {
       mostrarTip('<div class="tt-cab">' + esc(D.caminhos[chave].rotulo) + "</div>" +
-        '<div class="tt-rot">O caminho</div><div class="tt-txt">' + esc(D.caminhos[chave].resumo) + "</div>", btn);
+        '<div class="tt-rot">O caminho</div><div class="tt-txt">' + MdProsa.inline(D.caminhos[chave].resumo, MD_RESOLVE) + "</div>", btn);
     });
     btn.addEventListener("mouseleave", esconderTip);
     btn.addEventListener("click", function () {
@@ -537,8 +582,8 @@ function renderCircuito() {
   const gz = el.querySelector("#g-zona");
   armarTip(gz, function () {
     return '<div class="tt-cab">' + esc(D.laco.titulo) + "</div>" +
-      '<div class="tt-rot">O mecanismo</div><div class="tt-txt">' + esc(D.laco.texto) + "</div>" +
-      '<div class="tt-rot">Exemplo real (das provas)</div><div class="tt-txt">' + esc(D.laco.exemplo) + "</div>";
+      '<div class="tt-rot">O mecanismo</div><div class="tt-txt">' + MdProsa.inline(D.laco.texto, MD_RESOLVE) + "</div>" +
+      '<div class="tt-rot">Exemplo real (das provas)</div><div class="tt-txt">' + MdProsa.inline(D.laco.exemplo, MD_RESOLVE) + "</div>";
   });
   gz.addEventListener("mouseenter", function () { gz.classList.add("aceso"); });
   gz.addEventListener("mouseleave", function () { gz.classList.remove("aceso"); });
@@ -557,20 +602,25 @@ function renderCircuito() {
 
   document.getElementById("resumo-caminho").textContent = D.caminhos[CAMINHO].resumo;
 
-  /* a versão narrativa: a mesma ficha, em leitura sequencial */
-  document.getElementById("lista-passos").innerHTML = passos.map(function (p) {
+  /* o sumário dos passos: a ficha entra/acontece/sai vive no hover (ADR-0020) */
+  const lista = document.getElementById("lista-passos");
+  lista.innerHTML = passos.map(function (p) {
     const raia = raias[idxRaia[p.raia]];
-    const fx = p.ficha
-      ? '<div class="fx">' +
-        '<span class="k">entra</span><span class="v">' + esc(p.ficha.entra) + "</span>" +
-        '<span class="k">acontece</span><span class="v">' + esc(p.ficha.acontece) + "</span>" +
-        '<span class="k">sai</span><span class="v">' + esc(p.ficha.sai) + "</span></div>"
-      : "";
-    return '<div class="item' + (p.variavel ? " variavel" : "") + '">' +
+    return '<div class="item' + (p.variavel ? " variavel" : "") + '" data-passo="' + p.n + '">' +
       '<span class="num-lista">' + p.n + "</span>" +
       '<span class="chip ' + (p.variavel ? "azul" : "bloqueada") + '">' + esc(raia.rotulo) + "</span>" +
-      '<div class="corpo-item"><strong>' + esc(p.titulo) + "</strong>" + fx + "</div></div>";
+      '<div class="corpo-item"><strong>' + esc(p.titulo) + "</strong></div></div>";
   }).join("");
+  lista.querySelectorAll(".item").forEach(function (el) {
+    const p = porN[+el.dataset.passo];
+    armarTip(el, function () {
+      const raia = raias[idxRaia[p.raia]];
+      let html = '<div class="tt-cab">' + p.n + " · " + esc(p.titulo) +
+        '<span class="tt-onde">na raia ' + esc(raia.rotulo) + "</span></div>";
+      if (p.ficha) html += blocosFicha(p.ficha);
+      return html;
+    });
+  });
 }
 
 /* ---------- ferramentas ---------- */
@@ -589,12 +639,10 @@ function renderTools() {
       return '<div class="tool-card" data-tool="' + esc(t.id) + '" id="tool-' + esc(t.id) + '" tabindex="0" role="button" aria-label="' + esc(t.id) + '">' +
         '<div class="topo"><span class="nome">' + esc(t.id) + "</span>" +
         '<span class="' + CHIP_TIPO[t.tipo] + '">' + ROT_TIPO[t.tipo] + "</span></div>" +
-        '<div class="faz">' + esc(t.faz) + "</div></div>";
+        '<div class="selos-origem">' + OrigemDaFerramenta.cartao(t.id) + "</div>" +
+        /* sem links aqui: o card inteiro ja e clicavel e abre a ficha */
+        '<div class="faz">' + MdProsa.inline(t.faz, {}) + "</div></div>";
     }).join("");
-    if (g[0] === "nativa") {
-      cards += '<div class="tool-card fantasma"><div class="topo"><span class="nome">+ 3 nativas</span></div>' +
-        '<div class="faz">' + esc(D.meta.grants.observacao) + "</div></div>";
-    }
     return '<div class="grupo-tools"><span class="micro">' + esc(g[1]) + '</span><div class="cards-tools">' + cards + "</div></div>";
   }).join("");
 
@@ -619,16 +667,16 @@ function abrirTool(id) {
 
   const exemplo = t.exemplo
     ? '<div class="bloco"><span class="micro">Exemplo real (estático, das provas)</span><div class="exemplo">' +
-      '<div class="lin"><span class="k">Pedido</span><span class="v">' + esc(t.exemplo.pedido) + "</span></div>" +
-      '<div class="lin"><span class="k">Resposta</span><span class="v">' + esc(t.exemplo.resposta) + "</span></div>" +
-      '<div class="lin fonte"><span class="k">Fonte da prova</span><span class="v">' + esc(t.exemplo.fonte) + "</span></div>" +
+      '<div class="lin"><span class="k">Pedido</span><span class="v">' + MdProsa.inline(t.exemplo.pedido, MD_RESOLVE) + "</span></div>" +
+      '<div class="lin"><span class="k">Resposta</span><span class="v">' + MdProsa.inline(t.exemplo.resposta, MD_RESOLVE) + "</span></div>" +
+      '<div class="lin fonte"><span class="k">Fonte da prova</span><span class="v">' + MdProsa.inline(t.exemplo.fonte, MD_RESOLVE) + "</span></div>" +
       "</div></div>"
     : "";
 
   const desfechos = (t.desfechos && t.desfechos.length)
     ? '<div class="bloco"><span class="micro">O que a Ana faz com o resultado</span>' +
       t.desfechos.map(function (d) {
-        return '<div class="desfecho"><span class="rot">' + esc(d.rotulo) + '</span><span class="acao">' + esc(d.ana) + "</span></div>";
+        return '<div class="desfecho"><span class="rot">' + esc(d.rotulo) + '</span><span class="acao">' + MdProsa.inline(d.ana, MD_RESOLVE) + "</span></div>";
       }).join("") + "</div>"
     : "";
 
@@ -643,7 +691,7 @@ function abrirTool(id) {
   document.getElementById("painel-corpo").innerHTML =
     '<div class="linha">' + chips + "</div>" +
     '<div class="nome-tool">' + esc(t.id) + "</div>" +
-    '<p style="font-size:14px;">' + esc(t.faz) + "</p>" +
+    '<p style="font-size:14px;">' + MdProsa.inline(t.faz, MD_RESOLVE) + "</p>" +
     '<div class="bloco"><span class="micro">Chamada</span><code>' + esc(chamadaDe(t)) + "</code></div>" +
     exemplo + desfechos + secoes +
     '<div class="bloco caption">Quer ver ao vivo? A página <a href="cadeias.html">Cadeias</a> roda a API GH elo a elo e a <a href="bancada.html">Bancada</a> chama endpoint a endpoint.</div>';
@@ -668,24 +716,52 @@ function renderSecoes() {
           return '<button class="badge-tool" data-tool="' + esc(t) + '">' + esc(t) + "</button>";
         }).join("") + "</div>"
       : "";
-    const trechos = s.trechos.map(function (tr) {
-      return '<div class="trecho">' +
-        (tr.linhas ? '<span class="linhas">linhas ' + esc(tr.linhas) + " do export " + esc(D.meta.versao_prompt) + "</span>" : "") +
-        esc(tr.texto) + "</div>";
+    const trechos = s.trechos.map(function (tr, i) {
+      const rot = "trecho " + (i + 1) + (tr.linhas ? " · linhas " + esc(tr.linhas) + " do export " + esc(D.meta.versao_prompt) : "");
+      return '<details class="det-trecho"><summary><span class="zig">▶</span>' + rot + "</summary>" +
+        '<div class="trecho">' + MdProsa.trecho(tr.texto, MD_RESOLVE) + "</div></details>";
     }).join("");
-    return '<div class="secao-prompt" id="sec-' + esc(s.id) + '">' +
-      '<div class="cab"><h3>' + esc(s.rotulo) + "</h3>" +
-      '<span class="conta-trechos">' + s.trechos.length + (s.trechos.length === 1 ? " trecho literal" : " trechos literais") + "</span></div>" +
-      '<div class="papel">' + esc(s.papel) + "</div>" + badges +
-      "<details><summary><span class=\"zig\">▶</span>Ver o texto literal do prompt</summary>" + trechos + "</details></div>";
+    return '<details class="secao-prompt" id="sec-' + esc(s.id) + '">' +
+      '<summary class="cab"><span class="zig">▶</span><h3>' + esc(s.rotulo) + "</h3>" +
+      '<span class="conta-trechos">' + s.trechos.length + (s.trechos.length === 1 ? " trecho literal" : " trechos literais") + "</span></summary>" +
+      '<div class="papel">' + MdProsa.inline(s.papel, MD_RESOLVE) + "</div>" + badges + trechos + "</details>";
   }).join("");
 
   alvo.querySelectorAll(".badge-tool").forEach(function (btn) {
-    btn.addEventListener("click", function () {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
       const card = document.getElementById("tool-" + btn.dataset.tool);
       if (card) card.scrollIntoView({ block: "center" });
       abrirTool(btn.dataset.tool);
     });
+  });
+
+  /* índice lateral: clique pula e abre; a seção visível acende (scroll-spy) */
+  const ind = document.getElementById("indice-prompt");
+  ind.innerHTML = D.secoes.map(function (s) {
+    return '<a href="#sec-' + esc(s.id) + '" data-sec="' + esc(s.id) + '">' + esc(s.rotulo) + "</a>";
+  }).join("");
+  ind.addEventListener("click", function (e) {
+    const a = e.target.closest("a[data-sec]");
+    if (!a) return;
+    e.preventDefault();
+    irPara("sec-" + a.dataset.sec);
+  });
+  const espiao = new IntersectionObserver(function (entradas) {
+    entradas.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      ind.querySelectorAll("a").forEach(function (a) {
+        a.classList.toggle("atual", "sec-" + a.dataset.sec === en.target.id);
+      });
+    });
+  }, { rootMargin: "-15% 0px -75% 0px" });
+  alvo.querySelectorAll(".secao-prompt").forEach(function (el) { espiao.observe(el); });
+
+  document.getElementById("btn-abrir-tudo").addEventListener("click", function () {
+    alvo.querySelectorAll("details").forEach(function (d) { d.open = true; });
+  });
+  document.getElementById("btn-fechar-tudo").addEventListener("click", function () {
+    alvo.querySelectorAll("details").forEach(function (d) { d.open = false; });
   });
 }
 
@@ -702,8 +778,7 @@ function irPara(hash) {
   const el = document.getElementById(hash);
   if (!el) return;
   if (el.classList.contains("secao-prompt")) {
-    const det = el.querySelector("details");
-    if (det) det.open = true;
+    el.open = true;
     el.classList.add("acesa");
     setTimeout(function () { el.classList.remove("acesa"); }, 2200);
   }

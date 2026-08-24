@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ana OS · Famílias da bancada</title>
+<link rel="stylesheet" href="assets/os.css">
+<style>
+  /* ---- exclusivo das Famílias da bancada (OS22, ADR-0022) ---- */
+  .placar { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--gap-cards); margin: 16px 0 26px; }
+  .placar .card .desc { font-size: 12px; line-height: 1.45; color: var(--cor-rotulo); }
+  .placar .num-indicador { display: block; margin: 2px 0 3px; }
+
+  .niveis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin: 0 0 30px; }
+  .nivel { background: var(--cor-card); border-radius: var(--raio-interno); padding: 11px 14px; }
+  .nivel .n { font: var(--peso-semibold) 10px/1 var(--font-inter); letter-spacing: .07em; color: var(--cor-mudo); }
+  .nivel .nome { font: var(--peso-semibold) 13px/1.4 var(--font-inter); display: block; margin: 3px 0 2px; }
+  .nivel .prova { font-size: 11.5px; line-height: 1.5; color: var(--cor-rotulo); }
+  .nivel .como { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; color: var(--cor-mudo); display: block; margin-top: 5px; }
+
+  .familia { margin-bottom: 44px; }
+  .fam-cab { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 4px; }
+  .letrao {
+    flex-shrink: 0; width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center;
+    font: var(--peso-bold, 800) 26px/1 var(--font-poppins, var(--font-inter)); background: var(--cor-tinta); color: #fff;
+  }
+  .fam-cab .miolo { flex: 1; min-width: 0; }
+  .fam-cab h2 { margin: 0 0 2px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .peso { border-radius: var(--raio-pill); padding: 4px 11px; font: var(--peso-semibold) 10.5px/1.3 var(--font-inter); white-space: nowrap; }
+  .peso.bloq { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); }
+  .peso.ajuste { background: var(--cor-fio); color: var(--cor-rotulo); }
+  .promessa { font: var(--peso-semibold) 14px/1.5 var(--font-inter); margin: 2px 0 4px; }
+  .promessa::before { content: "\201C"; color: var(--cor-mudo); }
+  .promessa::after { content: "\201D"; color: var(--cor-mudo); }
+  .fam-explica { font-size: 13px; line-height: 1.6; color: var(--cor-rotulo); margin: 0 0 10px; max-width: 860px; }
+
+  .progresso { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; max-width: 420px; }
+  .progresso .barra-p { flex: 1; height: 8px; border-radius: 99px; background: var(--cor-fio); overflow: hidden; }
+  .progresso .cheio { height: 100%; border-radius: 99px; background: var(--cor-verde); }
+  .progresso .rot-p { font: var(--peso-semibold) 11.5px/1 var(--font-inter); color: var(--cor-rotulo); white-space: nowrap; }
+
+  .cen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 10px; align-items: start; }
+  details.cen { background: var(--cor-card); border-radius: var(--raio-interno); border-left: 4px solid var(--cor-fio); }
+  details.cen.c-verde { border-left-color: var(--cor-verde); }
+  details.cen.c-ressalva { border-left-color: #c9a227; }
+  details.cen.c-cinza { border-left-color: var(--cor-mudo); }
+  details.cen > summary { list-style: none; cursor: pointer; padding: 12px 14px; }
+  details.cen > summary::-webkit-details-marker { display: none; }
+  .cen-topo { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .cen-topo .id { font: var(--peso-semibold) 11px/1 var(--font-inter); letter-spacing: .07em; color: var(--cor-mudo); }
+  .cen-topo .tit { font: var(--peso-semibold) 13.5px/1.35 var(--font-inter); flex: 1; min-width: 150px; }
+  .cen-topo .seta { color: var(--cor-mudo); font-size: 11px; transition: transform .15s ease; }
+  details[open] .cen-topo .seta { transform: rotate(90deg); }
+  .mini { border-radius: var(--raio-pill); padding: 3px 8px; font: var(--peso-semibold) 10px/1.3 var(--font-inter); white-space: nowrap; }
+  .mini.bancada { background: var(--cor-azul-tinta); color: var(--cor-azul); }
+  .mini.manual { background: var(--cor-tinta); color: #fff; }
+  .hoje { display: flex; align-items: center; gap: 7px; margin-top: 7px; font: var(--peso-medio) 12px/1.45 var(--font-inter); color: var(--cor-rotulo); }
+  .bolinha { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .bolinha.verde { background: var(--cor-verde); }
+  .bolinha.ressalva { background: #c9a227; }
+  .bolinha.cinza { background: var(--cor-mudo); }
+
+  .cen-corpo { padding: 0 14px 14px; }
+  .perigo { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); border-radius: 9px; padding: 9px 12px; font-size: 12px; line-height: 1.5; margin: 2px 0 10px; }
+  .perigo b { font-weight: 700; }
+
+  .passos { display: flex; flex-direction: column; margin: 4px 0 2px; }
+  .passo { display: flex; gap: 10px; position: relative; padding: 0 0 12px 0; }
+  .passo::before {
+    content: ""; position: absolute; left: 5px; top: 14px; bottom: 0; width: 2px; background: var(--cor-fio);
+  }
+  .passo:last-child::before { display: none; }
+  .passo .ponto { flex-shrink: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--cor-card); border: 3px solid var(--cor-mudo); margin-top: 2px; z-index: 1; }
+  .passo.p-espere .ponto { border-color: var(--cor-verde); }
+  .passo.p-falha .ponto { border-color: var(--cor-vermelho); }
+  .passo.p-monte .ponto, .passo.p-edite .ponto { border-color: #c9a227; }
+  .passo .rot { font: var(--peso-semibold) 9.5px/1.7 var(--font-inter); letter-spacing: .08em; text-transform: uppercase; color: var(--cor-mudo); white-space: nowrap; min-width: 62px; }
+  .passo.p-espere .rot { color: var(--cor-verde); }
+  .passo.p-falha .rot { color: var(--cor-vermelho); }
+  .passo.p-monte .rot, .passo.p-edite .rot { color: #8a6d3b; }
+  .passo .tx { font-size: 12.5px; line-height: 1.55; }
+
+  .variantes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px; margin: 8px 0 2px; }
+  .var { display: flex; align-items: baseline; gap: 7px; background: var(--cor-card-interno); border-radius: 8px; padding: 7px 10px; }
+  .var .bolinha { margin-top: 1px; align-self: center; }
+  .var .vid { font: var(--peso-semibold) 10px/1.4 var(--font-inter); letter-spacing: .05em; color: var(--cor-mudo); }
+  .var .vtx { font-size: 11.5px; line-height: 1.45; flex: 1; }
+  .var .vnota { display: block; font-size: 10.5px; color: var(--cor-rotulo); margin-top: 1px; }
+
+  .hist { margin: 10px 0 0; border-top: 1px solid var(--cor-fio); padding-top: 9px; }
+  .hist .rot-h { font: var(--peso-semibold) 9.5px/1 var(--font-inter); letter-spacing: .08em; text-transform: uppercase; color: var(--cor-mudo); }
+  .evento { display: flex; gap: 9px; margin-top: 7px; }
+  .evento .quando { flex-shrink: 0; min-width: 118px; }
+  .evento .quando .r { font: var(--peso-semibold) 11px/1.4 var(--font-inter); display: block; }
+  .evento .quando .d { font-size: 10px; color: var(--cor-mudo); }
+  .evento .veredito { flex-shrink: 0; font: var(--peso-semibold) 10px/1.8 var(--font-inter); text-transform: uppercase; letter-spacing: .05em; min-width: 74px; }
+  .evento .veredito.passou { color: var(--cor-verde); }
+  .evento .veredito.falhou { color: var(--cor-vermelho); }
+  .evento .veredito.ressalva { color: #8a6d3b; }
+  .evento .veredito.nao_rodado { color: var(--cor-mudo); }
+  .evento .ev { font-size: 11.5px; line-height: 1.5; color: var(--cor-rotulo); flex: 1; }
+
+  .cen-links { margin-top: 10px; display: flex; gap: 7px; flex-wrap: wrap; }
+  .link-teste {
+    display: inline-flex; align-items: center; gap: 5px; text-decoration: none;
+    border-radius: var(--raio-pill); padding: 4px 11px; background: var(--cor-azul-tinta); color: var(--cor-azul);
+    font: var(--peso-semibold) 11px/1.35 var(--font-inter);
+  }
+  .link-teste:hover { filter: brightness(.95); }
+  .chip-preparo { border-radius: var(--raio-pill); padding: 4px 10px; background: var(--cor-areia); color: #6b6862; font: var(--peso-medio) 11px/1.35 var(--font-inter); }
+</style>
+</head>
+<body>
+
+<main>
+  <h1>Famílias da bancada</h1>
+  <p class="lead">O que os códigos A1, C1b, D5, E3 querem dizer, por dentro. Cada <strong>família</strong> vigia uma promessa da integração com o app do hospital; cada <strong>cenário</strong> é uma prova executável dessa promessa. Esta página não guarda nada: lê <code>os/dados/familias.json</code>, curado do roteiro de integração (ADR-0022). Clique num cenário para abrir a anatomia.</p>
+
+  <div class="placar" id="placar"></div>
+
+  <div class="niveis" id="niveis"></div>
+
+  <div id="familias"></div>
+</main>
+
+<footer class="os-rodape">
+  Fonte: <code>os/dados/familias.json</code>, curadoria de <code>roadmap/roteiro-integracao-hospital.md</code> (o roteiro é a verdade; os vereditos vêm das rodadas datadas registradas nele). Os cenários que a máquina roda vivem em <code>ana/bancada/cenarios/integracao.json</code> e aparecem também na página Testes manuais.
+</footer>
+
+<script src="assets/nav.js" data-ambiente="local"></script>
+<script>
+"use strict";
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+var CORES = { verde: "verde", ressalva: "ressalva", cinza: "cinza" };
+
+function render(d) {
+  var rodadas = {};
+  d.rodadas.forEach(function (r) { rodadas[r.id] = r; });
+
+  /* placar */
+  var totalCen = 0, verdes = 0, aguardando = 0;
+  d.familias.forEach(function (f) { totalCen += f.total; verdes += f.verdes; });
+  d.familias.forEach(function (f) {
+    f.cenarios.forEach(function (c) { if (c.hoje.cor === "cinza") aguardando++; });
+  });
+  var stats = [
+    ["famílias", d.familias.length, "cada uma vigia uma promessa da integração"],
+    ["cenários verdes", verdes + " de " + totalCen, "contando as variantes por tabela"],
+    ["aguardando janela", aguardando, "mexem na credencial ou na tool em produção: é a V29"],
+    ["rodadas registradas", d.rodadas.length, "de 18 a 21/ago/2026, no roteiro"],
+  ];
+  document.getElementById("placar").innerHTML = stats.map(function (s) {
+    return '<div class="card"><span class="micro-rotulo">' + s[0] + "</span>" +
+      '<span class="num-indicador">' + s[1] + "</span>" +
+      '<span class="desc">' + s[2] + "</span></div>";
+  }).join("");
+
+  /* niveis de rodagem */
+  document.getElementById("niveis").innerHTML = d.niveis.map(function (n) {
+    return '<div class="nivel"><span class="n">NÍVEL ' + esc(n.n) + '</span>' +
+      '<span class="nome">' + esc(n.nome) + "</span>" +
+      '<span class="prova">' + esc(n.prova) + "</span>" +
+      '<span class="como">' + esc(n.como) + "</span></div>";
+  }).join("");
+
+  /* familias */
+  document.getElementById("familias").innerHTML = d.familias.map(function (f) {
+    var pct = Math.round(100 * f.verdes / f.total);
+    var cards = f.cenarios.map(function (c) { return cenHtml(c, rodadas); }).join("");
+    return '<section class="familia">' +
+      '<div class="fam-cab"><div class="letrao">' + esc(f.letra) + '</div><div class="miolo">' +
+      '<h2>' + esc(f.nome) +
+      '<span class="peso ' + (f.peso === "ajuste" ? "ajuste" : "bloq") + '">' + esc(f.peso) + "</span></h2>" +
+      '<p class="promessa">' + esc(f.promessa) + "</p>" +
+      '<p class="fam-explica">' + esc(f.explica) + "</p>" +
+      '<div class="progresso"><div class="barra-p"><div class="cheio" style="width:' + pct + '%"></div></div>' +
+      '<span class="rot-p">' + f.verdes + " de " + f.total + " verdes</span></div>" +
+      "</div></div>" +
+      '<div class="cen-grid">' + cards + "</div></section>";
+  }).join("");
+}
+
+function cenHtml(c, rodadas) {
+  var como = c.como === "bancada"
+    ? '<span class="mini bancada">máquina roda</span>'
+    : '<span class="mini manual">manual</span>';
+
+  var passos = (c.passos || []).map(function (p) {
+    var classe = { "monte": "p-monte", "edite": "p-edite", "espere": "p-espere", "falha se": "p-falha" }[p.t] || "";
+    return '<div class="passo ' + classe + '"><span class="ponto"></span>' +
+      '<span class="rot">' + esc(p.t) + "</span>" +
+      '<span class="tx">' + esc(p.x) + "</span></div>";
+  }).join("");
+
+  var variantes = (c.variantes || []).map(function (v) {
+    return '<div class="var"><span class="bolinha ' + (CORES[v.cor] || "cinza") + '"></span>' +
+      '<span class="vid">' + esc(v.id) + '</span>' +
+      '<span class="vtx">' + esc(v.rotulo) +
+      (v.nota ? '<span class="vnota">' + esc(v.nota) + "</span>" : "") + "</span></div>";
+  }).join("");
+
+  var hist = (c.historico || []).map(function (h) {
+    var r = rodadas[h.rodada] || { rotulo: h.rodada, data: "" };
+    return '<div class="evento"><span class="quando"><span class="r">' + esc(r.rotulo) + '</span>' +
+      '<span class="d">' + esc(r.data) + "</span></span>" +
+      '<span class="veredito ' + esc(h.veredito) + '">' + esc(h.veredito).replace("_", " ") + "</span>" +
+      '<span class="ev">' + esc(h.evidencia) + "</span></div>";
+  }).join("");
+
+  var links = "";
+  if (c.como === "bancada") {
+    links += '<a class="link-teste" href="testes.html#q=' + encodeURIComponent(c.id) + '">ver na página Testes ↗</a>';
+  }
+  if (c.preparo) links += '<span class="chip-preparo">' + esc(c.preparo) + "</span>";
+
+  return '<details class="cen c-' + esc(c.hoje.cor) + '">' +
+    '<summary><div class="cen-topo"><span class="seta">▶</span>' +
+    '<span class="id">' + esc(c.id) + '</span>' +
+    '<span class="tit">' + esc(c.titulo) + "</span>" + como + "</div>" +
+    '<div class="hoje"><span class="bolinha ' + esc(c.hoje.cor) + '"></span>' + esc(c.hoje.txt) + "</div></summary>" +
+    '<div class="cen-corpo">' +
+    (c.perigo ? '<div class="perigo"><b>cuidado:</b> ' + esc(c.perigo) + "</div>" : "") +
+    '<div class="passos">' + passos + "</div>" +
+    (variantes ? '<div class="variantes">' + variantes + "</div>" : "") +
+    (hist ? '<div class="hist"><span class="rot-h">como foi nas rodadas</span>' + hist + "</div>" : "") +
+    (links ? '<div class="cen-links">' + links + "</div>" : "") +
+    "</div></details>";
+}
+
+fetch("dados/familias.json").then(function (r) { return r.json(); }).then(render);
+</script>
+
+</body>
+</html>

@@ -358,3 +358,41 @@ footer.os-rodape {
   .os-sidebar a.item .dica { display: none; }
   h1 { font-size: 26px; }
 }
+
+/* ---------------------------------------------- selo de origem da ferramenta
+   ADR-0018 (estendido pelo ADR-0020 ao cockpit inteiro): a mesma palavra e a
+   mesma cor em toda página que desenha ferramenta. Página de origem única
+   (Bancada, Cadeias) usa uma faixa no topo em vez de repetir o selo por card.
+   Responde quem atende a chamada da Ana.
+   Cores da tabela do DESIGN.md: verde é semântico (funciona em produção), azul é
+   o selo de ambiente homolog, areia é o neutro-quente. */
+.selo-origem {
+  display: inline-block; align-self: flex-start;
+  border-radius: var(--raio-pill); padding: 3px 9px;
+  font: var(--peso-medio) 11px/1.35 var(--font-inter);
+  white-space: nowrap;
+}
+.selo-origem.hospital { background: var(--cor-verde-tinta); color: var(--cor-verde); }
+.selo-origem.gh { background: var(--cor-azul-tinta); color: var(--cor-azul); }
+.selo-origem.nativa { background: var(--cor-areia); color: #6b6862; }
+.selo-origem.desconhecida,
+.selo-origem.sem-leitura { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); }
+.selo-origem.nao-concedida {
+  background: transparent; box-shadow: inset 0 0 0 1px var(--cor-vermelho);
+  color: var(--cor-vermelho); margin-left: 5px;
+}
+
+/* ---------------------------------------------- mini-Markdown dos trechos
+   OS19: os trechos literais do prompt (sop.html e circuito.html) renderizam
+   **negrito**, `codigo`, "> " de citacao e "#### " de titulo via assets/md.js,
+   e as referencias a tool, Secao e Regra viram link navegavel. */
+.md-quote {
+  display: inline-block; width: calc(100% - 12px);
+  border-left: 2px solid var(--cor-fio); padding-left: 10px;
+  color: var(--cor-rotulo);
+}
+.md-h { display: inline-block; margin-top: 2px; }
+a.md-link { color: inherit; text-decoration: underline dotted; text-underline-offset: 3px; }
+a.md-link:hover { text-decoration-style: solid; }
+a.md-link code { color: inherit; }
+.md-fence { color: var(--cor-mudo); font-size: 11px; }

@@ -1,16 +1,29 @@
 {
   "apps": [
-    { "nome": "fazer.ai agents", "url": "https://agents.hospitalsaomatheus.cloud",
-      "desc": "O cérebro da Ana: prompt, ferramentas, base de conhecimento e playground do agente." },
-    { "nome": "Chatwoot", "url": "https://chatwoot.mala-ia.cloud",
-      "desc": "As conversas dos testes: etapas do funil, tags e handoff. Sua visão principal." },
-    { "nome": "Langfuse", "url": "https://langfuse.hospitalsaomatheus.cloud",
-      "desc": "O raio-X de cada resposta: ferramentas chamadas, tokens e custo." },
-    { "nome": "Coolify", "url": "https://coolify.hospitalsaomatheus.cloud",
-      "desc": "A infra na VPS: deploys e saúde dos serviços." },
-    { "nome": "Bot do Telegram (SaoMatheusBot)", "url": "https://t.me/SaoMatheusBot",
-      "desc": "O canal de teste onde o roteiro de cenários roda." },
-    { "nome": "NocoDB (Base Ana)", "url": "https://nocodb-ucc0hkwgqdsa38p5xrwa1x0h.31.97.29.32.sslip.io",
-      "desc": "As tabelas oficiais que a Ana lê (consultas, exames, cirurgias, convênios). É aqui que o negócio edita valores." }
+    {
+      "nome": "fazer.ai agents",
+      "url": "https://agents.hospitalsaomatheus.cloud",
+      "desc": "O cérebro da Ana: prompt, ferramentas, base de conhecimento e playground do agente."
+    },
+    {
+      "nome": "Chatwoot",
+      "url": "https://chatwoot.mala-ia.cloud",
+      "desc": "As conversas dos testes: etapas do funil, tags e handoff. Sua visão principal."
+    },
+    {
+      "nome": "Langfuse",
+      "url": "https://langfuse.hospitalsaomatheus.cloud",
+      "desc": "O raio-X de cada resposta: ferramentas chamadas, tokens e custo."
+    },
+    {
+      "nome": "Coolify",
+      "url": "https://coolify.hospitalsaomatheus.cloud",
+      "desc": "A infra na VPS: deploys e saúde dos serviços."
+    },
+    {
+      "nome": "Bot do Telegram (SaoMatheusBot)",
+      "url": "https://t.me/SaoMatheusBot",
+      "desc": "O canal de teste onde o roteiro de cenários roda."
+    }
   ]
 }

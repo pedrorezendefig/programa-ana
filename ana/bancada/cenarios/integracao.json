@@ -1,10 +1,14 @@
 {
   "roteiro": "roadmap/roteiro-integracao-hospital.md",
-  "sobre": "Cenarios do roteiro de integracao Base Ana no Hospital Reunioes. So entram aqui os cenarios que a fonte nova ja sustenta: hoje a tool 1 (consultas particulares) e as tools 11 e 12 (ouvidoria) leem a API do app; exames, cirurgias e convenios seguem no NocoDB ate a V23. Os cenarios D4 e D5 vieram do runner da V24 (ana/testes/, consolidado aqui em 18/ago/2026): eles cobrem o caminho de falha da gravacao e o paciente que volta citando o numero.",
+  "sobre": "Cenarios do roteiro de integracao Base Ana no Hospital Reunioes. Desde a V23 as quatro tabelas (consultas particulares, exames, cirurgias-estimativas e convenios por especialidade) e a ouvidoria (tools 11 e 12) leem a API do app do hospital. A V30 fechou o buraco achado no grilling de 19/ago/2026: a tool 1 tinha sete cenarios e as tools 2, 3 e 4 nenhum. Cada tabela virada tem agora o mesmo quarteto da tool 1: primeiro item, ultimo item, pergunta de catalogo e item ausente caindo na Regra Global 13. A ordem do primeiro e do ultimo e a que a API devolve, conferida com smoke-hospital.py. Os cenarios D4 e D5 vieram do runner da V24 (ana/testes/, consolidado aqui em 18/ago/2026): eles cobrem o caminho de falha da gravacao e o paciente que volta citando o numero. Nenhum cenario aqui toca agendamento.",
   "cenarios": [
     {
       "id": "B1",
       "familia": "B",
+      "secao": "Secao 2.3",
+      "secao_ids": [
+        "2-3"
+      ],
       "titulo": "Numero vira moeda brasileira, nao vaza o formato do JSON",
       "turnos": [
         {
@@ -27,6 +31,10 @@
     {
       "id": "B2",
       "familia": "B",
+      "secao": "Secao 2.3",
+      "secao_ids": [
+        "2-3"
+      ],
       "titulo": "Booleano alta_demanda nao vira fala de campo de banco",
       "turnos": [
         {
@@ -57,8 +65,72 @@
       ]
     },
     {
+      "id": "B3",
+      "familia": "B",
+      "secao": "Secao 5.D",
+      "secao_ids": [
+        "5-d"
+      ],
+      "titulo": "Preparo da colonoscopia sai literal, sem perder passo clinico",
+      "nota": "A tabela manda tres coisas: dieta sem residuos 2 dias antes, laxativo prescrito pelo medico e jejum absoluto de 8h. O preparo so existe no modo completo, entao este cenario tambem prova que a tool 2 pediu o detalhe com ?exame=.",
+      "turnos": [
+        {
+          "envie": "qual o preparo da colonoscopia?",
+          "contem": [
+            "laxativo",
+            "jejum",
+            "sem res",
+            "dias antes"
+          ],
+          "contem_algum": [
+            "8h",
+            "8 horas",
+            "oito horas"
+          ],
+          "nao_contem": [
+            "instrucoes_preparo_completas",
+            "preparo_necessario",
+            "true"
+          ],
+          "tools": [
+            "consultar_exames"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B4",
+      "familia": "B",
+      "secao": "Secao 3.2",
+      "secao_ids": [
+        "3-2"
+      ],
+      "titulo": "Ressalva do convenio sai junto com o cobre",
+      "nota": "A observacao do par Amil / Cardiologia e 'Cobre consultas e exames cardiologicos. Cirurgias sujeitas a autorizacao.' e so existe no modo completo. As Secoes 3 e 5.A mandam dizer a ressalva. Falha aqui e item de ajuste de redacao, nao defeito da fonte.",
+      "turnos": [
+        {
+          "envie": "meu convenio e a Amil, voces cobrem cardiologia?",
+          "contem_algum": [
+            "autoriza"
+          ],
+          "nao_contem": [
+            "observacao",
+            "cobre: true",
+            "booleano"
+          ],
+          "tools": [
+            "consultar_convenios_especialidade"
+          ]
+        }
+      ]
+    },
+    {
       "id": "C1a",
       "familia": "C",
+      "secao": "Secao 2.3",
+      "secao_ids": [
+        "2-3"
+      ],
       "titulo": "Primeiro item da tabela (Cardiologia) responde com o dado certo",
       "turnos": [
         {
@@ -76,6 +148,10 @@
     {
       "id": "C1b",
       "familia": "C",
+      "secao": "Secao 2.3",
+      "secao_ids": [
+        "2-3"
+      ],
       "titulo": "Ultimo item da tabela (Urologia) responde com o dado certo",
       "turnos": [
         {
@@ -91,8 +167,169 @@
       ]
     },
     {
+      "id": "C1c",
+      "familia": "C",
+      "secao": "Secao 6.B",
+      "secao_ids": [
+        "6-b"
+      ],
+      "titulo": "Exames, primeiro item da tabela (Colonoscopia) responde com o dado certo",
+      "turnos": [
+        {
+          "envie": "quanto custa a colonoscopia particular?",
+          "contem": [
+            "580"
+          ],
+          "tools": [
+            "consultar_exames"
+          ],
+          "tools_max_por_turno": 1
+        }
+      ]
+    },
+    {
+      "id": "C1d",
+      "familia": "C",
+      "secao": "Secao 6.B",
+      "secao_ids": [
+        "6-b"
+      ],
+      "titulo": "Exames, ultimo item da tabela (Ultrassonografia Abdominal) responde com o dado certo",
+      "turnos": [
+        {
+          "envie": "quanto custa a ultrassonografia abdominal particular?",
+          "contem": [
+            "220"
+          ],
+          "tools": [
+            "consultar_exames"
+          ],
+          "tools_max_por_turno": 1
+        }
+      ]
+    },
+    {
+      "id": "C1e",
+      "familia": "C",
+      "secao": "Secao 6.C",
+      "secao_ids": [
+        "6-c"
+      ],
+      "titulo": "Cirurgias, primeiro item da tabela (Apendicectomia) responde com o dado certo e o caveat",
+      "nota": "A tool 3 obriga o caveat de avaliacao medica em toda resposta de valor. Por isso o cenario cobra o numero E o caveat: valor de cirurgia sem caveat e falha, mesmo com o numero certo.",
+      "turnos": [
+        {
+          "envie": "quanto custa a cirurgia de apendicectomia por videolaparoscopia?",
+          "contem_algum": [
+            "8.300",
+            "8300"
+          ],
+          "nao_contem": [
+            "estimativa_total_rs",
+            "honorarios_equipe_rs",
+            "8300.0"
+          ],
+          "tools": [
+            "consultar_cirurgias_estimativas"
+          ],
+          "tools_max_por_turno": 1
+        }
+      ]
+    },
+    {
+      "id": "C1f",
+      "familia": "C",
+      "secao": "Secao 6.C",
+      "secao_ids": [
+        "6-c"
+      ],
+      "titulo": "Cirurgias, ultimo item da tabela (Herniorrafia) responde com o dado certo",
+      "turnos": [
+        {
+          "envie": "quanto custa a cirurgia de hernia inguinal?",
+          "contem_algum": [
+            "7.500",
+            "7500"
+          ],
+          "nao_contem": [
+            "estimativa_total_rs",
+            "7500.0"
+          ],
+          "tools": [
+            "consultar_cirurgias_estimativas"
+          ],
+          "tools_max_por_turno": 1
+        }
+      ]
+    },
+    {
+      "id": "C1g",
+      "familia": "C",
+      "secao": "Secao 3.2",
+      "secao_ids": [
+        "3-2"
+      ],
+      "titulo": "Convenios, primeiro par da tabela (Amil / Cardiologia) responde com o dado certo",
+      "nota": "Espelha o C1a: o que a familia C mede aqui e o par do comeco da tabela chegar ao modelo. A ressalva de autorizacao que vem junto no modo completo e medida no B4, porque perder ressalva e fidelidade de conteudo, nao cobertura de tabela.",
+      "turnos": [
+        {
+          "envie": "meu convenio e a Amil, voces cobrem cardiologia?",
+          "contem_algum": [
+            "cobre",
+            "cobertura",
+            "atende"
+          ],
+          "nao_contem": [
+            "nao cobre",
+            "não cobre",
+            "nao aceitamos",
+            "não aceitamos",
+            "cobre: true",
+            "booleano"
+          ],
+          "tools": [
+            "consultar_convenios_especialidade"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C1h",
+      "familia": "C",
+      "secao": "Secao 3.2",
+      "secao_ids": [
+        "3-2"
+      ],
+      "titulo": "Convenios, ultimo par da tabela (Unimed / Pediatria) responde com o dado certo",
+      "turnos": [
+        {
+          "envie": "tenho Unimed, voces atendem pediatria pelo convenio?",
+          "contem_algum": [
+            "cobre",
+            "cobertura",
+            "atende"
+          ],
+          "nao_contem": [
+            "nao cobre",
+            "não cobre",
+            "nao aceitamos",
+            "não aceitamos",
+            "cobre: true",
+            "booleano"
+          ],
+          "tools": [
+            "consultar_convenios_especialidade"
+          ]
+        }
+      ]
+    },
+    {
       "id": "C2",
       "familia": "C",
+      "secao": "Secao 2.2",
+      "secao_ids": [
+        "2-2"
+      ],
       "titulo": "Pergunta de catalogo traz a lista completa das ativas",
       "turnos": [
         {
@@ -116,8 +353,95 @@
       ]
     },
     {
+      "id": "C2b",
+      "familia": "C",
+      "secao": "Secao 6.B",
+      "secao_ids": [
+        "6-b"
+      ],
+      "titulo": "Catalogo de exames traz os 10 da tabela, sem o fim da lista cortado",
+      "turnos": [
+        {
+          "envie": "quais exames voces fazem e quanto custa cada um particular?",
+          "contem": [
+            "colonoscopia",
+            "ecocardiograma",
+            "eletrocardiograma",
+            "endoscopia",
+            "hemograma",
+            "holter",
+            "mapa",
+            "raio",
+            "tomografia",
+            "ultrassonografia"
+          ],
+          "tools": [
+            "consultar_exames"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C2c",
+      "familia": "C",
+      "secao": "Secao 6.C",
+      "secao_ids": [
+        "6-c"
+      ],
+      "titulo": "Catalogo de estimativas de cirurgia traz os 3 da tabela",
+      "nota": "A pergunta e pela lista com ESTIMATIVA cadastrada, nao pelo catalogo cirurgico do hospital. A tool 3 proibe sugerir que o hospital nao realiza um procedimento fora da tabela, entao a pergunta do cenario e escrita para nao induzir essa violacao.",
+      "turnos": [
+        {
+          "envie": "de quais cirurgias voces conseguem me passar uma estimativa de valor?",
+          "contem": [
+            "apendicect",
+            "colecistect",
+            "herni"
+          ],
+          "tools": [
+            "consultar_cirurgias_estimativas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C2d",
+      "familia": "C",
+      "secao": "Secao 3.2",
+      "secao_ids": [
+        "3-2"
+      ],
+      "titulo": "Catalogo de cobertura de um convenio traz as 5 especialidades da tabela",
+      "nota": "Reescrito na rodada 4. A pergunta original ('quais convenios voces atendem?') nao vai para a tool 4: a Ana responde pela base de conhecimento, que lista os 40+ convenios aceitos pelo hospital. Sao fontes diferentes de proposito: a tabela e o mapa de cobertura POR ESPECIALIDADE, nao a lista de convenios aceitos. Para medir o corte da tabela, a pergunta certa e a cobertura de um convenio: Unimed tem 5 pares, de Cardiologia a Pediatria.",
+      "turnos": [
+        {
+          "envie": "tenho Unimed, quais especialidades voces cobrem por ela?",
+          "contem": [
+            "cardiologia",
+            "ginecologia",
+            "obstetr",
+            "ortopedia",
+            "pediatria"
+          ],
+          "nao_contem": [
+            "nao trabalhamos",
+            "não trabalhamos",
+            "nao aceitamos",
+            "não aceitamos"
+          ],
+          "tools": [
+            "consultar_convenios_especialidade"
+          ]
+        }
+      ]
+    },
+    {
       "id": "E2",
       "familia": "E",
+      "secao": "Regra Global 13",
+      "secao_ids": [
+        "regras"
+      ],
       "titulo": "Item ausente da tabela cai na Regra Global 13, sem negar o hospital",
       "turnos": [
         {
@@ -143,8 +467,113 @@
       ]
     },
     {
+      "id": "E2b",
+      "familia": "E",
+      "secao": "Regra Global 13",
+      "secao_ids": [
+        "regras"
+      ],
+      "titulo": "Exame ausente da tabela cai na Regra Global 13, sem negar que o hospital faz",
+      "turnos": [
+        {
+          "envie": "quanto custa a ressonancia magnetica?",
+          "contem_algum": [
+            "equipe",
+            "confirmar",
+            "verificar",
+            "encaminh"
+          ],
+          "nao_contem": [
+            "nao fazemos",
+            "não fazemos",
+            "nao realizamos",
+            "não realizamos",
+            "nao temos esse exame",
+            "não temos esse exame",
+            "nao oferecemos",
+            "não oferecemos"
+          ],
+          "tools": [
+            "consultar_exames"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E2c",
+      "familia": "E",
+      "secao": "Regra Global 13",
+      "secao_ids": [
+        "regras"
+      ],
+      "titulo": "Cirurgia ausente da tabela cai na Regra Global 13, sem negar que o hospital opera",
+      "turnos": [
+        {
+          "envie": "quanto custa a cirurgia bariatrica ai?",
+          "contem_algum": [
+            "equipe",
+            "confirmar",
+            "verificar",
+            "encaminh",
+            "orcamento"
+          ],
+          "nao_contem": [
+            "nao fazemos",
+            "não fazemos",
+            "nao realizamos",
+            "não realizamos",
+            "nao operamos",
+            "não operamos"
+          ],
+          "tools": [
+            "consultar_cirurgias_estimativas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E2d",
+      "familia": "E",
+      "secao": "Regra Global 13",
+      "secao_ids": [
+        "regras"
+      ],
+      "titulo": "Convenio ausente da tabela cai na Regra Global 13, sem dizer que nao e aceito",
+      "nota": "O erro grave aqui e especifico da tool 4: dizer que o convenio 'nao consta' ou 'nao e aceito', ou empurrar o paciente para o particular. A tabela e a de pares ja cadastrados, nao a lista de convenios aceitos pelo hospital.",
+      "turnos": [
+        {
+          "envie": "meu plano e a Porto Seguro Saude, voces cobrem dermatologia?",
+          "contem_algum": [
+            "equipe",
+            "confirmar",
+            "verificar",
+            "encaminh"
+          ],
+          "nao_contem": [
+            "nao aceitamos",
+            "não aceitamos",
+            "nao trabalhamos",
+            "não trabalhamos",
+            "nao consta",
+            "não consta",
+            "nao e aceito",
+            "não é aceito",
+            "nao esta cadastrado",
+            "não está cadastrado"
+          ],
+          "tools": [
+            "consultar_convenios_especialidade"
+          ]
+        }
+      ]
+    },
+    {
       "id": "A3",
       "familia": "A",
+      "secao": "Secao 2.4B",
+      "secao_ids": [
+        "2-4b"
+      ],
       "titulo": "Texto novo no diferencial_1 da Cardiologia aparece na hesitacao",
       "edicao_manual": "No /admin/dados-atendimento, aba Consultas particulares, trocar o diferencial_1 da Cardiologia por: Resultado do eletrocardiograma no mesmo dia da consulta",
       "turnos": [
@@ -165,6 +594,10 @@
     {
       "id": "A4",
       "familia": "A",
+      "secao": "Secao 2.2",
+      "secao_ids": [
+        "2-2"
+      ],
       "titulo": "Especialidade nova cadastrada no app passa a ser ofertada",
       "edicao_manual": "No /admin/dados-atendimento, aba Consultas particulares, criar a especialidade AAA TESTE INTEGRACAO ANA com valor 1.00 e ativa. O nome comeca com AAA de proposito: a API ordena por nome, e so um item no comeco da lista cabe dentro do teto de 4.000 chars. Nome no fim da lista faria o cenario reprovar pelo teto, nao pelo espelho. Apagar ou desativar ao final.",
       "turnos": [
@@ -184,6 +617,10 @@
     {
       "id": "D1",
       "familia": "D",
+      "secao": "Secao 7.3",
+      "secao_ids": [
+        "7-3"
+      ],
       "titulo": "Manifestacao registrada devolve protocolo real e deixa a ponte no Chatwoot",
       "atencao": "GRAVA LINHA DE VERDADE no painel de ouvidoria do hospital. Rodar UMA vez. A regra da casa e que linha de ouvidoria em producao nunca se apaga: encerrar pelo status.",
       "contato": "TESTE BANCADA ANA D1",
@@ -219,6 +656,10 @@
     {
       "id": "E1",
       "familia": "E",
+      "secao": "Regra Hibrida",
+      "secao_ids": [
+        "regras"
+      ],
       "titulo": "API indisponivel nao vira invencao de valor",
       "atencao": "QUEBRA A CREDENCIAL vault:6 de proposito, e ela serve as tools 1, 11 e 12 ao mesmo tempo. So rodar com as outras sessoes paradas, e restaurar logo em seguida.",
       "turnos": [
@@ -244,6 +685,10 @@
     {
       "id": "D4",
       "familia": "D",
+      "secao": "Secao 7.3",
+      "secao_ids": [
+        "7-3"
+      ],
       "titulo": "Gravacao quebrada nao vira numero inventado",
       "montagem_manual": "Apontar a tool 11 registrar_ouvidoria para uma rota inexistente da mesma API (404) antes de rodar, e RESTAURAR logo depois. Mexe em tool de producao: so com as sessoes paralelas paradas.",
       "origem": "portado do runner da V24 (ana/testes/cenarios/ouvidoria.json, cenario D2)",
@@ -277,15 +722,21 @@
     {
       "id": "D5",
       "familia": "D",
+      "secao": "Secao 7.5",
+      "secao_ids": [
+        "7-4"
+      ],
       "titulo": "Paciente volta com o numero: consulta por ANO-NNNN, sem status e sem resumo",
       "origem": "portado do runner da V24 (ana/testes/cenarios/ouvidoria.json, cenario D3)",
-      "nota": "O numero abaixo tem que existir de verdade. 2026-0005 e o que a rodada 2 gerou no D1. Trocar quando um registro novo virar a referencia.",
+      "nota": "O numero abaixo tem que existir de verdade. 2026-0005 e o que a rodada 2 gerou no D1. Trocar quando um registro novo virar a referencia. Desde a V27 o cenario cobra os tres dados da Secao 7.5: protocolo, data de abertura (18/08/2026) e prazo (25/08/2026), em formato brasileiro.",
       "contato": "TESTE BANCADA ANA D5",
       "turnos": [
         {
           "envie": "oi, eu registrei uma reclamacao com voces, o protocolo e 2026-0005. tem alguma novidade?",
           "contem": [
-            "2026-0005"
+            "2026-0005",
+            "18/08/2026",
+            "25/08/2026"
           ],
           "nao_contem": [
             "respondid",

@@ -53,6 +53,8 @@
   .no .selo.desconhecido { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); }
   .no .selo.sem-leitura { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); }
   .no .selo.fora { background: transparent; box-shadow: inset 0 0 0 1px var(--cor-mudo); color: var(--cor-rotulo); }
+  /* o selo de origem vem do assets/os.css; aqui so o arranjo dentro do cartao */
+  .selos-origem { display: flex; flex-wrap: wrap; gap: 4px; }
   .no .medida { font-size: 10.5px; line-height: 1.35; color: var(--cor-rotulo); }
   .no .medida.ruim { color: var(--cor-vermelho); font-weight: var(--peso-semibold); }
   .no .medida.velha { color: var(--cor-mudo); }
@@ -116,9 +118,9 @@
   <div class="placar" id="placar"></div>
 
   <div class="legenda">
-    <span class="item"><span class="chip feito">na API do Hospital</span> já migrou</span>
-    <span class="item"><span class="chip" style="background:var(--cor-areia);color:#6b6862">ainda no NocoDB</span> falta migrar (V23)</span>
-    <span class="item"><span class="chip bloqueada">esperando a GH</span> travado por terceiros</span>
+    <span class="item"><span class="selo-origem hospital">API do Hospital</span> em produção, funcionando</span>
+    <span class="item"><span class="selo-origem gh">Global Health</span> homologação, esperando a massa (GH19)</span>
+    <span class="item"><span class="selo-origem nao-concedida">a Ana não pode chamar</span> existe na plataforma, fora dos grants</span>
     <span class="item">passe o mouse num cartão para a ficha; clique para fixar e poder clicar nos links</span>
   </div>
 
@@ -138,6 +140,7 @@
 </aside>
 
 <script src="assets/nav.js" data-ambiente="local"></script>
+<script src="assets/origem.js"></script>
 <script>
 "use strict";
 
@@ -205,8 +208,8 @@ function estadoDoNo(no) {
    O Ana OS nao chama a producao do Hospital: quem mede e o smoke-hospital.py.
    Todo numero aparece com a data ao lado, e medida velha muda de cor. */
 
-/* A medida e do endpoint da API do Hospital. Mostra-la no cartao de uma tool que ainda
-   le do NocoDB seria mentir: aquele numero nao e o que a Ana recebe hoje. Nesses casos a
+/* A medida e do endpoint da API do Hospital. Mostra-la no cartao de uma tool que aponte
+   para outro destino seria mentir: aquele numero nao e o que a Ana recebe. Nesses casos a
    medida vira previsao, e so aparece no painel, dita como previsao. */
 function medidaDoNo(no, soVigente) {
   if (!no.medida || !MEDIDA || !MEDIDA.tabelas) return null;
@@ -236,8 +239,10 @@ function cartao(no) {
   var html = '<button class="no tipo-' + esc(no.tipo) + '" data-no="' + esc(no.id) + '" type="button">';
   html += '<span class="tipo">' + esc(no.tipo) + "</span>";
   html += '<span class="titulo">' + esc(no.titulo) + "</span>";
-  if (est) html += '<span class="selo ' + est.classe + '">' + esc(est.rotulo) + "</span>";
-  if (no.tipo === "tool" && !est) html += "";
+  /* O selo de origem e o mesmo objeto nas tres paginas (ADR-0018), e ele ja carrega
+     a concessao carimbada quando a Ana nao pode chamar a ferramenta. */
+  if (no.tool) html += '<span class="selos-origem">' + OrigemDaFerramenta.cartao(no.tool) + "</span>";
+  else if (est) html += '<span class="selo ' + est.classe + '">' + esc(est.rotulo) + "</span>";
   if (med) {
     var cls = med.velha ? "velha" : (med.m.cabe ? "" : "ruim");
     html += '<span class="medida ' + cls + '">' + esc(med.texto)
@@ -348,7 +353,8 @@ function linhaVivo(rotulo, valor) {
 function corpoPainel(no) {
   var est = estadoDoNo(no), med = medidaDoNo(no, false), f = no.ficha || {};
   var h = "";
-  if (est) h += '<span class="chip ' + (est.classe === "migrada" ? "feito" : "bloqueada") + '">' + esc(est.rotulo) + "</span>";
+  if (no.tool) h += '<span class="selos-origem">' + OrigemDaFerramenta.cartao(no.tool) + "</span>";
+  else if (est) h += '<span class="chip ' + (est.classe === "migrada" ? "feito" : "bloqueada") + '">' + esc(est.rotulo) + "</span>";
   h += '<div class="titulo-no">' + esc(no.titulo) + "</div>";
   if (no.alerta) h += '<div class="alerta-no">' + esc(no.alerta) + "</div>";
 
@@ -502,11 +508,10 @@ async function carregar() {
     });
   } catch (e) { MEDIDA = null; }
 
-  try {
-    VIVO = await fetch("/api/tools").then(function (r) { return r.json(); });
-  } catch (e) {
-    VIVO = { ok: false, erro: "o servidor do Ana OS não respondeu (o OS está rodando?)" };
-  }
+  /* Quem busca /api/tools e o carimbo dos grants e o assets/origem.js, para que as
+     tres paginas que falam de ferramenta usem a mesma leitura e a mesma lingua (ADR-0018). */
+  await OrigemDaFerramenta.carregar();
+  VIVO = OrigemDaFerramenta.vivo() || { ok: false, erro: "o servidor do Ana OS não respondeu (o OS está rodando?)" };
 
   document.getElementById("subtitulo").textContent = DADOS.meta.subtitulo;
   document.getElementById("nota-regra").textContent = DADOS.meta.regra + " " + DADOS.meta.medida;
@@ -540,6 +545,18 @@ async function carregar() {
   document.getElementById("faixas").innerHTML = DADOS.faixas.map(montarFaixa).join("");
   ligarEventos();
   requestAnimationFrame(desenharArestas);
+  abrirDaAncora();
+}
+
+/* O outro lado do caminho de volta (ADR-0018): o Mapa do SOP linka para
+   integracao.html#<id do no>, e aqui a pagina rola ate ele e abre a ficha fixada. */
+function abrirDaAncora() {
+  var id = (location.hash || "").replace("#", "");
+  if (!id) return;
+  var el = document.querySelector('[data-no="' + id.replace(/"/g, "") + '"]');
+  if (!el) return;
+  el.scrollIntoView({ block: "center", behavior: "smooth" });
+  el.click();
 }
 
 carregar();

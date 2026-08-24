@@ -1,6 +1,6 @@
 {
   "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
-  "atualizado": "2026-08-19",
+  "atualizado": "2026-08-20",
   "tarefas": [
     {
       "id": "V1",
@@ -626,21 +626,19 @@
       "id": "V26",
       "titulo": "Desligar o NocoDB no Coolify: a Base Ana termina a mudança de casa",
       "dono": "C+P",
-      "status": "fazer",
+      "status": "feito",
       "deps": [
         "V23",
         "V24",
         "V25"
       ],
-      "canal": "comigo",
-      "canal_desde": "2026-08-17",
-      "mesa": {
-        "destrava": "Um dono só para os dados, o fim do risco do xc-token de base inteira (ADR-0010) e uma aplicação a menos consumindo a VPS.",
-        "gesto": "Sessão comigo, depois das outras: conferir a paridade das 5 tabelas, esperar o sinal verde da issue #293 do Hospital, exportar o backup e só então parar o serviço."
-      },
-      "nota": "Último passo do ADR-0015, e o único irreversível: o NocoDB só desliga com as 6 tools viradas e a bancada de integração aprovada. Do lado do Hospital, a issue #293 (aberta, ready-for-human) é o cutover formal e pede paridade registro a registro das 5 tabelas, a sequence do protocolo conferida, as variáveis ANA_READONLY_* removidas do ambiente (o usuário Postgres read-only que o ADR-0015 deixou obsoleto) e o sinal verde comentado na issue para a P9. Antes de parar o serviço: exportar as 5 tabelas do NocoDB para backup fora do git e guardar o export do agente. Parar não é apagar: o serviço fica parado no Coolify por um tempo antes de qualquer remoção definitiva. ITEM NOVO DO CHECKLIST DE CUTOVER (achado da rodada 2, 18/ago/2026): GET /api/ana/ouvidoria/protocolos/2026-0001 a 0003 devolvem 404. Esses três vivem só no NocoDB e a tool 12 já aponta para a API, então um paciente que volte citando um deles ouve \"não consegui localizar esse número\". Risco baixo (os três são testes de 12/ago, nenhum informado a paciente real), mas o cutover precisa decidir por escrito: migrar as três linhas para o Postgres ou aceitar a perda.",
-      "prompt": "Chegou a hora de desligar o NocoDB (o último passo do ADR-0015). Antes de tocar no Coolify, confira comigo, nesta ordem: (1) as 6 tools da Ana estão na API do Hospital e nenhuma aponta mais para o NocoDB (tool_list); (2) a bancada de integração (V25) passou nas famílias bloqueantes; (3) a paridade das 5 tabelas entre NocoDB e app está registrada e a issue #293 do Hospital deu o sinal verde; (4) existe backup das 5 tabelas fora do git. Só com os quatro conferidos, me conduza para PARAR (não remover) o serviço nocodb-base-ana no Coolify, e depois rode a regressão para provar que a Ana continua respondendo tudo com o NocoDB fora do ar. Registre nos dois arquivos do roadmap e atualize o CONTEXT.md (o termo Base Ana deixa de ser NocoDB e passa a ser o app).",
-      "tema": "base"
+      "nota": "Último passo do ADR-0015, e o único irreversível: o NocoDB só desliga com as 6 tools viradas e a bancada de integração aprovada. Do lado do Hospital, a issue #293 (aberta, ready-for-human) é o cutover formal e pede paridade registro a registro das 5 tabelas, a sequence do protocolo conferida, as variáveis ANA_READONLY_* removidas do ambiente (o usuário Postgres read-only que o ADR-0015 deixou obsoleto) e o sinal verde comentado na issue para a P9. Antes de parar o serviço: exportar as 5 tabelas do NocoDB para backup fora do git e guardar o export do agente. Parar não é apagar: o serviço fica parado no Coolify por um tempo antes de qualquer remoção definitiva. ITEM NOVO DO CHECKLIST DE CUTOVER (achado da rodada 2, 18/ago/2026): GET /api/ana/ouvidoria/protocolos/2026-0001 a 0003 devolvem 404. Esses três vivem só no NocoDB e a tool 12 já aponta para a API, então um paciente que volte citando um deles ouve \"não consegui localizar esse número\". Risco baixo (os três são testes de 12/ago, nenhum informado a paciente real), mas o cutover precisa decidir por escrito: migrar as três linhas para o Postgres ou aceitar a perda. CONCLUÍDA EM 19/ago/2026. Os quatro pré-requisitos foram conferidos nesta ordem: (1) as 6 tools (1 a 4, 11 e 12) apontam todas para api.hospitalsaomatheus.cloud com a credencial vault:6, nenhuma menciona o NocoDB; (2) a bancada da V25 fechou as duas famílias bloqueantes, A completa e D completa; (3) a paridade estava registrada (divergímetro com zero divergência de conteúdo nas 4 tabelas, re-executado no dia com o mesmo veredito) mas a issue #293 seguia ABERTA e sem sinal verde, o que travou o cutover até a sessão postar lá o comentário de evidência e marcar 3 dos 4 critérios; (4) o backup NÃO existia (havia só 4 CSVs de 30/jul dentro do git, sem a 5ª tabela) e foi feito na hora pelo MCP do NocoDB, com as 5 tabelas em dados-locais/backup-nocodb-19ago2026/, fora do git, 10+10+3+20+3 registros e um LEIA-ME com as divergências esperadas. O item de checklist dos protocolos 2026-0001 a 0003 já estava resolvido por escrito antes desta tarefa: o ADR-0016 decisão 6 diz que os três não migram (são testes de 12/ago, nenhum informado a paciente real) e que a sequence foi adiantada com setval para 3. Serviço parado com coolify service stop ucc0hkwgqdsa38p5xrwa1x0h: status exited e a URL pública devolvendo HTTP 503. PARADO NÃO É REMOVIDO: religar é coolify service start no mesmo uuid. Um critério da #293 ficou desmarcado de propósito, o das variáveis ANA_READONLY_*, porque o .env de produção vive no Coolify e não dá para conferir do repo da Ana (não há mais referência em código no repo Hospital). REGRESSÃO COM O NOCODB FORA DO AR: 7 de 8 cenários da bancada passaram (B1, B2, C1a, C1b, C2, E2 e D1). A única falha é a D5, que já era a V27 antes desta sessão e não é regressão nova: a Ana chama consultar_protocolo_ouvidoria e encontra a manifestação, mas não diz o número ao paciente. O D1 gravou o protocolo real 2026-0006 em produção. Ficaram de fora A3 e A4 (exigem o Pedro editando no app) e E1 e D4 (quebram a credencial de propósito, são a V29).",
+      "tema": "base",
+      "ficha": {
+        "fez": "Conferiu os quatro pré-requisitos do cutover antes de tocar no Coolify, fez o backup das 5 tabelas fora do git (que não existia), postou o sinal verde na issue #293 do Hospital e parou o serviço nocodb-base-ana. Depois rodou a regressão da bancada com o NocoDB já fora do ar.",
+        "mudou": "A Base Ana passou a ter um dono só: o Postgres do app do hospital. O NocoDB saiu do ar (HTTP 503) e o termo Base Ana do CONTEXT.md deixou de apontar para ele. O risco do xc-token com alcance de base inteira (ADR-0010) morreu junto com o serviço, e o ADR-0015 fechou por completo.",
+        "valor": "A prova saiu com o NocoDB desligado: 7 de 8 cenários passaram, incluindo a ouvidoria ponta a ponta gravando o protocolo real 2026-0006. A única falha já era a V27, não regressão nova. A conferência valeu o preço: dois dos quatro pré-requisitos não estavam prontos, e sair parando o serviço teria deixado o programa sem backup e sem cutover formal."
+      }
     },
     {
       "id": "OS16",
@@ -662,17 +660,15 @@
       "id": "V27",
       "titulo": "Seção 7.5: a Ana encontra o protocolo e informa número, data de abertura e prazo",
       "dono": "C+P",
-      "status": "fazer",
+      "status": "feito",
       "deps": [],
-      "canal": "comigo",
-      "canal_desde": "2026-08-18",
-      "mesa": {
-        "destrava": "O paciente que volta com um protocolo passa a sair da conversa sabendo mais do que quando entrou: o número, a data de abertura e o prazo de retorno. Hoje ele ouve só que a manifestação foi encontrada.",
-        "gesto": "Sessão curta comigo: pôr a trava dura do template na Seção 7.5 de ana/prompt/bloco-ouvidoria.md (a mesma que a 7.3 ganhou na OV2), recompilar, republicar e re-rodar só o D5."
-      },
       "nota": "Única falha da rodada 2 que não vem do teto de 4.000 chars. No D5 o paciente volta com o protocolo 2026-0005; a tool consultar_protocolo_ouvidoria respondeu HTTP 200 com tudo (protocolo, data_abertura 2026-08-18, prazo_resposta 2026-08-25) e a Ana respondeu só \"Encontrei sua manifestação, vou passar para a nossa equipe de ouvidoria para eles darem um retorno atualizado\": engoliu os três dados que o template da Seção 7.5 (V24, ADR-0016) manda informar. A proteção que mais importava segurou: ela NÃO leu o campo status, que estava como respondido, e dizer \"sua manifestação já foi respondida\" a quem nunca recebeu retorno seria dano grave. O template já está correto na fonte (ana/prompt/bloco-ouvidoria.md, a partir da linha 143); falta a trava dura que proíbe a versão genérica. Pronto quando: python3 ana/bancada/e2e.py cenarios/integracao.json --so D5 passar.",
-      "prompt": "A Seção 7.5 da ouvidoria encontra o protocolo e não conta nada ao paciente (falha D5 da rodada 2 da bancada, 18/ago/2026). Leia a ficha da V27 no roadmap/TODO.md e a Seção 7.5 em ana/prompt/bloco-ouvidoria.md. O template já está certo: o que falta é a trava dura, no mesmo espírito da que a Seção 7.3 ganhou na OV2, obrigando os três campos (protocolo, data de abertura em formato brasileiro, prazo de resposta) e proibindo a versão genérica \"encontrei sua manifestação\". Não relaxe as duas proibições existentes: nunca ler o campo status, nunca ler o resumo. Depois: recompilar com ana/prompt/compilar.py, publicar na instância, conferir byte a byte, e rodar python3 ana/bancada/e2e.py cenarios/integracao.json --so D5. Registre o resultado na tabela da rodada em roadmap/roteiro-integracao-hospital.md e feche a tarefa nos dois lados do roadmap.",
-      "tema": "ouvidoria"
+      "tema": "ouvidoria",
+      "ficha": {
+        "fez": "Pôs a trava dura na Seção 7.5 (passos P1 a P4) e descobriu no flowlog que a mensagem da escalada é a customerMessage do handoff_to_human, não a mensagem final do modelo.",
+        "mudou": "Prompt v6.5 publicado byte a byte: o template com protocolo, data de abertura e prazo agora é a própria customerMessage da escalada, e a descrição da tool 12 repete a obrigação. O D5 endurecido cobra os três dados.",
+        "valor": "O paciente que volta com um protocolo sai da conversa sabendo o número, a data e o prazo: D5 verde 3 de 3 com resposta idêntica, e o B4 da ressalva do convênio passou de carona."
+      }
     },
     {
       "id": "V28",
@@ -716,6 +712,96 @@
         "fez": "Nasce o Mapa da Integração (os/integracao.html), a fronteira externa inteira da Ana em três faixas: a ida do dado do hospital até a fala, a volta da queixa até o protocolo no painel, e as seis ferramentas paradas esperando a Global Health.",
         "mudou": "O Ana OS passou a não guardar o que a plataforma já sabe (ADR-0017): URL, credencial e estado de migração vêm ao vivo de /api/tools, e o selo de cada nó é derivado do host da URL. A circuito.json perdeu o campo backend, que dizia NocoDB para a tool 1 havia cinco dias, e a arquitetura.html parou de desenhar o NocoDB como a casa das quatro tabelas.",
         "valor": "A pergunta \"onde a migração está pela metade\" se responde de longe, e a resposta não pode envelhecer: virar uma ferramenta na plataforma muda o desenho sozinho. Testado com a leitura quebrada de propósito, a página diz que não sabe em vez de mentir."
+      }
+    },
+    {
+      "id": "OS18",
+      "titulo": "Ana OS: uma língua só para a origem da ferramenta, e o NocoDB sai do cockpit",
+      "dono": "C",
+      "status": "feito",
+      "deps": [],
+      "nota": "Decisão do grilling de 19/ago/2026 (ADR-0018). Três famílias de selo (API do Hospital, Global Health, nativa da plataforma), mesmo vocabulário e mesma cor no Mapa da Integração, no Mapa do SOP e no Circuito da Ana. Origem derivada do host da urlTemplate em /api/v1/tools; ausência daquela rota é nativa. A Global Health FICA na tela, marcada, com a GH19 em vermelho. A concessão ao agente vem carimbada por script com a data, porque a instância 1.4.1 não expõe rota REST de grants (8 caminhos testados em 19/ago, todos 404; só o MCP agent_tools_get alcança). O NocoDB sai de 7 peças: integracao.json, apps.json, circuito.json, arquitetura.html, circuito.html, roadmap.html e integracao.html. Saem também 3 alertas que já morreram (tela admin, NocoDB, etiquetas V23/V26) e o alerta manual do cadastrar_paciente. Pronto quando: as três páginas mostram o selo na caixa, o link vai e volta entre SOP e Integração, nenhuma peça do cockpit cita NocoDB como coisa viva, e o grep de NocoDB em os/ só devolve prosa histórica.",
+      "tema": "os",
+      "ficha": {
+        "fez": "Criou o selo de origem da ferramenta como asset compartilhado (os/assets/origem.js) e o acendeu nas três páginas que falam de ferramenta, com a mesma palavra e a mesma cor; tirou o NocoDB de seis peças do cockpit e os três alertas que já tinham morrido.",
+        "mudou": "Olhando o Mapa do SOP dá para ver, sem clicar, quais chamadas são da Global Health e quais são da API do Hospital: ponto verde, azul ou areia no canto do cartão. O painel mostra a palavra inteira e o link para o nó do Mapa da Integração, que agora abre pela âncora. A concessão do cadastrar_paciente deixou de ser prosa escrita à mão e virou carimbo com data.",
+        "valor": "Uma virada de tool na plataforma passa a atualizar sozinha as três páginas, e não mais só uma. O cockpit parou de dar três respostas diferentes para de onde vem o preço da Cardiologia."
+      }
+    },
+    {
+      "id": "V30",
+      "titulo": "Bancada: cenários das tools de consulta (exames, cirurgias e convênios) e o B3 do preparo",
+      "dono": "C+P",
+      "status": "feito",
+      "deps": [],
+      "nota": "Buraco achado no grilling de 19/ago/2026. O arquivo ana/bancada/cenarios/integracao.json tem 12 cenários: 7 sobre consultar_precos_consultas (B1, B2, C1a, C1b, C2, E2, A4), 1 sobre registrar_ouvidoria (D1), 1 sobre consultar_protocolo_ouvidoria (D5) e 3 sem tool (A3, E1, D4). As tools 2 (exames), 3 (cirurgias) e 4 (convênios) têm ZERO cenário executável, mesmo depois da V23. O roteiro escrito em roadmap/roteiro-integracao-hospital.md já manda cobrir 'cada tabela virada' (família C1), e o B3 (preparo de exame sai literal) está marcado como 'não rodado, exames ainda no NocoDB' desde a rodada 2, condição que deixou de valer. Só tools de consulta: nada de agendamento, que segue parado na GH19. Pronto quando: os cenários novos existem no arquivo, rodam por python3 ana/bancada/e2e.py cenarios/integracao.json e têm veredito escrito na tabela da rodada do roteiro. CONCLUÍDA EM 20/ago/2026. O arquivo saiu de 12 para 26 cenários: cada tabela virada ganhou o mesmo quarteto da tool 1 (primeiro item, último item, catálogo e item ausente na Regra Global 13), mais o B3 do preparo, que estava parado como não rodado desde a rodada 2. Os alvos vieram da ordem que a API devolve, conferida com smoke-hospital.py antes de conversar (10 checks, 10 OK): exames Colonoscopia a Ultrassonografia Abdominal, cirurgias Apendicectomia a Herniorrafia, convênios Amil/Cardiologia a Unimed/Pediatria. Placar 13 de 14, com a família C verde nas quatro tabelas e toda resposta de dado saindo com 1 chamada de tool, sem sinal do loop de truncamento da rodada 2. Achado 1: a ressalva do convênio sai ou não sai, sem regra. A mesma pergunta sobre Amil e Cardiologia, feita três vezes, engoliu duas vezes a frase 'Cirurgias sujeitas a autorização' e disse uma; virou o cenário B4, que fica reprovando até a Seção 3 / 5.A ser ajustada. Achado 2: convênio tem duas fontes de propósito, a base de conhecimento com os 40 e poucos convênios aceitos e a tabela da API com os 6 pares de cobertura mapeada; o C2d foi reescrito para a pergunta que exige a tabela e passou. O arquivo inteiro não foi disparado de propósito: D1 grava ouvidoria de verdade e E1 e D4 quebram credencial e tool em produção. Relatório na rodada 4 do roadmap/roteiro-integracao-hospital.md.",
+      "tema": "base",
+      "ficha": {
+        "fez": "Deu às tools de exames, cirurgias e convênios os cenários que só a tool 1 tinha: primeiro item, último item, pergunta de catálogo e item ausente caindo na Regra Global 13, mais o B3 do preparo da colonoscopia. A bancada saiu de 12 para 26 cenários.",
+        "mudou": "A prova da V23 deixou de ser a comparação campo a campo do dia da virada e virou conversa executável, com os alvos tirados da ordem que a própria API devolve. O quarteto da família C virou molde: tabela nova que entrar na Base Ana já tem a forma do teste pronta.",
+        "valor": "13 de 14 passaram e toda resposta de dado saiu com 1 chamada de tool, o que descarta o truncamento nas quatro tabelas. A única falha é útil: a ressalva 'Cirurgias sujeitas a autorização' sai ou não sai sem regra, e agora existe um cenário que cobra isso até ser corrigido."
+      }
+    },
+    {
+      "id": "OS19",
+      "titulo": "Ana OS: cockpit enxuto, sete páginas para o arquivo e o Circuito re-validado no v6.4",
+      "dono": "C",
+      "status": "feito",
+      "deps": [],
+      "tema": "os",
+      "nota": "Decisão do saneamento de 20/ago/2026 (ADR-0019). Auditoria das 16 páginas no navegador com nota por página; sete saem intactas para os/arquivo/ (Absorção, Insights e Atlas esperando os CSVs do C8 que nunca chegaram; Roteiro com comando morto e redundante com a Bancada; Mapa das APIs superado pela Integração e pela Comparação; Conexão TST resolvida; Biblioteca redundante com o editor). O menu cai para 9 itens. As queries exclusivas do Roteiro (detector *_INTEGRA e busca do id da GH) migraram para a Bancada antes do arquivamento. Na conferência, o Pedro pediu o enriquecimento de leitura: nasce os/assets/md.js (mini-Markdown dos trechos literais no SOP e no Circuito, com links para tool, Seção e Regra) e as ligações do painel do SOP ficaram clicáveis.",
+      "ficha": {
+        "fez": "Auditou as 16 páginas do OS no navegador, arquivou sete em os/arquivo/ (menu cai para 9), migrou as queries úteis do Roteiro para a Bancada e re-validou o Circuito contra o export v6.4 do prompt. Depois, na conferência, criou o mini-Markdown compartilhado (md.js) que renderiza os trechos literais e transforma tool, Seção e Regra em link.",
+        "mudou": "O cockpit só mostra página viva: o trio da produção espera os CSVs do C8 no arquivo, e o Circuito voltou a contar a verdade (88 trechos literais, 100% batendo, 8 nativas nomeadas via MCP, cadastrar_paciente fora).",
+        "valor": "Menos telas mentindo por desatualização: quem abre o OS vê só o que reflete o programa de hoje, e o critério de volta de cada página arquivada está escrito no ADR-0019."
+      }
+    },
+    {
+      "id": "OS20",
+      "titulo": "Ana OS: página Testes manuais, selo de origem no cockpit inteiro e a anatomia navegável",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS19"
+      ],
+      "tema": "os",
+      "nota": "Grilling de 20/ago/2026, na mesma noite do enxugamento (ADR-0020). A décima página (os/testes.html) não guarda teste nenhum: lê os/dados/comparacao.json e os cenários da bancada pela rota nova /api/cenarios, e mostra os 61 testes em duas faixas de assertividade derivada (humano roda / máquina roda). O selo de origem do ADR-0018 passou a valer no cockpit inteiro: por item na Comparação, Testes manuais e Arquitetura; faixa única no topo da Bancada e das Cadeias. No Circuito, a lista de passos ficou só com número, raia e título (a ficha vive no hover) e a anatomia do prompt virou navegador com índice lateral, acordeão de 2 níveis e abrir/fechar tudo.",
+      "ficha": {
+        "fez": "Criou a página Testes manuais (61 testes lidos da Comparação e dos cenários da bancada, em duas faixas derivadas: humano roda e máquina roda, com botão de copiar turno a turno), estendeu o selo de origem às abas que faltavam e transformou a anatomia do prompt do Circuito num navegador com índice lateral e acordeão.",
+        "mudou": "O cockpit tem 10 páginas e uma língua só de origem em todas; testar na mão deixou de exigir caçar a ficha certa na Comparação, e a faixa da máquina já é a lista de entrada da futura automação pela API do fazer.ai agents.",
+        "valor": "O Pedro senta, copia e roda uma bateria manual em minutos, e sabe de antemão qual teste uma máquina julgará sozinha quando a automação nascer."
+      }
+    },
+    {
+      "id": "OS21",
+      "titulo": "Testes manuais filtráveis e o vínculo teste até a seção do prompt",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS20"
+      ],
+      "tema": "os",
+      "nota": "Grilling de 24/ago/2026 (ADR-0021). A página de Testes virou lista única de linhas compactas (uma por teste) com detalhe em popover (hover mostra, clique fixa), filtros de quem roda / seção do SOP / busca livre e ordenação por jornada do SOP, ID ou bloco, com estado no hash da URL. O vínculo nasceu na fonte: secao_ids nas 30 capacidades de comparacao.json e secao + secao_ids nos 26 cenários da bancada, apontando para as âncoras sec-<id> da anatomia do prompt no Circuito. Link só para seção que existe; lista vazia mostra a prosa com a marca fora do prompt compilado. Na mesma sessão, a página ganhou o filtro de estado da capacidade (funciona / defeito / esperando GH / planejado, derivado do campo estado da Comparação), o chip de seção virou multi-select, os sem-teste viraram cartões curtos lado a lado, o placar ganhou o card 'funcionam hoje' e o C24 foi sincronizado com a V27 (parcial para funciona).",
+      "ficha": {
+        "fez": "Transformou os Testes manuais em lista compacta filtrável (quem roda, seção do SOP, busca livre) com popover de detalhe e ordenação por jornada do SOP, e curou o vínculo teste até seção nas duas fontes (secao_ids na Comparação e na bancada).",
+        "mudou": "Achar um teste deixou de ser rolagem: filtro e busca cruzam as duas fontes, e cada teste linka direto para a seção do prompt na anatomia do Circuito.",
+        "valor": "O Pedro varre os 61 testes em segundos, roda só o recorte que quer, e quando um teste falha pula direto para o trecho do prompt que o rege."
+      }
+    },
+    {
+      "id": "OS22",
+      "titulo": "Ana OS: página Famílias da bancada, os cenários A a E explicados por dentro",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS21"
+      ],
+      "tema": "os",
+      "nota": "24/ago/2026 (ADR-0022). O Pedro esbarrou nos códigos E1, D4, E3 sem conseguir responder o que significam. Nasce os/dados/familias.json (curadoria do roteiro de integração: promessa e peso por família, passos, perigos, variantes e histórico das rodadas por cenário) e a página os/familias.html, a 11a do menu: letrão por família, barra de progresso (28 de 31 verdes), níveis de rodagem e cada cenário abrindo num stepper visual com perigo em destaque e link para a página Testes. O roteiro segue sendo a verdade; rodada nova pede atualizar a curadoria.",
+      "ficha": {
+        "fez": "Criou a página Famílias da bancada e a curadoria familias.json: as 5 famílias (A espelho, B formato, C cobertura, D ouvidoria, E robustez) com promessa, peso, anatomia passo a passo de cada cenário, perigos de produção e o histórico das 5 rodadas.",
+        "mudou": "Os códigos A1 a E3 deixaram de ser sopa de letras: qualquer um abre a página e entende o que cada prova significa, o que já passou e o que espera a janela V29.",
+        "valor": "O Pedro olha a barra de cada família e sabe em segundos o quanto a integração está provada, e o que exatamente falta provar."
       }
     }
   ],

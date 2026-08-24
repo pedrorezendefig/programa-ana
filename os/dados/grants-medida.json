@@ -1,0 +1,43 @@
+{
+  "conferido_em": "2026-08-19",
+  "regra": "ADR-0018, cláusula 6: a concessão de ferramenta ao agente NÃO tem rota REST na instância 1.4.1 (oito caminhos testados em 19/ago/2026, todos 404). Só a ferramenta MCP agent_tools_get alcança o dado, e script Python não fala MCP. Por isso este arquivo é carimbado por uma sessão Claude, com a data, e a página sempre mostra o valor COM a data ao lado. Nunca apresente este dado como se fosse de agora.",
+  "como_recarimbar": "Numa sessão Claude com o MCP fazer-ai: mcp__fazer-ai__agent_tools_get com agent_id 1 e tenant vitta-tech. Os grants HTTP vêm por toolDefinitionId; case o id com o nome pelo catalog.toolDefinitions da mesma resposta. Atualize conferido_em.",
+  "pendencia": "A rota REST que falta está no report V10 para a fazer.ai, junto com resolve_conversation, o teto de 2.000 chars da descrição de tool e o reasoning_effort no modelConfig.",
+  "agente": {
+    "id": "1",
+    "nome": "Ana (Hospital São Matheus)",
+    "tenant": "vitta-tech"
+  },
+  "ferramentas": {
+    "consultar_precos_consultas": true,
+    "consultar_exames": true,
+    "consultar_cirurgias_estimativas": true,
+    "consultar_convenios_especialidade": true,
+    "buscar_paciente_por_cpf": true,
+    "buscar_paciente_por_telefone": true,
+    "cadastrar_paciente": false,
+    "consultar_especialidades_agenda": true,
+    "consultar_horarios_livres": true,
+    "consultar_prestadores_agenda": true,
+    "registrar_ouvidoria": true,
+    "consultar_protocolo_ouvidoria": true,
+    "search_knowledge": true,
+    "handoff_to_human": true,
+    "private_note": true,
+    "set_custom_attribute": true,
+    "assign_label": true,
+    "kanban_move_card": true,
+    "update_kanban_task": true,
+    "skip_reply": true,
+    "get_current_time": true,
+    "resolve_conversation": false,
+    "calculator": false,
+    "suggest_kb_entry": false,
+    "set_voice_preference": false,
+    "react_to_message": false
+  },
+  "notas": {
+    "cadastrar_paciente": "Fora dos grants desde a V20 (12/ago/2026, ADR-0014): o cadastro saiu do bot. A definição continua existindo na plataforma (id 7, enabled true), mas a Ana não pode chamá-la. Volta com a P6.",
+    "resolve_conversation": "Retirada dos grants na V6 (06/ago/2026): a plataforma descartava a mensagem final de qualquer turno em que o modelo resolvia a conversa. Bug no report V10."
+  }
+}

@@ -89,10 +89,28 @@
   .chip-lig:hover rect, .chip-lig:focus rect, .chip-lig.acesa rect { fill: var(--cor-tinta); }
   .chip-lig:hover text, .chip-lig:focus text, .chip-lig.acesa text { fill: #ffffff; }
   .chip-lig:focus { outline: none; }
+  /* ponto de origem da ferramenta (ADR-0018): mesma familia, mesma cor das outras paginas */
+  .ponto-origem { stroke: rgba(255,255,255,.55); stroke-width: 1; }
+  .ponto-origem.hospital { fill: var(--cor-verde); }
+  .ponto-origem.gh { fill: var(--cor-azul); }
+  .ponto-origem.nativa { fill: var(--cor-areia); }
+  .ponto-origem.desconhecida, .ponto-origem.sem-leitura { fill: var(--cor-vermelho); }
+
   .no.tool .chip-lig rect { fill: rgba(255,255,255,.16); }
   .no.tool .chip-lig text { fill: #eaeaea; }
   .no.tool .chip-lig:hover rect, .no.tool .chip-lig.acesa rect { fill: #ffffff; }
   .no.tool .chip-lig:hover text, .no.tool .chip-lig.acesa text { fill: var(--cor-tinta); }
+  /* o ponto da legenda repete a cor do ponto desenhado no cartao da tool */
+  .ponto-legenda { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+  .ponto-legenda.hospital { background: var(--cor-verde); }
+  .ponto-legenda.gh { background: var(--cor-azul); }
+  .ponto-legenda.nativa { background: var(--cor-areia); }
+
+  /* uma ferramenta por linha no painel: nome, selo de origem e o link de volta */
+  .linha-tool { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 7px; }
+  .linha-tool .nome-tool { font-family: var(--font-mono); font-size: 11.5px; }
+  .selos-origem { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+
   .amostra-chip {
     display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 9px;
     background: var(--cor-card-interno); font: var(--peso-semibold) 10px/1 var(--font-inter);
@@ -194,6 +212,9 @@
       <span class="item"><span class="amostra mensagem"></span>Script fixo ao paciente</span>
       <span class="item"><span class="amostra fim"></span>Encerramento</span>
       <span class="item"><span class="amostra-chip">→ 2.3</span>Conector de salto: clique leva ao destino</span>
+      <span class="item"><span class="ponto-legenda hospital"></span>API do Hospital</span>
+      <span class="item"><span class="ponto-legenda gh"></span>Global Health</span>
+      <span class="item"><span class="ponto-legenda nativa"></span>nativa da plataforma</span>
       <span class="item"><span class="amostra tool"></span>Faixa preta larga: zona de agente lógico, clique abre a ficha da fronteira</span>
       <span class="item direita">Passe o mouse num nó para ver o trecho. Clique para fixar. Clique numa raia para isolá-la.</span>
     </div>
@@ -226,6 +247,8 @@
 </footer>
 
 <script src="assets/nav.js" data-ambiente="local"></script>
+<script src="assets/origem.js"></script>
+<script src="assets/md.js"></script>
 <script>
 "use strict";
 
@@ -294,9 +317,39 @@ function quebrar(texto, fonte, largura, maxLinhas) {
 }
 
 /* ---------- carga ---------- */
+/* O caminho de volta do ADR-0018: nome da ferramenta -> no do Mapa da Integracao.
+   Montado aqui, na renderizacao, a partir do proprio integracao.json. Nenhum indice
+   novo e escrito em arquivo, e ele nunca fica defasado do outro mapa. */
+var NO_DA_INTEGRACAO = {};
+
+/* Enriquecimento da OS19: os trechos literais renderizam em mini-Markdown e as
+   referencias viram link. Tool so vira link se existir como ficha no Circuito
+   (a lista vem do circuito.json, nada de adivinhar por regex); "Secao N" e
+   "Regra N" apontam para o primeiro no daquela secao neste proprio mapa. */
+var TOOL_NO_CIRCUITO = {};
+var NO_DA_SECAO = {};
+var MD_RESOLVE = {
+  tool: function (nome) { return TOOL_NO_CIRCUITO[nome] ? "circuito.html#tool-" + nome : null; },
+  secao: function (n) { return NO_DA_SECAO[n] ? "#" + NO_DA_SECAO[n] : null; },
+  regra: function (n) { return NO_DA_SECAO["Regra " + n] ? "#" + NO_DA_SECAO["Regra " + n] : null; }
+};
+
 async function carregar() {
   DADOS = await fetch("dados/sop-fluxo.json").then(function (r) { return r.json(); });
   DADOS.nos.forEach(function (n) { POR_ID[n.id] = n; });
+  DADOS.nos.forEach(function (n) {
+    if (n.secao && !NO_DA_SECAO[n.secao]) NO_DA_SECAO[n.secao] = n.id;
+  });
+
+  await OrigemDaFerramenta.carregar();
+  try {
+    var integ = await fetch("dados/integracao.json").then(function (r) { return r.json(); });
+    integ.nos.forEach(function (n) { if (n.tool) NO_DA_INTEGRACAO[n.tool] = n.id; });
+  } catch (e) { NO_DA_INTEGRACAO = {}; }
+  try {
+    var circ = await fetch("dados/circuito.json").then(function (r) { return r.json(); });
+    circ.tools.forEach(function (t) { TOOL_NO_CIRCUITO[t.id] = true; });
+  } catch (e) { TOOL_NO_CIRCUITO = {}; }
   /* as fontes são locais: medir o texto antes delas carregarem quebra as linhas errado */
   if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) { /* segue com a fallback */ } }
 
@@ -685,6 +738,23 @@ function no(n) {
     ? '<rect class="barra" x="0" y="14" width="3" height="' + (g.h - 28) + '" rx="1.5"/>' : "";
 
   /* conectores de salto dentro do cartão */
+  /* Pontos de origem (ADR-0018): um por familia presente no no, no canto superior
+     direito. Um no de tool pode chamar mais de uma ferramenta (o U5 chama tres), entao
+     o que e verdade por no e o CONJUNTO de familias, nao uma so. A palavra inteira vem
+     no titulo do ponto e no painel lateral; aqui o desenho so precisa distinguir. */
+  var pontos = "";
+  if (n.tipo === "tool" && n.tools && n.tools.length) {
+    var vistas = [], px = NO_L - 14;
+    n.tools.forEach(function (t) {
+      var s = OrigemDaFerramenta.selo(t);
+      if (!s || vistas.indexOf(s.familia) !== -1) return;
+      vistas.push(s.familia);
+      pontos += '<circle class="ponto-origem ' + esc(s.familia) + '" cx="' + px + '" cy="14" r="4.5">'
+        + "<title>" + esc(s.rotulo) + "</title></circle>";
+      px -= 13;
+    });
+  }
+
   var chips = "";
   var c = CHIPS[n.id];
   if (c) c.linhas.forEach(function (linha, li) {
@@ -706,7 +776,7 @@ function no(n) {
     linhas.map(function (t, i) {
       return '<text class="tit" x="13" y="' + (y0 + i * 14) + '">' + esc(t) + "</text>";
     }).join("") +
-    chips +
+    chips + pontos +
     '<rect class="halo" x="-2" y="-2" width="' + (NO_L + 4) + '" height="' + (g.h + 4) + '" rx="16"/>' +
     "</g>";
 }
@@ -769,6 +839,18 @@ function ligarEventos() {
   });
 }
 
+/* links internos do painel (OS19): "Secao N"/"Regra N" nos trechos e as
+   ligacoes "Chega de / Segue para" fixam o no e rolam ate ele, sem recarregar */
+document.getElementById("painel").addEventListener("click", function (e) {
+  var a = e.target.closest ? e.target.closest("a.md-sec, a.md-regra, a.lig-no") : null;
+  if (!a) return;
+  var id = a.dataset.no || (a.getAttribute("href") || "").slice(1);
+  if (!POR_ID[id]) return;
+  e.preventDefault();
+  FIXADO = null; /* forca o fixar a reabrir mesmo vindo do mesmo no */
+  irAte(id);
+});
+
 /* clique num conector: fixa o destino e rola até ele (scrollIntoView não vale para <g> de SVG) */
 function irAte(id) {
   if (FIXADO !== id) fixar(id);
@@ -799,26 +881,39 @@ function mostrar(id, fixando) {
 
   var entram = DADOS.arestas.filter(function (a) { return a.para === id; });
   var saem = DADOS.arestas.filter(function (a) { return a.de === id; });
+  /* cada ligacao e clicavel: fixa o vizinho e rola ate ele (OS19) */
   function lista(titulo, arr, campo) {
     if (!arr.length) return "";
     return '<div class="bloco"><span class="micro">' + titulo + '</span><div class="lista-lig">' +
       arr.map(function (a) {
         var alvo = POR_ID[a[campo]];
-        return "<div><strong>" + esc(alvo.secao) + "</strong> " + esc(alvo.titulo) +
+        return '<div><a class="md-link lig-no" data-no="' + esc(alvo.id) + '" href="#' + esc(alvo.id) + '">' +
+          "<strong>" + esc(alvo.secao) + "</strong> " + esc(alvo.titulo) + "</a>" +
           (a.rotulo ? ' <span class="caption">(' + esc(a.rotulo) + ")</span>" : "") + "</div>";
       }).join("") + "</div></div>";
   }
 
+  /* Cada ferramenta aparece com o selo de origem (ADR-0018), o link para a ficha
+     dela no Circuito (OS19) e, quando ela existe no Mapa da Integracao, o link
+     para o no de la: e o caminho de volta que faltava. */
   var tools = n.tools.length
-    ? '<div class="bloco"><span class="micro">Tools</span><div class="linha" style="margin-top:7px;">' +
-      n.tools.map(function (t) { return '<span class="chip contorno" style="font-family:var(--font-mono);font-size:11.5px;">' + esc(t) + "</span>"; }).join("") +
-      "</div></div>"
+    ? '<div class="bloco"><span class="micro">Tools</span>' +
+      n.tools.map(function (t) {
+        var alvo = NO_DA_INTEGRACAO[t];
+        return '<div class="linha-tool">'
+          + '<code class="nome-tool">' + esc(t) + "</code>"
+          + '<span class="selos-origem">' + OrigemDaFerramenta.cartao(t) + "</span>"
+          + (TOOL_NO_CIRCUITO[t] ? ' <a class="caption" href="circuito.html#tool-' + esc(t) + '">ficha no Circuito</a>' : "")
+          + (alvo ? ' <a class="caption" href="integracao.html#' + esc(alvo) + '">ver na Integração</a>' : "")
+          + "</div>";
+      }).join("") +
+      "</div>"
     : "";
 
   var trechos = n.ancora.trechos.map(function (t, i) {
     return '<div class="bloco"><span class="micro">Trecho literal do prompt ' + esc(DADOS.meta.versao_prompt) +
       " · linhas " + esc(t.linhas) + "</span>" +
-      '<pre class="trecho" id="trecho-' + i + '">' + esc(t.texto) + "</pre></div>";
+      '<pre class="trecho" id="trecho-' + i + '">' + MdProsa.trecho(t.texto, MD_RESOLVE) + "</pre></div>";
   }).join("");
 
   var raia = DADOS.raias.filter(function (r) { return r.id === n.raia; })[0];
@@ -828,7 +923,7 @@ function mostrar(id, fixando) {
     '<span class="chip bloqueada">' + esc(rotuloTipo(n.tipo)) + "</span>" +
     '<span class="caption">' + esc(raia ? raia.rotulo : n.raia) + "</span></div>" +
     '<div class="titulo-no">' + esc(n.titulo) + "</div>" +
-    '<div class="card-interno"><div class="linha-dado"><span>' + esc(n.resumo) + "</span></div></div>" +
+    '<div class="card-interno"><div class="linha-dado"><span>' + MdProsa.inline(n.resumo, MD_RESOLVE) + "</span></div></div>" +
     tools + trechos +
     lista("Chega de", entram, "de") + lista("Segue para", saem, "para") +
     '<div class="acoes"><button class="btn claro mini" id="btn-copiar-trecho">Copiar trecho</button>' +

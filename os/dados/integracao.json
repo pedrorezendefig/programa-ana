@@ -11,7 +11,9 @@
       "O modelo de dados do MV: fica no Atlas.",
       "A série histórica das rodadas da bancada: fica no roteiro; aqui só o último veredito."
     ],
-    "console": "https://agents.hospitalsaomatheus.cloud"
+    "console": "https://agents.hospitalsaomatheus.cloud",
+    "selo_de_origem": "ADR-0018: toda ferramenta desenhada carrega o selo da família que responde a chamada (API do Hospital, Global Health, nativa da plataforma). É derivado do host da urlTemplate lida em /api/tools; ferramenta ausente daquela rota é nativa. Mesma palavra e mesma cor no Mapa do SOP e no Circuito da Ana.",
+    "concessao": "A concessão da ferramenta ao agente (o selo 'a Ana não pode chamar') NÃO tem rota REST na instância 1.4.1: vem carimbada por script em os/dados/grants-medida.json, e aparece sempre com a data da conferência ao lado. Pendência aberta no report V10."
   },
   "destinos": [
     {
@@ -21,14 +23,6 @@
       "estado": "migrada",
       "estado_rotulo": "na API do Hospital",
       "nota": "Postgres do Hospital Reuniões, em produção. Editável por gente, com login e papéis, na tela /admin/dados-atendimento."
-    },
-    {
-      "id": "nocodb",
-      "host": "31.97.29.32.sslip.io",
-      "rotulo": "NocoDB",
-      "estado": "a-migrar",
-      "estado_rotulo": "ainda no NocoDB",
-      "nota": "A casa velha da Base Ana: shared view pública, sem credencial, sem login. Sai de cena na V26."
     },
     {
       "id": "gh",
@@ -43,7 +37,7 @@
     {
       "id": "ida",
       "rotulo": "A ida: o dado do hospital vira fala da Ana",
-      "resumo": "Alguém do hospital edita um valor na tela do app. Sem redeploy e sem cache, a próxima conversa já usa o dado novo. Provado ao vivo na rodada 1 da bancada, com o Pedro editando e a sessão medindo as três camadas."
+      "resumo": "Alguém do hospital edita um valor na tela do app. Sem redeploy e sem cache, a próxima conversa já usa o dado novo. Vale para as quatro tabelas desde a V23. Provado ao vivo nas rodadas 1 a 3 da bancada, com o Pedro editando e a sessão medindo as três camadas."
     },
     {
       "id": "volta",
@@ -61,11 +55,6 @@
       "id": "hospital",
       "rotulo": "App do Hospital Reuniões",
       "nota": "FastAPI, Next.js e Postgres, no mesmo VPS. É o produto que a diretoria e as secretárias já usam."
-    },
-    {
-      "id": "nocodb",
-      "rotulo": "NocoDB (a casa velha)",
-      "nota": "Base Ana original (ADR-0006). Ninguém do hospital visita. Aposenta na V26."
     },
     {
       "id": "ana",
@@ -92,13 +81,11 @@
         "quando": "Quando o hospital muda um preço, ativa ou desativa uma especialidade, corrige o preparo de um exame ou atualiza a cobertura de um convênio.",
         "devolve": "Nada para a Ana diretamente: grava no Postgres do app. Super admins e secretárias editam, facilitadores só leem. Não existe apagar: desativar é ativo = false.",
         "limites": [
-          "O topo da tela promete que a edição vale na resposta seguinte. Isso só é verdade na aba Consultas particulares.",
-          "Em Exames, Estimativas de cirurgias e Convênios por especialidade a Ana ainda lê o NocoDB: quem editar sai achando que resolveu e nada muda."
+          "As quatro abas valem: desde a V23 (19/ago/2026) a Ana lê as quatro tabelas desta tela.",
+          "Não existe apagar linha: desativar é ativo = false, e a Ana ignora o que está desativado."
         ],
-        "quando_falha": "Silenciosamente. Não existe sinal de erro em lugar nenhum: a pessoa edita, vê salvo, e a Ana continua falando o dado velho."
-      },
-      "alerta": "Promete o que não cumpre em 3 das 4 abas. A V28 avisa o hospital por escrito; a V23 conserta.",
-      "tarefa": "V23"
+        "quando_falha": "A edição grava e a Ana passa a usar o dado novo na resposta seguinte. O risco que sobra é humano: valor errado digitado vira valor errado dito, sem nenhuma trava."
+      }
     },
     {
       "id": "H2",
@@ -145,27 +132,6 @@
         ],
         "veredito": "A família A inteira passou na rodada 2: valor alterado, especialidade desativada, texto novo e item novo, todos refletidos na conversa seguinte sem redeploy."
       }
-    },
-    {
-      "id": "N1",
-      "faixa": "ida",
-      "raia": "nocodb",
-      "col": 2,
-      "linha": 0,
-      "tipo": "banco",
-      "titulo": "NocoDB, shared views públicas",
-      "ficha": {
-        "serve_para": "Servir as três tabelas que ainda não mudaram de casa.",
-        "quando": "Toda vez que a Ana pergunta por exame, estimativa de cirurgia ou cobertura de convênio.",
-        "devolve": "As linhas cruas da tabela, com os nomes de campo antigos (Valor_Particular_RS, Cobre_SN, datas em dd/mm/aaaa).",
-        "limites": [
-          "A view é pública e read-only: qualquer um com a URL lê. Não tem credencial nenhuma.",
-          "Não filtra por Ativo: a regra de ignorar Ativo = N vive no prompt, não no servidor."
-        ],
-        "quando_falha": "O serviço cai no Coolify e as três tabelas somem de uma vez. É um dos motivos do ADR-0015."
-      },
-      "alerta": "Fonte velha. Some na V26, depois que a V23 virar as tools 2, 3 e 4.",
-      "tarefa": "V23"
     },
     {
       "id": "T1",
@@ -222,14 +188,13 @@
       "ficha": {
         "serve_para": "Dar valor particular, aceitação por convênio e, sobretudo, o preparo do exame.",
         "quando": "Quando o paciente pergunta o preço de um exame (Seção 6.B) ou como se preparar para ele (Seção 5.D).",
-        "devolve": "Hoje, as linhas cruas do NocoDB, com os nomes de campo antigos.",
+        "devolve": "A lista de exames pela API do Hospital, com valor particular, aceitação por convênio e o preparo completo. O filtro por termo devolve o exame pedido inteiro.",
         "limites": [
           "O preparo sai literal, e resumir a ponto de perder um passo é falha clínica, não de estilo.",
-          "Quando esta tool virar para a API, ela precisa nascer com o campo de filtro: sem ele o servidor devolve o modo resumo e o preparo some."
+          "Sem o termo de filtro o servidor devolve o modo resumo, e no resumo o preparo não vem."
         ],
         "quando_falha": "Setor responsável e handoff (Seção 5.D), nunca preparo inventado."
-      },
-      "tarefa": "V23"
+      }
     },
     {
       "id": "T3",
@@ -249,14 +214,13 @@
       "ficha": {
         "serve_para": "Dar a estimativa de um procedimento cirúrgico, sempre com o caveat de avaliação médica.",
         "quando": "Quando o paciente pergunta quanto custa uma cirurgia (Seção 6.C).",
-        "devolve": "Hoje, as linhas cruas do NocoDB. Do lado da API já cabe inteira no modo completo.",
+        "devolve": "As estimativas pela API do Hospital. Cabe inteira no modo completo, com o caveat de avaliação médica em cada linha.",
         "limites": [
           "O caveat de avaliação médica é obrigatório em toda resposta: estimativa dita sem ele é erro.",
-          "É a tabela mais pesada por linha, então ela é a que mais rápido volta a apertar quando o hospital cadastrar procedimentos novos."
+          "É a tabela mais pesada por linha, então é a que mais rápido volta a apertar quando o hospital cadastrar procedimentos novos."
         ],
         "quando_falha": "Escala à fila humana com o resumo do pedido, sem estimativa de memória."
-      },
-      "tarefa": "V23"
+      }
     },
     {
       "id": "T4",
@@ -276,14 +240,13 @@
       "ficha": {
         "serve_para": "Dizer se um convênio cobre uma especialidade, sem nunca afirmar nem negar de memória.",
         "quando": "Sempre que o paciente menciona convênio e é preciso verificar cobertura (Seções 3 e 5.A).",
-        "devolve": "Hoje, as linhas cruas do NocoDB, com Cobre_SN em S ou N.",
+        "devolve": "A cobertura convênio por especialidade pela API do Hospital, já traduzida, sem o Cobre_SN cru.",
         "limites": [
           "É a tabela que mais cresce: seis convênios por oito especialidades já dariam 48 linhas.",
           "Combinação ausente da tabela não é negativa: cai na Regra Global 13."
         ],
         "quando_falha": "Oferece confirmação humana; jamais afirma que o convênio não cobre."
-      },
-      "tarefa": "V23"
+      }
     },
     {
       "id": "A1",
@@ -309,7 +272,7 @@
           "B2",
           "B3"
         ],
-        "veredito": "B1 e B2 passaram nas rodadas 2 e 3. B3 (preparo de exame) só roda depois da V23."
+        "veredito": "B1 e B2 passaram nas rodadas 2 e 3. O B3 (preparo de exame) ainda não tem cenário executável: é a V30."
       }
     },
     {
@@ -383,8 +346,8 @@
         "quando": "A cada manifestação registrada.",
         "devolve": "A linha inteira já gravada, com o protocolo pronto (sequence mais coluna gerada).",
         "limites": [
-          "A numeração continua do último número usado no NocoDB: a sequence nasceu dele, então nada se repete.",
-          "As três linhas de teste do NocoDB (2026-0001 a 0003) não foram migradas: existem só lá."
+          "A numeração continua do último número da base antiga: a sequence nasceu dele, então nada se repete.",
+          "As três linhas de teste 2026-0001 a 0003 nunca foram migradas da base antiga: nenhum paciente real recebeu esses números."
         ],
         "quando_falha": "Recusa com o motivo. Sem o campo protocolo na resposta, a Ana não diz número nenhum."
       },
@@ -392,7 +355,7 @@
         "cenarios": [
           "D2"
         ],
-        "veredito": "Passou na rodada 2: o NocoDB termina em 0003 e o Postgres tem 0004 e 0005, sem reiniciar e sem repetir."
+        "veredito": "Passou na rodada 2: a base antiga terminava em 0003 e o Postgres tem 0004 e 0005, sem reiniciar e sem repetir."
       }
     },
     {
@@ -460,18 +423,16 @@
         "limites": [
           "Nunca ler o status: respondido é estado interno, e dizer isso a quem nunca recebeu retorno é dano grave.",
           "Nunca ler o resumo de volta: a consulta confirma que o registro existe, não reabre o caso.",
-          "Os protocolos 2026-0001 a 0003 devolvem 404: vivem só no NocoDB."
+          "Os protocolos 2026-0001 a 0003 devolvem 404: eram linhas de teste da base antiga, nunca migradas."
         ],
         "quando_falha": "Não afirmar que o protocolo não existe. Mensagem de não localizado e escalada."
       },
-      "alerta": "Encontra e não conta: na rodada 2 a Ana omitiu número, data e prazo. A proteção do status segurou. A V27 conserta.",
       "prova": {
         "cenarios": [
           "D5"
         ],
-        "veredito": "Falhou na rodada 2 (18/ago/2026): a consulta funcionou, mas a Ana informou só que encontrou. É a V27."
-      },
-      "tarefa": "V27"
+        "veredito": "Passou na rodada da V27 (21/ago/2026), 3 de 3 com resposta idêntica: número, data de abertura e prazo ditos ao paciente, sem status e sem resumo."
+      }
     },
     {
       "id": "H6",
@@ -487,11 +448,10 @@
         "devolve": "A linha inteira do índice.",
         "limites": [
           "Não existe consulta por id nem listagem em /api/ana/*: só por ANO-NNNN.",
-          "Protocolo que só existe no NocoDB devolve 404. São os três de 12/ago, item do checklist da V26."
+          "Protocolo que só existia na base antiga devolve 404. São os três de 12/ago, conferidos no cutover da V26."
         ],
         "quando_falha": "404 tipado. A Ana trata como não localizado, sem negar a existência."
-      },
-      "tarefa": "V26"
+      }
     },
     {
       "id": "V3",
@@ -507,11 +467,10 @@
         "devolve": "O número, e na Seção 7.5 também a data de abertura e o prazo de resposta.",
         "limites": [
           "O número tem que ser cópia literal do campo devolvido pela ferramenta. Número inventado é a violação mais grave da seção.",
-          "Na Seção 7.5 a Ana hoje engole a data e o prazo: é a V27."
+          "Na Seção 7.5 a mensagem da escalada (customerMessage do handoff) é o template preenchido com número, data e prazo: trava da V27, prompt v6.5."
         ],
         "quando_falha": "Mensagem de acolhimento sem número nenhum, e escalada."
-      },
-      "tarefa": "V27"
+      }
     },
     {
       "id": "T5",
@@ -579,8 +538,7 @@
           "Volta com a P6, e o achado do contact_phone desenha essa volta com uma pergunta a menos."
         ],
         "quando_falha": "Não se aplica: a Ana não chama."
-      },
-      "alerta": "Existe na plataforma, mas está fora dos grants do agente (ADR-0014). A Ana não pode chamá-la."
+      }
     },
     {
       "id": "T8",
@@ -694,21 +652,6 @@
       "de": "H3",
       "para": "T1",
       "rotulo": "X-API-Key"
-    },
-    {
-      "de": "N1",
-      "para": "T2",
-      "rotulo": ""
-    },
-    {
-      "de": "N1",
-      "para": "T3",
-      "rotulo": ""
-    },
-    {
-      "de": "N1",
-      "para": "T4",
-      "rotulo": ""
     },
     {
       "de": "T1",

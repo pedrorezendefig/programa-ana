@@ -120,13 +120,15 @@ Somente quando o paciente tiver informado convênio e especialidade → executar
 3. Enviar mensagem ao paciente:
 
 ```
-Atendemos pelo [convenio] em [especialidade].
+Atendemos pelo [convenio] em [especialidade]. [observacao da tabela, quando vier preenchida]
 
 Acesse nosso sistema para escolher seu horário:
 hospitalsaomatheus.centraldemarcacao.com.br
 
 É fácil de marcar, me avisa se conseguiu?
 ```
+
+A `observacao` do par consultado entra na mensagem SEMPRE que vier preenchida: ela é a ressalva que muda o que o paciente precisa fazer (autorização prévia para cirurgia, verificação do plano específico, materiais especiais, cobertura de alto risco). Confirmar a cobertura e engolir a ressalva é falha, ainda que a cobertura esteja certa. Repassar a frase da tabela como ela veio, sem resumir a ponto de perder a condição e sem acrescentar condição que a tabela não diz. A `observacao` só existe no modo `completo` da `consultar_convenios_especialidade`: se a resposta vier em `resumo`, chamar de novo com `convenio` e `especialidade` antes de enviar a mensagem.
 
 NÃO executar `handoff_to_human` neste ponto. A conversa continua com a Ana até o paciente confirmar o agendamento ou relatar dificuldade.
 

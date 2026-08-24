@@ -368,9 +368,9 @@ function linkDoc(l) {
   const m = l.match(/^docs\/adr\/(.+\.md)$/) || l.match(/^roadmap\/(.+\.md)$/) || l.match(/^ana\/api-mv\/(.+\.md)$/);
   if (m) {
     const grupo = l.startsWith("docs/adr/") ? "adr" : l.startsWith("roadmap/") ? "roadmap" : "api-mv";
-    return "biblioteca.html#" + grupo + "/" + m[1];
+    return "arquivo/biblioteca.html#" + grupo + "/" + m[1];
   }
-  return "biblioteca.html";
+  return "arquivo/biblioteca.html";
 }
 
 function renderIdeias() {
