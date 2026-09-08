@@ -126,6 +126,11 @@
 
   <div id="faixas"></div>
 
+  <section class="card" style="padding:22px 26px;margin-bottom:18px;" id="cartao-chatwoot">
+    <h3>A versão do Chatwoot</h3>
+    <div id="chatwoot-corpo"><p class="caption">perguntando à instância e à fazer.ai...</p></div>
+  </section>
+
   <section class="card" style="padding:22px 26px;">
     <h3>Por que esta página não envelhece</h3>
     <p class="nota-regra" id="nota-regra"></p>
@@ -533,6 +538,11 @@ async function carregar() {
   }
   document.getElementById("selos").innerHTML = selos;
 
+  /* A versao do Chatwoot e fato rastreado do programa (ADR-0024), e os dois numeros sao
+     vivos: instalada vem do GET /api do proprio Chatwoot, ultima vem da pagina da fazer.ai.
+     Nao bloqueia o resto da pagina: carrega depois e preenche o cartao quando chegar. */
+  montarChatwoot();
+
   if (!VIVO || !VIVO.ok) {
     document.getElementById("aviso-vivo").innerHTML =
       '<div class="aviso-vivo"><strong>Não consegui perguntar à plataforma onde as ferramentas apontam.</strong> '
@@ -546,6 +556,47 @@ async function carregar() {
   ligarEventos();
   requestAnimationFrame(desenharArestas);
   abrirDaAncora();
+}
+
+async function montarChatwoot() {
+  var alvo = document.getElementById("chatwoot-corpo");
+  var d;
+  try {
+    d = await fetch("/api/chatwoot").then(function (r) { return r.json(); });
+  } catch (e) {
+    d = { ok: false, erro: "o servidor do Ana OS não respondeu (o OS está rodando?)" };
+  }
+
+  if (!d.ok) {
+    alvo.innerHTML = '<p class="caption"><strong>Não consegui ler as versões.</strong> ' + esc(d.erro || "erro desconhecido")
+      + ". Esta página não guarda esses números de propósito (ADR-0017), então prefere dizer que não sabe. "
+      + 'Na mão: <code>python3 ana/plataforma/scripts/fetch-chatwoot-releases.py</code>.</p>';
+    return;
+  }
+
+  var chip = d.atraso === 0
+    ? '<span class="chip feito">na versão corrente</span>'
+    : '<span class="chip ' + (d.alerta ? "bloqueada" : "azul") + '">' + d.atraso + (d.atraso === 1 ? " versão atrás" : " versões atrás") + "</span>";
+
+  var html = "<p>" + chip + " &nbsp; instalada <code>" + esc(d.instalada || "?") + "</code>"
+    + " &nbsp; última publicada <code>" + esc(d.ultima) + "</code> (" + esc(d.ultima_em) + ")</p>";
+
+  if (!d.instalada_conhecida) {
+    html += '<p class="caption">A versão instalada não aparece na lista Pro publicada. Pode ser build fora da esteira, ou a página mudou de formato.</p>';
+  }
+
+  if (d.atraso > 0) {
+    html += '<p class="caption">O que está na frente: '
+      + d.atrasadas.map(function (r) {
+          return '<a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.tag.split("-pro.").pop()) + "</a>";
+        }).join(" · ")
+      + ". A leitura curada do que isso significa para a Ana vive em "
+      + "<code>ana/plataforma/chatwoot-releases.md</code>"
+      + " (ADR-0024). Subir de versão é pré-requisito da Ana entrar num número de WhatsApp real (V32).</p>";
+  }
+
+  html += '<p class="caption">Fronteira: aqui é só o Chatwoot. A plataforma fazer.ai agents tem numeração e notas próprias.</p>';
+  alvo.innerHTML = html;
 }
 
 /* O outro lado do caminho de volta (ADR-0018): o Mapa do SOP linka para

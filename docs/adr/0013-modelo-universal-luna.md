@@ -40,6 +40,10 @@ Até um dos dois destravar, o tenant segue no `gpt-5-mini`.
 
 Descoberta nova: pela rota MCP (`agent_update`), o `modelConfig` ACEITA e PERSISTE `reasoning_effort: "none"` (diferente da UI, que descarta o campo). Mas persistir não basta: o cliente OpenAI da plataforma não repassa o campo para a API, e o turno com tool no playground devolveu o mesmo 400. Ou seja, o bloqueio não é de validação de schema, é do request builder. Rollback para `gpt-5-mini` executado de novo; o campo persistido reforça o feature request (metade do caminho já existe no banco).
 
+### Terceira tentativa: aplicado (08/set/2026)
+
+A plataforma fazer.ai agents subiu de 1.4.1 para 1.15.0. A release 1.5.0 passou a rodar a família gpt-5.6 com `reasoning_effort: none` (fix #73) e a 1.6.0 expôs `reasoningEffort` por agente (#87). O `agent_update` via MCP aceitou `{"model":"gpt-5.6-luna","reasoningEffort":"none"}` e a fumaça com tools passou (preço e cadeia de 4 elos de horários, sem 400). A decisão deste ADR está em vigor; a bateria v3 no canal real é o critério para declarar estável.
+
 ## Consequências
 
 - "Modelo universal" vira regra do tenant: agente novo nasce com `gpt-5.6-luna` salvo decisão contrária registrada.

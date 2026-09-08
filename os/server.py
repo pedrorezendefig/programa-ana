@@ -44,6 +44,9 @@ ROADMAP_JSON = os.path.join(OS_DIR, "dados", "roadmap.json")
 # Cenarios da bancada (ADR-0020): a pagina Testes manuais le o arquivo que vive
 # fora de os/. Leitura de UM arquivo fixo, nunca de uma pasta.
 CENARIOS_JSON = os.path.join(REPO_DIR, "ana", "bancada", "cenarios", "integracao.json")
+# Parser das notas de versao do Chatwoot (ADR-0024). O server NAO tem copia da logica:
+# ele importa o mesmo script que uma sessao roda na mao, para os dois nunca divergirem.
+RELEASES_SCRIPT = os.path.join(REPO_DIR, "ana", "plataforma", "scripts", "fetch-chatwoot-releases.py")
 
 ESTATICOS = {
     ".html": "text/html; charset=utf-8",
@@ -169,6 +172,60 @@ def ler_tools():
     brutas = doc.get("tools", doc if isinstance(doc, list) else [])
     tools = [{c: t.get(c) for c in TOOL_CAMPOS} for t in brutas]
     return {"ok": True, "tools": tools, "lido_em": time.strftime("%Y-%m-%dT%H:%M:%S")}
+
+
+# A pagina de releases da fazer.ai custa alguns segundos para desempacotar e muda poucas
+# vezes por semana. Cache em memoria (nunca em arquivo, ADR-0017): morre com o server.
+_CHATWOOT_CACHE = {"em": 0.0, "resposta": None}
+CHATWOOT_CACHE_S = 600
+CHATWOOT_ATRASO_ALERTA = 3
+
+
+def _releases_modulo():
+    """Importa o fetch-chatwoot-releases.py pelo caminho (o nome tem hifen, entao nao da import)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("fetch_chatwoot_releases", RELEASES_SCRIPT)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+def ler_chatwoot():
+    """Diz quantas versoes o Chatwoot da Ana esta atras do que a fazer.ai publicou (ADR-0024).
+
+    Os dois numeros sao vivos: a versao instalada vem de GET {CHATWOOT_URL}/api e a ultima
+    publicada vem da pagina https://fazer.ai/chatwoot-release-notes. Nenhum dos dois e escrito
+    em arquivo. Sem fonte, devolve o erro: a pagina prefere dizer que nao sabe.
+    """
+    agora = time.time()
+    if _CHATWOOT_CACHE["resposta"] and agora - _CHATWOOT_CACHE["em"] < CHATWOOT_CACHE_S:
+        return _CHATWOOT_CACHE["resposta"]
+    try:
+        rel = _releases_modulo()
+        pro = rel.ordenar([r for r in rel.ler_releases() if r.get("edition") == rel.EDICAO])
+        tags = [rel.normalizar(r["tagName"]) for r in pro]
+        instalada = rel.versao_instalada()
+        alvo = rel.normalizar(instalada)
+        conhecida = alvo in tags
+        atras = tags[tags.index(alvo) + 1:] if conhecida else []
+        resposta = {
+            "ok": True,
+            "instalada": instalada,
+            "instalada_conhecida": conhecida,
+            "ultima": pro[-1]["tagName"],
+            "ultima_em": pro[-1]["publishedAt"][:10],
+            "atraso": len(atras),
+            "alerta": len(atras) >= CHATWOOT_ATRASO_ALERTA,
+            "atrasadas": [
+                {"tag": r["tagName"], "em": r["publishedAt"][:10], "url": r.get("htmlUrl", "")}
+                for r in pro if rel.normalizar(r["tagName"]) in atras
+            ],
+            "lido_em": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        }
+    except (OSError, ValueError, urllib.error.URLError, ImportError, AttributeError) as e:
+        resposta = {"ok": False, "erro": "nao consegui ler as versoes do Chatwoot: %s" % e}
+    _CHATWOOT_CACHE.update({"em": agora, "resposta": resposta})
+    return resposta
 
 
 _oracle_iniciado = False
@@ -532,6 +589,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(listar_docs())
         elif path == "/api/tools":
             self._json(ler_tools())
+        elif path == "/api/chatwoot":
+            self._json(ler_chatwoot())
         elif path == "/api/cenarios":
             try:
                 with open(CENARIOS_JSON, encoding="utf-8") as f:

@@ -1,6 +1,6 @@
 {
   "estagio": "Testes de viabilidade no fazer.ai agents (sem Global Health)",
-  "atualizado": "2026-08-20",
+  "atualizado": "2026-08-26",
   "tarefas": [
     {
       "id": "V1",
@@ -463,7 +463,7 @@
       "deps": [
         "V15"
       ],
-      "nota": "Feita em 12/ago/2026, na sessão do grilling dos ADRs 0012/0013. Backup agent_export da v5.3 arquivado (ana/plataforma/), imagem agents-pro atualizada (29/jul -> 1.4.1, teto do prompt a 100.000 via default novo; Chatwoot e hotfix V8 intocados), fonte criada (nucleo-comum + bloco-orquestradora + bloco-particular com P6 gated + bloco-ouvidoria + compilar.py), prompt v6.0 compilado (52.502 chars; o registro original dizia 50.816, corrigido no check de 12/ago, fidelidade verbatim 100% com a v5.3) e publicado via prompt_set. Smoke tests dos 3 blocos no playground: ancoragem com tag no Particular, mensagem fixa e escalada imediata na urgência, acolhimento com tag na ouvidoria.",
+      "nota": "Feita em 12/ago/2026, na sessão do grilling dos ADRs 0012/0013. Backup agent_export da v5.3 arquivado (ana/plataforma/), imagem agents-pro atualizada (29/jul -> 1.4.1, teto do prompt a 100.000 via default novo; Chatwoot e hotfix V8 intocados), fonte criada (nucleo-comum + bloco-orquestradora + bloco-particular com P6 gated + bloco-ouvidoria + compilar.py), prompt v6.0 compilado (52.502 chars; o registro original dizia 50.816, corrigido no check de 12/ago, fidelidade verbatim 100% com a v5.3) e publicado via prompt_set. Smoke tests dos 3 blocos no playground: ancoragem com tag no Particular, mensagem fixa e escalada imediata na urgência, acolhimento com tag na ouvidoria. 08/set/2026: imagem agents-pro subiu de 1.4.1 para 1.15.0 (digest de rollback anterior sha256:88c595012816a55ed60388f161c29fb65a97dc3bbb495686f1365cdccfb7297c; backup do Postgres em /root/backup-agents-20260908.sql na VPS).",
       "ficha": {
         "fez": "Grilling do ADR-0012 executado: fonte do prompt no repo (núcleo comum + 3 blocos de agente lógico + P6 gated), compilada por compilar.py e publicada como v6.0 (52.502 chars, verbatim com a v5.3; as 95 âncoras do Mapa do SOP seguem válidas).",
         "mudou": "O prompt deixou de nascer na plataforma: nasce em ana/prompt/ e a plataforma recebe. A imagem agents-pro subiu para a 1.4.1 e o teto foi a 100k (o R1 saiu do radar).",
@@ -473,15 +473,15 @@
     },
     {
       "id": "V18",
-      "titulo": "Modelo universal gpt-5.6-luna: troca bloqueada pela plataforma, rollback documentado (ADR-0013)",
+      "titulo": "Modelo universal gpt-5.6-luna: bloqueado em 12/ago, APLICADO em 08/set com a plataforma 1.15.0 (ADR-0013)",
       "dono": "C",
       "status": "feito",
       "deps": [],
-      "nota": "Feita em 12/ago/2026. O Luna é real ($0,20/$1,20 por 1M após corte de 80% em 30/jul) e a troca foi aplicada; o primeiro turno com tool devolveu o 400 literal \"Function tools with reasoning_effort are not supported... use /v1/responses or set reasoning_effort to none\". Rollback imediato para o gpt-5-mini, smoke test saudável. A plataforma não expõe reasoning_effort no modelConfig (verificado no código, schema zod): o pedido de expor o campo foi somado ao report V10.",
+      "nota": "Feita em 12/ago/2026. O Luna é real ($0,20/$1,20 por 1M após corte de 80% em 30/jul) e a troca foi aplicada; o primeiro turno com tool devolveu o 400 literal \"Function tools with reasoning_effort are not supported... use /v1/responses or set reasoning_effort to none\". Rollback imediato para o gpt-5-mini, smoke test saudável. A plataforma não expõe reasoning_effort no modelConfig (verificado no código, schema zod): o pedido de expor o campo foi somado ao report V10. **08/set/2026: destravou.** A plataforma subiu de 1.4.1 para 1.15.0 (a 1.5.0 roda a família gpt-5.6 com reasoning none; a 1.6.0 expõe reasoningEffort por agente). modelConfig da Ana agora: gpt-5.6-luna, reasoningEffort none, sem temperature. Fumaça no playground: preço (1 tool) e cadeia completa de horários (6 tools, 3 horários reais) sem nenhum 400. Rollback: gpt-5-mini com temperature 1.",
       "ficha": {
-        "fez": "Pesquisa citada em fonte primária, troca aplicada e smoke test com tool: a API recusou function tools com reasoning_effort no chat/completions; rollback de um comando para o gpt-5-mini.",
-        "mudou": "ADR-0013 registra intenção mantida e execução bloqueada pela plataforma; o pedido de expor reasoning_effort entrou no report V10.",
-        "valor": "Decisão preservada com evidência empírica: quando a fazer.ai expor o campo, a troca universal é um agent_update."
+        "fez": "Trocou o modelo da Ana para gpt-5.6-luna com reasoning none, depois de subir a plataforma para 1.15.0.",
+        "mudou": "O tenant roda no modelo econômico da família 5.6; o mini vira histórico.",
+        "valor": "Custo por token cai e a cadeia de horários rodou inteira num turno, sem o 400 de 12/ago."
       },
       "tema": "cerebro"
     },
@@ -803,6 +803,116 @@
         "mudou": "Os códigos A1 a E3 deixaram de ser sopa de letras: qualquer um abre a página e entende o que cada prova significa, o que já passou e o que espera a janela V29.",
         "valor": "O Pedro olha a barra de cada família e sabe em segundos o quanto a integração está provada, e o que exatamente falta provar."
       }
+    },
+    {
+      "id": "V31",
+      "titulo": "Massa própria na homolog: agenda de Cardiologia de teste via tutorial MV (Painel GH + SoulMV TST)",
+      "dono": "P+E+C",
+      "status": "feito",
+      "deps": [],
+      "nota": "Nasce do grilling de 26/ago/2026 (ADR-0023). O tutorial oficial da MV (ana/api-mv/tutorial-agenda-online-gh.pdf) mostra que a massa nasce de cadastro comum: agenda pública no SoulMV com prestador vinculado ao item + ativação no Painel de Controle GH. Pedido mínimo: 1 agenda de Cardiologia, o cenário da vitrine. A pergunta 'o SoulMV TST alimenta a dem.agenda?' viaja no pedido. Sem VPN em nenhum passo do Pedro. GH19 segue aberta. Pronto quando: o smoke-gh sai de VAZIO para OK em /consultas; na sequência a vitrine da V15 re-valida e a Cadeia D destrava. CONCLUÍDA em 26/ago/2026, e por um caminho mais curto do que o previsto: o Pedro entrou no Painel GH de homologação e as agendas de CONSULTA CARDIOLOGICA já estavam lá, com quatro médicos listados e dois ligados (Amanda 21 e Charles 51). O cadastro no SoulMV TST não foi preciso. O smoke-gh saiu de VAZIO para OK em /consultas (item 1843, Consulta Cardiologica) e a cadeia inteira passou a responder: 32 convênios, planos, 2 prestadores e horários reais (28/ago 08:00 e 12:00 com Amanda Pinheiro Santos). Prova de que o botão do Painel é o que manda: a API devolve exatamente os dois prestadores ligados. A pergunta sobre o SoulMV TST alimentar a dem.agenda continua sem resposta e deixou de ser bloqueante.",
+      "tema": "agenda",
+      "ficha": {
+        "fez": "Ativou a agenda de Cardiologia no Painel GH de homologação e provou a cadeia inteira ao vivo.",
+        "mudou": "O catálogo saiu de 100% vazio depois de 50 dias; a GH-19 deixou de ser bloqueante.",
+        "valor": "A vitrine de horários da V15 destravou, e com ela a Cadeia D e o primeiro teste real das tools 9 e 10."
+      }
+    },
+    {
+      "id": "V33",
+      "titulo": "Cadeia de horários de quatro elos: as tools que faltavam e a trava dura que fez a Ana consultar a agenda",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "V31",
+        "V15"
+      ],
+      "tema": "agenda",
+      "nota": "Feita em 26/ago/2026, logo depois da V31. Com a massa no ar, a vitrine da V15 falhou na primeira prova: a tool 9 mandava só idItemAgendamento e a API respondia HTTP 500. Era o risco D1 do perguntas-global-health.md virando defeito real. Medido: /agendas/v2 exige os TRÊS ids (idItemAgendamento, idConvenio, idPlano); faltando um, ou com um vazio, 500. Id inexistente NÃO dá erro, devolve 200 com agendas vazio (falso 'sem horário'). Correção em três partes: tools novas 13 consultar_convenios_agenda e 14 consultar_planos_convenio; tool 9 com os três parâmetros; Seção 2.3.1 do prompt reescrita como cadeia de quatro elos. As duas primeiras não bastaram: a Ana continuou pulando a agenda e escalando direto. O que resolveu foi a TRAVA DURA no PASSO 4 da Seção 2.4A (proibido handoff_to_human sem consultar_horarios_livres ter rodado) mais o PASSO 3 que encerra o turno na lista numerada. Terceiro achado: o tipo dos ids no inputSchema era string e o modelo mandava número, gastando uma chamada recusada por elo; trocado para integer, a interpolação na query aguenta número. Prova no playground: conversa particular completa, quatro elos, horários reais, escolha do número e escalada com o resumo certo.",
+      "ficha": {
+        "fez": "Tools 13 e 14 criadas, tool 9 com os três ids, Seção 2.3.1 virou cadeia de quatro elos e ganhou trava dura.",
+        "mudou": "Provado que a trava dura é o que faz o modelo não pular passo: sem ela, tools certas e o bot escalava mesmo assim.",
+        "valor": "A Ana entrega horário real de verdade na conversa. A vitrine da V15 saiu do papel."
+      }
+    },
+    {
+      "id": "V34",
+      "titulo": "A cobertura de convênio passa a vir da agenda online (tool 4 aposentada, ADR-0025)",
+      "dono": "C+P",
+      "status": "feito",
+      "deps": [
+        "V33"
+      ],
+      "tema": "agenda",
+      "nota": "Feita em 26/ago/2026, por decisão do Pedro na sessão. Provado que GET /convenios é escopado por idItemAgendamento (id diferente ou ausente devolve zero), ou seja, a própria GH responde cobertura por especialidade. As duas fontes já divergiam: a tabela curada tinha Amil, Golden Cross e Hapvida, e nenhum dos três está nos 32 convênios da agenda de Cardiologia. Executado: tool 4 fora do grant (definição preservada, como a tool 7 no ADR-0014); Seção 3.2 do prompt reescrita em três casos (convênio na lista entrega horário com a tag agendamento-convenio; convênio fora da lista nega e oferece particular; especialidade não publicada cai no portal, sem afirmar nem negar cobertura). O Caso 3 é a rede de segurança: só Cardiologia está publicada. Prompt v6.7 no ar (60.838 chars, conferido por hash). Provas no playground: Unimed Do Brasil entregou horários; Amil recebeu a negativa clara com oferta de particular, sem citar sistema nem lista. Perda assumida: a coluna observacao da tabela curada não tem equivalente na GH.",
+      "ficha": {
+        "fez": "GH virou a fonte única de cobertura: tool 4 aposentada e Seção 3.2 reescrita em três casos.",
+        "mudou": "Morreu a classe de bug 'convênio aceito mas cobertura não detalhada', que era a dor da v6.6.",
+        "valor": "Uma verdade só, e o paciente de convênio passou a receber horário na conversa em vez do link do portal."
+      }
+    },
+    {
+      "id": "V35",
+      "titulo": "Espelho da Global Health no app do hospital, no lugar da tabela de convênios (ADR-0025)",
+      "dono": "P+E",
+      "status": "fazer",
+      "deps": [
+        "V34"
+      ],
+      "tema": "agenda",
+      "canal": "dispare",
+      "canal_desde": "2026-08-26",
+      "mesa": {
+        "destrava": "Fecha o ADR-0025 do lado do hospital e mata a segunda verdade de vez. O espelho responde na hora por que a Ana não achou horário: especialidade não publicada, convênio fora da lista, médico com o botão desligado no Painel, ou agenda sem horário livre. Hoje ninguém sabe dizer qual das quatro.",
+        "gesto": "Abrir uma sessão em ~/PedroDev/Hospital e colar o conteúdo de ana/api-hospital/pedido-espelho-gh.md. Não depende de nada aqui."
+      },
+      "nota": "Nasce do ADR-0025. Duas tarefas: (1) remover a tabela de convênios por especialidade em camadas, com dump do conteúdo antes da migration de drop (o texto da coluna observacao é escrito por gente e não existe na GH); (2) no lugar dela, uma tela somente leitura que espelha ao vivo a agenda da GH de homologação, com botão de atualizar. Regras: só homologação, só leitura, token só no backend, nada gravado em banco. ESCOPO: apenas a tabela de convênios. As tabelas de consultas particulares, exames e cirurgias continuam alimentando as tools 1, 2 e 3 da Ana e removê-las quebra o bot. Pronto quando: a tela mostra especialidades, convênios por especialidade, prestadores e horários livres, e o endpoint GET /api/ana/convenios não existe mais.",
+      "prompt": "Vamos tocar a V35 (Espelho da Global Health no app do hospital, ADR-0025). Esta tarefa NÃO se executa neste repo: abra uma sessão em ~/PedroDev/Hospital e use o prompt pronto em ana/api-hospital/pedido-espelho-gh.md. Se você está nesta sessão para acompanhar: leia o ADR-0025 e a ficha no TODO.md, confira se a tabela de convênios já saiu do app (GET https://api.hospitalsaomatheus.cloud/api/ana/convenios deve deixar de existir) e, quando sair, marque a V35 como feita nos dois lugares e escreva a ficha do nó."
+    },
+    {
+      "id": "V32",
+      "titulo": "Subir o Chatwoot de .111 para a versão corrente e provar o que a .112 promete sobre a V8",
+      "dono": "C+P",
+      "status": "feito",
+      "deps": [],
+      "nota": "Nasce do grilling de 26/ago/2026 (ADR-0024). Instância em 4.16.0-fazer-ai-pro.111 desde o onboarding de 29/jul; última publicada v4.17.0-fazer-ai-pro.120 (25/ago): 9 versões de atraso. Duas descrevem coisas no ar hoje: a .119 corrige 'conversas que o bot deixava sem resposta' e a .120 tira a conversa que está com um bot da aba Não atribuídas, mudando a fila da secretária. A .112 é candidata a fix da V8 ('erros com token de acesso da API ao gerenciar bots, etiquetas'), mas NÃO é prova: a base CE dela é a v4.16.2-fazer-ai.91, exatamente o que a inspeção de 06/ago mostrou ainda quebrado. Leitura completa em ana/plataforma/chatwoot-releases.md. Cautelas: o hotfix evapora no pull (anotar digest antes); o caminho cruza os merges oficiais 4.16.1, 4.16.2 e 4.17.0, com migração de banco; a .120 muda a fila sem ninguém configurar nada. Pronto quando: GET /api devolve a versão corrente, digest de rollback anotado, teste por token rodado (fechando a V8 ou reaplicando o hotfix com evidência fresca) e a bateria v3 passa de novo. **Feita em 08/set/2026**: Chatwoot de .111 para 4.17.0-fazer-ai-pro.129 (digest de rollback sha256:965ec31b108bacdcfdf3f44e0cba8ab6263be7f3acf7027ea2eb6d98b768690d; backup /root/backup-chatwoot-20260908.sql, 1 MB, conferido com chatwoot_production e conversations). Teste por token depois da subida: /agent_bots, /labels, /inboxes e /automation_rules em 200 SEM o hotfix, então a V8 morreu e sai do radar. E2E na inbox de API: conversa resolvida reabriu pending, /teste ativou, Ana (Luna) respondeu R$ 380. Falta a bateria v3 completa. Achado: healthcheck do postgres do Chatwoot chama pg_isready com argumento a mais (unhealthy falso, 176 mil falhas); banco responde.",
+      "ficha": {
+        "fez": "Subiu o Chatwoot de .111 para .129 com backup e digest de rollback, e provou por token que o bug da V8 sumiu.",
+        "mudou": "Instância corrente (18 versões absorvidas), hotfix aposentado, pré-requisito do WhatsApp real cumprido.",
+        "valor": "Bot que silenciava (.119), resposta duplicada (.116) e fila (.120) corrigidos; a Ana pode entrar num número real."
+      }
+    },
+    {
+      "id": "OS23",
+      "titulo": "Ana OS: o atraso de versão do Chatwoot, medido ao vivo no Mapa da Integração",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS17"
+      ],
+      "tema": "os",
+      "nota": "26/ago/2026 (ADR-0024). Nove versões de atraso sem sinal em lugar nenhum. Escrever o número num JSON repetiria a circuito.json do ADR-0017, então os dois números são vivos: a instalada vem do GET /api do próprio Chatwoot (sem credencial) e a última vem da página da fazer.ai. A página esconde 143 releases atrás de um Load more e seis notas chegam como referências não resolvidas que somem sem erro, então o parser virou script versionado (ana/plataforma/scripts/fetch-chatwoot-releases.py) que o server importa em vez de duplicar. Rota /api/chatwoot com cache em memória de 10 min, cartão no Mapa da Integração, vermelho a partir de 3 versões de atraso.",
+      "ficha": {
+        "fez": "Criou a rota /api/chatwoot no os/server.py e o cartão 'A versão do Chatwoot' no Mapa da Integração: instalada, última publicada e quantas versões atrás, com o atraso linkado ao GitHub release por release.",
+        "mudou": "O atraso de versão do canal por onde a Ana fala deixou de ser invisível. Nenhum dos dois números é escrito em arquivo, então o cartão não tem como envelhecer calado (ADR-0017).",
+        "valor": "O Pedro abre o cockpit e vê na hora se o Chatwoot está na versão corrente, sem precisar lembrar de conferir nem confiar num número escrito meses atrás."
+      }
+    },
+    {
+      "id": "OS24",
+      "titulo": "Ana OS: Cadeias elo a elo, com entrada, saída e a conversa da Ana ao lado (ADR-0027)",
+      "dono": "C",
+      "status": "feito",
+      "deps": [
+        "OS8"
+      ],
+      "tema": "os",
+      "nota": "08/set/2026 (ADR-0027). Depois do teste no Telegram que devolveu três horários reais, a pergunta do Pedro foi 'como ela achou isso, o que saiu de uma chamada e entrou na outra'. A página Cadeias passou a rodar elo por elo (contexto guardado entre cliques), listar a entrada de cada elo com origem e motivo, a saída com destino, e mostrar pareada a conversa da Ana: paciente, ferramentas chamadas (selo de origem e 'não tem') e a mensagem dela, montada com a resposta real quando dá. Cadeia D atualizada para os quatro elos e três ids da V33; cadeia C com horário do convênio (ADR-0025); elos 'só conversa' para o que sai da Global Health. Achados: /horarios/{id}/instrucoes devolve 500 com id real; duas linhas com particular = true no /convenios; grants-medida.json carimbado antes das tools 13 e 14.",
+      "ficha": {
+        "fez": "Reescreveu os/cadeias.html: botão por elo, contexto vivo entre cliques, entrada com origem e motivo, saída com destino, e a coluna da conversa da Ana pareada em cada elo, com as seis cadeias cobrindo consulta, exame, agendamento e cancelamento.",
+        "mudou": "A Cadeia D saiu do mundo de 06/ago (bloqueada, dois ids) para o de 26/ago (quatro elos, três ids, horários reais), e a página passou a responder 'como a Ana achou isso' em vez de só 'funcionou'.",
+        "valor": "O Pedro testa ponto a ponto na própria página, vê o id atravessar de um elo para o outro e lê ao lado o que a Ana estaria dizendo naquele momento, inclusive onde ela ainda não tem a ferramenta."
+      }
     }
   ],
   "pendentes": [
@@ -813,12 +923,13 @@
       "canal": "aguardando",
       "canal_desde": "2026-08-12",
       "mesa": {
-        "destrava": "A vitrine de horários da V15, a Cadeia D da demo e o caminho feliz da P6; também o primeiro teste real das tools 9 e 10.",
-        "gesto": "Cobrar a resposta da Global Health se passar 1 semana sem retorno (a mensagem foi enviada em 12/ago, com as 4 perguntas de arquitetura)."
+        "destrava": "Nada mais: a V31 destravou a vitrine por conta própria. O que resta é resposta às perguntas de arquitetura, que não seguram trabalho.",
+        "gesto": "Somar as perguntas 19, 20 e 21 à próxima conversa com a Global Health. Sem urgência."
       },
-      "nota": "Pedida em 07/jul/2026; cobranca formal ENVIADA em 12/ago/2026 via WhatsApp (versao em ana/api-mv/cobranca-massa-homolog.md), com as 4 perguntas de arquitetura (origem do catalogo, sincronizacao com o MV/GH-18, painel da homolog, sentido inverso MV->API). Evidencia de 12/ago: catalogo 100% vazio, /agendas/v2 com 500, escrita OK (id 1696). Destrava sozinha quando o smoke sair de VAZIO para OK.",
+      "nota": "Pedida em 07/jul/2026; cobranca formal ENVIADA em 12/ago/2026 via WhatsApp (versao em ana/api-mv/cobranca-massa-homolog.md), com as 4 perguntas de arquitetura (origem do catalogo, sincronizacao com o MV/GH-18, painel da homolog, sentido inverso MV->API). Evidencia de 12/ago: catalogo 100% vazio, /agendas/v2 com 500, escrita OK (id 1696). Destrava sozinha quando o smoke sair de VAZIO para OK.. 26/ago: smoke re-rodado, catalogo segue 100% vazio (50 dias); nasce o caminho proprio V31 (ADR-0023), que nao cancela este pendente RESOLVIDA POR OUTRO CAMINHO em 26/ago/2026: a V31 achou a agenda de Cardiologia já cadastrada e a ativou no Painel GH de homologação. O catálogo saiu de vazio sem que a Global Health respondesse. O que a GH ainda deve são as 4 perguntas de arquitetura da cobrança de 12/ago, agora somadas às perguntas 19, 20 e 21 de ana/api-mv/perguntas-global-health.md (id inexistente sem erro, o idPlano filtra disponibilidade?, origem da lista de /convenios). Deixou de bloquear qualquer tarefa.",
       "prompt": "Quero disparar a cobrança da massa de homologação da Global Health (o card GH19). Abra ana/api-mv/cobranca-massa-homolog.md e revise o texto comigo: confira se a evidência segue atual (rode python3 ana/api-mv/scripts/smoke-gh.py e me mostre o catálogo vazio), ajuste as datas, me pergunte por qual via vou enviar (o diretor endossa ou eu envio direto em nome do hospital) e me entregue a versão final pronta para colar. Depois do envio, eu marco o card como disparado na home do Ana OS; se eu esquecer, marque você: canal 'aguardando' com canal_desde de hoje no os/dados/roadmap.json e o registro no TODO.md.",
-      "tema": "agenda"
+      "tema": "agenda",
+      "status": "resolvido"
     }
   ],
   "propostas": [
@@ -826,13 +937,13 @@
       "id": "P3",
       "titulo": "Prova da finalização: a homolog grava na Base TST? (GH-18)",
       "resumo": "Agendar na homologação com o paciente-sonda e procurar o registro no Oracle da Base TST. Responde a GH-18 e é o gate da P6 (a Ana só promete protocolo com a prova feita). Pré-requisito prático: religar a VPN da TST (item P2 do radar).",
-      "nota": "06/ago/2026 (sessão autônoma): bloqueada por fator externo, não executada. Evidência fresca: query-mv.py SELECT 1 falha com ORA-12170 (timeout TCP de 20s para 10.100.66.170:1521), a VPN da TST segue caída desde 13/jul e religar depende da TI do hospital (P2 do radar).",
+      "nota": "06/ago/2026 (sessão autônoma): bloqueada por fator externo, não executada. Evidência fresca: query-mv.py SELECT 1 falha com ORA-12170 (timeout TCP de 20s para 10.100.66.170:1521), a VPN da TST segue caída desde 13/jul e religar depende da TI do hospital (P2 do radar). 08/set/2026: a finalização foi tentada pela primeira vez (Bancada, sonda, homolog) e a API recusou com HTTP 417 \"Não é possível agendar com o convênio escolhido\" para Particular (planos 2 e 1) e para Unimed (8); nada gravado. Antes de qualquer prova no Oracle, a própria API precisa aceitar. Hipótese: De/Para de convênios vazio no Painel GH de homologação (pergunta 24). Bloqueio local adicional: o Oracle Instant Client sumiu deste Mac (~/oracle não existe), refazer o passo do conexao-oracle.md antes da prova no banco.",
       "deps": [],
-      "canal": "aguardando",
-      "canal_desde": "2026-07-13",
+      "canal": "dispare",
+      "canal_desde": "2026-09-08",
       "mesa": {
-        "destrava": "A resposta da GH-18 e o gate da P6: sem a Prova no banco a Ana não promete protocolo de agendamento.",
-        "gesto": "Nada seu por ora: espera a VPN da TST voltar (o pedido à TI é o card P2, esse sim dispare)."
+        "destrava": "A finalização pela API (hoje recusada com 417) e, depois, a GH-18.",
+        "gesto": "Pedir ao analista de TI (SoulMV TST) o vínculo das agendas de Cardiologia com os convênios PARTICULAR e UNIMED (aba Convênio do Cadastro de Agendas, tutorial pág. 3), e confirmar no Painel GH que a aba 'Convênios e planos' de cada agenda (lista de proibidos) está vazia. Depois rodar o agendar de novo pela Bancada. Roteiro completo: ana/api-mv/prompt-agendamento-fim-a-fim.md, Passo 0."
       },
       "prompt": "Com a VPN da TST ativa, quero responder a pergunta GH-18: a homologação da Global Health grava na Base TST na finalização do agendamento? Me conduza passo a passo na Bancada do Ana OS: (1) buscar o paciente-sonda (CPF 66301102770) no GET /pessoas; (2) listar horários livres no GET /agendas/v2; (3) preparar o POST /horarios/agendar de teste. Antes da chamada de escrita, fotografe o resultado da query de conferência na TST; depois dela, rode a query de novo e me mostre a diferença (a Prova no banco). Se o agendamento aparecer no Oracle, a GH-18 está respondida: registre a evidência no CONTEXT.md e nos docs do api-mv. Se não aparecer, registre o que vimos e escreva comigo a pergunta objetiva para a MV/Global Health.",
       "tema": "agenda"
@@ -841,7 +952,7 @@
       "id": "P6",
       "titulo": "Agendamento fim a fim em homolog: a Ana finaliza uma marcação",
       "resumo": "Identificação, escolha de horário e POST /horarios/agendar pela conversa, com a Prova no banco confirmando na TST. O Entregável funcional a um passo.",
-      "nota": "07/ago/2026 (sessão autônoma): não executada, por regra e por bloqueio. Finalização nunca roda em modo autônomo; além disso depende da P3 (GH-18, travada pela VPN caída) e a vitrine de horários depende da GH-19. A mecânica que a antecede (identificação, cadastro, disponibilidade) ficou pronta nas V12/V14/V15.",
+      "nota": "07/ago/2026 (sessão autônoma): não executada, por regra e por bloqueio. Finalização nunca roda em modo autônomo; além disso depende da P3 (GH-18, travada pela VPN caída) e a vitrine de horários depende da GH-19. A mecânica que a antecede (identificação, cadastro, disponibilidade) ficou pronta nas V12/V14/V15. 08/set/2026: campos obrigatórios do POST /horarios/agendar todos produzidos pela cadeia (cpf, item, convênio, plano, horário, tipo); a API recusa com 417 por configuração (ver P3). Prompt de execução pronto em ana/api-mv/prompt-agendamento-fim-a-fim.md.",
       "deps": [
         "V15",
         "P3"
@@ -850,26 +961,13 @@
       "canal_desde": "2026-08-11",
       "mesa": {
         "destrava": "O Entregável funcional da Ana (a marcação fim a fim), que destrava +R$ 2.000/mês no contrato.",
-        "gesto": "Nada seu por ora: destrava quando P3 (VPN) e GH19 (massa) fecharem. Nunca roda em modo autônomo."
+        "gesto": "Destrava quando a P3 passar (a API aceitar o agendar). O prompt para a sessão está em ana/api-mv/prompt-agendamento-fim-a-fim.md. Nunca roda em modo autônomo."
       },
       "prompt": "A prova final em homologação: quero que a Ana agende fim a fim pela conversa. Me conduza cenário por cenário no playground: identificação do paciente (paciente-sonda), escolha de especialidade e horário real, e a finalização com o POST /horarios/agendar, conferindo cada chamada no Langfuse. Depois da finalização, faça a Prova no banco na Base TST (como na P3) para confirmar que a marcação chegou ao Oracle. No final, escreva comigo o relatório da prova: o que funciona, o que falta para produção (canal principal, cadastros reais, LGPD), e registre nos docs, no TODO.md e no os/dados/roadmap.json.",
       "tema": "agenda"
     }
   ],
   "radar": [
-    {
-      "id": "V8",
-      "titulo": "Hotfix temporário do Chatwoot (regressão .111: 500 em /agent_bots e /labels via token)",
-      "prioridade": 4,
-      "canal": "comigo",
-      "canal_desde": "2026-08-11",
-      "mesa": {
-        "destrava": "Segurança de que o bind de inbox e as tags da Ana sobrevivem a um redeploy do Chatwoot.",
-        "gesto": "Sessão comigo quando houver redeploy ou resposta da fazer.ai; hoje está verificado e quieto."
-      },
-      "nota": "A correção de 1 linha aplicada no container evapora num redeploy; se evaporar, quebram o bind de inbox e a aplicação de tags da Ana. Re-verificado em 06/ago/2026 (noite, sessão autônoma): hotfix intacto no container (linha 11 do base_controller.rb com current_account), zero 5xx em todo o log desde 29/jul, containers de pé há 8 dias sem restart. Ressalva: teste ponta a ponta por token não rodou (bloqueio de permissão do harness); evidência é a inspeção do arquivo + ausência de 5xx. Fix upstream não lançado; o bug é herdado do Chatwoot oficial (commit #14973). Tocar quando: houver redeploy do Chatwoot (reaplicar, detalhe na memória do projeto) ou resposta da fazer.ai (cobrar build novo). 12/ago: a atualização da imagem agents-pro (V17) não tocou o container do Chatwoot; hotfix segue intacto por construção.",
-      "prompt": "Vamos resolver o hotfix temporário do Chatwoot. Primeiro leia a ficha da V8 no roadmap/TODO.md e a memória do projeto (fazer-ai-agents-instancia) para relembrar o caso (regressão da versão .111: 500 em /agent_bots e /labels via token; a correção de 1 linha em app/controllers/api/v1/accounts/base_controller.rb, aplicada no container, evapora a cada redeploy). Depois: verifique se o 500 voltou (teste você mesmo pelas ferramentas, me mostrando o resultado), confira se o fix upstream já foi lançado, e me recomende o caminho. Se for preciso reaplicar a correção no container, me explique cada comando antes de rodar e rode só com a minha aprovação. No final, atualize o TODO.md e o os/dados/roadmap.json (V8)."
-    },
     {
       "id": "V10",
       "titulo": "Reportar à fazer.ai o bug do resolve_conversation e a dessincronização de inboxes",
@@ -895,6 +993,19 @@
       },
       "nota": "Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou.",
       "prompt": "Quero revogar o token de API da Cloudflare usado no onboarding de 29/jul (ele criou os DNS de agents/langfuse/coolify). Sou leigo: me guie passo a passo no painel dash.cloudflare.com, dizendo exatamente onde clicar para chegar em API Tokens, como identificar o token certo, como confirmar comigo que nada mais depende dele (verifique isso comigo primeiro), e só então como revogar. Espere a minha confirmação em cada passo. No final, atualize o TODO.md e o os/dados/roadmap.json (V7)."
+    },
+    {
+      "id": "V36",
+      "titulo": "Remover a automacao /resolve do Chatwoot antes do WhatsApp real",
+      "prioridade": 5,
+      "canal": "aguardando",
+      "canal_desde": "2026-09-08",
+      "mesa": {
+        "destrava": "Nenhum paciente consegue fechar a propria conversa digitando /resolve.",
+        "gesto": "No dia de ligar a Ana num numero real: Chatwoot > Configuracoes > Automacao, desativar ou apagar a regra id 9."
+      },
+      "nota": "Criada em 08/set/2026 (regra id 9, evento message_created, incoming + content igual a /resolve, acao resolve_conversation). Serve ao modo teste: quem testa digita /resolve para fechar a conversa e /teste para reabrir com a Ana; sem isso a conversa em fila humana fica presa (caso do Felipe, conversa #166, 11 dias sem resposta). Provada na conversa 154 da inbox de API. E pre-requisito da V32/WhatsApp real remover ou desativar.",
+      "prompt": "A automacao /resolve do Chatwoot (regra id 9, criada em 08/set/2026 para o modo teste) precisa sair antes de a Ana entrar num numero de WhatsApp real. Liste as automation_rules pela API do Chatwoot (token no .env), confirme comigo que e a regra certa, desative ou apague, e prove mandando /resolve numa conversa de teste da inbox de API (nao pode mais resolver). Depois atualize o TODO.md e o os/dados/roadmap.json (V36)."
     }
   ],
   "ideias": [
