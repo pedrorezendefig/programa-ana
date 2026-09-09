@@ -4,6 +4,10 @@
    nomeado dentro do quadro. Sem leitura ao vivo: a família de cada ferramenta vem
    do próprio retrato.json.
 
+   Contrato de links (ADR-0029): cada nó tem id no-<id>; o painel do nó liga para a
+   seção das regras (regras/sec-...) e para as ferramentas (busca/tool-...); os
+   filtros (raia, tipo, ferramenta, busca) esmaecem os nós que não passam.
+
    Uso: RetratoSop.montar(regras, ferramentas, versao) */
 
 var RetratoSop = (function () {
@@ -19,7 +23,7 @@ var RetratoSop = (function () {
   var DADOS = null, FERR = {}, VERSAO = "";
   var POR_ID = {}, GEO = {}, FAIXAS = {}, ROTAS = [], CHIPS = {}, LONGA = [];
   var ZONAS_GEO = {}, ZONA_DA_RAIA = {}, ABRE_ZONA = {};
-  var FIXADO = null, RAIA_FOCO = null;
+  var FIXADO = null, RAIA_FOCO = null, FILTRO = null, SEC_ID = {};
   var ROTULO_FAMILIA = { hospital: "API do Hospital", gh: "Global Health", nativa: "nativa da plataforma", "sem-leitura": "origem não lida", desconhecida: "destino não mapeado" };
 
   function esc(s) {
@@ -104,7 +108,7 @@ var RetratoSop = (function () {
       add(a.para, { i: i, alvo: a.de, entrada: true, rot: "← " + POR_ID[a.de].secao });
     });
 
-    medidor.font = "600 9.5px Inter, sans-serif";
+    medidor.font = "400 10px 'HP Simplified', sans-serif";
     Object.keys(CHIPS).forEach(function (id) {
       var c = CHIPS[id];
       c.lista.sort(function (x, y2) { return (x.entrada ? 0 : 1) - (y2.entrada ? 0 : 1); });
@@ -363,6 +367,7 @@ var RetratoSop = (function () {
     svg.innerHTML = partes.join("");
     montarGutter();
     ligarEventos();
+    if (FILTRO) filtrar(FILTRO);
   }
 
   function aresta(a, i) {
@@ -381,7 +386,7 @@ var RetratoSop = (function () {
 
   function no(n) {
     var g = GEO[n.id];
-    var fonte = n.tipo === "ferramenta" ? "500 11px ui-monospace, SFMono-Regular, Menlo, monospace" : "500 11.5px Inter, sans-serif";
+    var fonte = n.tipo === "ferramenta" ? "400 11px ui-monospace, SFMono-Regular, Menlo, monospace" : "400 12px 'HP Simplified', sans-serif";
     var linhas = quebrar(n.titulo, fonte, NO_L - 26, 3);
     var y0 = NO_A / 2 - (linhas.length - 1) * 7 + 7;
     var barra = (n.tipo === "mensagem" || n.tipo === "fim")
@@ -413,7 +418,7 @@ var RetratoSop = (function () {
       });
     });
 
-    return '<g class="no ' + esc(n.tipo) + '" data-id="' + esc(n.id) + '" tabindex="0" role="button" aria-label="' + esc(n.secao + ": " + n.titulo) + '" transform="translate(' + g.x + "," + g.y + ')">' +
+    return '<g class="no ' + esc(n.tipo) + '" id="no-' + esc(n.id) + '" data-id="' + esc(n.id) + '" data-raia="' + esc(n.raia) + '" data-tipo="' + esc(n.tipo) + '" data-tools="' + esc((n.ferramentas || []).join(" ")) + '" tabindex="0" role="button" aria-label="' + esc(n.secao + ": " + n.titulo) + '" transform="translate(' + g.x + "," + g.y + ')">' +
       '<rect class="corpo" x="0" y="0" width="' + NO_L + '" height="' + g.h + '" rx="14"/>' + barra +
       '<text class="rot" x="13" y="17">' + esc(n.secao) + "</text>" +
       linhas.map(function (t, i) { return '<text class="tit" x="13" y="' + (y0 + i * 14) + '">' + esc(t) + "</text>"; }).join("") +
@@ -499,7 +504,7 @@ var RetratoSop = (function () {
       return '<div class="bloco"><span class="micro">' + titulo + '</span><div class="lista-lig">' +
         arr.map(function (a) {
           var alvo = POR_ID[a[campo]];
-          return '<div><a class="lig-no" data-no="' + esc(alvo.id) + '" href="#regras">' +
+          return '<div><a class="lig-no" data-ir="regras/no-' + esc(alvo.id) + '" href="#regras/no-' + esc(alvo.id) + '">' +
             "<strong>" + esc(alvo.secao) + "</strong> " + esc(alvo.titulo) + "</a>" +
             (a.rotulo ? ' <span class="caption">(' + esc(a.rotulo) + ")</span>" : "") + "</div>";
         }).join("") + "</div></div>";
@@ -508,8 +513,15 @@ var RetratoSop = (function () {
     var tools = n.ferramentas.length
       ? '<div class="bloco"><span class="micro">Ferramentas que este passo chama</span>' +
         n.ferramentas.map(function (t) {
-          return '<div class="linha-tool"><code class="nome-tool">' + esc(t) + "</code>" + seloHtml(t) + "</div>";
+          var nome = FERR[t]
+            ? '<a class="nome-tool tool-link" data-ir="busca/tool-' + esc(t) + '" href="#busca/tool-' + esc(t) + '">' + esc(t) + "</a>"
+            : '<code class="nome-tool">' + esc(t) + "</code>";
+          return '<div class="linha-tool">' + nome + seloHtml(t) + "</div>";
         }).join("") + "</div>"
+      : "";
+    var sid = SEC_ID[n.secao];
+    var secao = sid
+      ? '<div class="bloco"><span class="micro">Seção das regras</span><div class="lista-lig"><div><a class="lig-sec" data-ir="regras/sec-' + esc(sid.id) + '" href="#regras/sec-' + esc(sid.id) + '">' + esc(sid.rotulo) + "</a></div></div></div>"
       : "";
 
     var trechos = n.trechos.map(function (t, i) {
@@ -525,7 +537,7 @@ var RetratoSop = (function () {
       '<span class="caption">' + esc(raia ? raia.rotulo : n.raia) + "</span></div>" +
       '<div class="titulo-no">' + esc(n.titulo) + "</div>" +
       '<div class="card-interno" style="font-size:14px;">' + MdProsa.inline(n.resumo, {}) + "</div>" +
-      tools + trechos +
+      secao + tools + trechos +
       lista("Chega de", entram, "de") + lista("Segue para", saem, "para") +
       (fixando ? '<p class="fixado">Passo fixado. Esc ou o X fecham e liberam o mouse.</p>' : "");
 
@@ -579,7 +591,36 @@ var RetratoSop = (function () {
   }
 
   function focarRaia(id) {
-    RAIA_FOCO = RAIA_FOCO === id ? null : id;
+    if (window.Filtros) { Filtros.alternar("regras", "raia", id); return; }
+    filtrar({ raia: RAIA_FOCO === id ? "" : id });
+  }
+
+  function normal(s) {
+    return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  /* filtro da esfera: raia, tipo, ferramenta e busca livre; devolve {n, m} */
+  function filtrar(f) {
+    FILTRO = f || {};
+    RAIA_FOCO = FILTRO.raia || null;
+    var q = normal(FILTRO.q).trim();
+    var passa = {}, n = 0;
+    DADOS.nos.forEach(function (no) {
+      var ok = (!FILTRO.raia || no.raia === FILTRO.raia) &&
+        (!FILTRO.tipo || no.tipo === FILTRO.tipo) &&
+        (!FILTRO.ferramenta || (no.ferramentas || []).indexOf(FILTRO.ferramenta) !== -1);
+      if (ok && q) ok = normal(no.secao + " " + no.titulo + " " + no.resumo + " " + (no.ferramentas || []).join(" ")).indexOf(q) !== -1;
+      passa[no.id] = ok;
+      if (ok) n++;
+    });
+    var algum = n < DADOS.nos.length;
+    document.querySelectorAll("#svg .no").forEach(function (el) {
+      el.classList.toggle("apagado", !passa[el.dataset.id]);
+    });
+    DADOS.arestas.forEach(function (a, i) {
+      var apagada = algum && !(passa[a.de] && passa[a.para]);
+      document.querySelectorAll('#svg [data-i="' + i + '"]').forEach(function (el) { el.classList.toggle("apagada", apagada); });
+    });
     document.querySelectorAll("#gutter .raia-rot").forEach(function (el) {
       el.classList.toggle("focada", RAIA_FOCO === el.dataset.raia);
       el.classList.toggle("apagada", !!RAIA_FOCO && RAIA_FOCO !== el.dataset.raia);
@@ -587,27 +628,23 @@ var RetratoSop = (function () {
     document.querySelectorAll("#svg .faixa").forEach(function (el) {
       el.classList.toggle("apagada", !!RAIA_FOCO && RAIA_FOCO !== el.dataset.raia);
     });
-    document.querySelectorAll("#svg .no").forEach(function (el) {
-      var n = POR_ID[el.dataset.id];
-      el.classList.toggle("apagado", !!RAIA_FOCO && n.raia !== RAIA_FOCO);
-    });
-    var camada = document.getElementById("camada-arestas");
-    if (camada) camada.classList.toggle("camada-apagada", !!RAIA_FOCO);
+    return { n: n, m: DADOS.nos.length };
   }
 
   async function montar(regras, ferramentas, versao) {
     DADOS = regras; FERR = ferramentas || {}; VERSAO = versao || regras.versao || "";
-    POR_ID = {};
+    POR_ID = {}; SEC_ID = {};
     DADOS.nos.forEach(function (n) { POR_ID[n.id] = n; });
+    (DADOS.secoes || []).forEach(function (s) { SEC_ID[s.chave] = s; });
     if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) { /* segue com a fallback */ } }
     desenhar();
 
-    document.getElementById("painel").addEventListener("click", function (e) {
-      var a = e.target.closest ? e.target.closest("a.lig-no") : null;
-      if (!a) return;
-      e.preventDefault();
+    /* chegada por link (Liga.ir): fixa o nó e deixa a rolagem padrão levar até ele */
+    document.addEventListener("liga:chegou", function (e) {
+      var el = e.detail && e.detail.el;
+      if (!el || !el.classList || !el.classList.contains("no")) return;
       FIXADO = null;
-      irAte(a.dataset.no);
+      fixar(el.dataset.id);
     });
     document.getElementById("btn-fechar").onclick = limparFixo;
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") limparFixo(); });
@@ -616,5 +653,6 @@ var RetratoSop = (function () {
     });
   }
 
-  return { montar: montar, seloHtml: seloHtml, redesenhar: function () { if (DADOS) desenhar(); } };
+  return { montar: montar, seloHtml: seloHtml, filtrar: function (f) { return DADOS ? filtrar(f) : { n: 0, m: 0 }; },
+           redesenhar: function () { if (DADOS) desenhar(); } };
 })();

@@ -198,7 +198,13 @@
        ],
        "faz": "Reconhece sinal de emergência em qualquer ponto da conversa, manda a mensagem fixa de orientação, aplica a tag emergencia e passa para humano sem pedir dado nenhum.",
        "prova": "Roteiro v3, bateria de 13 de 13 em 12/ago/2026. É a prioridade absoluta do SOP.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "0",
+         "rotulo": "Seção 0: triagem de urgência"
+        }
+       ]
       },
       {
        "id": "C02",
@@ -213,7 +219,17 @@
        ],
        "faz": "Abre a conversa, descobre o que a pessoa quer sem interrogatório e escolhe a trilha do SOP.",
        "prova": "Roteiro v3 e todas as rodadas da bancada, onde a Ana entra direto no assunto.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "1-1",
+         "rotulo": "Seção 1.1: motivo do contato"
+        },
+        {
+         "id": "1-2",
+         "rotulo": "Seção 1.2: validação de escopo"
+        }
+       ]
       },
       {
        "id": "C03",
@@ -228,7 +244,13 @@
        ],
        "faz": "Assunto que não é do hospital vira encaminhamento educado para a fila de atendimento, sem inventar resposta.",
        "prova": "Roteiro v3.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "1-2",
+         "rotulo": "Seção 1.2: validação de escopo"
+        }
+       ]
       },
       {
        "id": "C04",
@@ -243,7 +265,13 @@
        ],
        "faz": "Assume que é assistente virtual, sem drama e sem mentir.",
        "prova": "Roteiro v3.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "persona",
+         "rotulo": "Persona e canais"
+        }
+       ]
       }
      ]
     },
@@ -265,7 +293,13 @@
        ],
        "faz": "Diz o valor de qualquer uma das 10 especialidades ativas, em formato brasileiro, e usa um diferencial da tabela quando o paciente hesita.",
        "prova": "Bancada: C1a (primeira), C1b (última), C2 (catálogo das 10), B1 (formato), B2 (alta demanda), E2 (ausente).",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "2-3",
+         "rotulo": "Seção 2.3: preço com ancoragem"
+        }
+       ]
       },
       {
        "id": "C06",
@@ -281,7 +315,17 @@
        ],
        "faz": "Diz o valor de qualquer um dos 10 exames da tabela, e lista o catálogo inteiro com valor quando perguntada.",
        "prova": "Bancada rodada 4: C1c (Colonoscopia R$ 580), C1d (Ultrassonografia R$ 220), C2b (os 10 listados).",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "5-b",
+         "rotulo": "Seção 5.B: exame particular"
+        },
+        {
+         "id": "6-b",
+         "rotulo": "Seção 6.B: valor de exame particular"
+        }
+       ]
       },
       {
        "id": "C07",
@@ -297,7 +341,13 @@
        ],
        "faz": "Repassa as instruções de preparo como a tabela escreveu, inclusive jejum, dieta e laxativo.",
        "prova": "Bancada rodada 4: B3, com os três passos do preparo da colonoscopia inteiros e uma chamada só de ferramenta.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "5-d",
+         "rotulo": "Seção 5.D: preparo do exame"
+        }
+       ]
       },
       {
        "id": "C08",
@@ -313,7 +363,13 @@
        ],
        "faz": "Dá a estimativa total dos três procedimentos cadastrados e nunca solta o número sem dizer que o valor final depende de avaliação médica.",
        "prova": "Bancada rodada 4: C1e (Apendicectomia R$ 8.300 com caveat), C1f (Herniorrafia R$ 7.500), C2c (as 3 listadas).",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "6-c",
+         "rotulo": "Seção 6.C: estimativa de cirurgia"
+        }
+       ]
       },
       {
        "id": "C09",
@@ -337,7 +393,17 @@
        ],
        "faz": "Pergunta à agenda online quais convênios atendem a especialidade pedida. Convênio na lista: a Ana segue e oferece horário. Convênio fora da lista: ela diz que aquele convênio não é atendido naquela especialidade e oferece o particular. Especialidade sem agenda publicada: não afirma nem nega e orienta o portal de marcação.",
        "prova": "Conversa de teste de 26/08/2026: Unimed em Cardiologia, com horário real devolvido pela agenda online.",
-       "falta": "Só uma especialidade está publicada na agenda online de testes. Para as outras, a Ana cai no caminho do portal."
+       "falta": "Só uma especialidade está publicada na agenda online de testes. Para as outras, a Ana cai no caminho do portal.",
+       "secoes": [
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        },
+        {
+         "id": "5-a",
+         "rotulo": "Seção 5.A: exame por convênio"
+        }
+       ]
       },
       {
        "id": "C10",
@@ -352,7 +418,13 @@
        ],
        "faz": "Especialidade, exame, cirurgia ou convênio que não esteja na tabela vira 'não achei na tabela oficial, quer que eu encaminhe para a equipe confirmar?'. Ela nunca diz que o hospital não atende, não faz ou não aceita.",
        "prova": "Bancada rodada 4: E2 (Reumatologia), E2b (ressonância), E2c (bariátrica), E2d (Porto Seguro). Foi a falha mais perigosa já pega no programa e hoje é o comportamento provado.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "regras",
+         "rotulo": "Regras globais inegociáveis"
+        }
+       ]
       },
       {
        "id": "C11",
@@ -367,7 +439,8 @@
        ],
        "faz": "Mudança feita pela equipe na tela do aplicativo do hospital aparece na conversa seguinte, sem reinstalar nada e sem cópia atrasada.",
        "prova": "Família A da bancada, completa: A1 (valor mudado), A2 (especialidade desativada), A3 (texto novo na hesitação), A4 (especialidade nova ofertada).",
-       "falta": ""
+       "falta": "",
+       "secoes": []
       },
       {
        "id": "C12",
@@ -382,7 +455,13 @@
        ],
        "faz": "Se a fonte não responde, a Ana diz que não conseguiu consultar e encaminha, sem citar valor de memória.",
        "prova": "Provado em agosto de 2026 com uma falha real de acesso à API do Hospital: a Ana disse que não conseguiu consultar e encaminhou.",
-       "falta": "O teste não é repetido desde então. Reproduzir a falha exige derrubar de propósito a chave que serve três ferramentas ao mesmo tempo, com a Ana parada."
+       "falta": "O teste não é repetido desde então. Reproduzir a falha exige derrubar de propósito a chave que serve três ferramentas ao mesmo tempo, com a Ana parada.",
+       "secoes": [
+        {
+         "id": "regras",
+         "rotulo": "Regras globais inegociáveis"
+        }
+       ]
       }
      ]
     },
@@ -408,7 +487,13 @@
        ],
        "faz": "Busca a pessoa por CPF ou telefone na agenda online do hospital, antes de escalar.",
        "prova": "A busca responde e encontra o cadastro de teste, conferido em 20/08/2026 e de novo em 08/09/2026.",
-       "falta": "A base de testes da agenda online tem poucos cadastros, então quase todo paciente volta como sem cadastro. A Ana segue mesmo assim e avisa a equipe no resumo."
+       "falta": "A base de testes da agenda online tem poucos cadastros, então quase todo paciente volta como sem cadastro. A Ana segue mesmo assim e avisa a equipe no resumo.",
+       "secoes": [
+        {
+         "id": "2-4a",
+         "rotulo": "Seção 2.4A: aceitou fechar"
+        }
+       ]
       },
       {
        "id": "C14",
@@ -436,7 +521,13 @@
        ],
        "faz": "Procura a especialidade na agenda online, escolhe a linha do particular e o plano, pega os horários livres e apresenta uma lista numerada de até cinco para o paciente escolher.",
        "prova": "Conversa real de 08/09/2026: três horários reais de Cardiologia devolvidos numa resposta só, montados com a agenda online.",
-       "falta": "Só Cardiologia está publicada na agenda online de testes. Nas outras especialidades a Ana avisa que a agenda não retornou horários e encaminha à equipe."
+       "falta": "Só Cardiologia está publicada na agenda online de testes. Nas outras especialidades a Ana avisa que a agenda não retornou horários e encaminha à equipe.",
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        }
+       ]
       },
       {
        "id": "C15",
@@ -452,7 +543,13 @@
        ],
        "faz": "Lista os profissionais publicados na agenda online para uma especialidade.",
        "prova": "Conferido em 08/09/2026: a agenda online devolve os profissionais publicados em Cardiologia.",
-       "falta": "Profissional publicado não é profissional com horário livre. A Ana nunca promete que o nome citado tem vaga."
+       "falta": "Profissional publicado não é profissional com horário livre. A Ana nunca promete que o nome citado tem vaga.",
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        }
+       ]
       },
       {
        "id": "C16",
@@ -476,7 +573,13 @@
        ],
        "faz": "Coleta nome e CPF, valida, registra a preferência de horário se houver, move o card no kanban e entrega para o humano com um resumo interno.",
        "prova": "Roteiro v3 e todas as baterias. É o caminho real do agendamento hoje: a Ana informa e organiza, a equipe fecha.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "2-4a",
+         "rotulo": "Seção 2.4A: aceitou fechar"
+        }
+       ]
       },
       {
        "id": "C17",
@@ -492,7 +595,8 @@
        ],
        "faz": "Criar o cadastro na agenda online quando a busca voltar vazia.",
        "prova": "",
-       "falta": "A ferramenta existe, mas foi tirada da Ana de propósito: sem a marcação final automática, cadastrar só cria registro sem uso. Volta junto com a marcação de ponta a ponta."
+       "falta": "A ferramenta existe, mas foi tirada da Ana de propósito: sem a marcação final automática, cadastrar só cria registro sem uso. Volta junto com a marcação de ponta a ponta.",
+       "secoes": []
       },
       {
        "id": "C18",
@@ -508,7 +612,8 @@
        ],
        "faz": "Confirmar o resumo com o paciente, gravar o agendamento e devolver o protocolo, sem passar por humano.",
        "prova": "",
-       "falta": "Esta parte das regras ainda não entra em vigor: fica fora do prompt até a marcação de ponta a ponta. As ferramentas de marcação ainda não existem. Hoje a agenda online recusa a marcação de teste, e ainda é preciso provar que a marcação chega ao banco do hospital."
+       "falta": "Esta parte das regras ainda não entra em vigor: fica fora do prompt até a marcação de ponta a ponta. As ferramentas de marcação ainda não existem. Hoje a agenda online recusa a marcação de teste, e ainda é preciso provar que a marcação chega ao banco do hospital.",
+       "secoes": []
       },
       {
        "id": "C19",
@@ -532,7 +637,8 @@
        ],
        "faz": "Listar o que o paciente tem marcado, remarcar e cancelar pelo próprio chat.",
        "prova": "",
-       "falta": "Mesma porta da marcação final: está no desenho, fora das regras em vigor, com as ferramentas por criar."
+       "falta": "Mesma porta da marcação final: está no desenho, fora das regras em vigor, com as ferramentas por criar.",
+       "secoes": []
       },
       {
        "id": "C20",
@@ -552,7 +658,13 @@
        ],
        "faz": "Confirma a cobertura pela agenda online e, quando o convênio está na lista, oferece horário na própria conversa, como no particular. Quando a especialidade não tem agenda publicada, manda o link do portal de marcação e continua na conversa até o paciente dizer se conseguiu.",
        "prova": "Conversas de teste de 26/08/2026 (Unimed, Cardiologia), com a etiqueta de agendamento por convênio aplicada e o card movido no funil.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       }
      ]
     },
@@ -573,7 +685,17 @@
        ],
        "faz": "Recebe a queixa sem se defender, faz a coleta estruturada uma pergunta por vez e nunca promete apuração.",
        "prova": "Roteiro v3 e cenário D1 da bancada.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "7-1",
+         "rotulo": "Seção 7.1: acolhimento"
+        },
+        {
+         "id": "7-2",
+         "rotulo": "Seção 7.2: coleta do relato"
+        }
+       ]
       },
       {
        "id": "C22",
@@ -589,7 +711,13 @@
        ],
        "faz": "Grava a manifestação e informa o número ANO-NNNN que o banco gerou, nunca um número composto por ela. O protocolo aparece no painel do hospital.",
        "prova": "Protocolos reais gerados e conferidos no banco do hospital em agosto de 2026. A numeração continuou do último número usado, sem repetir.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "7-3",
+         "rotulo": "Seção 7.3: registro e fila"
+        }
+       ]
       },
       {
        "id": "C23",
@@ -605,7 +733,13 @@
        ],
        "faz": "O que vai para o painel é categoria, setor, resumo e datas. Nome, CPF e dado clínico ficam só na nota privada do Chatwoot.",
        "prova": "Cenário D3: nenhum dado pessoal no registro.",
-       "falta": "Ressalva conhecida: o número da conversa não chega ao painel, porque a plataforma não preenche esse campo. A ponte entre o painel e a conversa é procurar o número do protocolo na central de atendimento."
+       "falta": "Ressalva conhecida: o número da conversa não chega ao painel, porque a plataforma não preenche esse campo. A ponte entre o painel e a conversa é procurar o número do protocolo na central de atendimento.",
+       "secoes": [
+        {
+         "id": "7-0",
+         "rotulo": "Seção 7.0: ouvidoria, guardrails"
+        }
+       ]
       },
       {
        "id": "C24",
@@ -621,7 +755,13 @@
        ],
        "faz": "Consulta o protocolo e conversa sobre ele sem nunca ler o status (dizer 'já foi respondido' a quem nunca recebeu retorno seria dano grave).",
        "prova": "Cenário endurecido em 21/08/2026: 3 de 3 com resposta idêntica. Ela encontra, informa número, data de abertura e prazo, e a proteção do status segurou.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "7-4",
+         "rotulo": "Seção 7.4: pós-registro"
+        }
+       ]
       },
       {
        "id": "C25",
@@ -637,7 +777,13 @@
        ],
        "faz": "Se a gravação falhar, acolher sem citar número nenhum, nem no condicional.",
        "prova": "",
-       "falta": "O comportamento está escrito nas regras, mas nunca foi testado. O teste exige apontar a gravação para um destino inexistente, com a Ana parada."
+       "falta": "O comportamento está escrito nas regras, mas nunca foi testado. O teste exige apontar a gravação para um destino inexistente, com a Ana parada.",
+       "secoes": [
+        {
+         "id": "7-3",
+         "rotulo": "Seção 7.3: registro e fila"
+        }
+       ]
       }
      ]
     },
@@ -658,7 +804,25 @@
        ],
        "faz": "Identifica a finalidade do pedido, orienta o envio de documentos e encaminha.",
        "prova": "Roteiro v3.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "8-1",
+         "rotulo": "Seção 8.1: prontuário, finalidade"
+        },
+        {
+         "id": "8-2",
+         "rotulo": "Seção 8.2: documentação"
+        },
+        {
+         "id": "8-3",
+         "rotulo": "Seção 8.3: encaminhamento"
+        },
+        {
+         "id": "8-4",
+         "rotulo": "Seção 8.4: status da solicitação"
+        }
+       ]
       },
       {
        "id": "C27",
@@ -674,7 +838,13 @@
        ],
        "faz": "Responde pela base de conhecimento o que é do hospital (endereço, horários, convênios aceitos, serviços) e passa adiante o que não é dela.",
        "prova": "Roteiro v3. Achado da rodada 4: a lista dos 40 e poucos convênios aceitos vem daqui, não da tabela da API. São fontes diferentes de propósito.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "9",
+         "rotulo": "Seção 9: dúvidas gerais"
+        }
+       ]
       },
       {
        "id": "C28",
@@ -690,7 +860,13 @@
        ],
        "faz": "Ajusta o prazo prometido conforme o dia e a hora, com a regra de ouro de nunca dizer 'segunda-feira' fora do fim de semana.",
        "prova": "A própria bateria de testes pegou o defeito da mensagem de fim de semana numa quarta-feira, e a correção entrou na versão seguinte das regras.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "10",
+         "rotulo": "Seção 10: fora de horário"
+        }
+       ]
       },
       {
        "id": "C29",
@@ -705,7 +881,13 @@
        ],
        "faz": "Fecha a conversa sem cortar o paciente e sem prometer o que não pode.",
        "prova": "Roteiro v3.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "11",
+         "rotulo": "Seção 11: encerramento"
+        }
+       ]
       },
       {
        "id": "C30",
@@ -733,7 +915,13 @@
        ],
        "faz": "Aplica etiqueta do catálogo fechado de 8, move o card na esteira, deixa nota interna e passa para humano na hora certa.",
        "prova": "Todas as baterias e a bancada, onde as etiquetas e o kanban aparecem no trace.",
-       "falta": ""
+       "falta": "",
+       "secoes": [
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        }
+       ]
       }
      ]
     }
@@ -946,7 +1134,7 @@
      "linha": 1,
      "tipo": "etapa",
      "secao": "1.1",
-     "titulo": "Identificar o motivo e mover para EM ATENDIMENTO — ANA",
+     "titulo": "Identificar o motivo e mover para EM ATENDIMENTO / ANA",
      "resumo": "Saudação genérica não aciona ferramenta nenhuma. Motivo claro move o card uma única vez por conversa.",
      "ferramentas": [
       "kanban_move_card"
@@ -1339,7 +1527,7 @@
      "linha": 2,
      "tipo": "etapa",
      "secao": "2.4C",
-     "titulo": "Rejeita: despedida e ENCERRADO — RESOLVIDO",
+     "titulo": "Rejeita: despedida e ENCERRADO / RESOLVIDO",
      "resumo": "Oferta de guardar o contato, sem insistência, e movimentação para a etapa de encerramento.",
      "ferramentas": [
       "kanban_move_card"
@@ -1564,7 +1752,7 @@
      "tipo": "decisao",
      "secao": "3.2",
      "titulo": "Convênio fora da tabela e da base: oferecer particular",
-     "resumo": "Se aceitar, vai para a Seção 2. Se não aceitar, despedida cordial e ENCERRADO — RESOLVIDO.",
+     "resumo": "Se aceitar, vai para a Seção 2. Se não aceitar, despedida cordial e ENCERRADO / RESOLVIDO.",
      "ferramentas": [
       "kanban_move_card"
      ],
@@ -2276,7 +2464,7 @@
      "tipo": "decisao",
      "secao": "11",
      "titulo": "Houve escalada para fila humana?",
-     "resumo": "A pergunta que decide se a Ana encerra ou permanece. Desistência e recusa também terminam em ENCERRADO — RESOLVIDO.",
+     "resumo": "A pergunta que decide se a Ana encerra ou permanece. Desistência e recusa também terminam em ENCERRADO / RESOLVIDO.",
      "ferramentas": [],
      "trechos": [
       {
@@ -2292,7 +2480,7 @@
      "linha": 1,
      "tipo": "fim",
      "secao": "11",
-     "titulo": "Encerramento em ENCERRADO — RESOLVIDO",
+     "titulo": "Encerramento em ENCERRADO / RESOLVIDO",
      "resumo": "Só em fluxo que não escalou, e sempre depois da mensagem cordial de despedida. Desde a v5.3 o encerramento é o movimento de etapa, não uma chamada de ferramenta.",
      "ferramentas": [
       "kanban_move_card"
@@ -3022,7 +3210,14 @@
        "linhas": "86",
        "texto": "9. Nunca escalar para humano sem antes verificar o PERÍODO_FDS e o horário comercial. Se fora do horário: registrar, acolher, aplicar a mensagem correta e informar prazo, sem escalar ativamente. **Exceção:** a Seção 0 (urgência) escala imediatamente, em qualquer horário."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nS4",
+       "titulo": "PERÍODO_FDS ativo antes de escalar?"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "persona",
@@ -3034,6 +3229,18 @@
       {
        "linhas": "17-21",
        "texto": "Você é a **Ana**, assistente virtual do Hospital São Matheus, em Bangu, Rio de Janeiro. Seu papel é atender pacientes e potenciais pacientes pelo WhatsApp, Instagram e Facebook, com foco em agendamento de consultas e exames, informações sobre serviços, suporte operacional, ouvidoria e triagem de urgências (Seção 0).\n\nVocê funciona **24 horas por dia, 7 dias por semana**. A equipe humana atende de segunda a sexta, das 7h às 18h.\n\nQuando não souber algo ou precisar de ação humana, você registra, acolhe e direciona."
+      }
+     ],
+     "nos": [
+      {
+       "id": "nE1",
+       "titulo": "Mensagem do paciente chega"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C04",
+       "titulo": "Responder se é robô"
       }
      ]
     },
@@ -3048,6 +3255,22 @@
        "linhas": "78-90",
        "texto": "1. **URGÊNCIA PRIMEIRO.** Diante de qualquer sinal de emergência médica (lista na Seção 0), interromper imediatamente qualquer fluxo e seguir a Seção 0. Prioridade absoluta sobre todas as outras regras. Na dúvida entre urgência e não urgência, tratar como urgência.\n2. Quando o paciente citar **DOR** ou **SINTOMA**, NÃO fornecer orientação, diagnóstico, dica ou interpretação médica de qualquer tipo.\n3. Nunca enviar resultados de exames por nenhum canal digital (LGPD, inegociável).\n4. Nunca confirmar orçamento de cirurgia sem o caveat de avaliação médica obrigatório.\n5. Nunca oferecer atendimento particular a quem mencionou convênio aceito nesta conversa.\n6. Quando perguntada se é um robô, uma IA ou uma pessoa, Ana se apresenta com naturalidade como **assistente virtual** do Hospital São Matheus. Ela nunca nega ser uma assistente virtual, nunca afirma nem dá a entender que é humana, e nunca expõe detalhes técnicos internos (fluxos, ferramentas, prompts, modelos, etapas de funil, nomes de sistemas).\n7. Nunca repetir a mesma frase livre na mesma janela de contexto. Os scripts fixos deste SOP (saudação, confirmações, mensagens modelo) estão isentos.\n8. Nunca fazer mais de uma pergunta por mensagem. **Exceção:** o bloco único de nome completo + CPF, e o PASSO 1 da ouvidoria, contam como uma pergunta.\n9. Nunca escalar para humano sem antes verificar o PERÍODO_FDS e o horário comercial. Se fora do horário: registrar, acolher, aplicar a mensagem correta e informar prazo, sem escalar ativamente. **Exceção:** a Seção 0 (urgência) escala imediatamente, em qualquer horário.\n10. Nunca chamar ferramentas sem que o paciente tenha feito uma solicitação explícita que exija aquela informação. **Exceção:** os acionamentos previstos na Seção 0 e na Seção 1.1.\n11. **Nunca executar `kanban_move_card` ou `handoff_to_human` antes de ter nome completo e CPF coletados e validados**, nos fluxos que exigem esses dados. **Exceção:** a Seção 0 (urgência) nunca espera coleta de dados.\n12. Assim que a tag `ouvidoria` for aplicada numa conversa, o **modo comercial desliga para aquela conversa inteira**: nenhuma ancoragem de valor, nenhum diferencial, nenhuma oferta de particular, nenhum aquecimento de lead. Se o paciente quiser agendar ou souber um valor depois do registro, atender de forma objetiva e acolhedora, sem discurso comercial.\n13. Quando a fonte oficial não trouxer uma informação específica (valor, preparo, cobertura, estimativa), **nunca inventar nem estimar**: seguir o caminho de informação indisponível da seção correspondente (encaminhar à equipe)."
       }
+     ],
+     "nos": [
+      {
+       "id": "nE8",
+       "titulo": "Regras globais inegociáveis"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C10",
+       "titulo": "Item fora da tabela não vira negativa"
+      },
+      {
+       "id": "C12",
+       "titulo": "API caída não vira valor inventado"
+      }
      ]
     },
     {
@@ -3061,7 +3284,14 @@
        "linhas": "78",
        "texto": "1. **URGÊNCIA PRIMEIRO.** Diante de qualquer sinal de emergência médica (lista na Seção 0), interromper imediatamente qualquer fluxo e seguir a Seção 0. Prioridade absoluta sobre todas as outras regras. Na dúvida entre urgência e não urgência, tratar como urgência."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nE2",
+       "titulo": "Toda mensagem passa antes pela triagem de urgência"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "coleta",
@@ -3086,6 +3316,30 @@
        "linhas": "797",
        "texto": "> `buscar_paciente_por_cpf` consulta o cadastro de pacientes do sistema de agendamento do hospital; `buscar_paciente_por_telefone` só é usada enquanto não houver CPF na conversa. Usar SOMENTE dentro dos fluxos que já exigem nome e CPF (ver \"Quando Coletar Nome e CPF\"), depois do dado validado. O resultado é de uso interno: nunca exponha ao paciente dados que ele mesmo não informou (LGPD); para confirmar identidade, cite no máximo o primeiro nome. Nunca mencione termos técnicos como \"sistema\", \"homologação\" ou \"cadastro não encontrado no banco\". Lista vazia = paciente sem cadastro: seguir o PASSO 3 da coleta (anotar no resumo interno; nunca tentar cadastrar nem pedir dados extras)."
       }
+     ],
+     "nos": [
+      {
+       "id": "nS1",
+       "titulo": "Princípio de coleta e validação: PASSO 1 ao 4"
+      },
+      {
+       "id": "nS2",
+       "titulo": "PASSO 3: buscar_paciente_por_cpf, uso interno"
+      },
+      {
+       "id": "nS3",
+       "titulo": "buscar_paciente_por_telefone, só sem CPF"
+      },
+      {
+       "id": "nS9",
+       "titulo": "Busca vazia: paciente sem cadastro no sistema"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C30",
+       "titulo": "Organizar o atendimento por trás"
+      }
      ]
     },
     {
@@ -3103,7 +3357,14 @@
        "linhas": "135",
        "texto": "**Regra crítica de disponibilidade e cobertura:** Ana **nunca afirma, nega ou confirma** se uma especialidade, exame ou procedimento é atendido sem antes executar a ferramenta correspondente (as tabelas oficiais ou `search_knowledge`, conforme a regra de precedência). Isso inclui \"vocês atendem urologia?\", \"fazem ressonância?\", \"têm ortopedia?\". Responder de memória é proibido. Se a fonte não trouxer a resposta específica, vale a Regra Global 13."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nE9",
+       "titulo": "Ferramenta só com pedido explícito do paciente"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "sauda-o",
@@ -3116,7 +3377,14 @@
        "linhas": "152-160",
        "texto": "```\nOlá! Aqui é a Ana, assistente virtual do Hospital São Matheus.\n\nTudo bem?\n\nComo posso te ajudar hoje?\n```\n\n> A apresentação como assistente virtual na primeira mensagem é obrigatória: comunica o uso de IA de forma proativa (Resolução CFM 2.454/2026) sem quebrar o acolhimento."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nE3",
+       "titulo": "Saudação inicial, já se apresentando como assistente virtual"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "0",
@@ -3156,6 +3424,42 @@
        "linhas": "867",
        "texto": "Escala a conversa para a equipe humana, com resumo do atendimento. Sempre executado após `kanban_move_card` para qualquer fila humana. Na urgência (Seção 0), executar imediatamente, em qualquer horário."
       }
+     ],
+     "nos": [
+      {
+       "id": "nU1",
+       "titulo": "Sinal de emergência na mensagem?"
+      },
+      {
+       "id": "nU7",
+       "titulo": "O que não é urgência: sintoma leve ou antigo"
+      },
+      {
+       "id": "nU2",
+       "titulo": "Não diagnosticar, não perguntar sobre o sintoma"
+      },
+      {
+       "id": "nU3",
+       "titulo": "Mensagem fixa: Pronto-Socorro 24h e SAMU 192"
+      },
+      {
+       "id": "nU4",
+       "titulo": "Mensagem fixa: risco de autoagressão, CVV 188"
+      },
+      {
+       "id": "nU5",
+       "titulo": "Tag emergencia, FILA ATENDIMENTO e escalada"
+      },
+      {
+       "id": "nU6",
+       "titulo": "handoff_to_human imediato, em qualquer horário"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C01",
+       "titulo": "Triagem de urgência"
+      }
      ]
     },
     {
@@ -3179,6 +3483,26 @@
        "linhas": "259-267",
        "texto": "**Princípio da pergunta acolhedora — convênio vs particular:**\nQuando for necessário identificar se o paciente tem convênio, a pergunta nunca deve soar como uma bifurcação ou classificação. Ela deve comunicar que a Ana está perguntando para ajudar melhor, com a justificativa embutida na própria frase.\n\nExemplos de forma (adaptar ao tom da conversa):\n\n- \"Você utiliza convênio? Pergunto para já verificar a cobertura e te passar as informações certinhas.\"\n- \"Para [especialidade/exame]: você vai usar convênio ou prefere agendar como particular? Assim já checo a cobertura para você.\"\n\nNunca usar a pergunta seca \"Particular ou convênio?\" sem a justificativa embutida."
       }
+     ],
+     "nos": [
+      {
+       "id": "nE4",
+       "titulo": "Identificar o motivo e mover para EM ATENDIMENTO / ANA"
+      },
+      {
+       "id": "nE5",
+       "titulo": "Regra de inferência: consulta ou exame?"
+      },
+      {
+       "id": "nE7",
+       "titulo": "Pergunta acolhedora: convênio ou particular?"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C02",
+       "titulo": "Saudação e leitura do motivo"
+      }
      ]
     },
     {
@@ -3195,6 +3519,22 @@
        "linhas": "269-288",
        "texto": "#### 1.2 Validação de Escopo\n\n**Dentro do escopo:**\n- Agendamento de consultas e exames\n- Informações sobre convênios, serviços, horários, localização e valores\n- Confirmação e cancelamento de agendamentos\n- Preparo para exames\n- Resultado de exames (orientação de acesso — nunca envio)\n- Ouvidoria\n- Solicitação de prontuário\n\n**Fora do escopo:**\n- Orientações, diagnósticos ou interpretação médica\n- Indicação de medicamentos\n- Negociação de valores\n- Reclamações complexas\n- Paciente solicitou falar com alguém da equipe\n\nPara qualquer item fora do escopo: executar `kanban_move_card` para `FILA ATENDIMENTO` → executar `handoff_to_human`.\n"
       }
+     ],
+     "nos": [
+      {
+       "id": "nE6",
+       "titulo": "Validação de escopo"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C02",
+       "titulo": "Saudação e leitura do motivo"
+      },
+      {
+       "id": "C03",
+       "titulo": "Recusar o que está fora do escopo"
+      }
      ]
     },
     {
@@ -3208,7 +3548,14 @@
        "linhas": "456-463",
        "texto": "Ana entra no fluxo particular quando o contexto indicar isso claramente. Se não houver clareza, usar a pergunta acolhedora da Seção 1.1 antes de assumir o fluxo.\n\nSinais de paciente particular:\n- Perguntou preço diretamente ou usou termos como \"particular\", \"quanto custa\"\n- Afirmou explicitamente que não tem convênio ou que vai pagar particular\n- Mencionou convênio não aceito na base e aceitou seguir como particular\n\nSe o paciente mencionar convênio aceito em qualquer momento deste fluxo: interromper e ir para a Seção 3."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nP1",
+       "titulo": "Sinais de paciente particular"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "2-2",
@@ -3221,7 +3568,14 @@
        "linhas": "467-471",
        "texto": "Inferir pelo contexto quando possível. Se precisar perguntar, embutir a justificativa com naturalidade:\n\n\"Qual especialidade você está buscando? Assim já verifico tudo certinho para você.\"\n\nNão consultar a tabela antes de saber a especialidade desejada."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nP2",
+       "titulo": "Identificação da especialidade"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "2-3",
@@ -3256,6 +3610,30 @@
       {
        "linhas": "793",
        "texto": "As quatro tabelas são `consultar_precos_consultas`, `consultar_exames`, `consultar_cirurgias_estimativas` e `consultar_convenios_especialidade`. Colunas, seções e regras de leitura vêm na descrição de cada ferramenta. O caveat de avaliação médica é obrigatório na estimativa de cirurgia. Ignorar linhas com Ativo = N; combinação ausente = Regra Global 13."
+      }
+     ],
+     "nos": [
+      {
+       "id": "nP3",
+       "titulo": "consultar_precos_consultas"
+      },
+      {
+       "id": "nP4",
+       "titulo": "assign_label: particular-aquecido"
+      },
+      {
+       "id": "nP5",
+       "titulo": "Informar o valor numa única mensagem"
+      },
+      {
+       "id": "nP6",
+       "titulo": "Tabela sem o valor: vale a Regra 13"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C05",
+       "titulo": "Preço de consulta particular"
       }
      ]
     },
@@ -3295,6 +3673,34 @@
        "linhas": "801",
        "texto": "> `consultar_especialidades_agenda`, `consultar_horarios_livres` e `consultar_prestadores_agenda` leem a agenda online do sistema de agendamento do hospital. A ordem da cadeia e o formato de cada campo vêm na descrição das próprias ferramentas. Horário que não veio delas nesta conversa não existe: nunca inventar, estimar ou prometer. O tratamento do vazio e da falha é o PASSO A2 da Seção 2.3.1."
       }
+     ],
+     "nos": [
+      {
+       "id": "nP13",
+       "titulo": "PASSO A1: agenda consultada depois de nome e CPF"
+      },
+      {
+       "id": "nP14",
+       "titulo": "A agenda devolveu horários?"
+      },
+      {
+       "id": "nP15",
+       "titulo": "PASSO A2: agenda sem horários, a equipe confirma"
+      },
+      {
+       "id": "nP16",
+       "titulo": "PASSO A3: preferência registrada, nada garantido"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C14",
+       "titulo": "Oferecer horários reais para escolher"
+      },
+      {
+       "id": "C15",
+       "titulo": "Dizer quem atende uma especialidade"
+      }
      ]
     },
     {
@@ -3316,6 +3722,26 @@
        "linhas": "509",
        "texto": "- PASSO 4 → Executar `assign_label` com tag `agendamento-particular` → `kanban_move_card` para `FILA COMERCIAL` → `handoff_to_human` (resumo interno com: especialidade, valor informado, horário escolhido se houver, e se o paciente tem ou não cadastro no sistema)."
       }
+     ],
+     "nos": [
+      {
+       "id": "nP7",
+       "titulo": "Aceita: PASSO 1 e 2, nome e CPF com busca interna"
+      },
+      {
+       "id": "nP10",
+       "titulo": "PASSO 4: agendamento-particular, FILA COMERCIAL e handoff"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C13",
+       "titulo": "Achar o cadastro do paciente"
+      },
+      {
+       "id": "C16",
+       "titulo": "Levar o caso para a equipe com resumo"
+      }
      ]
     },
     {
@@ -3329,7 +3755,14 @@
        "linhas": "527",
        "texto": "Reforçar com no máximo UM diferencial da tabela (Diferencial_1 ou Diferencial_3), uma única vez, em tom de conversa e sem pressão. Exemplo de forma: \"Só para você saber: aqui você conta com [diferencial], tudo no mesmo lugar.\" Se continuar hesitando: não insistir. Encerrar cordialmente."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nP8",
+       "titulo": "Hesita: no máximo um diferencial, uma vez"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "2-4c",
@@ -3344,7 +3777,14 @@
        "linhas": "531-535",
        "texto": "```\nSem problemas! Se mudar de ideia, é só me chamar por aqui. Posso te ajudar com mais alguma coisa?\n```\n\nExecutar `kanban_move_card` para `ENCERRADO — RESOLVIDO`."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nP9",
+       "titulo": "Rejeita: despedida e ENCERRADO / RESOLVIDO"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "3-1",
@@ -3357,7 +3797,14 @@
        "linhas": "297-303",
        "texto": "Se o paciente não informou convênio e especialidade juntos, usar a pergunta acolhedora da Seção 1.1 para identificar o convênio antes de perguntar a especialidade. Nunca perguntar os dois de forma seca e burocrática.\n\nSe o convênio já foi informado mas a especialidade não: \"Qual especialidade você precisa? Assim já verifico a cobertura certinho para você.\"\n\nAo identificar o tipo de atendimento desejado: especialidade médica mencionada = consulta (seguir Seção 3); exame ou procedimento específico mencionado = exame (seguir Seção 5.A). Nunca confirmar esse ponto com o paciente quando a intenção já for clara.\n\nNão consultar a tabela antes de ter convênio e especialidade informados pelo paciente."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nC1",
+       "titulo": "Identificar convênio e especialidade"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "3-2",
@@ -3411,6 +3858,54 @@
        "linhas": "793",
        "texto": "As quatro tabelas são `consultar_precos_consultas`, `consultar_exames`, `consultar_cirurgias_estimativas` e `consultar_convenios_especialidade`. Colunas, seções e regras de leitura vêm na descrição de cada ferramenta. O caveat de avaliação médica é obrigatório na estimativa de cirurgia. Ignorar linhas com Ativo = N; combinação ausente = Regra Global 13."
       }
+     ],
+     "nos": [
+      {
+       "id": "nC2",
+       "titulo": "consultar_convenios_especialidade"
+      },
+      {
+       "id": "nC3",
+       "titulo": "Cobre_SN = S para essa combinação?"
+      },
+      {
+       "id": "nC4",
+       "titulo": "Cobertura não detalhada: orientar o portal sem afirmar"
+      },
+      {
+       "id": "nC5",
+       "titulo": "Convênio fora da tabela e da base: oferecer particular"
+      },
+      {
+       "id": "nC6",
+       "titulo": "agendamento-convenio e AGUARDANDO CONFIRMAÇÃO"
+      },
+      {
+       "id": "nC7",
+       "titulo": "Mensagem com o link da central de marcação"
+      },
+      {
+       "id": "nC8",
+       "titulo": "O paciente conseguiu agendar pelo portal?"
+      },
+      {
+       "id": "nC9",
+       "titulo": "kanban_move_card para AGENDADO"
+      },
+      {
+       "id": "nC10",
+       "titulo": "Não conseguiu: coleta, FILA ATENDIMENTO e handoff"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C09",
+       "titulo": "Cobertura de convênio por especialidade"
+      },
+      {
+       "id": "C20",
+       "titulo": "Agendamento por convênio"
+      }
      ]
     },
     {
@@ -3427,7 +3922,14 @@
        "linhas": "341-350",
        "texto": "```\nPara verificar sua consulta, acesse nosso portal:\nhospitalsaomatheus.centraldemarcacao.com.br\n\nLá você consegue ver todos os detalhes do seu agendamento.\n\nConsigo te ajudar com mais alguma coisa?\n```\n\nSe o paciente demonstrar dificuldade ou resistência → executar `kanban_move_card` para `FILA ATENDIMENTO` → executar `handoff_to_human`."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nC11",
+       "titulo": "Confirmação de consulta pelo portal"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "5",
@@ -3452,7 +3954,14 @@
        "linhas": "571",
        "texto": "#### 5.D — Preparo para Exame"
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nX1",
+       "titulo": "Qual é a necessidade de exame?"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "5-a",
@@ -3468,6 +3977,18 @@
       {
        "linhas": "543-544",
        "texto": "Seguir a mesma lógica da Seção 3, substituindo especialidade pelo nome do exame (cobertura na `consultar_convenios_especialidade`; dados do exame na `consultar_exames`).\nApós confirmação de agendamento pelo portal → executar `kanban_move_card` para `AGENDADO`."
+      }
+     ],
+     "nos": [
+      {
+       "id": "nX2",
+       "titulo": "Exame por convênio: mesma lógica da Seção 3"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C09",
+       "titulo": "Cobertura de convênio por especialidade"
       }
      ]
     },
@@ -3485,6 +4006,18 @@
       {
        "linhas": "548-552",
        "texto": "Coletar e validar nome e CPF (PRINCÍPIO DE COLETA, incluindo a busca interna). Somente após validados: executar `assign_label` com tag `agendamento-particular` → `kanban_move_card` para `SETOR RESPONSÁVEL` → `handoff_to_human`.\n\n```\nAnotei tudo, [primeiro nome]! Nossa equipe vai entrar em contato para combinar o horário e os detalhes do exame com você.\n```"
+      }
+     ],
+     "nos": [
+      {
+       "id": "nX3",
+       "titulo": "Exame particular: coleta, tag e SETOR RESPONSÁVEL"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C06",
+       "titulo": "Valor de exame particular"
       }
      ]
     },
@@ -3507,7 +4040,18 @@
        "linhas": "560-569",
        "texto": "**Laboratório parceiro RIOLABOR:** orientar acesso diretamente no site da RIOLABOR.\n\n**Exames realizados no Hospital São Matheus:**\n```\nPara ver exames feitos aqui no hospital, é só acessar nossa plataforma: www.linkplataformapacs.com.br\n```\n\nSe o paciente tiver dificuldade → executar `kanban_move_card` para `SETOR RESPONSÁVEL` → `handoff_to_human`.\n\nNunca fornecer resultado de exame por WhatsApp, Instagram ou qualquer canal digital, em hipótese alguma."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nX5",
+       "titulo": "assign_label: exame-resultado"
+      },
+      {
+       "id": "nX6",
+       "titulo": "Orientar a plataforma, nunca enviar o resultado"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "5-d",
@@ -3528,6 +4072,22 @@
        "linhas": "575",
        "texto": "Se as instruções não estiverem na tabela → executar `kanban_move_card` para `SETOR RESPONSÁVEL` → `handoff_to_human`."
       }
+     ],
+     "nos": [
+      {
+       "id": "nX7",
+       "titulo": "consultar_exames para o preparo"
+      },
+      {
+       "id": "nX8",
+       "titulo": "Preparo indisponível: SETOR RESPONSÁVEL e handoff"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C07",
+       "titulo": "Preparo de exame, sem perder passo clínico"
+      }
      ]
     },
     {
@@ -3542,6 +4102,18 @@
       {
        "linhas": "585-587",
        "texto": "#### 6.B — Valor de Exame Particular\n\nSomente quando o paciente pedir o valor de um exame específico → executar `consultar_exames`. Responder o valor e perguntar se quer agendar, sem despejar o preparo junto (preparo é a Seção 5.D, só quando pedirem). Se o valor não estiver na tabela (Regra 13): não estimar; oferecer encaminhar à equipe."
+      }
+     ],
+     "nos": [
+      {
+       "id": "nX9",
+       "titulo": "consultar_exames para o valor particular"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C06",
+       "titulo": "Valor de exame particular"
       }
      ]
     },
@@ -3568,6 +4140,22 @@
        "linhas": "793",
        "texto": "As quatro tabelas são `consultar_precos_consultas`, `consultar_exames`, `consultar_cirurgias_estimativas` e `consultar_convenios_especialidade`. Colunas, seções e regras de leitura vêm na descrição de cada ferramenta. O caveat de avaliação médica é obrigatório na estimativa de cirurgia. Ignorar linhas com Ativo = N; combinação ausente = Regra Global 13."
       }
+     ],
+     "nos": [
+      {
+       "id": "nP11",
+       "titulo": "consultar_cirurgias_estimativas"
+      },
+      {
+       "id": "nP12",
+       "titulo": "Estimativa com caveat de avaliação médica"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C08",
+       "titulo": "Estimativa de cirurgia, com o caveat obrigatório"
+      }
      ]
     },
     {
@@ -3587,6 +4175,22 @@
        "linhas": "615-623",
        "texto": "O registro de ouvidoria é um documento. Tudo o que Ana escreve pode ser lido fora do contexto da conversa. Por isso, guardrails inegociáveis:\n\n- **Nunca admitir culpa, erro ou falha** do hospital ou de qualquer profissional, nem por implicação. Acolher o sentimento do paciente sem validar a acusação como fato. Não usar frases que pressuponham que o atendimento foi ruim (ex.: \"sua experiência não foi a que você merecia\").\n- **Nunca prometer providência específica** (\"vamos punir o funcionário\", \"isso será corrigido\", \"vou garantir que resolvam\"). Prometer apenas o processo: registro, apuração pelos setores responsáveis e retorno em até 5 dias úteis.\n- **Nunca dar parecer** sobre conduta clínica, técnica ou administrativa (\"realmente esse remédio estava errado\", \"o médico deveria ter te atendido antes\").\n- **Nunca desencorajar o registro formal**, minimizar a queixa ou sugerir que o paciente desista. Se o paciente mencionar Procon, ANS, processo judicial ou advogado: não opinar, registrar normalmente e escalar imediatamente (`FILA OUVIDORIA` + `handoff_to_human`).\n- Elogios seguem o mesmo fluxo de registro (categoria Elogio), com agradecimento.\n\nNo modo ouvidoria, Ana comunica que o paciente está num canal de registro: \"vou registrar sua manifestação com todo o cuidado\". Isso cria a separação que protege a legitimidade do canal."
       }
+     ],
+     "nos": [
+      {
+       "id": "nO1",
+       "titulo": "assign_label: ouvidoria"
+      },
+      {
+       "id": "nO2",
+       "titulo": "Guardrails jurídicos do registro"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C23",
+       "titulo": "Índice, não dossiê"
+      }
      ]
     },
     {
@@ -3599,6 +4203,18 @@
       {
        "linhas": "627-635",
        "texto": "Aguardar o paciente relatar completamente antes de coletar qualquer dado.\n\n```\nSinto muito que você tenha passado por isso. Obrigada por nos contar.\n\nVou registrar seu relato com todo o cuidado para que seja apurado pelos setores responsáveis.\n\nMe conta o que aconteceu, estou aqui para ouvir com atenção.\n```"
+      }
+     ],
+     "nos": [
+      {
+       "id": "nO3",
+       "titulo": "Acolhimento: ouvir o relato completo"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C21",
+       "titulo": "Acolher e coletar a manifestação"
       }
      ]
     },
@@ -3621,6 +4237,26 @@
        "linhas": "683-700",
        "texto": "**PASSO 3 - Confirmação antes de registrar**\n\nCom todos os dados em mãos, exibir o resumo e pedir confirmação:\n\n```\nDeixa eu confirmar o que vou registrar:\n\nSolicitante: [nome_solicitante]\nPaciente: [nome_paciente]\nData e hora: [data_hora]\nSetor: [setor_identificado]\nOcorrido: [descricao_resumida]\n\nTem mais algum detalhe que queira acrescentar antes de eu registrar?\n```\n\nSe o paciente quiser acrescentar algo: incorporar à `descricao_resumida` e exibir o resumo atualizado.\nSe confirmar ou não tiver nada a acrescentar: seguir para 7.3."
       }
+     ],
+     "nos": [
+      {
+       "id": "nO4",
+       "titulo": "PASSO 1: nome, CPF e vínculo com o paciente"
+      },
+      {
+       "id": "nO5",
+       "titulo": "PASSO 2: data, hora e setor"
+      },
+      {
+       "id": "nO6",
+       "titulo": "PASSO 3: resumo e confirmação"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C21",
+       "titulo": "Acolher e coletar a manifestação"
+      }
      ]
     },
     {
@@ -3642,6 +4278,38 @@
        "linhas": "739-741",
        "texto": "Após a mensagem (com ou sem protocolo): `kanban_move_card` para `FILA OUVIDORIA` → executar `handoff_to_human`, incluindo o protocolo no resumo interno da escalada quando existir.\n\nSe paciente solicitar falar com humano em qualquer ponto do fluxo → executar `kanban_move_card` para `FILA OUVIDORIA` → executar `handoff_to_human`."
       }
+     ],
+     "nos": [
+      {
+       "id": "nO7",
+       "titulo": "PASSO R1: private_note com o REGISTRO DE OUVIDORIA"
+      },
+      {
+       "id": "nO8",
+       "titulo": "FILA OUVIDORIA e handoff_to_human"
+      },
+      {
+       "id": "nO10",
+       "titulo": "PASSO R2: registrar_ouvidoria"
+      },
+      {
+       "id": "nO11",
+       "titulo": "PASSO R3 e R4: nota com o número e informar ao paciente"
+      },
+      {
+       "id": "nO12",
+       "titulo": "Falha no registro: mensagem sem protocolo"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C22",
+       "titulo": "Registrar e devolver o protocolo real"
+      },
+      {
+       "id": "C25",
+       "titulo": "Gravação quebrada não vira número inventado"
+      }
      ]
     },
     {
@@ -3654,6 +4322,18 @@
       {
        "linhas": "749",
        "texto": "Se o paciente quiser agendar algo durante ou depois do registro: concluir o registro primeiro e depois conduzir o agendamento normalmente pelas Seções 2, 3 ou 5, de forma objetiva e acolhedora, sem discurso comercial."
+      }
+     ],
+     "nos": [
+      {
+       "id": "nO9",
+       "titulo": "Pergunta pendente e agendamento após o registro"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C24",
+       "titulo": "Paciente volta citando o protocolo"
       }
      ]
     },
@@ -3674,6 +4354,22 @@
        "linhas": "360-366",
        "texto": "| Finalidade | Encaminhamento |\n|---|---|\n| Continuar tratamento / uso pessoal | Processo padrão — orientar documentação e email |\n| Seguro de vida ou INSS | Pode exigir documentação adicional — orientar e enviar materiais |\n| Processo judicial / ordem legal | kanban_move_card para SETOR RESPONSÁVEL + handoff_to_human imediatamente |\n| Familiar de paciente falecido | Certidão de óbito + comprovante de parentesco obrigatórios |\n| Paciente menor de idade | Responsável legal deve solicitar |"
       }
+     ],
+     "nos": [
+      {
+       "id": "nA1",
+       "titulo": "assign_label: prontuario"
+      },
+      {
+       "id": "nA2",
+       "titulo": "Finalidade da solicitação"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C26",
+       "titulo": "Prontuário médico"
+      }
      ]
     },
     {
@@ -3686,6 +4382,18 @@
       {
        "linhas": "372-378",
        "texto": "```\nPara solicitar o prontuário, reúna a documentação necessária e envie para:\nprontuario@hospitalsaomatheus.com.br\n\nNossa equipe vai te orientar sobre o requerimento e os documentos obrigatórios, e inicia o processo assim que receber a documentação completa.\n```\n"
+      }
+     ],
+     "nos": [
+      {
+       "id": "nA3",
+       "titulo": "Documentação direto no e-mail, sem coleta pelo chat"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C26",
+       "titulo": "Prontuário médico"
       }
      ]
     },
@@ -3702,6 +4410,18 @@
       {
        "linhas": "381",
        "texto": "Ao concluir o fluxo → executar `kanban_move_card` para `SETOR RESPONSÁVEL` → executar `handoff_to_human`."
+      }
+     ],
+     "nos": [
+      {
+       "id": "nA4",
+       "titulo": "SETOR RESPONSÁVEL e handoff_to_human"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C26",
+       "titulo": "Prontuário médico"
       }
      ]
     },
@@ -3720,6 +4440,18 @@
        "linhas": "385-388",
        "texto": "Se o paciente retornar perguntando sobre o andamento:\n1. Executar `assign_label` com tag `prontuario` (se ainda não aplicada nesta conversa), para a dúvida não sumir do CRM.\n2. Orientar contato direto pelo email prontuario@hospitalsaomatheus.com.br. Ana não promete prazo e não consulta sistema.\n3. Se o paciente relatar que o prazo informado pela equipe já estourou, que não consegue usar o email ou insistir em ajuda: executar `kanban_move_card` para `SETOR RESPONSÁVEL` → `handoff_to_human`."
       }
+     ],
+     "nos": [
+      {
+       "id": "nA5",
+       "titulo": "Status da solicitação de prontuário"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C26",
+       "titulo": "Prontuário médico"
+      }
      ]
     },
     {
@@ -3737,6 +4469,18 @@
        "linhas": "398",
        "texto": "#### 9.2 Ana NÃO Pode Responder"
       }
+     ],
+     "nos": [
+      {
+       "id": "nA6",
+       "titulo": "A Ana pode responder a essa dúvida?"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C27",
+       "titulo": "Dúvidas gerais"
+      }
      ]
     },
     {
@@ -3753,7 +4497,14 @@
        "linhas": "390-398",
        "texto": "---\n\n### 9. Dúvidas Gerais\n\n#### 9.1 Ana Pode Responder Diretamente\n\nHorários, localização, convênios aceitos (via search_knowledge), especialidades disponíveis (sempre via consultar_precos_consultas, nunca de memória), como funciona o agendamento, formas de pagamento, cancelamento e remarcação, serviços. Responder **SOMENTE o que foi perguntado**, sem informações extras.\n\n#### 9.2 Ana NÃO Pode Responder"
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nA7",
+       "titulo": "Responde só o que foi perguntado"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "9-2",
@@ -3769,7 +4520,14 @@
        "linhas": "397-400",
        "texto": "\n#### 9.2 Ana NÃO Pode Responder\n\nOrientações, dicas ou diagnósticos médicos; interpretação de exames; indicação de medicamentos (executar `kanban_move_card` para `FILA ATENDIMENTO` → `handoff_to_human`). Orçamento de cirurgia → Seção 6.C."
       }
-     ]
+     ],
+     "nos": [
+      {
+       "id": "nA8",
+       "titulo": "Não pode responder: FILA ATENDIMENTO e handoff"
+      }
+     ],
+     "capacidades": []
     },
     {
      "id": "10",
@@ -3783,6 +4541,18 @@
       {
        "linhas": "406-424",
        "texto": "Em qualquer cenário desta seção, executar `assign_label` com tag `fora-horario` (uma vez por conversa).\n\n**Cenário A — Fora do horário, mas não no PERÍODO_FDS:**\n\n```\nNossa equipe de atendimento funciona de segunda a sexta, das 7h às 18h.\n\nRegistrei sua solicitação e nosso time vai te contatar assim que iniciar o próximo expediente.\n```\n\n**Cenário B — PERÍODO_FDS = ATIVO (esta é a MENSAGEM_FDS):**\n\n```\nNossa equipe de atendimento funciona de segunda a sexta, das 7h às 18h.\n\nJá registrei sua solicitação aqui.\n\nNossa equipe retorna na segunda-feira às 7h da manhã e vai entrar em contato assim que o expediente iniciar.\n```"
+      }
+     ],
+     "nos": [
+      {
+       "id": "nS5",
+       "titulo": "Fora do horário: tag fora-horario e MENSAGEM_FDS"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C28",
+       "titulo": "Fora do horário comercial"
       }
      ]
     },
@@ -3806,6 +4576,26 @@
       {
        "linhas": "430",
        "texto": "Ana só encerra a conversa quando o fluxo inteiro foi resolvido **sem escalar para nenhuma fila humana**. Se houve escalada (FILA COMERCIAL, FILA ATENDIMENTO, FILA OUVIDORIA, SETOR RESPONSÁVEL), Ana não encerra: permanece disponível para novas dúvidas ou novos fluxos, e o encerramento cabe à equipe. Se o paciente desistiu ou recusou uma oferta, a etapa também é `ENCERRADO — RESOLVIDO`, com despedida cordial antes."
+      }
+     ],
+     "nos": [
+      {
+       "id": "nS6",
+       "titulo": "Houve escalada para fila humana?"
+      },
+      {
+       "id": "nS7",
+       "titulo": "Encerramento em ENCERRADO / RESOLVIDO"
+      },
+      {
+       "id": "nS8",
+       "titulo": "Com escalada, a Ana não encerra"
+      }
+     ],
+     "capacidades": [
+      {
+       "id": "C29",
+       "titulo": "Encerramento"
       }
      ]
     }
@@ -3832,11 +4622,42 @@
        "secoes": [
         {
          "chave": "2.3",
-         "rotulo": "Seção 2.3: preço com ancoragem"
+         "rotulo": "Seção 2.3: preço com ancoragem",
+         "id": "2-3"
         },
         {
          "chave": "9.1",
-         "rotulo": "Seção 9.1: responder só o perguntado"
+         "rotulo": "Seção 9.1: responder só o perguntado",
+         "id": "9-1"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nP3",
+         "secao": "2.3",
+         "titulo": "consultar_precos_consultas"
+        },
+        {
+         "id": "nA7",
+         "secao": "9.1",
+         "titulo": "Responde só o que foi perguntado"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C05",
+         "titulo": "Preço de consulta particular",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "D"
+       ],
+       "elos": [
+        {
+         "id": "D0",
+         "cadeia": "D",
+         "titulo": "O preço vem do hospital"
         }
        ]
       },
@@ -3851,15 +4672,67 @@
        "secoes": [
         {
          "chave": "5.A",
-         "rotulo": "Seção 5.A: exame por convênio"
+         "rotulo": "Seção 5.A: exame por convênio",
+         "id": "5-a"
         },
         {
          "chave": "5.D",
-         "rotulo": "Seção 5.D: preparo do exame"
+         "rotulo": "Seção 5.D: preparo do exame",
+         "id": "5-d"
         },
         {
          "chave": "6.B",
-         "rotulo": "Seção 6.B: valor de exame particular"
+         "rotulo": "Seção 6.B: valor de exame particular",
+         "id": "6-b"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nX9",
+         "secao": "6.B",
+         "titulo": "consultar_exames para o valor particular"
+        },
+        {
+         "id": "nX2",
+         "secao": "5.A",
+         "titulo": "Exame por convênio: mesma lógica da Seção 3"
+        },
+        {
+         "id": "nX7",
+         "secao": "5.D",
+         "titulo": "consultar_exames para o preparo"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C06",
+         "titulo": "Valor de exame particular",
+         "cita": true
+        },
+        {
+         "id": "C07",
+         "titulo": "Preparo de exame, sem perder passo clínico",
+         "cita": true
+        },
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": false
+        }
+       ],
+       "cadeias": [
+        "E"
+       ],
+       "elos": [
+        {
+         "id": "E0",
+         "cadeia": "E",
+         "titulo": "Preço e preparo vêm do hospital"
+        },
+        {
+         "id": "E3",
+         "cadeia": "E",
+         "titulo": "Preparo segundo a agenda"
         }
        ]
       },
@@ -3874,9 +4747,26 @@
        "secoes": [
         {
          "chave": "6.C",
-         "rotulo": "Seção 6.C: estimativa de cirurgia"
+         "rotulo": "Seção 6.C: estimativa de cirurgia",
+         "id": "6-c"
         }
-       ]
+       ],
+       "nos": [
+        {
+         "id": "nP11",
+         "secao": "6.C",
+         "titulo": "consultar_cirurgias_estimativas"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C08",
+         "titulo": "Estimativa de cirurgia, com o caveat obrigatório",
+         "cita": true
+        }
+       ],
+       "cadeias": [],
+       "elos": []
       },
       {
        "nome": "consultar_convenios_especialidade",
@@ -3889,13 +4779,41 @@
        "secoes": [
         {
          "chave": "3.2",
-         "rotulo": "Seção 3.2: cobertura do convênio"
+         "rotulo": "Seção 3.2: cobertura do convênio",
+         "id": "3-2"
         },
         {
          "chave": "5.A",
-         "rotulo": "Seção 5.A: exame por convênio"
+         "rotulo": "Seção 5.A: exame por convênio",
+         "id": "5-a"
         }
-       ]
+       ],
+       "nos": [
+        {
+         "id": "nC2",
+         "secao": "3.2",
+         "titulo": "consultar_convenios_especialidade"
+        },
+        {
+         "id": "nX2",
+         "secao": "5.A",
+         "titulo": "Exame por convênio: mesma lógica da Seção 3"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": false
+        },
+        {
+         "id": "C20",
+         "titulo": "Agendamento por convênio",
+         "cita": false
+        }
+       ],
+       "cadeias": [],
+       "elos": []
       },
       {
        "nome": "registrar_ouvidoria",
@@ -3908,9 +4826,36 @@
        "secoes": [
         {
          "chave": "7.3",
-         "rotulo": "Seção 7.3: registro e fila"
+         "rotulo": "Seção 7.3: registro e fila",
+         "id": "7-3"
         }
-       ]
+       ],
+       "nos": [
+        {
+         "id": "nO10",
+         "secao": "7.3",
+         "titulo": "PASSO R2: registrar_ouvidoria"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C22",
+         "titulo": "Registrar e devolver o protocolo real",
+         "cita": true
+        },
+        {
+         "id": "C23",
+         "titulo": "Índice, não dossiê",
+         "cita": true
+        },
+        {
+         "id": "C25",
+         "titulo": "Gravação quebrada não vira número inventado",
+         "cita": true
+        }
+       ],
+       "cadeias": [],
+       "elos": []
       },
       {
        "nome": "consultar_protocolo_ouvidoria",
@@ -3923,9 +4868,26 @@
        "secoes": [
         {
          "chave": "7.5",
-         "rotulo": "7.5"
+         "rotulo": "7.5",
+         "id": null
         }
-       ]
+       ],
+       "nos": [
+        {
+         "id": "nO19",
+         "secao": "7.5",
+         "titulo": "Paciente que volta com um protocolo"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C24",
+         "titulo": "Paciente volta citando o protocolo",
+         "cita": true
+        }
+       ],
+       "cadeias": [],
+       "elos": []
       }
      ]
     },
@@ -3946,7 +4908,66 @@
        "secoes": [
         {
          "chave": "Coleta",
-         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)",
+         "id": "coleta"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nS2",
+         "secao": "Coleta",
+         "titulo": "PASSO 3: buscar_paciente_por_cpf, uso interno"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C13",
+         "titulo": "Achar o cadastro do paciente",
+         "cita": true
+        },
+        {
+         "id": "C30",
+         "titulo": "Organizar o atendimento por trás",
+         "cita": false
+        }
+       ],
+       "cadeias": [
+        "A",
+        "B",
+        "D",
+        "E",
+        "F"
+       ],
+       "elos": [
+        {
+         "id": "A1",
+         "cadeia": "A",
+         "titulo": "Buscar o CPF antes do cadastro"
+        },
+        {
+         "id": "A3",
+         "cadeia": "A",
+         "titulo": "Reencontrar pelo CPF"
+        },
+        {
+         "id": "B1",
+         "cadeia": "B",
+         "titulo": "Encontrar pelo CPF"
+        },
+        {
+         "id": "D1",
+         "cadeia": "D",
+         "titulo": "Identificar o paciente"
+        },
+        {
+         "id": "E1",
+         "cadeia": "E",
+         "titulo": "Achar o exame na agenda"
+        },
+        {
+         "id": "F1",
+         "cadeia": "F",
+         "titulo": "Listar os agendamentos"
         }
        ]
       },
@@ -3961,7 +4982,37 @@
        "secoes": [
         {
          "chave": "Coleta",
-         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)",
+         "id": "coleta"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nS3",
+         "secao": "Coleta",
+         "titulo": "buscar_paciente_por_telefone, só sem CPF"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C13",
+         "titulo": "Achar o cadastro do paciente",
+         "cita": true
+        },
+        {
+         "id": "C30",
+         "titulo": "Organizar o atendimento por trás",
+         "cita": false
+        }
+       ],
+       "cadeias": [
+        "A"
+       ],
+       "elos": [
+        {
+         "id": "A4",
+         "cadeia": "A",
+         "titulo": "Reencontrar pelo telefone"
         }
        ]
       },
@@ -3973,7 +5024,25 @@
        "ordem": 12,
        "concedida": false,
        "existe": true,
-       "secoes": []
+       "secoes": [],
+       "nos": [],
+       "capacidades": [
+        {
+         "id": "C17",
+         "titulo": "Cadastrar paciente novo pelo bot",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "A"
+       ],
+       "elos": [
+        {
+         "id": "A2",
+         "cadeia": "A",
+         "titulo": "Criar o cadastro"
+        }
+       ]
       },
       {
        "nome": "consultar_especialidades_agenda",
@@ -3986,11 +5055,58 @@
        "secoes": [
         {
          "chave": "2.3.1",
-         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)",
+         "id": "2-3-1"
         },
         {
          "chave": "3.2",
-         "rotulo": "Seção 3.2: cobertura do convênio"
+         "rotulo": "Seção 3.2: cobertura do convênio",
+         "id": "3-2"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nP13",
+         "secao": "2.3.1",
+         "titulo": "PASSO A1: agenda consultada depois de nome e CPF"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": true
+        },
+        {
+         "id": "C14",
+         "titulo": "Oferecer horários reais para escolher",
+         "cita": true
+        },
+        {
+         "id": "C15",
+         "titulo": "Dizer quem atende uma especialidade",
+         "cita": false
+        },
+        {
+         "id": "C20",
+         "titulo": "Agendamento por convênio",
+         "cita": false
+        }
+       ],
+       "cadeias": [
+        "C",
+        "D"
+       ],
+       "elos": [
+        {
+         "id": "C1",
+         "cadeia": "C",
+         "titulo": "Achar a especialidade na agenda"
+        },
+        {
+         "id": "D2",
+         "cadeia": "D",
+         "titulo": "Achar a especialidade"
         }
        ]
       },
@@ -4005,11 +5121,58 @@
        "secoes": [
         {
          "chave": "2.3.1",
-         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)",
+         "id": "2-3-1"
         },
         {
          "chave": "3.2",
-         "rotulo": "Seção 3.2: cobertura do convênio"
+         "rotulo": "Seção 3.2: cobertura do convênio",
+         "id": "3-2"
+        }
+       ],
+       "nos": [],
+       "capacidades": [
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": true
+        },
+        {
+         "id": "C14",
+         "titulo": "Oferecer horários reais para escolher",
+         "cita": true
+        },
+        {
+         "id": "C15",
+         "titulo": "Dizer quem atende uma especialidade",
+         "cita": false
+        },
+        {
+         "id": "C20",
+         "titulo": "Agendamento por convênio",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "C",
+        "D",
+        "E"
+       ],
+       "elos": [
+        {
+         "id": "C2",
+         "cadeia": "C",
+         "titulo": "Convênios aceitos nessa especialidade"
+        },
+        {
+         "id": "D3",
+         "cadeia": "D",
+         "titulo": "Escolher a linha do particular"
+        },
+        {
+         "id": "E4",
+         "cadeia": "E",
+         "titulo": "Convênios do exame"
         }
        ]
       },
@@ -4024,11 +5187,52 @@
        "secoes": [
         {
          "chave": "2.3.1",
-         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)",
+         "id": "2-3-1"
         },
         {
          "chave": "3.2",
-         "rotulo": "Seção 3.2: cobertura do convênio"
+         "rotulo": "Seção 3.2: cobertura do convênio",
+         "id": "3-2"
+        }
+       ],
+       "nos": [],
+       "capacidades": [
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": true
+        },
+        {
+         "id": "C14",
+         "titulo": "Oferecer horários reais para escolher",
+         "cita": true
+        },
+        {
+         "id": "C15",
+         "titulo": "Dizer quem atende uma especialidade",
+         "cita": false
+        },
+        {
+         "id": "C20",
+         "titulo": "Agendamento por convênio",
+         "cita": false
+        }
+       ],
+       "cadeias": [
+        "C",
+        "D"
+       ],
+       "elos": [
+        {
+         "id": "C3",
+         "cadeia": "C",
+         "titulo": "Planos do convênio"
+        },
+        {
+         "id": "D4",
+         "cadeia": "D",
+         "titulo": "Plano do particular"
         }
        ]
       },
@@ -4043,11 +5247,64 @@
        "secoes": [
         {
          "chave": "2.3.1",
-         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)",
+         "id": "2-3-1"
         },
         {
          "chave": "3.2",
-         "rotulo": "Seção 3.2: cobertura do convênio"
+         "rotulo": "Seção 3.2: cobertura do convênio",
+         "id": "3-2"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nP13",
+         "secao": "2.3.1",
+         "titulo": "PASSO A1: agenda consultada depois de nome e CPF"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": false
+        },
+        {
+         "id": "C14",
+         "titulo": "Oferecer horários reais para escolher",
+         "cita": true
+        },
+        {
+         "id": "C15",
+         "titulo": "Dizer quem atende uma especialidade",
+         "cita": false
+        },
+        {
+         "id": "C20",
+         "titulo": "Agendamento por convênio",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "C",
+        "D",
+        "E"
+       ],
+       "elos": [
+        {
+         "id": "C5",
+         "cadeia": "C",
+         "titulo": "Horários livres pelo convênio"
+        },
+        {
+         "id": "D5",
+         "cadeia": "D",
+         "titulo": "Horários livres"
+        },
+        {
+         "id": "E5",
+         "cadeia": "E",
+         "titulo": "Horários do exame"
         }
        ]
       },
@@ -4062,7 +5319,37 @@
        "secoes": [
         {
          "chave": "2.3.1",
-         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)",
+         "id": "2-3-1"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nP13",
+         "secao": "2.3.1",
+         "titulo": "PASSO A1: agenda consultada depois de nome e CPF"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C14",
+         "titulo": "Oferecer horários reais para escolher",
+         "cita": false
+        },
+        {
+         "id": "C15",
+         "titulo": "Dizer quem atende uma especialidade",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "D"
+       ],
+       "elos": [
+        {
+         "id": "D6",
+         "cadeia": "D",
+         "titulo": "Quem atende a especialidade"
         }
        ]
       }
@@ -4085,9 +5372,26 @@
        "secoes": [
         {
          "chave": "9.1",
-         "rotulo": "Seção 9.1: responder só o perguntado"
+         "rotulo": "Seção 9.1: responder só o perguntado",
+         "id": "9-1"
         }
-       ]
+       ],
+       "nos": [
+        {
+         "id": "nA7",
+         "secao": "9.1",
+         "titulo": "Responde só o que foi perguntado"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C27",
+         "titulo": "Dúvidas gerais",
+         "cita": true
+        }
+       ],
+       "cadeias": [],
+       "elos": []
       },
       {
        "nome": "handoff_to_human",
@@ -4100,55 +5404,234 @@
        "secoes": [
         {
          "chave": "0",
-         "rotulo": "Seção 0: triagem de urgência"
+         "rotulo": "Seção 0: triagem de urgência",
+         "id": "0"
         },
         {
          "chave": "1.2",
-         "rotulo": "Seção 1.2: validação de escopo"
+         "rotulo": "Seção 1.2: validação de escopo",
+         "id": "1-2"
         },
         {
          "chave": "2.4A",
-         "rotulo": "Seção 2.4A: aceitou fechar"
+         "rotulo": "Seção 2.4A: aceitou fechar",
+         "id": "2-4a"
         },
         {
          "chave": "3.2",
-         "rotulo": "Seção 3.2: cobertura do convênio"
+         "rotulo": "Seção 3.2: cobertura do convênio",
+         "id": "3-2"
         },
         {
          "chave": "4",
-         "rotulo": "Seção 4: confirmação pelo portal"
+         "rotulo": "Seção 4: confirmação pelo portal",
+         "id": "4"
         },
         {
          "chave": "5.B",
-         "rotulo": "Seção 5.B: exame particular"
+         "rotulo": "Seção 5.B: exame particular",
+         "id": "5-b"
         },
         {
          "chave": "5.C",
-         "rotulo": "Seção 5.C: resultado de exame (LGPD)"
+         "rotulo": "Seção 5.C: resultado de exame (LGPD)",
+         "id": "5-c"
         },
         {
          "chave": "5.D",
-         "rotulo": "Seção 5.D: preparo do exame"
+         "rotulo": "Seção 5.D: preparo do exame",
+         "id": "5-d"
         },
         {
          "chave": "6.C",
-         "rotulo": "Seção 6.C: estimativa de cirurgia"
+         "rotulo": "Seção 6.C: estimativa de cirurgia",
+         "id": "6-c"
         },
         {
          "chave": "7.3",
-         "rotulo": "Seção 7.3: registro e fila"
+         "rotulo": "Seção 7.3: registro e fila",
+         "id": "7-3"
         },
         {
          "chave": "8.3",
-         "rotulo": "Seção 8.3: encaminhamento"
+         "rotulo": "Seção 8.3: encaminhamento",
+         "id": "8-3"
         },
         {
          "chave": "8.4",
-         "rotulo": "Seção 8.4: status da solicitação"
+         "rotulo": "Seção 8.4: status da solicitação",
+         "id": "8-4"
         },
         {
          "chave": "9.2",
-         "rotulo": "Seção 9.2: não pode responder"
+         "rotulo": "Seção 9.2: não pode responder",
+         "id": "9-2"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nE6",
+         "secao": "1.2",
+         "titulo": "Validação de escopo"
+        },
+        {
+         "id": "nU5",
+         "secao": "0",
+         "titulo": "Tag emergencia, FILA ATENDIMENTO e escalada"
+        },
+        {
+         "id": "nU6",
+         "secao": "0",
+         "titulo": "handoff_to_human imediato, em qualquer horário"
+        },
+        {
+         "id": "nP12",
+         "secao": "6.C",
+         "titulo": "Estimativa com caveat de avaliação médica"
+        },
+        {
+         "id": "nP10",
+         "secao": "2.4A",
+         "titulo": "PASSO 4: agendamento-particular, FILA COMERCIAL e handoff"
+        },
+        {
+         "id": "nC11",
+         "secao": "4",
+         "titulo": "Confirmação de consulta pelo portal"
+        },
+        {
+         "id": "nC10",
+         "secao": "3.2",
+         "titulo": "Não conseguiu: coleta, FILA ATENDIMENTO e handoff"
+        },
+        {
+         "id": "nX3",
+         "secao": "5.B",
+         "titulo": "Exame particular: coleta, tag e SETOR RESPONSÁVEL"
+        },
+        {
+         "id": "nX6",
+         "secao": "5.C",
+         "titulo": "Orientar a plataforma, nunca enviar o resultado"
+        },
+        {
+         "id": "nX8",
+         "secao": "5.D",
+         "titulo": "Preparo indisponível: SETOR RESPONSÁVEL e handoff"
+        },
+        {
+         "id": "nO8",
+         "secao": "7.3",
+         "titulo": "FILA OUVIDORIA e handoff_to_human"
+        },
+        {
+         "id": "nA5",
+         "secao": "8.4",
+         "titulo": "Status da solicitação de prontuário"
+        },
+        {
+         "id": "nA8",
+         "secao": "9.2",
+         "titulo": "Não pode responder: FILA ATENDIMENTO e handoff"
+        },
+        {
+         "id": "nA4",
+         "secao": "8.3",
+         "titulo": "SETOR RESPONSÁVEL e handoff_to_human"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C01",
+         "titulo": "Triagem de urgência",
+         "cita": false
+        },
+        {
+         "id": "C02",
+         "titulo": "Saudação e leitura do motivo",
+         "cita": false
+        },
+        {
+         "id": "C03",
+         "titulo": "Recusar o que está fora do escopo",
+         "cita": false
+        },
+        {
+         "id": "C06",
+         "titulo": "Valor de exame particular",
+         "cita": false
+        },
+        {
+         "id": "C07",
+         "titulo": "Preparo de exame, sem perder passo clínico",
+         "cita": false
+        },
+        {
+         "id": "C08",
+         "titulo": "Estimativa de cirurgia, com o caveat obrigatório",
+         "cita": false
+        },
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": false
+        },
+        {
+         "id": "C13",
+         "titulo": "Achar o cadastro do paciente",
+         "cita": false
+        },
+        {
+         "id": "C16",
+         "titulo": "Levar o caso para a equipe com resumo",
+         "cita": true
+        },
+        {
+         "id": "C20",
+         "titulo": "Agendamento por convênio",
+         "cita": false
+        },
+        {
+         "id": "C22",
+         "titulo": "Registrar e devolver o protocolo real",
+         "cita": false
+        },
+        {
+         "id": "C25",
+         "titulo": "Gravação quebrada não vira número inventado",
+         "cita": false
+        },
+        {
+         "id": "C26",
+         "titulo": "Prontuário médico",
+         "cita": false
+        },
+        {
+         "id": "C30",
+         "titulo": "Organizar o atendimento por trás",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "D",
+        "E",
+        "F"
+       ],
+       "elos": [
+        {
+         "id": "D9",
+         "cadeia": "D",
+         "titulo": "O paciente escolhe e a equipe fecha"
+        },
+        {
+         "id": "E1",
+         "cadeia": "E",
+         "titulo": "Achar o exame na agenda"
+        },
+        {
+         "id": "F1",
+         "cadeia": "F",
+         "titulo": "Listar os agendamentos"
         }
        ]
       },
@@ -4163,15 +5646,93 @@
        "secoes": [
         {
          "chave": "2.3.1",
-         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)",
+         "id": "2-3-1"
         },
         {
          "chave": "7.3",
-         "rotulo": "Seção 7.3: registro e fila"
+         "rotulo": "Seção 7.3: registro e fila",
+         "id": "7-3"
         },
         {
          "chave": "Coleta",
-         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)",
+         "id": "coleta"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nP16",
+         "secao": "2.3.1",
+         "titulo": "PASSO A3: preferência registrada, nada garantido"
+        },
+        {
+         "id": "nO7",
+         "secao": "7.3",
+         "titulo": "PASSO R1: private_note com o REGISTRO DE OUVIDORIA"
+        },
+        {
+         "id": "nS9",
+         "secao": "Coleta",
+         "titulo": "Busca vazia: paciente sem cadastro no sistema"
+        },
+        {
+         "id": "nO11",
+         "secao": "7.3",
+         "titulo": "PASSO R3 e R4: nota com o número e informar ao paciente"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C14",
+         "titulo": "Oferecer horários reais para escolher",
+         "cita": false
+        },
+        {
+         "id": "C15",
+         "titulo": "Dizer quem atende uma especialidade",
+         "cita": false
+        },
+        {
+         "id": "C16",
+         "titulo": "Levar o caso para a equipe com resumo",
+         "cita": true
+        },
+        {
+         "id": "C22",
+         "titulo": "Registrar e devolver o protocolo real",
+         "cita": false
+        },
+        {
+         "id": "C25",
+         "titulo": "Gravação quebrada não vira número inventado",
+         "cita": false
+        },
+        {
+         "id": "C30",
+         "titulo": "Organizar o atendimento por trás",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "D",
+        "F"
+       ],
+       "elos": [
+        {
+         "id": "D9",
+         "cadeia": "D",
+         "titulo": "O paciente escolhe e a equipe fecha"
+        },
+        {
+         "id": "F1",
+         "cadeia": "F",
+         "titulo": "Listar os agendamentos"
+        },
+        {
+         "id": "F4",
+         "cadeia": "F",
+         "titulo": "Cancelar"
         }
        ]
       },
@@ -4186,7 +5747,26 @@
        "secoes": [
         {
          "chave": "Coleta",
-         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)",
+         "id": "coleta"
+        }
+       ],
+       "nos": [],
+       "capacidades": [
+        {
+         "id": "C30",
+         "titulo": "Organizar o atendimento por trás",
+         "cita": false
+        }
+       ],
+       "cadeias": [
+        "B"
+       ],
+       "elos": [
+        {
+         "id": "B1",
+         "cadeia": "B",
+         "titulo": "Encontrar pelo CPF"
         }
        ]
       },
@@ -4201,43 +5781,194 @@
        "secoes": [
         {
          "chave": "0",
-         "rotulo": "Seção 0: triagem de urgência"
+         "rotulo": "Seção 0: triagem de urgência",
+         "id": "0"
         },
         {
          "chave": "10",
-         "rotulo": "Seção 10: fora de horário"
+         "rotulo": "Seção 10: fora de horário",
+         "id": "10"
         },
         {
          "chave": "2.3",
-         "rotulo": "Seção 2.3: preço com ancoragem"
+         "rotulo": "Seção 2.3: preço com ancoragem",
+         "id": "2-3"
         },
         {
          "chave": "2.4A",
-         "rotulo": "Seção 2.4A: aceitou fechar"
+         "rotulo": "Seção 2.4A: aceitou fechar",
+         "id": "2-4a"
         },
         {
          "chave": "3.2",
-         "rotulo": "Seção 3.2: cobertura do convênio"
+         "rotulo": "Seção 3.2: cobertura do convênio",
+         "id": "3-2"
         },
         {
          "chave": "5.B",
-         "rotulo": "Seção 5.B: exame particular"
+         "rotulo": "Seção 5.B: exame particular",
+         "id": "5-b"
         },
         {
          "chave": "5.C",
-         "rotulo": "Seção 5.C: resultado de exame (LGPD)"
+         "rotulo": "Seção 5.C: resultado de exame (LGPD)",
+         "id": "5-c"
         },
         {
          "chave": "7.0",
-         "rotulo": "Seção 7.0: ouvidoria, guardrails"
+         "rotulo": "Seção 7.0: ouvidoria, guardrails",
+         "id": "7-0"
         },
         {
          "chave": "8.1",
-         "rotulo": "Seção 8.1: prontuário, finalidade"
+         "rotulo": "Seção 8.1: prontuário, finalidade",
+         "id": "8-1"
         },
         {
          "chave": "8.4",
-         "rotulo": "Seção 8.4: status da solicitação"
+         "rotulo": "Seção 8.4: status da solicitação",
+         "id": "8-4"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nU5",
+         "secao": "0",
+         "titulo": "Tag emergencia, FILA ATENDIMENTO e escalada"
+        },
+        {
+         "id": "nP4",
+         "secao": "2.3",
+         "titulo": "assign_label: particular-aquecido"
+        },
+        {
+         "id": "nP10",
+         "secao": "2.4A",
+         "titulo": "PASSO 4: agendamento-particular, FILA COMERCIAL e handoff"
+        },
+        {
+         "id": "nC6",
+         "secao": "3.2",
+         "titulo": "agendamento-convenio e AGUARDANDO CONFIRMAÇÃO"
+        },
+        {
+         "id": "nX3",
+         "secao": "5.B",
+         "titulo": "Exame particular: coleta, tag e SETOR RESPONSÁVEL"
+        },
+        {
+         "id": "nX5",
+         "secao": "5.C",
+         "titulo": "assign_label: exame-resultado"
+        },
+        {
+         "id": "nO1",
+         "secao": "7.0",
+         "titulo": "assign_label: ouvidoria"
+        },
+        {
+         "id": "nA1",
+         "secao": "8.1",
+         "titulo": "assign_label: prontuario"
+        },
+        {
+         "id": "nA5",
+         "secao": "8.4",
+         "titulo": "Status da solicitação de prontuário"
+        },
+        {
+         "id": "nS5",
+         "secao": "10",
+         "titulo": "Fora do horário: tag fora-horario e MENSAGEM_FDS"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C01",
+         "titulo": "Triagem de urgência",
+         "cita": false
+        },
+        {
+         "id": "C05",
+         "titulo": "Preço de consulta particular",
+         "cita": false
+        },
+        {
+         "id": "C06",
+         "titulo": "Valor de exame particular",
+         "cita": false
+        },
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": false
+        },
+        {
+         "id": "C13",
+         "titulo": "Achar o cadastro do paciente",
+         "cita": false
+        },
+        {
+         "id": "C16",
+         "titulo": "Levar o caso para a equipe com resumo",
+         "cita": false
+        },
+        {
+         "id": "C20",
+         "titulo": "Agendamento por convênio",
+         "cita": false
+        },
+        {
+         "id": "C23",
+         "titulo": "Índice, não dossiê",
+         "cita": false
+        },
+        {
+         "id": "C26",
+         "titulo": "Prontuário médico",
+         "cita": false
+        },
+        {
+         "id": "C28",
+         "titulo": "Fora do horário comercial",
+         "cita": false
+        },
+        {
+         "id": "C30",
+         "titulo": "Organizar o atendimento por trás",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "D",
+        "E",
+        "F"
+       ],
+       "elos": [
+        {
+         "id": "D0",
+         "cadeia": "D",
+         "titulo": "O preço vem do hospital"
+        },
+        {
+         "id": "D9",
+         "cadeia": "D",
+         "titulo": "O paciente escolhe e a equipe fecha"
+        },
+        {
+         "id": "E1",
+         "cadeia": "E",
+         "titulo": "Achar o exame na agenda"
+        },
+        {
+         "id": "F3",
+         "cadeia": "F",
+         "titulo": "Remarcar"
+        },
+        {
+         "id": "F4",
+         "cadeia": "F",
+         "titulo": "Cancelar"
         }
        ]
       },
@@ -4252,71 +5983,289 @@
        "secoes": [
         {
          "chave": "0",
-         "rotulo": "Seção 0: triagem de urgência"
+         "rotulo": "Seção 0: triagem de urgência",
+         "id": "0"
         },
         {
          "chave": "1.1",
-         "rotulo": "Seção 1.1: motivo do contato"
+         "rotulo": "Seção 1.1: motivo do contato",
+         "id": "1-1"
         },
         {
          "chave": "1.2",
-         "rotulo": "Seção 1.2: validação de escopo"
+         "rotulo": "Seção 1.2: validação de escopo",
+         "id": "1-2"
         },
         {
          "chave": "11",
-         "rotulo": "Seção 11: encerramento"
+         "rotulo": "Seção 11: encerramento",
+         "id": "11"
         },
         {
          "chave": "2.4A",
-         "rotulo": "Seção 2.4A: aceitou fechar"
+         "rotulo": "Seção 2.4A: aceitou fechar",
+         "id": "2-4a"
         },
         {
          "chave": "2.4C",
-         "rotulo": "Seção 2.4C: rejeitou"
+         "rotulo": "Seção 2.4C: rejeitou",
+         "id": "2-4c"
         },
         {
          "chave": "3.2",
-         "rotulo": "Seção 3.2: cobertura do convênio"
+         "rotulo": "Seção 3.2: cobertura do convênio",
+         "id": "3-2"
         },
         {
          "chave": "4",
-         "rotulo": "Seção 4: confirmação pelo portal"
+         "rotulo": "Seção 4: confirmação pelo portal",
+         "id": "4"
         },
         {
          "chave": "5.A",
-         "rotulo": "Seção 5.A: exame por convênio"
+         "rotulo": "Seção 5.A: exame por convênio",
+         "id": "5-a"
         },
         {
          "chave": "5.B",
-         "rotulo": "Seção 5.B: exame particular"
+         "rotulo": "Seção 5.B: exame particular",
+         "id": "5-b"
         },
         {
          "chave": "5.C",
-         "rotulo": "Seção 5.C: resultado de exame (LGPD)"
+         "rotulo": "Seção 5.C: resultado de exame (LGPD)",
+         "id": "5-c"
         },
         {
          "chave": "5.D",
-         "rotulo": "Seção 5.D: preparo do exame"
+         "rotulo": "Seção 5.D: preparo do exame",
+         "id": "5-d"
         },
         {
          "chave": "6.C",
-         "rotulo": "Seção 6.C: estimativa de cirurgia"
+         "rotulo": "Seção 6.C: estimativa de cirurgia",
+         "id": "6-c"
         },
         {
          "chave": "7.3",
-         "rotulo": "Seção 7.3: registro e fila"
+         "rotulo": "Seção 7.3: registro e fila",
+         "id": "7-3"
         },
         {
          "chave": "8.3",
-         "rotulo": "Seção 8.3: encaminhamento"
+         "rotulo": "Seção 8.3: encaminhamento",
+         "id": "8-3"
         },
         {
          "chave": "8.4",
-         "rotulo": "Seção 8.4: status da solicitação"
+         "rotulo": "Seção 8.4: status da solicitação",
+         "id": "8-4"
         },
         {
          "chave": "9.2",
-         "rotulo": "Seção 9.2: não pode responder"
+         "rotulo": "Seção 9.2: não pode responder",
+         "id": "9-2"
+        }
+       ],
+       "nos": [
+        {
+         "id": "nE4",
+         "secao": "1.1",
+         "titulo": "Identificar o motivo e mover para EM ATENDIMENTO / ANA"
+        },
+        {
+         "id": "nE6",
+         "secao": "1.2",
+         "titulo": "Validação de escopo"
+        },
+        {
+         "id": "nU5",
+         "secao": "0",
+         "titulo": "Tag emergencia, FILA ATENDIMENTO e escalada"
+        },
+        {
+         "id": "nP12",
+         "secao": "6.C",
+         "titulo": "Estimativa com caveat de avaliação médica"
+        },
+        {
+         "id": "nP9",
+         "secao": "2.4C",
+         "titulo": "Rejeita: despedida e ENCERRADO / RESOLVIDO"
+        },
+        {
+         "id": "nP10",
+         "secao": "2.4A",
+         "titulo": "PASSO 4: agendamento-particular, FILA COMERCIAL e handoff"
+        },
+        {
+         "id": "nC11",
+         "secao": "4",
+         "titulo": "Confirmação de consulta pelo portal"
+        },
+        {
+         "id": "nC5",
+         "secao": "3.2",
+         "titulo": "Convênio fora da tabela e da base: oferecer particular"
+        },
+        {
+         "id": "nC6",
+         "secao": "3.2",
+         "titulo": "agendamento-convenio e AGUARDANDO CONFIRMAÇÃO"
+        },
+        {
+         "id": "nC9",
+         "secao": "3.2",
+         "titulo": "kanban_move_card para AGENDADO"
+        },
+        {
+         "id": "nC10",
+         "secao": "3.2",
+         "titulo": "Não conseguiu: coleta, FILA ATENDIMENTO e handoff"
+        },
+        {
+         "id": "nX2",
+         "secao": "5.A",
+         "titulo": "Exame por convênio: mesma lógica da Seção 3"
+        },
+        {
+         "id": "nX3",
+         "secao": "5.B",
+         "titulo": "Exame particular: coleta, tag e SETOR RESPONSÁVEL"
+        },
+        {
+         "id": "nX6",
+         "secao": "5.C",
+         "titulo": "Orientar a plataforma, nunca enviar o resultado"
+        },
+        {
+         "id": "nX8",
+         "secao": "5.D",
+         "titulo": "Preparo indisponível: SETOR RESPONSÁVEL e handoff"
+        },
+        {
+         "id": "nO8",
+         "secao": "7.3",
+         "titulo": "FILA OUVIDORIA e handoff_to_human"
+        },
+        {
+         "id": "nA5",
+         "secao": "8.4",
+         "titulo": "Status da solicitação de prontuário"
+        },
+        {
+         "id": "nA8",
+         "secao": "9.2",
+         "titulo": "Não pode responder: FILA ATENDIMENTO e handoff"
+        },
+        {
+         "id": "nA4",
+         "secao": "8.3",
+         "titulo": "SETOR RESPONSÁVEL e handoff_to_human"
+        },
+        {
+         "id": "nS7",
+         "secao": "11",
+         "titulo": "Encerramento em ENCERRADO / RESOLVIDO"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C01",
+         "titulo": "Triagem de urgência",
+         "cita": false
+        },
+        {
+         "id": "C02",
+         "titulo": "Saudação e leitura do motivo",
+         "cita": false
+        },
+        {
+         "id": "C03",
+         "titulo": "Recusar o que está fora do escopo",
+         "cita": false
+        },
+        {
+         "id": "C06",
+         "titulo": "Valor de exame particular",
+         "cita": false
+        },
+        {
+         "id": "C07",
+         "titulo": "Preparo de exame, sem perder passo clínico",
+         "cita": false
+        },
+        {
+         "id": "C08",
+         "titulo": "Estimativa de cirurgia, com o caveat obrigatório",
+         "cita": false
+        },
+        {
+         "id": "C09",
+         "titulo": "Cobertura de convênio por especialidade",
+         "cita": false
+        },
+        {
+         "id": "C13",
+         "titulo": "Achar o cadastro do paciente",
+         "cita": false
+        },
+        {
+         "id": "C16",
+         "titulo": "Levar o caso para a equipe com resumo",
+         "cita": true
+        },
+        {
+         "id": "C20",
+         "titulo": "Agendamento por convênio",
+         "cita": false
+        },
+        {
+         "id": "C22",
+         "titulo": "Registrar e devolver o protocolo real",
+         "cita": false
+        },
+        {
+         "id": "C25",
+         "titulo": "Gravação quebrada não vira número inventado",
+         "cita": false
+        },
+        {
+         "id": "C26",
+         "titulo": "Prontuário médico",
+         "cita": false
+        },
+        {
+         "id": "C29",
+         "titulo": "Encerramento",
+         "cita": false
+        },
+        {
+         "id": "C30",
+         "titulo": "Organizar o atendimento por trás",
+         "cita": true
+        }
+       ],
+       "cadeias": [
+        "D",
+        "E",
+        "F"
+       ],
+       "elos": [
+        {
+         "id": "D9",
+         "cadeia": "D",
+         "titulo": "O paciente escolhe e a equipe fecha"
+        },
+        {
+         "id": "E1",
+         "cadeia": "E",
+         "titulo": "Achar o exame na agenda"
+        },
+        {
+         "id": "F1",
+         "cadeia": "F",
+         "titulo": "Listar os agendamentos"
         }
        ]
       },
@@ -4328,7 +6277,11 @@
        "ordem": 26,
        "concedida": true,
        "existe": true,
-       "secoes": []
+       "secoes": [],
+       "nos": [],
+       "capacidades": [],
+       "cadeias": [],
+       "elos": []
       },
       {
        "nome": "get_current_time",
@@ -4341,9 +6294,26 @@
        "secoes": [
         {
          "chave": "Regra 9",
-         "rotulo": "Regra 9: fim de semana e feriado"
+         "rotulo": "Regra 9: fim de semana e feriado",
+         "id": "regra-9"
         }
-       ]
+       ],
+       "nos": [
+        {
+         "id": "nS4",
+         "secao": "Regra 9",
+         "titulo": "PERÍODO_FDS ativo antes de escalar?"
+        }
+       ],
+       "capacidades": [
+        {
+         "id": "C28",
+         "titulo": "Fora do horário comercial",
+         "cita": true
+        }
+       ],
+       "cadeias": [],
+       "elos": []
       },
       {
        "nome": "skip_reply",
@@ -4353,7 +6323,11 @@
        "ordem": 28,
        "concedida": true,
        "existe": true,
-       "secoes": []
+       "secoes": [],
+       "nos": [],
+       "capacidades": [],
+       "cadeias": [],
+       "elos": []
       },
       {
        "nome": "react_to_message",
@@ -4363,7 +6337,11 @@
        "ordem": 29,
        "concedida": true,
        "existe": true,
-       "secoes": []
+       "secoes": [],
+       "nos": [],
+       "capacidades": [],
+       "cadeias": [],
+       "elos": []
       },
       {
        "nome": "resolve_conversation",
@@ -4373,13 +6351,165 @@
        "ordem": 30,
        "concedida": true,
        "existe": true,
-       "secoes": []
+       "secoes": [],
+       "nos": [],
+       "capacidades": [],
+       "cadeias": [],
+       "elos": []
       }
      ]
     }
    ],
    "sem_leitura": [],
    "desconhecidas": [],
+   "por_criar": [
+    {
+     "nome": "agendar_horario",
+     "familia": "gh",
+     "lida": true,
+     "descricao": "ainda não existe: entra com a marcação final",
+     "ordem": 999,
+     "concedida": false,
+     "existe": false,
+     "secoes": [],
+     "nos": [],
+     "capacidades": [
+      {
+       "id": "C18",
+       "titulo": "Marcar o horário de verdade, com protocolo",
+       "cita": true
+      }
+     ],
+     "cadeias": [
+      "D",
+      "E"
+     ],
+     "elos": [
+      {
+       "id": "D10",
+       "cadeia": "D",
+       "titulo": "A marcação final"
+      },
+      {
+       "id": "E7",
+       "cadeia": "E",
+       "titulo": "A marcação final do exame"
+      }
+     ]
+    },
+    {
+     "nome": "cancelar_agendamento",
+     "familia": "gh",
+     "lida": true,
+     "descricao": "ainda não existe: entra com a gestão do agendado",
+     "ordem": 999,
+     "concedida": false,
+     "existe": false,
+     "secoes": [],
+     "nos": [],
+     "capacidades": [
+      {
+       "id": "C19",
+       "titulo": "Remarcar e cancelar",
+       "cita": true
+      }
+     ],
+     "cadeias": [
+      "F"
+     ],
+     "elos": [
+      {
+       "id": "F4",
+       "cadeia": "F",
+       "titulo": "Cancelar"
+      }
+     ]
+    },
+    {
+     "nome": "consultar_tipos_consulta",
+     "familia": "gh",
+     "lida": true,
+     "descricao": "ainda não existe: só faz sentido com a marcação final",
+     "ordem": 999,
+     "concedida": false,
+     "existe": false,
+     "secoes": [],
+     "nos": [],
+     "capacidades": [],
+     "cadeias": [
+      "D"
+     ],
+     "elos": [
+      {
+       "id": "D7",
+       "cadeia": "D",
+       "titulo": "Tipo da consulta (primeira ou retorno)"
+      }
+     ]
+    },
+    {
+     "nome": "listar_agendamentos",
+     "familia": "gh",
+     "lida": true,
+     "descricao": "ainda não existe: entra com a gestão do agendado",
+     "ordem": 999,
+     "concedida": false,
+     "existe": false,
+     "secoes": [],
+     "nos": [],
+     "capacidades": [
+      {
+       "id": "C19",
+       "titulo": "Remarcar e cancelar",
+       "cita": true
+      }
+     ],
+     "cadeias": [
+      "A",
+      "B"
+     ],
+     "elos": [
+      {
+       "id": "A5",
+       "cadeia": "A",
+       "titulo": "Listar os agendamentos do paciente novo"
+      },
+      {
+       "id": "B3",
+       "cadeia": "B",
+       "titulo": "Agendamentos do paciente"
+      }
+     ]
+    },
+    {
+     "nome": "reagendar_horario",
+     "familia": "gh",
+     "lida": true,
+     "descricao": "ainda não existe: entra com a gestão do agendado",
+     "ordem": 999,
+     "concedida": false,
+     "existe": false,
+     "secoes": [],
+     "nos": [],
+     "capacidades": [
+      {
+       "id": "C19",
+       "titulo": "Remarcar e cancelar",
+       "cita": true
+      }
+     ],
+     "cadeias": [
+      "F"
+     ],
+     "elos": [
+      {
+       "id": "F3",
+       "cadeia": "F",
+       "titulo": "Remarcar"
+      }
+     ]
+    }
+   ],
    "faixas": [
     {
      "id": "ida",
@@ -4557,7 +6687,13 @@
          }
         ],
         "nota": "A Ana só busca depois de validar o nome (duas palavras) e o CPF (11 dígitos). Nascimento e telefone ela não pede."
-       }
+       },
+       "secoes": [
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        }
+       ]
       },
       {
        "id": "A2",
@@ -4577,7 +6713,8 @@
          }
         ],
         "nota": "Hoje a Ana não cadastra. A ferramenta existe, mas foi tirada dela de propósito: sem a marcação final automática, cadastrar só cria registro sem uso. Ela segue o agendamento e avisa a equipe no resumo que o paciente não tem cadastro."
-       }
+       },
+       "secoes": []
       },
       {
        "id": "A3",
@@ -4598,7 +6735,13 @@
         ],
         "ana": "Confirma para mim: é para o agendamento no nome de [nome]?",
         "nota": "Paciente com cadastro: a Ana confirma pelo nome que a agenda devolveu, sem ler o CPF de volta."
-       }
+       },
+       "secoes": [
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        }
+       ]
       },
       {
        "id": "A4",
@@ -4618,7 +6761,13 @@
          }
         ],
         "nota": "Só quando o paciente quer agendar e não tem o CPF à mão. A busca por CPF é a preferencial."
-       }
+       },
+       "secoes": [
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        }
+       ]
       },
       {
        "id": "A5",
@@ -4638,7 +6787,20 @@
          }
         ],
         "nota": "A Ana ainda não lista agendamentos. Quando existir, é o que evita marcar em duplicidade."
-       }
+       },
+       "secoes": []
+      }
+     ],
+     "ferramentas": [
+      "buscar_paciente_por_cpf",
+      "cadastrar_paciente",
+      "buscar_paciente_por_telefone",
+      "listar_agendamentos"
+     ],
+     "secoes": [
+      {
+       "id": "coleta",
+       "rotulo": "Princípio de Coleta (PASSOS 1-6)"
       }
      ]
     },
@@ -4673,7 +6835,13 @@
         ],
         "ana": "Confirma para mim: é para o agendamento no nome de [nome]?",
         "nota": "A Ana guarda nome e CPF no contato. Na conversa seguinte ela confirma pelo nome sem pedir o CPF de novo."
-       }
+       },
+       "secoes": [
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        }
+       ]
       },
       {
        "id": "B2",
@@ -4686,7 +6854,8 @@
        "conversa": {
         "nota": "A Ana não mexe com carteira de convênio. Quem cadastra carteira é a recepção.",
         "ferramentas": []
-       }
+       },
+       "secoes": []
       },
       {
        "id": "B3",
@@ -4706,7 +6875,19 @@
          }
         ],
         "nota": "Ainda sem ferramenta na Ana. No dia em que existir, é o que responde \"tenho consulta marcada?\"."
-       }
+       },
+       "secoes": []
+      }
+     ],
+     "ferramentas": [
+      "buscar_paciente_por_cpf",
+      "set_custom_attribute",
+      "listar_agendamentos"
+     ],
+     "secoes": [
+      {
+       "id": "coleta",
+       "rotulo": "Princípio de Coleta (PASSOS 1-6)"
       }
      ]
     },
@@ -4734,7 +6915,17 @@
          }
         ],
         "nota": "Cobertura de convênio não é tabela: é a cadeia da agenda. O primeiro elo é o mesmo do particular."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "C2",
@@ -4755,7 +6946,17 @@
         ],
         "ana": "Boa notícia: a Unimed atende Cardiologia aqui. Quer que eu veja os horários disponíveis para você?",
         "nota": "A Ana procura o nome que o paciente disse na lista e nunca lê a lista inteira. Convênio ausente vira negativa clara, mais a oferta do particular, sem inventar."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "C3",
@@ -4775,7 +6976,17 @@
          }
         ],
         "nota": "Plano é uso interno: a Ana não diz o nome ao paciente. Só pergunta se o paciente mencionar o plano dele."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "C4",
@@ -4788,7 +6999,8 @@
        "conversa": {
         "nota": "A Ana não desce até aqui: a busca de horários aceita o plano direto.",
         "ferramentas": []
-       }
+       },
+       "secoes": []
       },
       {
        "id": "C5",
@@ -4810,7 +7022,17 @@
         ],
         "ana": "Achei estes horários para Cardiologia pela Unimed:\n\n1) [data] às [hora] com [médico]\n2) [data] às [hora] com [médico]\n3) [data] às [hora] com [médico]\n\nMe diz o número da opção que você prefere?",
         "nota": "Mesma cadeia do particular, com o convênio escolhido. Provado em 26/08/2026 com horário real."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "C6",
@@ -4823,7 +7045,8 @@
        "conversa": {
         "nota": "A Ana nunca grava carteira. Este elo só prova que a agenda valida de verdade.",
         "ferramentas": []
-       }
+       },
+       "secoes": []
       },
       {
        "id": "C7",
@@ -4836,7 +7059,24 @@
        "conversa": {
         "nota": "Fora do escopo da Ana.",
         "ferramentas": []
-       }
+       },
+       "secoes": []
+      }
+     ],
+     "ferramentas": [
+      "consultar_especialidades_agenda",
+      "consultar_convenios_agenda",
+      "consultar_planos_convenio",
+      "consultar_horarios_livres"
+     ],
+     "secoes": [
+      {
+       "id": "2-3-1",
+       "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+      },
+      {
+       "id": "3-2",
+       "rotulo": "Seção 3.2: cobertura do convênio"
       }
      ]
     },
@@ -4871,7 +7111,17 @@
         ],
         "ana": "A consulta de Cardiologia é R$ 380. Quer que eu veja os horários disponíveis para você?",
         "nota": "Preço direto, sem diferencial na abertura (o diferencial só aparece na hesitação). Junto vai a etiqueta de paciente particular aquecido."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3",
+         "rotulo": "Seção 2.3: preço com ancoragem"
+        },
+        {
+         "id": "9-1",
+         "rotulo": "Seção 9.1: responder só o perguntado"
+        }
+       ]
       },
       {
        "id": "D1",
@@ -4895,7 +7145,13 @@
         ],
         "ana": "Confirma para mim: é para o agendamento no nome de [nome]?",
         "nota": "Na conversa de 08/09 a busca voltou vazia e a Ana seguiu mesmo assim: cadastro não é pré-requisito hoje, e ela avisa a equipe no resumo."
-       }
+       },
+       "secoes": [
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        }
+       ]
       },
       {
        "id": "D2",
@@ -4916,7 +7172,17 @@
          }
         ],
         "nota": "Na conversa de 08/09 foram quatro chamadas em 21 segundos, sem mensagem no meio. A Ana confere o nome devolvido antes de seguir, porque a busca casa por aproximação."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "D3",
@@ -4936,7 +7202,17 @@
          }
         ],
         "nota": "Escolha da Ana, sem perguntar ao paciente: a linha Particular da lista de convênios. O nome decide, porque há mais de uma linha marcada como particular."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "D4",
@@ -4956,7 +7232,17 @@
          }
         ],
         "nota": "Ponto de decisão do programa: perguntar o plano ao paciente ou fixar um padrão."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "D5",
@@ -4977,7 +7263,17 @@
         ],
         "ana": "Perfeito! Achei estes horários para Cardiologia:\n\n1) [data] às [hora] com [médico]\n2) [data] às [hora] com [médico]\n3) [data] às [hora] com [médico]\n\nMe diz o número da opção que você prefere?",
         "nota": "A mensagem é montada com a resposta real da agenda: no máximo cinco opções, com data, hora e médico. A conversa para aqui e espera o número."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "D6",
@@ -4999,7 +7295,13 @@
         ],
         "ana": "Na agenda de Cardiologia atendem [profissionais publicados]. Quer que eu veja os horários?",
         "nota": "Só quando o paciente pergunta quem atende. A Ana nunca promete que o nome citado tem horário."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        }
+       ]
       },
       {
        "id": "D7",
@@ -5019,7 +7321,8 @@
          }
         ],
         "nota": "Sem ferramenta na Ana hoje. Só entra junto com a marcação final."
-       }
+       },
+       "secoes": []
       },
       {
        "id": "D8",
@@ -5032,7 +7335,8 @@
        "conversa": {
         "nota": "Sem ferramenta na Ana. Se um dia vier preparo por aqui, a Ana repassaria antes de confirmar.",
         "ferramentas": []
-       }
+       },
+       "secoes": []
       },
       {
        "id": "D9",
@@ -5072,7 +7376,101 @@
         ],
         "ana": "Perfeito! Anotei sua preferência de horário. Nossa equipe vai entrar em contato em breve para confirmar tudo com você.",
         "nota": "Hoje quem marca é a equipe. A Ana registra o horário escolhido numa nota interna, etiqueta a conversa, move o card para a fila comercial e passa para a equipe com o resumo: especialidade, valor, horário, tem ou não cadastro."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "7-3",
+         "rotulo": "Seção 7.3: registro e fila"
+        },
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        },
+        {
+         "id": "0",
+         "rotulo": "Seção 0: triagem de urgência"
+        },
+        {
+         "id": "10",
+         "rotulo": "Seção 10: fora de horário"
+        },
+        {
+         "id": "2-3",
+         "rotulo": "Seção 2.3: preço com ancoragem"
+        },
+        {
+         "id": "2-4a",
+         "rotulo": "Seção 2.4A: aceitou fechar"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        },
+        {
+         "id": "5-b",
+         "rotulo": "Seção 5.B: exame particular"
+        },
+        {
+         "id": "5-c",
+         "rotulo": "Seção 5.C: resultado de exame (LGPD)"
+        },
+        {
+         "id": "7-0",
+         "rotulo": "Seção 7.0: ouvidoria, guardrails"
+        },
+        {
+         "id": "8-1",
+         "rotulo": "Seção 8.1: prontuário, finalidade"
+        },
+        {
+         "id": "8-4",
+         "rotulo": "Seção 8.4: status da solicitação"
+        },
+        {
+         "id": "1-1",
+         "rotulo": "Seção 1.1: motivo do contato"
+        },
+        {
+         "id": "1-2",
+         "rotulo": "Seção 1.2: validação de escopo"
+        },
+        {
+         "id": "11",
+         "rotulo": "Seção 11: encerramento"
+        },
+        {
+         "id": "2-4c",
+         "rotulo": "Seção 2.4C: rejeitou"
+        },
+        {
+         "id": "4",
+         "rotulo": "Seção 4: confirmação pelo portal"
+        },
+        {
+         "id": "5-a",
+         "rotulo": "Seção 5.A: exame por convênio"
+        },
+        {
+         "id": "5-d",
+         "rotulo": "Seção 5.D: preparo do exame"
+        },
+        {
+         "id": "6-c",
+         "rotulo": "Seção 6.C: estimativa de cirurgia"
+        },
+        {
+         "id": "8-3",
+         "rotulo": "Seção 8.3: encaminhamento"
+        },
+        {
+         "id": "9-2",
+         "rotulo": "Seção 9.2: não pode responder"
+        }
+       ]
       },
       {
        "id": "D10",
@@ -5092,7 +7490,121 @@
          }
         ],
         "nota": "Quando as regras de marcação entrarem em vigor: resumo (especialidade, profissional, data, hora, valor), confirmação explícita, uma marcação só, protocolo devolvido pela agenda, sem passar pela equipe."
-       }
+       },
+       "secoes": []
+      }
+     ],
+     "ferramentas": [
+      "consultar_precos_consultas",
+      "assign_label",
+      "buscar_paciente_por_cpf",
+      "consultar_especialidades_agenda",
+      "consultar_convenios_agenda",
+      "consultar_planos_convenio",
+      "consultar_horarios_livres",
+      "consultar_prestadores_agenda",
+      "consultar_tipos_consulta",
+      "private_note",
+      "kanban_move_card",
+      "handoff_to_human",
+      "agendar_horario"
+     ],
+     "secoes": [
+      {
+       "id": "2-3",
+       "rotulo": "Seção 2.3: preço com ancoragem"
+      },
+      {
+       "id": "9-1",
+       "rotulo": "Seção 9.1: responder só o perguntado"
+      },
+      {
+       "id": "coleta",
+       "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+      },
+      {
+       "id": "2-3-1",
+       "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+      },
+      {
+       "id": "3-2",
+       "rotulo": "Seção 3.2: cobertura do convênio"
+      },
+      {
+       "id": "7-3",
+       "rotulo": "Seção 7.3: registro e fila"
+      },
+      {
+       "id": "0",
+       "rotulo": "Seção 0: triagem de urgência"
+      },
+      {
+       "id": "10",
+       "rotulo": "Seção 10: fora de horário"
+      },
+      {
+       "id": "2-4a",
+       "rotulo": "Seção 2.4A: aceitou fechar"
+      },
+      {
+       "id": "5-b",
+       "rotulo": "Seção 5.B: exame particular"
+      },
+      {
+       "id": "5-c",
+       "rotulo": "Seção 5.C: resultado de exame (LGPD)"
+      },
+      {
+       "id": "7-0",
+       "rotulo": "Seção 7.0: ouvidoria, guardrails"
+      },
+      {
+       "id": "8-1",
+       "rotulo": "Seção 8.1: prontuário, finalidade"
+      },
+      {
+       "id": "8-4",
+       "rotulo": "Seção 8.4: status da solicitação"
+      },
+      {
+       "id": "1-1",
+       "rotulo": "Seção 1.1: motivo do contato"
+      },
+      {
+       "id": "1-2",
+       "rotulo": "Seção 1.2: validação de escopo"
+      },
+      {
+       "id": "11",
+       "rotulo": "Seção 11: encerramento"
+      },
+      {
+       "id": "2-4c",
+       "rotulo": "Seção 2.4C: rejeitou"
+      },
+      {
+       "id": "4",
+       "rotulo": "Seção 4: confirmação pelo portal"
+      },
+      {
+       "id": "5-a",
+       "rotulo": "Seção 5.A: exame por convênio"
+      },
+      {
+       "id": "5-d",
+       "rotulo": "Seção 5.D: preparo do exame"
+      },
+      {
+       "id": "6-c",
+       "rotulo": "Seção 6.C: estimativa de cirurgia"
+      },
+      {
+       "id": "8-3",
+       "rotulo": "Seção 8.3: encaminhamento"
+      },
+      {
+       "id": "9-2",
+       "rotulo": "Seção 9.2: não pode responder"
       }
      ]
     },
@@ -5121,7 +7633,21 @@
         ],
         "ana": "O Ecocardiograma particular é R$ [valor da tabela]. Quer agendar?",
         "nota": "Valor direto, sem despejar o preparo. O preparo só quando pedirem, com a mesma ferramenta."
-       }
+       },
+       "secoes": [
+        {
+         "id": "5-a",
+         "rotulo": "Seção 5.A: exame por convênio"
+        },
+        {
+         "id": "5-d",
+         "rotulo": "Seção 5.D: preparo do exame"
+        },
+        {
+         "id": "6-b",
+         "rotulo": "Seção 6.B: valor de exame particular"
+        }
+       ]
       },
       {
        "id": "E1",
@@ -5161,7 +7687,13 @@
         ],
         "ana": "Anotei tudo, [primeiro nome]! Nossa equipe vai entrar em contato para combinar o horário e os detalhes do exame com você.",
         "nota": "Hoje a Ana não consulta agenda de exame. Exame particular segue para a equipe: nome e CPF, busca do cadastro, etiqueta, card no setor responsável e passagem para a equipe."
-       }
+       },
+       "secoes": [
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        }
+       ]
       },
       {
        "id": "E2",
@@ -5174,7 +7706,8 @@
        "conversa": {
         "nota": "Futuro: a Ana faria as perguntas uma a uma. Resposta que impede vira passagem para a equipe, sem agendar.",
         "ferramentas": []
-       }
+       },
+       "secoes": []
       },
       {
        "id": "E3",
@@ -5194,7 +7727,21 @@
          }
         ],
         "nota": "Hoje o preparo já sai da tabela do hospital. Este elo seria a segunda fonte."
-       }
+       },
+       "secoes": [
+        {
+         "id": "5-a",
+         "rotulo": "Seção 5.A: exame por convênio"
+        },
+        {
+         "id": "5-d",
+         "rotulo": "Seção 5.D: preparo do exame"
+        },
+        {
+         "id": "6-b",
+         "rotulo": "Seção 6.B: valor de exame particular"
+        }
+       ]
       },
       {
        "id": "E4",
@@ -5214,7 +7761,17 @@
          }
         ],
         "nota": "As regras mandam usar a mesma cadeia para cobertura de exame por convênio."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "E5",
@@ -5234,7 +7791,17 @@
          }
         ],
         "nota": "Mesma lista numerada da consulta."
-       }
+       },
+       "secoes": [
+        {
+         "id": "2-3-1",
+         "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+        },
+        {
+         "id": "3-2",
+         "rotulo": "Seção 3.2: cobertura do convênio"
+        }
+       ]
       },
       {
        "id": "E6",
@@ -5247,7 +7814,8 @@
        "conversa": {
         "nota": "Futuro: a Ana pediria a foto do pedido médico e enviaria para a agenda.",
         "ferramentas": []
-       }
+       },
+       "secoes": []
       },
       {
        "id": "E7",
@@ -5267,7 +7835,44 @@
          }
         ],
         "nota": "Junto com a marcação da consulta."
-       }
+       },
+       "secoes": []
+      }
+     ],
+     "ferramentas": [
+      "consultar_exames",
+      "buscar_paciente_por_cpf",
+      "assign_label",
+      "kanban_move_card",
+      "handoff_to_human",
+      "consultar_convenios_agenda",
+      "consultar_horarios_livres",
+      "agendar_horario"
+     ],
+     "secoes": [
+      {
+       "id": "5-a",
+       "rotulo": "Seção 5.A: exame por convênio"
+      },
+      {
+       "id": "5-d",
+       "rotulo": "Seção 5.D: preparo do exame"
+      },
+      {
+       "id": "6-b",
+       "rotulo": "Seção 6.B: valor de exame particular"
+      },
+      {
+       "id": "coleta",
+       "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+      },
+      {
+       "id": "2-3-1",
+       "rotulo": "Seção 2.3.1: horários livres (A1-A3)"
+      },
+      {
+       "id": "3-2",
+       "rotulo": "Seção 3.2: cobertura do convênio"
       }
      ]
     },
@@ -5316,7 +7921,13 @@
         ],
         "ana": "Anotei seu pedido de cancelamento, [primeiro nome]. Nossa equipe vai confirmar com você em breve.",
         "nota": "Hoje a Ana não lista nem cancela. Ela identifica o paciente, registra o pedido (e o motivo, se dito) numa nota interna e passa para a equipe."
-       }
+       },
+       "secoes": [
+        {
+         "id": "coleta",
+         "rotulo": "Princípio de Coleta (PASSOS 1-6)"
+        }
+       ]
       },
       {
        "id": "F2",
@@ -5329,7 +7940,8 @@
        "conversa": {
         "nota": "Futuro: a Ana confirma qual agendamento antes de agir.",
         "ferramentas": []
-       }
+       },
+       "secoes": []
       },
       {
        "id": "F3",
@@ -5355,7 +7967,8 @@
          }
         ],
         "nota": "Repetir a cadeia de horários, confirmação explícita, uma remarcação só, etiqueta de remarcação."
-       }
+       },
+       "secoes": []
       },
       {
        "id": "F4",
@@ -5389,7 +8002,23 @@
         ],
         "ana": "Cancelado. Se quiser remarcar, é só me chamar por aqui.",
         "nota": "Confirmar explicitamente qual agendamento, cancelar uma vez, etiqueta de cancelamento, motivo em nota interna."
-       }
+       },
+       "secoes": []
+      }
+     ],
+     "ferramentas": [
+      "buscar_paciente_por_cpf",
+      "private_note",
+      "kanban_move_card",
+      "handoff_to_human",
+      "reagendar_horario",
+      "assign_label",
+      "cancelar_agendamento"
+     ],
+     "secoes": [
+      {
+       "id": "coleta",
+       "rotulo": "Princípio de Coleta (PASSOS 1-6)"
       }
      ]
     }
@@ -5441,5 +8070,16 @@
     }
    ]
   }
+ },
+ "ligacoes": {
+  "ferramenta->secao": 66,
+  "ferramenta->no": 65,
+  "ferramenta->capacidade": 87,
+  "ferramenta->elo": 44,
+  "secao->no": 80,
+  "secao->capacidade": 33,
+  "capacidade->secao": 33,
+  "elo->secao": 59,
+  "cadeia->ferramenta": 39
  }
 }

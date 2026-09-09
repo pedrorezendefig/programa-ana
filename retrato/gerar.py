@@ -241,6 +241,7 @@ def montar_faz(comp, cur):
                 "id": c["id"],
                 "titulo": o.get("titulo", c["titulo"]),
                 "secao": o.get("secao", c["secao"]),
+                "secao_ids": list(c.get("secao_ids") or []),
                 "estado": e["classe"],
                 "estado_rotulo": e["rotulo"],
                 "ferramentas": parse_lista_tools(o.get("tools", c.get("tools", ""))),
@@ -263,6 +264,20 @@ def montar_faz(comp, cur):
     return {"placar": placar, "total": sum(placar.values()), "legenda": legenda, "blocos": blocos}
 
 
+TRAVESSAO = re.compile(r"\s*[\u2014\u2013]\s*")
+
+
+def sem_travessao(texto):
+    """A moldura do retrato não leva travessão. Entre dois nomes em caixa alta (EM ATENDIMENTO / ANA,
+    ENCERRADO / RESOLVIDO) vira barra; no meio de prosa vira vírgula. O miolo literal não passa por aqui."""
+    def troca(m):
+        antes = texto[:m.start()].rstrip()
+        depois = texto[m.end():].lstrip()
+        caixa_alta = re.search(r"[A-ZÀ-Ü]{2,}$", antes) and re.match(r"[A-ZÀ-Ü]{2,}", depois)
+        return " / " if caixa_alta else ", "
+    return TRAVESSAO.sub(troca, texto or "")
+
+
 def montar_regras(sop, circ, cur):
     zonas_cur = cur.get("zonas") or {}
     # Os ids dos nós do SOP (E1, P3, S2...) colidem com o formato dos códigos de tarefa
@@ -282,15 +297,15 @@ def montar_regras(sop, circ, cur):
     for n in sop["nos"]:
         nos.append({
             "id": nid(n["id"]), "raia": n["raia"], "col": n["col"], "linha": n["linha"],
-            "tipo": tipo(n["tipo"]), "secao": n["secao"], "titulo": n["titulo"],
-            "resumo": resumos.get(n["id"], n["resumo"]),
+            "tipo": tipo(n["tipo"]), "secao": n["secao"], "titulo": sem_travessao(n["titulo"]),
+            "resumo": sem_travessao(resumos.get(n["id"], n["resumo"])),
             "ferramentas": list(n.get("tools") or []),
             "trechos": [{"linhas": t.get("linhas", ""), "texto": t["texto"]} for t in n["ancora"]["trechos"]],
         })
     secoes = []
     for s in circ["secoes"]:
         secoes.append({
-            "id": s["id"], "chave": s["chave"], "rotulo": s["rotulo"], "papel": s["papel"],
+            "id": s["id"], "chave": s["chave"], "rotulo": sem_travessao(s["rotulo"]), "papel": sem_travessao(s["papel"]),
             "ferramentas": list(s.get("tools") or []),
             "trechos": [{"linhas": t.get("linhas", ""), "texto": t["texto"]} for t in s["trechos"]],
         })
@@ -329,10 +344,12 @@ def montar_ferramentas(vivas, concedidas, circ, sop, cur, plataforma_lida):
         for chave in d.get("secoes_extra") or []:
             marca(nome, chave)
     rotulo_secao = {s["chave"]: s["rotulo"] for s in circ["secoes"]}
+    id_secao = {s["chave"]: s["id"] for s in circ["secoes"]}
 
     def secoes_de(nome):
         chaves = sorted(chamadas.get(nome, set()), key=lambda k: (rotulo_secao.get(k) is None, k))
-        return [{"chave": k, "rotulo": rotulo_secao.get(k, k)} for k in chaves]
+        # seção sem ficha própria na anatomia (ex.: "7.5") fica sem id, e o site não inventa link
+        return [{"chave": k, "rotulo": rotulo_secao.get(k, k), "id": id_secao.get(k)} for k in chaves]
 
     itens = {}
     conc = cur.get("concessao") or {}
@@ -375,6 +392,9 @@ def montar_busca(ferramentas, integ, cur, conferido_em, como):
                          key=lambda f: (f["ordem"], f["nome"]))
     desconhecidas = sorted([f for f in ferramentas.values() if f["familia"] == "desconhecida"],
                            key=lambda f: f["nome"])
+    # as ferramentas que as cadeias citam e ainda não existem ganham ficha própria, para
+    # toda menção a elas ter destino (contrato de links) e o "ainda não" morar na esfera
+    por_criar = sorted([f for f in ferramentas.values() if not f["existe"]], key=lambda f: f["nome"])
 
     por_no = {n["id"]: n for n in integ["nos"]}
     faixas = []
@@ -392,6 +412,7 @@ def montar_busca(ferramentas, integ, cur, conferido_em, como):
     return {
         "conferido_em": conferido_em, "como_conferido": como,
         "grupos": grupos, "sem_leitura": sem_leitura, "desconhecidas": desconhecidas,
+        "por_criar": por_criar,
         "faixas": faixas,
     }
 
@@ -422,6 +443,87 @@ def montar_gh(ferramentas, cur):
         cadeias.append({"letra": c["letra"], "titulo": c["titulo"], "resumo": c["resumo"], "elos": elos})
     return {"cadeias": cadeias, "da": g["da"], "nao_da": g["nao_da"], "legenda": [
         {"classe": v["classe"], "rotulo": v["rotulo"]} for v in vereditos.values()]}
+
+
+def ligar(doc):
+    """Contrato de links (ADR-0029): grava as ligações inversas, quem menciona quem.
+    Ferramenta: seções que a chamam, nós do mapa, capacidades (que a citam ou cuja seção
+    a chama), cadeias e elos que a usam. Seção: nós do mapa, ferramentas, capacidades.
+    Capacidade: seções e ferramentas. Elo: ferramentas e seções. Cadeia: ferramentas e seções.
+    Item sem ligação real fica com a lista vazia, e o site não inventa link."""
+    e = doc["esferas"]
+    regras, faz, busca, gh = e["regras"], e["faz"], e["busca"], e["global_health"]
+    sec_por_id = {s["id"]: s for s in regras["secoes"]}
+
+    ferr = {}
+    for grupo in busca["grupos"]:
+        for f in grupo["ferramentas"]:
+            ferr[f["nome"]] = f
+    for f in busca["sem_leitura"] + busca["desconhecidas"] + busca["por_criar"]:
+        ferr[f["nome"]] = f
+
+    for s in regras["secoes"]:
+        s["nos"] = [{"id": n["id"], "titulo": n["titulo"]} for n in regras["nos"] if n["secao"] == s["chave"]]
+        s["capacidades"] = []
+    for f in ferr.values():
+        f["nos"] = [{"id": n["id"], "secao": n["secao"], "titulo": n["titulo"]}
+                    for n in regras["nos"] if f["nome"] in n["ferramentas"]]
+        f["capacidades"], f["cadeias"], f["elos"] = [], [], []
+
+    for b in faz["blocos"]:
+        for c in b["capacidades"]:
+            ids = c.pop("secao_ids")
+            c["secoes"] = [{"id": i, "rotulo": sec_por_id[i]["rotulo"]} for i in ids if i in sec_por_id]
+            for sc in c["secoes"]:
+                sec_por_id[sc["id"]]["capacidades"].append({"id": c["id"], "titulo": c["titulo"]})
+            citadas = [t["nome"] for t in c["ferramentas"] if "nome" in t]
+            for f in ferr.values():
+                cita = f["nome"] in citadas
+                cai = any(sc.get("id") in ids for sc in f["secoes"])
+                if cita or cai:
+                    f["capacidades"].append({"id": c["id"], "titulo": c["titulo"], "cita": cita})
+
+    def secoes_das(nomes):
+        saida = []
+        for n in nomes:
+            for sc in ferr.get(n, {}).get("secoes", []):
+                if sc.get("id") and all(x["id"] != sc["id"] for x in saida):
+                    saida.append({"id": sc["id"], "rotulo": sc["rotulo"]})
+        return saida
+
+    for c in gh["cadeias"]:
+        c["ferramentas"], c["secoes"] = [], []
+        for el in c["elos"]:
+            nomes = [f["nome"] for f in el["conversa"].get("ferramentas") or []]
+            # a seção do elo é a das ferramentas que definem o passo; as nativas
+            # (etiqueta, nota, funil) só entram quando são tudo o que o elo chama
+            principais = [n for n in nomes if ferr.get(n, {}).get("familia") != "nativa"] or nomes
+            el["secoes"] = secoes_das(principais)
+            for n in nomes:
+                f = ferr.get(n)
+                if not f:
+                    continue
+                if all(x["id"] != el["id"] for x in f["elos"]):
+                    f["elos"].append({"id": el["id"], "cadeia": c["letra"], "titulo": el["titulo"]})
+                if c["letra"] not in f["cadeias"]:
+                    f["cadeias"].append(c["letra"])
+                if n not in c["ferramentas"]:
+                    c["ferramentas"].append(n)
+            for sc in el["secoes"]:
+                if all(x["id"] != sc["id"] for x in c["secoes"]):
+                    c["secoes"].append(sc)
+
+    return {
+        "ferramenta->secao": sum(len([s for s in f["secoes"] if s.get("id")]) for f in ferr.values()),
+        "ferramenta->no": sum(len(f["nos"]) for f in ferr.values()),
+        "ferramenta->capacidade": sum(len(f["capacidades"]) for f in ferr.values()),
+        "ferramenta->elo": sum(len(f["elos"]) for f in ferr.values()),
+        "secao->no": sum(len(s["nos"]) for s in regras["secoes"]),
+        "secao->capacidade": sum(len(s["capacidades"]) for s in regras["secoes"]),
+        "capacidade->secao": sum(len(c["secoes"]) for b in faz["blocos"] for c in b["capacidades"]),
+        "elo->secao": sum(len(el["secoes"]) for c in gh["cadeias"] for el in c["elos"]),
+        "cadeia->ferramenta": sum(len(c["ferramentas"]) for c in gh["cadeias"]),
+    }
 
 
 def montar(args):
@@ -457,6 +559,7 @@ def montar(args):
             "global_health": montar_gh(ferramentas, cur),
         },
     }
+    doc["ligacoes"] = ligar(doc)
     return doc
 
 
@@ -471,8 +574,10 @@ def resumo(doc):
         len(e["regras"]["nos"]), len(e["regras"]["raias"]), len(e["regras"]["arestas"]), len(e["regras"]["secoes"])))
     print("  ferramentas por origem: %s; não lidas: %d; destino desconhecido: %d" % (
         ", ".join("%s %d" % kv for kv in por_fam.items()), len(e["busca"]["sem_leitura"]), len(e["busca"]["desconhecidas"])))
-    print("  cadeias: %d, elos: %d" % (len(e["global_health"]["cadeias"]),
-                                        sum(len(c["elos"]) for c in e["global_health"]["cadeias"])))
+    print("  cadeias: %d, elos: %d; ferramentas por criar: %d" % (
+        len(e["global_health"]["cadeias"]), sum(len(c["elos"]) for c in e["global_health"]["cadeias"]),
+        len(e["busca"]["por_criar"])))
+    print("  ligações: " + ", ".join("%s %d" % kv for kv in doc["ligacoes"].items()))
 
 
 def main():
@@ -505,6 +610,11 @@ def main():
             print("  [%s] '%s' em: ...%s..." % (rotulo, trecho, contexto), file=sys.stderr)
         return 3
 
+    moldura = json.dumps(sem_literais(doc), ensure_ascii=False)
+    if TRAVESSAO.search(moldura):
+        m = TRAVESSAO.search(moldura)
+        print("ERRO: travessão na moldura em: ...%s... Nada foi gravado." % moldura[max(0, m.start() - 60):m.end() + 60], file=sys.stderr)
+        return 4
     avisar_vocabulario(doc)
     resumo(doc)
     if args.dry_run:

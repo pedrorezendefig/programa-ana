@@ -1,0 +1,111 @@
+/* Retrato da Ana: os tokens do design system do aplicativo do Hospital São Matheus.
+   Copiados do globals.css do app (fonte HP Simplified só no peso 400, azul-marinho
+   da logo, verde, âmbar, vermelho e azul-info de estado, raios de 1 a 12 px, sombra
+   premium, vidro a 80% com desfoque de 12 px, fade-in-up). Tudo de movimento
+   desliga sob prefers-reduced-motion. */
+
+@font-face {
+  font-family: "HP Simplified";
+  src: url("fonts/HPSimplified_Rg.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font: "HP Simplified", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --cor-principal: #2B2E7E;
+  --cor-principal-clara: #3B6FB6;
+  --cor-principal-escura: #1A1C4E;
+  --cor-principal-tinta: #EEF0FB;
+  --cor-principal-fio: #C7CBE8;
+
+  --cor-verde: #88D7A4;
+  --cor-verde-fio: #5FBE8A;
+  --cor-verde-tinta: #E8F6EE;
+  --cor-verde-texto: #1F7A4D;
+  --cor-verde-escuro: #14532D;
+
+  --cor-ambar: #FFC067;
+  --cor-ambar-fio: #F2C078;
+  --cor-ambar-tinta: #FFF9EF;
+  --cor-ambar-texto: #7A4E12;
+
+  --cor-vermelho: #FC9D9D;
+  --cor-vermelho-fio: #F3BFBF;
+  --cor-vermelho-tinta: #FDEEEE;
+  --cor-vermelho-texto: #B4443E;
+
+  --cor-info: #7CC2F2;
+  --cor-info-tinta: #E6F3FC;
+  --cor-info-texto: #1E5A8A;
+
+  --cor-fundo: #F8FAFC;
+  --cor-superficie: #FFFFFF;
+  --cor-superficie-2: #F1F5F9;
+  --cor-texto: #1E293B;
+  --cor-texto-2: #64748B;
+  --cor-texto-3: #94A3B8;
+  --cor-borda: #E2E8F0;
+  --cor-borda-2: #CBD5E1;
+
+  --sombra: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  --sombra-forte: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.12);
+  --sombra-leve: 0 1px 3px rgba(15, 23, 42, 0.06);
+
+  --raio-xs: 1px;
+  --raio-sm: 2px;
+  --raio-md: 3px;
+  --raio-lg: 4px;
+  --raio-xl: 6px;
+  --raio-2xl: 8px;
+  --raio-3xl: 12px;
+  --raio-pill: 999px;
+
+  --tempo-aba: 250ms;
+  --tempo-card: 400ms;
+}
+
+/* Vidro: só no que flutua (barra fixa, painel). */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fade-in-up var(--tempo-card) ease-out both; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes entra-aba {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes sai-aba {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+*:focus-visible {
+  outline: 3px solid var(--cor-principal-clara);
+  outline-offset: 2px;
+  border-radius: var(--raio-lg);
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cor-borda-2); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cor-texto-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-up { animation: none !important; opacity: 1; transform: none; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  html { scroll-behavior: auto !important; }
+}
