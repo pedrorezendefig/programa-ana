@@ -2,8 +2,10 @@
    agora uma seção do Cockpit (ADR-0028). O index.html chama
      Grafo.montar(roadmap)   com o objeto que GET /api/roadmap já devolveu
      Grafo.abrir(id)         para abrir a ficha de um nó (painel lateral)
-   A página precisa ter: #placar, #filtros, #grafo (com o svg #arestas dentro),
-   o aside #painel com #painel-corpo e #btn-fechar. Só leitura: nada grava. */
+   A página precisa ter: #grafo-placar, #grafo-filtros, #grafo (com o svg #arestas dentro),
+   o aside #grafo-painel com #grafo-painel-corpo e #grafo-btn-fechar (ids com prefixo
+   desde o ADR-0030, porque o Cockpit divide a página com os motores do Retrato).
+   Só leitura: nada grava. */
 
 (function () {
   "use strict";
@@ -57,7 +59,7 @@
   const ROT_DONO = [["P", "Pedro"], ["C", "Claude"], ["E", "Externo"]];
 
   function renderFiltros() {
-    const alvo = document.getElementById("filtros");
+    const alvo = document.getElementById("grafo-filtros");
     const contaCat = {}, contaDono = { P: 0, C: 0, E: 0 };
     NOS.forEach(function (n) {
       const c = categoriaDe(n);
@@ -108,7 +110,7 @@
     const feitas = NOS.filter(n => n.estado === "feito").length;
     pecas.push('<button class="peca" data-ir="grafo"><span class="n">' + feitas +
       '</span><span class="rot">já concluídas</span></button>');
-    const alvo = document.getElementById("placar");
+    const alvo = document.getElementById("grafo-placar");
     alvo.innerHTML = pecas.join("");
     alvo.querySelectorAll(".peca").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -213,7 +215,6 @@
     renderPlacar();
     desenhar();
     aplicarFiltros();
-    if (location.hash) abrirFicha(location.hash.slice(1));
   }
 
   /* ---- layout (OS16): uma faixa por tema; dentro dela, colunas por estado ----
@@ -363,7 +364,7 @@
     document.querySelectorAll(".no.aberto").forEach(el => el.classList.remove("aberto"));
     const el = document.getElementById("no-" + id);
     if (el) el.classList.add("aberto");
-    history.replaceState(null, "", "#" + id);
+    history.replaceState(null, "", "#cockpit/no-" + id);
 
     const chip = n.estado === "feito" ? '<span class="chip feito">feito</span>'
       : n.estado === "bloqueada" ? '<span class="chip bloqueada">bloqueada</span>'
@@ -391,7 +392,7 @@
         ? '<div class="bloco caption">Nó concluído: a história dele vive no <code>roadmap/TODO.md</code>.</div>'
         : '<div class="bloco caption">Este nó ainda não tem prompt registrado.</div>');
 
-    document.getElementById("painel-corpo").innerHTML =
+    document.getElementById("grafo-painel-corpo").innerHTML =
       '<div class="linha"><span class="id" style="font:700 13px/1 var(--font-mono);color:var(--cor-rotulo);">' + esc(n.id) + "</span>" + chip +
       (n.dono ? '<span class="caption">dono: ' + esc(n.dono) + "</span>" : "") + "</div>" +
       '<div class="titulo-no">' + esc(n.titulo) + "</div>" +
@@ -416,19 +417,19 @@
       setTimeout(() => { btn.textContent = "Copiar prompt"; }, 1600);
     };
 
-    document.getElementById("painel").classList.add("aberto");
+    document.getElementById("grafo-painel").classList.add("aberto");
   }
 
   function fecharFicha() {
-    const painel = document.getElementById("painel");
+    const painel = document.getElementById("grafo-painel");
     if (!painel || !painel.classList.contains("aberto")) return;
     painel.classList.remove("aberto");
     document.querySelectorAll(".no.aberto").forEach(el => el.classList.remove("aberto"));
-    history.replaceState(null, "", location.pathname);
+    history.replaceState(null, "", "#cockpit");
   }
 
   function ligar() {
-    const btnFechar = document.getElementById("btn-fechar");
+    const btnFechar = document.getElementById("grafo-btn-fechar");
     if (btnFechar) btnFechar.onclick = fecharFicha;
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") fecharFicha(); });
     window.addEventListener("resize", function () { requestAnimationFrame(desenharArestas); });

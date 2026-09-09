@@ -48,7 +48,7 @@
       "canal": "comigo",
       "canal_desde": "2026-09-09",
       "mesa": {
-        "destrava": "A entrega funcional da Ana: sair de 'achei três horários' para 'está marcado, protocolo tal'. Destrava as Seções 2.5 e 2.6 do prompt, hoje gated, e a volta da tool de cadastro (ADR-0014).",
+        "destrava": "A Ana passa de 'achei três horários' para 'está marcado, protocolo tal'. Libera as Seções 2.5 e 2.6 do prompt, hoje fechadas, e a volta da ferramenta de cadastro (ADR-0014).",
         "gesto": "Sessão comigo, nunca em modo autônomo, com o prompt de ana/api-mv/prompt-agendamento-fim-a-fim.md. Só começa depois de a V37 passar."
       },
       "nota": "Herda a proposta P6 do estágio anterior. Fachada de agenda do ADR-0009: as tools de finalização e gestão (agendar, reagendar, cancelar) entram no grant, as Seções 2.5 e 2.6 saem do gate, e a Cadeia F (gerir o agendado) vira conversa real. Pronto quando: no Telegram, a Ana marca, remarca e cancela uma consulta de Cardiologia da agenda de teste, e cada ato aparece na Cadeia F e no Langfuse.",
@@ -79,7 +79,7 @@
       "canal": "comigo",
       "canal_desde": "2026-08-18",
       "mesa": {
-        "destrava": "A bancada fecha em 16 de 16 cenários, e as três provas de robustez que faltam (API fora do ar, chave rotacionada, gravação quebrada) deixam de ser suposição. É insumo direto do cutover da V26.",
+        "destrava": "A bancada fecha 16 de 16, e as três provas de robustez que faltam (API fora do ar, chave trocada, gravação quebrada) deixam de ser suposição. Insumo direto do cutover da V26.",
         "gesto": "Sessão comigo numa janela em que a Ana esteja parada: quebrar de propósito a credencial vault:6 e a tool 11, rodar E1, E3 e D4 um a um, restaurar imediatamente depois de cada um e conferir que voltou."
       },
       "nota": "Os três cenários ficaram de fora da rodada 2 (18/ago/2026) porque quebram de propósito a credencial vault:6 ou a tool 11, e a vault:6 serve as ferramentas 1, 11 e 12 ao mesmo tempo: rodar com sessão paralela em curso derrubaria o trabalho de outra pessoa. E1 prova que API indisponível não vira invenção de valor; E3 prova que trocar o segredo no vault, com o mesmo nome de entrada, faz a Ana voltar a funcionar sem tocar na definição da tool; D4 prova que gravação quebrada não vira número de protocolo inventado. Pronto quando: os três com veredito escrito na tabela da rodada, e credencial e tool 11 restauradas e conferidas.",
@@ -96,7 +96,7 @@
       "canal": "dispare",
       "canal_desde": "2026-08-26",
       "mesa": {
-        "destrava": "Fecha o ADR-0025 do lado do hospital e mata a segunda verdade de vez. O espelho responde na hora por que a Ana não achou horário: especialidade não publicada, convênio fora da lista, médico com o botão desligado no Painel, ou agenda sem horário livre. Hoje ninguém sabe dizer qual das quatro.",
+        "destrava": "Fecha o ADR-0025 do lado do hospital: acaba a segunda tabela de convênios. O espelho responde na hora por que a Ana não achou horário: especialidade não publicada, convênio fora da lista, médico desligado no Painel, ou agenda sem horário livre. Hoje ninguém sabe dizer qual das quatro.",
         "gesto": "Abrir uma sessão em ~/PedroDev/Hospital e colar o conteúdo de ana/api-hospital/pedido-espelho-gh.md. Não depende de nada aqui."
       },
       "nota": "Nasce do ADR-0025. Duas tarefas: (1) remover a tabela de convênios por especialidade em camadas, com dump do conteúdo antes da migration de drop (o texto da coluna observacao é escrito por gente e não existe na GH); (2) no lugar dela, uma tela somente leitura que espelha ao vivo a agenda da GH de homologação, com botão de atualizar. Regras: só homologação, só leitura, token só no backend, nada gravado em banco. ESCOPO: apenas a tabela de convênios. As tabelas de consultas particulares, exames e cirurgias continuam alimentando as tools 1, 2 e 3 da Ana e removê-las quebra o bot. Pronto quando: a tela mostra especialidades, convênios por especialidade, prestadores e horários livres, e o endpoint GET /api/ana/convenios não existe mais.",
@@ -112,7 +112,7 @@
       "canal": "comigo",
       "canal_desde": "2026-09-09",
       "mesa": {
-        "destrava": "O valor do programa: a Ana atendendo o número que concentra os pacientes de verdade (hoje só o Telegram de teste). É a Fase 1 do programa acontecendo.",
+        "destrava": "A Ana atendendo o número que os pacientes usam de verdade. Hoje ela só atende o Telegram de teste.",
         "gesto": "Sessão comigo para fechar os pré-requisitos, um a um: tirar a automação /resolve do Chatwoot (V36 do radar), decidir o transbordo seletivo (o que vai para humano e quando), ligar o número na inbox do Chatwoot e vincular à Ana, e um roteiro de estreia assistida com você olhando cada conversa. O Chatwoot já está na versão corrente (V32)."
       },
       "nota": "Não depende do agendamento: a Ana pode estrear informando preço, exame, convênio e ouvidoria, e escalando o agendamento para a secretária até a V39 fechar. Decisões que são do Pedro e do hospital: a data, o transbordo e o aviso aos pacientes. Pronto quando: uma conversa real de paciente, pelo número oficial, atendida pela Ana e visível no Chatwoot e no Langfuse.",
@@ -161,6 +161,20 @@
         "mudou": "O Retrato deixou de listar e passou a explicar: 768 links entre esferas, zero mortos; filtros que viram URL; o diretor vê a Ana no visual do app que já usa. No OS, cinco abas ligadas por liga.js com chegada acesa.",
         "valor": "Navegação fluida nos dois produtos e um Retrato que parece do hospital, não de outro sistema."
       }
+    },
+    {
+      "id": "OS28",
+      "titulo": "O Ana OS vira uma página só: o esqueleto do Retrato vestido de Ledger, com a camada de operação",
+      "dono": "C",
+      "status": "feito",
+      "deps": [],
+      "tema": "os",
+      "nota": "Feita em 09/set/2026 (ADR-0030), no terceiro grilling da noite. Verificação headless a 1360 e 390 px: console limpo, sem rolagem horizontal, 774 links e nenhum morto, elo B1 rodado de verdade na homologação, chegada acesa por link, painel da mesa abrindo. Regressão do Retrato: zero erros, 768 links, cores do hospital intactas.",
+      "ficha": {
+        "fez": "Uma página só (os/index.html): Cockpit mais as quatro esferas com os nomes do Retrato, desenhadas pelos motores JS do próprio Retrato (servidos por /retrato/) sobre /api/retrato, o gerar.py chamado ao vivo pelo server. Camada de operação por cima: chamada real de cada ferramenta, versão do Chatwoot, testes manuais por capacidade, famílias da bancada e o botão de rodar cada elo da Global Health. Cinco páginas antigas arquivadas intactas.",
+        "mudou": "O OS perdeu 340 KB de HTML repetido e ganhou o esqueleto do Retrato (abas no topo, filtros, painel, fluxogramas com percorrer) na roupa Ledger. Um mapa só para os dois produtos, uma lógica só de montagem, e os textos do roadmap sem tique de máquina.",
+        "valor": "Um arquiteto que nunca viu o programa abre o OS e entende a Ana em cinco abas, com tudo ligado e o dado de agora."
+      }
     }
   ],
   "pendentes": [],
@@ -168,42 +182,42 @@
   "radar": [
     {
       "id": "V10",
-      "titulo": "Reportar à fazer.ai o bug do resolve_conversation e a dessincronização de inboxes",
+      "titulo": "Mandar à fazer.ai o relato dos quatro bugs da plataforma",
       "prioridade": 3,
       "canal": "comigo",
       "canal_desde": "2026-08-11",
       "mesa": {
-        "destrava": "Os fixes upstream da fazer.ai (resolve_conversation, input_schema, interpolação do body, reasoning_effort no modelConfig) sem gambiarras nossas.",
-        "gesto": "Sessão comigo de 20 min: eu redijo o report consolidado e você envia no canal da fazer.ai."
+        "destrava": "Correções na própria plataforma, em vez de contornos nossos: resolve_conversation, input_schema, interpolação do body, reasoning_effort e o corte do output das ferramentas HTTP.",
+        "gesto": "Uma sessão de 20 minutos comigo: eu escrevo o relato consolidado, você envia no canal da fazer.ai."
       },
-      "prompt": "Quero fechar o report V10 para a fazer.ai. Leia a nota do V10 no os/dados/roadmap.json e redija comigo um bug report consolidado, num arquivo local, com os 4 achados: (1) mensagem final descartada em turno com resolve_conversation, (2) input_schema em JSON Schema padrão gravado cru vira campo-fantasma (a instância exige o formato compacto nativo), (3) o body de tool HTTP só interpola quando o nome do campo é idêntico à chave do JSON, (4) o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply), (5) o output de HTTP tool é truncado em 4.000 caracteres fixos (maxResponseChars de src/graph/tools/http.ts sem exposição em env ou config; pedir limite configurável por tool), o que esconde o fim de respostas maiores do modelo e causa loop de re-chamadas. Cada um com passos de reprodução, comportamento esperado e observado e a versão da instância. Some o pedido de build novo do chatwoot-pro (o hotfix V8). Me entregue o texto pronto para colar no canal deles; depois do envio, mova o canal do V10 para 'aguardando' e registre no TODO.md.",
-      "nota": "Mensagem final descartada em turno com resolve_conversation (contornado: tool removida dos grants) e dessincronização da lista de inboxes (já corrigida via instance_sync_inboxes). Sem impacto no funcionamento atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar ao report (achado da V12, 06/ago): a instância não normaliza input_schema em JSON Schema padrão nas tools HTTP (write edge anterior ao módulo de normalização); schema padrão gravado cru vira campo-fantasma e o input do modelo é descartado. Somar também (achados da V14, 07/ago): o body de tool só interpola quando o nome do campo do input_schema é idêntico à chave do JSON enviado; e o dry_run do prompt_set não valida o teto de 50.000 caracteres do systemPrompt (a recusa too_big só vem no apply). Somar ao report (12/ago): expor reasoning_effort no modelConfig (bloqueia o gpt-5.6-luna com tools, ADR-0013); e re-testar na 1.4.1 os achados antigos (normalização de input_schema e interpolação do body), que podem já ter sido corrigidos na atualização da imagem. 12/ago (tarde): a interpolação do body foi RE-TESTADA na 1.4.1 e o bug PERSISTE (nome do campo do input_schema precisa ser idêntico à chave do JSON; com API que aceita campo ausente, como o NocoDB, a falha é silenciosa: linha criada vazia com HTTP 200). A normalização de input_schema em JSON Schema padrão segue sem re-teste. Somar (14/ago, achado da V21): o output de toda HTTP tool é TRUNCADO em 4.000 chars fixos (default de maxResponseChars em src/graph/tools/http.ts da 1.4.1; prepare.ts não passa o valor e não há env var): com resposta maior o modelo não vê o fim, entra em loop de re-chamadas (10 por turno observadas) e não responde; pedir o limite configurável (env ou por tool)."
+      "prompt": "Quero fechar o relato V10 para a fazer.ai. Leia a nota do V10 no os/dados/roadmap.json e redija comigo um bug report consolidado, num arquivo local, com os quatro achados: (1) mensagem final descartada em turno com resolve_conversation, (2) input_schema em JSON Schema padrão gravado cru vira campo-fantasma (a instância exige o formato compacto nativo), (3) o body de tool HTTP só interpola quando o nome do campo é idêntico à chave do JSON, (4) o output de HTTP tool é truncado em 4.000 caracteres fixos (maxResponseChars de src/graph/tools/http.ts sem exposição em env ou config; pedir limite configurável por tool), o que esconde o fim de respostas maiores do modelo e causa loop de re-chamadas. Cada um com passos de reprodução, comportamento esperado e observado e a versão da instância. Some o pedido de build novo do chatwoot-pro (o hotfix V8). Me entregue o texto pronto para colar no canal deles; depois do envio, mova o canal do V10 para 'aguardando' e registre no TODO.md.",
+      "nota": "Quatro achados, todos vistos na instância 1.4.1. (1) Em turno com resolve_conversation a mensagem final é descartada; contornado tirando a ferramenta dos grants. (2) input_schema escrito em JSON Schema padrão é gravado cru e vira campo-fantasma: o input do modelo se perde (achado da V12, 06/ago; ainda sem re-teste na 1.4.1). (3) O body de uma ferramenta HTTP só interpola quando o nome do campo é idêntico à chave do JSON; com uma API que aceita campo ausente a falha é silenciosa, linha vazia com HTTP 200 (V14, 07/ago; re-testado em 12/ago, persiste). (4) O output de toda ferramenta HTTP é cortado em 4.000 caracteres fixos (maxResponseChars em src/graph/tools/http.ts, sem env nem config por tool): o modelo não vê o fim da resposta e entra em loop de re-chamadas, até 10 por turno (V21, 14/ago). Pedir também: reasoning_effort no modelConfig (bloqueia o gpt-5.6-luna com ferramentas, ADR-0013) e um build novo do chatwoot-pro (hotfix V8). A dessincronização da lista de inboxes já foi corrigida com instance_sync_inboxes e entra só como registro. Nada disso trava a Ana hoje. O achado do teto de 50.000 caracteres do prompt morreu: o teto atual é 100.000 e é configurável."
     },
     {
       "id": "V7",
-      "titulo": "Revogar o token Cloudflare do onboarding (29/jul)",
+      "titulo": "Revogar o token da Cloudflare usado no onboarding de 29/jul",
       "prioridade": 2,
       "canal": "dispare",
       "canal_desde": "2026-08-11",
       "mesa": {
-        "destrava": "Higiene: menos um token vivo com poder de DNS.",
-        "gesto": "Quando declarar que o uso acabou, revogar no painel da Cloudflare (o prompt te guia passo a passo)."
+        "destrava": "Um token a menos com poder sobre o DNS do hospital.",
+        "gesto": "Quando você disser que o token não tem mais uso, revogar no painel da Cloudflare. O prompt guia clique a clique."
       },
-      "nota": "Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou.",
+      "nota": "Saiu do Pendente para o radar em 06/ago, por decisão do Pedro: o token ainda tem uso previsto e não faz parte do roadmap. Conferido em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents, langfuse, coolify).",
       "prompt": "Quero revogar o token de API da Cloudflare usado no onboarding de 29/jul (ele criou os DNS de agents/langfuse/coolify). Sou leigo: me guie passo a passo no painel dash.cloudflare.com, dizendo exatamente onde clicar para chegar em API Tokens, como identificar o token certo, como confirmar comigo que nada mais depende dele (verifique isso comigo primeiro), e só então como revogar. Espere a minha confirmação em cada passo. No final, atualize o TODO.md e o os/dados/roadmap.json (V7)."
     },
     {
       "id": "V36",
-      "titulo": "Remover a automacao /resolve do Chatwoot antes do WhatsApp real",
+      "titulo": "Tirar a automação /resolve do Chatwoot antes do WhatsApp real",
       "prioridade": 5,
       "canal": "aguardando",
       "canal_desde": "2026-09-08",
       "mesa": {
-        "destrava": "Nenhum paciente consegue fechar a propria conversa digitando /resolve.",
-        "gesto": "No dia de ligar a Ana num numero real: Chatwoot > Configuracoes > Automacao, desativar ou apagar a regra id 9."
+        "destrava": "Nenhum paciente consegue encerrar a própria conversa digitando /resolve.",
+        "gesto": "No dia de ligar a Ana num número real: Chatwoot, Configurações, Automação, desativar ou apagar a regra 9."
       },
-      "nota": "Criada em 08/set/2026 (regra id 9, evento message_created, incoming + content igual a /resolve, acao resolve_conversation). Serve ao modo teste: quem testa digita /resolve para fechar a conversa e /teste para reabrir com a Ana; sem isso a conversa em fila humana fica presa (caso do Felipe, conversa #166, 11 dias sem resposta). Provada na conversa 154 da inbox de API. E pre-requisito da V32/WhatsApp real remover ou desativar.",
-      "prompt": "A automacao /resolve do Chatwoot (regra id 9, criada em 08/set/2026 para o modo teste) precisa sair antes de a Ana entrar num numero de WhatsApp real. Liste as automation_rules pela API do Chatwoot (token no .env), confirme comigo que e a regra certa, desative ou apague, e prove mandando /resolve numa conversa de teste da inbox de API (nao pode mais resolver). Depois atualize o TODO.md e o os/dados/roadmap.json (V36)."
+      "nota": "Regra criada em 08/set/2026 (id 9: evento message_created, mensagem recebida com o texto /resolve, ação resolve_conversation). Ela serve ao modo de teste: quem testa digita /resolve para fechar a conversa e /teste para reabrir com a Ana. Sem ela, a conversa que caiu na fila humana ficava presa (a conversa 166 do Felipe passou 11 dias sem resposta). Provada na conversa 154 da inbox de API. Tirar ou desativar a regra é pré-requisito da V41.",
+      "prompt": "A automação /resolve do Chatwoot (regra 9, criada em 08/set/2026 para o modo de teste) precisa sair antes de a Ana entrar num número de WhatsApp real. Liste as automation_rules pela API do Chatwoot (token no .env), confirme comigo que é a regra certa, desative ou apague, e prove mandando /resolve numa conversa de teste da inbox de API (não pode mais resolver). Depois atualize o TODO.md e o os/dados/roadmap.json (V36)."
     }
   ]
 }

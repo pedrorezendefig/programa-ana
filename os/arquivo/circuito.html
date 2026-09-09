@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mecanismo · Ana OS</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/os.css">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/os.css">
 <style>
   /* ---- Mecanismo (ADR-0028, decisão 8): Arquitetura + Circuito + Mapa da Integração numa aba só ---- */
   .cabeca { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -334,6 +334,7 @@
 </style>
 </head>
 <body>
+<!-- Arquivada em 09/set/2026 (ADR-0030): o Ana OS virou uma página só, Cockpit mais as quatro esferas do Retrato. Esta página segue intacta, fora do menu, por URL direta. -->
 
 <main>
   <section class="compacta">
@@ -557,10 +558,10 @@
   O vocabulário do desenho das peças segue o <code>CONTEXT.md</code> (canal de teste, canal principal, transbordo seletivo).
 </footer>
 
-<script src="assets/nav.js" data-ambiente="local"></script>
-<script src="assets/liga.js"></script>
-<script src="assets/origem.js"></script>
-<script src="assets/md.js"></script>
+<script src="../assets/nav.js" data-ambiente="local"></script>
+<script src="../assets/liga.js"></script>
+<script src="../assets/origem.js"></script>
+<script src="../assets/md.js"></script>
 <script>
 "use strict";
 function esc(s) {
@@ -635,8 +636,8 @@ const LIG = { caps: [], sop: [], cadeias: null };
 async function carregarLigacoes() {
   const seguro = function (p, vazio) { return p.catch(function () { return vazio; }); };
   const [comp, sop, cad] = await Promise.all([
-    seguro(fetch("dados/comparacao.json").then(function (r) { return r.json(); }), null),
-    seguro(fetch("dados/sop-fluxo.json").then(function (r) { return r.json(); }), null),
+    seguro(fetch("../dados/comparacao.json").then(function (r) { return r.json(); }), null),
+    seguro(fetch("../dados/sop-fluxo.json").then(function (r) { return r.json(); }), null),
     seguro(fetch("cadeias.html").then(function (r) { return r.text(); }), "")
   ]);
   if (comp && comp.blocos) {
@@ -1540,10 +1541,10 @@ function ligarEventos() {
 }
 
 async function carregar() {
-  DADOS = await fetch("dados/integracao.json").then(function (r) { return r.json(); });
+  DADOS = await fetch("../dados/integracao.json").then(function (r) { return r.json(); });
 
   try {
-    MEDIDA = await fetch("dados/integracao-medida.json").then(function (r) {
+    MEDIDA = await fetch("../dados/integracao-medida.json").then(function (r) {
       if (!r.ok) throw new Error("sem medida");
       return r.json();
     });

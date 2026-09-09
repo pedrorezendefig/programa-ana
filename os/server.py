@@ -10,6 +10,8 @@ O que o OS acrescenta:
   - Paginas e assets (css/js/json/woff2) servidos de os/.
   - /api/roadmap: leitura de os/dados/roadmap.json. So leitura (ADR-0028):
     card novo, card feito e canal movido nascem por sessao no terminal.
+  - /api/retrato: as quatro esferas montadas ao vivo pelo retrato/gerar.py (ADR-0030).
+  - /retrato/<x>.js|.css: os motores do Retrato da Ana, fonte unica para os dois produtos.
   - /api/docs e /docs/...: a Biblioteca, allowlist explicita de .md do repo.
     dados-locais/ e resultados/amostras/ ficam fora por construcao.
 
@@ -47,6 +49,13 @@ CENARIOS_JSON = os.path.join(REPO_DIR, "ana", "bancada", "cenarios", "integracao
 # Parser das notas de versao do Chatwoot (ADR-0024). O server NAO tem copia da logica:
 # ele importa o mesmo script que uma sessao roda na mao, para os dois nunca divergirem.
 RELEASES_SCRIPT = os.path.join(REPO_DIR, "ana", "plataforma", "scripts", "fetch-chatwoot-releases.py")
+# O retrato ao vivo (ADR-0030): o OS renderiza as quatro esferas com os mesmos motores
+# do Retrato da Ana, mas o dado e montado a cada pedido pelo retrato/gerar.py (os JSON
+# de os/dados/ mais a plataforma), sem gravar arquivo e sem a varredura de proibidos
+# (o OS e local). Os motores JS do Retrato sao servidos de retrato/assets/ por /retrato/.
+GERAR_SCRIPT = os.path.join(REPO_DIR, "retrato", "gerar.py")
+RETRATO_ASSETS_DIR = os.path.join(REPO_DIR, "retrato", "assets")
+RETRATO_ASSETS_EXT = {".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8"}
 
 ESTATICOS = {
     ".html": "text/html; charset=utf-8",
@@ -227,6 +236,46 @@ def ler_chatwoot():
         resposta = {"ok": False, "erro": "nao consegui ler as versoes do Chatwoot: %s" % e}
     _CHATWOOT_CACHE.update({"em": agora, "resposta": resposta})
     return resposta
+
+
+_RETRATO_CACHE = {"em": 0.0, "resposta": None}
+RETRATO_CACHE_S = 60
+
+
+def ler_retrato():
+    """Monta o retrato ao vivo com o retrato/gerar.py (ADR-0030).
+
+    Mesma logica que grava o retrato.json publicado, chamada em processo: nao ha copia
+    da montagem aqui. Se a plataforma nao responder, monta sem ela e diz isso no campo
+    'aviso' (as ferramentas saem como nao lidas, e a pagina mostra). Cache de 60 s em
+    memoria, nunca em arquivo.
+    """
+    import argparse
+    import importlib.util
+    agora = time.time()
+    if _RETRATO_CACHE["resposta"] and agora - _RETRATO_CACHE["em"] < RETRATO_CACHE_S:
+        return _RETRATO_CACHE["resposta"]
+    try:
+        spec = importlib.util.spec_from_file_location("gerar_retrato", GERAR_SCRIPT)
+        gerar = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gerar)
+    except (OSError, ImportError, AttributeError) as e:
+        return {"erro": "nao consegui carregar retrato/gerar.py: %s" % e}
+    aviso = ""
+    try:
+        doc = gerar.montar(argparse.Namespace(sem_plataforma=False))
+    except RuntimeError as e:
+        aviso = str(e)
+        try:
+            doc = gerar.montar(argparse.Namespace(sem_plataforma=True))
+        except RuntimeError as e2:
+            return {"erro": "nao consegui montar o retrato: %s" % e2}
+    doc["ao_vivo"] = True
+    doc["lido_em"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+    if aviso:
+        doc["aviso"] = aviso
+    _RETRATO_CACHE.update({"em": agora, "resposta": doc})
+    return doc
 
 
 _oracle_iniciado = False
@@ -453,6 +502,17 @@ class Handler(BaseHTTPRequestHandler):
             permitido = os.path.splitext(rel)[1].lower() in ESTATICOS
         elif len(partes) == 3 and partes[0] == "assets" and partes[1] == "fonts":
             permitido = os.path.splitext(rel)[1].lower() in (".woff2", ".css")
+        elif len(partes) == 2 and partes[0] == "retrato":
+            # os motores JS e CSS do Retrato da Ana, fonte unica (ADR-0030); nunca fontes, logo ou dados
+            ext = os.path.splitext(rel)[1].lower()
+            if ext in RETRATO_ASSETS_EXT and ".." not in rel:
+                caminho = os.path.join(RETRATO_ASSETS_DIR, partes[1])
+                raiz_r = os.path.realpath(RETRATO_ASSETS_DIR)
+                if os.path.realpath(caminho).startswith(raiz_r + os.sep) and os.path.isfile(caminho):
+                    self._arquivo(caminho, RETRATO_ASSETS_EXT[ext])
+                    return
+            self._json({"erro": "rota desconhecida"}, 404)
+            return
         else:
             permitido = False
         if not permitido or ".." in rel or rel.startswith("."):
@@ -490,6 +550,9 @@ class Handler(BaseHTTPRequestHandler):
                 self._json({"ok": True, "roadmap": ler_roadmap()})
             except (OSError, ValueError) as e:
                 self._json({"ok": False, "erro": str(e)}, 500)
+        elif path == "/api/retrato":
+            doc = ler_retrato()
+            self._json(doc, 500 if "erro" in doc else 200)
         elif path.startswith("/absorcao/"):
             self._servir_absorcao(path[len("/absorcao/"):])
         elif path.startswith("/docs/"):

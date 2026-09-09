@@ -17,7 +17,7 @@
 var Fluxo = (function () {
   "use strict";
 
-  var FONTE = "'HP Simplified', system-ui, sans-serif";
+  var FONTE = window.FLUXO_FONTE || "'HP Simplified', system-ui, sans-serif"; /* o OS mede com a fonte dele */
   var MS_PASSO = 400;
   var INSTANCIAS = 0;
   var UID = "";
@@ -176,14 +176,43 @@ var Fluxo = (function () {
   }
 
   /* ---------- desenho ---------- */
+  /* A paleta do app do hospital, a do Retrato. O Ana OS troca pela dele em window.FLUXO_PALETA (ADR-0030). */
+  var P = {
+    principal: "#2B2E7E",
+    principalClara: "#3B6FB6",
+    principalTinta: "#EEF0FB",
+    principalFio: "#C7CBE8",
+    branco: "#FFFFFF",
+    verde: "#88D7A4",
+    verdeFio: "#5FBE8A",
+    verdeTexto: "#14532D",
+    verdeTinta: "#E8F6EE",
+    verdeTintaFio: "#A9DEC2",
+    verdeTexto2: "#1F7A4D",
+    mudo: "#94A3B8",
+    texto2: "#64748B",
+    texto: "#1E293B",
+    borda: "#E2E8F0",
+    borda2: "#CBD5E1",
+    sombra: "#0F172A",
+    superficie2: "#F1F5F9",
+    texto3: "#475569",
+    ambarTinta: "#FFF9EF",
+    ambarFio: "#F2C078",
+    ambarTexto: "#7A4E12",
+    vermelhoTinta: "#FDEEEE",
+    vermelhoFio: "#F3BFBF",
+    vermelhoTexto: "#B4443E"
+  };
+  Object.keys(window.FLUXO_PALETA || {}).forEach(function (k) { P[k] = window.FLUXO_PALETA[k]; });
   var TONS = {
-    sim: { fill: "#E8F6EE", stroke: "#A9DEC2", texto: "#1F7A4D" },
-    nao: { fill: "#FDEEEE", stroke: "#F3BFBF", texto: "#B4443E" },
-    neutro: { fill: "#F1F5F9", stroke: "#CBD5E1", texto: "#475569" },
-    hospital: { fill: "#EEF0FB", stroke: "#C7CBE8", texto: "#2B2E7E" },
-    gh: { fill: "#FFF9EF", stroke: "#F2C078", texto: "#7A4E12" },
-    nativa: { fill: "#F1F5F9", stroke: "#CBD5E1", texto: "#475569" },
-    ambar: { fill: "#FFF9EF", stroke: "#F2C078", texto: "#7A4E12" }
+    sim: { fill: P.verdeTinta, stroke: P.verdeTintaFio, texto: P.verdeTexto2 },
+    nao: { fill: P.vermelhoTinta, stroke: P.vermelhoFio, texto: P.vermelhoTexto },
+    neutro: { fill: P.superficie2, stroke: P.borda2, texto: P.texto3 },
+    hospital: { fill: P.principalTinta, stroke: P.principalFio, texto: P.principal },
+    gh: { fill: P.ambarTinta, stroke: P.ambarFio, texto: P.ambarTexto },
+    nativa: { fill: P.superficie2, stroke: P.borda2, texto: P.texto3 },
+    ambar: { fill: P.ambarTinta, stroke: P.ambarFio, texto: P.ambarTexto }
   };
 
   function texto(g, cor, tam, x, alinhamento) {
@@ -193,22 +222,22 @@ var Fluxo = (function () {
     }).join("");
     var ys = y0 + g.linhas.length * lh - 2;
     out += g.sub.map(function (l, i) {
-      return '<text x="' + n(x) + '" y="' + n(ys + i * 15) + '" text-anchor="' + alinhamento + '" font-size="11.5" fill="#64748B" font-family="' + FONTE + '">' + esc(l) + "</text>";
+      return '<text x="' + n(x) + '" y="' + n(ys + i * 15) + '" text-anchor="' + alinhamento + '" font-size="11.5" fill="' + P.texto2 + '" font-family="' + FONTE + '">' + esc(l) + "</text>";
     }).join("");
     return out;
   }
 
   function badgeNumero(cx, cy, numero) {
-    return '<circle class="fbadge" cx="' + n(cx) + '" cy="' + n(cy) + '" r="11" fill="#EEF0FB" stroke="#C7CBE8" stroke-width="1.2"/>' +
-      '<text x="' + n(cx) + '" y="' + n(cy + 4) + '" text-anchor="middle" font-size="12" fill="#2B2E7E" font-family="' + FONTE + '">' + numero + "</text>";
+    return '<circle class="fbadge" cx="' + n(cx) + '" cy="' + n(cy) + '" r="11" fill="' + P.principalTinta + '" stroke="' + P.principalFio + '" stroke-width="1.2"/>' +
+      '<text x="' + n(cx) + '" y="' + n(cy + 4) + '" text-anchor="middle" font-size="12" fill="' + P.principal + '" font-family="' + FONTE + '">' + numero + "</text>";
   }
   function badgeDecisao(cx, cy) {
-    return '<rect x="' + n(cx - 8) + '" y="' + n(cy - 8) + '" width="16" height="16" rx="3" transform="rotate(45 ' + n(cx) + " " + n(cy) + ')" fill="#FFFFFF" stroke="#F2C078" stroke-width="1.5"/>' +
-      '<text x="' + n(cx) + '" y="' + n(cy + 4.5) + '" text-anchor="middle" font-size="12" fill="#7A4E12" font-family="' + FONTE + '">?</text>';
+    return '<rect x="' + n(cx - 8) + '" y="' + n(cy - 8) + '" width="16" height="16" rx="3" transform="rotate(45 ' + n(cx) + " " + n(cy) + ')" fill="' + P.branco + '" stroke="' + P.ambarFio + '" stroke-width="1.5"/>' +
+      '<text x="' + n(cx) + '" y="' + n(cy + 4.5) + '" text-anchor="middle" font-size="12" fill="' + P.ambarTexto + '" font-family="' + FONTE + '">?</text>';
   }
   function badgeTracejado(cx, cy) {
-    return '<circle cx="' + n(cx) + '" cy="' + n(cy) + '" r="11" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.4" stroke-dasharray="3 2"/>' +
-      '<text x="' + n(cx) + '" y="' + n(cy + 4) + '" text-anchor="middle" font-size="11" fill="#64748B" font-family="' + FONTE + '">…</text>';
+    return '<circle cx="' + n(cx) + '" cy="' + n(cy) + '" r="11" fill="' + P.branco + '" stroke="' + P.borda2 + '" stroke-width="1.4" stroke-dasharray="3 2"/>' +
+      '<text x="' + n(cx) + '" y="' + n(cy + 4) + '" text-anchor="middle" font-size="11" fill="' + P.texto2 + '" font-family="' + FONTE + '">…</text>';
   }
 
   function no(g) {
@@ -216,31 +245,31 @@ var Fluxo = (function () {
     var corpo = "", miolo = "";
     var tipo = g.tipo, tom = g.tom && TONS[g.tom];
     if (tipo === "inicio") {
-      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + n(g.w) + '" height="' + g.h + '" rx="17" fill="#2B2E7E" filter="url(#fsombra' + UID + ')"/>' +
-        '<path d="M ' + n(g.x + 18) + " " + n(g.y + 11) + ' l 10 6 l -10 6 z" fill="#FFFFFF" opacity="0.9"/>';
-      miolo = '<text x="' + n(g.x + g.w / 2 + 8) + '" y="' + n(cy + 5) + '" text-anchor="middle" font-size="14" fill="#FFFFFF" font-family="' + FONTE + '">' + esc(g.linhas[0]) + "</text>";
+      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + n(g.w) + '" height="' + g.h + '" rx="17" fill="' + P.principal + '" filter="url(#fsombra' + UID + ')"/>' +
+        '<path d="M ' + n(g.x + 18) + " " + n(g.y + 11) + ' l 10 6 l -10 6 z" fill="' + P.branco + '" opacity="0.9"/>';
+      miolo = '<text x="' + n(g.x + g.w / 2 + 8) + '" y="' + n(cy + 5) + '" text-anchor="middle" font-size="14" fill="' + P.branco + '" font-family="' + FONTE + '">' + esc(g.linhas[0]) + "</text>";
     } else if (tipo === "fim") {
-      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + n(g.w) + '" height="' + g.h + '" rx="17" fill="#88D7A4" stroke="#5FBE8A" stroke-width="1.5" filter="url(#fsombra' + UID + ')"/>' +
-        '<path d="M ' + n(g.x + 16) + " " + n(cy) + ' l 4.5 4.5 l 8 -8.5" stroke="#14532D" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
-      miolo = '<text x="' + n(g.x + g.w / 2 + 8) + '" y="' + n(cy + 5) + '" text-anchor="middle" font-size="14" fill="#14532D" font-family="' + FONTE + '">' + esc(g.linhas[0]) + "</text>";
+      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + n(g.w) + '" height="' + g.h + '" rx="17" fill="' + P.verde + '" stroke="' + P.verdeFio + '" stroke-width="1.5" filter="url(#fsombra' + UID + ')"/>' +
+        '<path d="M ' + n(g.x + 16) + " " + n(cy) + ' l 4.5 4.5 l 8 -8.5" stroke="' + P.verdeTexto + '" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+      miolo = '<text x="' + n(g.x + g.w / 2 + 8) + '" y="' + n(cy + 5) + '" text-anchor="middle" font-size="14" fill="' + P.verdeTexto + '" font-family="' + FONTE + '">' + esc(g.linhas[0]) + "</text>";
     } else if (tipo === "fim-tracejado") {
-      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + n(g.w) + '" height="' + g.h + '" rx="17" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 4"/>';
-      miolo = '<text x="' + n(g.x + g.w / 2) + '" y="' + n(cy + 5) + '" text-anchor="middle" font-size="14" fill="#64748B" font-family="' + FONTE + '">' + esc(g.linhas[0]) + "</text>";
+      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + n(g.w) + '" height="' + g.h + '" rx="17" fill="' + P.branco + '" stroke="' + P.mudo + '" stroke-width="1.5" stroke-dasharray="5 4"/>';
+      miolo = '<text x="' + n(g.x + g.w / 2) + '" y="' + n(cy + 5) + '" text-anchor="middle" font-size="14" fill="' + P.texto2 + '" font-family="' + FONTE + '">' + esc(g.linhas[0]) + "</text>";
     } else if (tipo === "decisao") {
-      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + g.w + '" height="' + g.h + '" rx="8" fill="#FFF9EF" stroke="#F2C078" stroke-width="1.5" filter="url(#fsombra' + UID + ')"/>';
-      miolo = badgeDecisao(g.x + 12 + 13, cy) + texto(g, "#7A4E12", 13, tx, "start");
+      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + g.w + '" height="' + g.h + '" rx="8" fill="' + P.ambarTinta + '" stroke="' + P.ambarFio + '" stroke-width="1.5" filter="url(#fsombra' + UID + ')"/>';
+      miolo = badgeDecisao(g.x + 12 + 13, cy) + texto(g, P.ambarTexto, 13, tx, "start");
     } else if (tipo === "tracejado") {
-      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + g.w + '" height="' + g.h + '" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4" stroke-dasharray="5 4"/>';
-      miolo = badgeTracejado(g.x + 12 + 13, cy) + texto(g, "#64748B", 13, tx, "start");
+      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + g.w + '" height="' + g.h + '" rx="8" fill="' + P.branco + '" stroke="' + P.mudo + '" stroke-width="1.4" stroke-dasharray="5 4"/>';
+      miolo = badgeTracejado(g.x + 12 + 13, cy) + texto(g, P.texto2, 13, tx, "start");
     } else if (tipo === "falha") {
-      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + g.w + '" height="' + g.h + '" rx="8" fill="#FDEEEE" stroke="#F3BFBF" stroke-width="1.5" filter="url(#fsombra' + UID + ')"/>';
-      miolo = badgeNumero(g.x + 12 + 13, cy, g.numero) + texto(g, "#B4443E", 13, tx, "start");
+      corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + g.w + '" height="' + g.h + '" rx="8" fill="' + P.vermelhoTinta + '" stroke="' + P.vermelhoFio + '" stroke-width="1.5" filter="url(#fsombra' + UID + ')"/>';
+      miolo = badgeNumero(g.x + 12 + 13, cy, g.numero) + texto(g, P.vermelhoTexto, 13, tx, "start");
     } else {
-      var fill = tom ? tom.fill : "#FFFFFF", stroke = tom ? tom.stroke : "#E2E8F0", cor = tom ? tom.texto : "#1E293B";
+      var fill = tom ? tom.fill : P.branco, stroke = tom ? tom.stroke : P.borda, cor = tom ? tom.texto : P.texto;
       corpo = '<rect x="' + n(g.x) + '" y="' + n(g.y) + '" width="' + g.w + '" height="' + g.h + '" rx="8" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1.5" filter="url(#fsombra' + UID + ')"/>';
       miolo = (g.numero != null ? badgeNumero(g.x + 12 + 13, cy, g.numero) : "") + texto(g, cor, 13, g.numero != null ? tx : g.x + 12, "start");
     }
-    var halo = '<rect class="fhalo" x="' + n(g.x - 3) + '" y="' + n(g.y - 3) + '" width="' + n(g.w + 6) + '" height="' + (g.h + 6) + '" rx="' + (tipo.indexOf("fim") === 0 || tipo === "inicio" ? 20 : 11) + '" fill="none" stroke="#3B6FB6" stroke-width="2.5"/>';
+    var halo = '<rect class="fhalo" x="' + n(g.x - 3) + '" y="' + n(g.y - 3) + '" width="' + n(g.w + 6) + '" height="' + (g.h + 6) + '" rx="' + (tipo.indexOf("fim") === 0 || tipo === "inicio" ? 20 : 11) + '" fill="none" stroke="' + P.principalClara + '" stroke-width="2.5"/>';
     return '<g class="fno ' + esc(tipo) + (g.classe ? " " + esc(g.classe) : "") + '" data-id="' + esc(g.id) + '" tabindex="0" role="button" aria-label="' + esc(g.no.texto) + '">' + corpo + miolo + halo + "</g>";
   }
 
@@ -254,10 +283,10 @@ var Fluxo = (function () {
 
   function defs() {
     return '<defs><marker id="fponta' + UID + '" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
-      '<path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#94A3B8"/></marker>' +
+      '<path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="' + P.mudo + '"/></marker>' +
       '<marker id="fponta-acesa' + UID + '" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
-      '<path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#2B2E7E"/></marker>' +
-      '<filter id="fsombra' + UID + '" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-color="#0F172A" flood-opacity="0.10"/></filter></defs>';
+      '<path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="' + P.principal + '"/></marker>' +
+      '<filter id="fsombra' + UID + '" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-color="' + P.sombra + '" flood-opacity="0.10"/></filter></defs>';
   }
 
   function svg(lay, opt) {
@@ -265,7 +294,7 @@ var Fluxo = (function () {
     return '<svg class="fluxo-svg" viewBox="0 0 ' + n(lay.largura) + " " + n(lay.altura) + '" width="' + n(lay.largura) + '" height="' + n(lay.altura) + '" style="min-width:' + n(minW) + 'px" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + esc(opt.rotulo || "Fluxograma") + '">' +
       defs() +
       lay.arestas.map(function (a) {
-        return '<path class="faresta' + (a.retorno ? " retorno" : "") + '" data-de="' + esc(a.de) + '" data-para="' + esc(a.para) + '" d="' + a.d + '" fill="none" stroke="#94A3B8" stroke-width="1.8" marker-end="url(#fponta' + UID + ')"/>';
+        return '<path class="faresta' + (a.retorno ? " retorno" : "") + '" data-de="' + esc(a.de) + '" data-para="' + esc(a.para) + '" d="' + a.d + '" fill="none" stroke="' + P.mudo + '" stroke-width="1.8" marker-end="url(#fponta' + UID + ')"/>';
       }).join("") +
       lay.nos.map(no).join("") +
       lay.chips.map(chip).join("") +

@@ -64,7 +64,7 @@ Todo check deve:
 **Risco que mais me preocupa hoje:** ... (um só, com o porquê)
 ```
 
-Adapte com bom senso: se uma coluna está vazia, diga em uma linha e siga. O Ana OS é o complemento visual do relatório: aponte que o roadmap.json foi atualizado e que o Pedro pode abrir `localhost:8777` (subindo com `python3 os/server.py` se preciso) para ver o cockpit (cinco abas desde o ADR-0028: Cockpit, Mecanismo, Mapa do SOP, Provas, Global Health).
+Adapte com bom senso: se uma coluna está vazia, diga em uma linha e siga. O Ana OS é o complemento visual do relatório: aponte que o roadmap.json foi atualizado e que o Pedro pode abrir `localhost:8777` (subindo com `python3 os/server.py` se preciso) para ver o cockpit (uma página só desde o ADR-0030, com cinco abas no topo: Cockpit, O que a Ana faz hoje, As regras da Ana, Onde ela busca a resposta, Global Health).
 
 ## Como gerar sugestões que prestam
 

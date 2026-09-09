@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Provas · Ana OS</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/os.css">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/os.css">
 <style>
   /* ---- Provas (ADR-0028): Capacidades, Testes e Famílias numa página só ---- */
   .cabeca { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -460,6 +460,7 @@
 </style>
 </head>
 <body>
+<!-- Arquivada em 09/set/2026 (ADR-0030): o Ana OS virou uma página só, Cockpit mais as quatro esferas do Retrato. Esta página segue intacta, fora do menu, por URL direta. -->
 
 <main>
   <div class="cabeca">
@@ -675,17 +676,17 @@
   Fontes: <code>os/dados/comparacao.json</code> (capacidades e os testes de cada uma, com <code>secao_ids</code>), <code>ana/bancada/cenarios/integracao.json</code> (cenários da bancada, via <code>/api/cenarios</code>), <code>os/dados/circuito.json</code> (as seções do prompt, para a ordem da jornada e os links) e <code>os/dados/familias.json</code> (curadoria de <code>roadmap/roteiro-integracao-hospital.md</code>; o roteiro é a verdade). A faixa de cada teste é derivada da forma da asserção, nunca escrita à mão (ADR-0020); o vínculo teste e seção vive na fonte, nunca aqui (ADR-0021). Esta página não guarda nada (ADR-0028).
 </footer>
 
-<script src="assets/nav.js" data-ambiente="local"></script>
-<script src="assets/liga.js"></script>
-<script src="assets/origem.js"></script>
+<script src="../assets/nav.js" data-ambiente="local"></script>
+<script src="../assets/liga.js"></script>
+<script src="../assets/origem.js"></script>
 <script>
 "use strict";
 /* ADR-0028: as três seções leem a mesma carga uma vez só e conversam por este objeto.
    A chegada pelo #hash (#cap-C14, #fam-D2) é do assets/liga.js (ADR-0029). */
 var AnaProvas = {
   origem: OrigemDaFerramenta.carregar(),
-  comparacao: fetch("dados/comparacao.json").then(function (r) { return r.json(); }),
-  circuito: fetch("dados/circuito.json").then(function (r) { return r.json(); }),
+  comparacao: fetch("../dados/comparacao.json").then(function (r) { return r.json(); }),
+  circuito: fetch("../dados/circuito.json").then(function (r) { return r.json(); }),
   abrirFamilia: null,
   buscarTeste: null
 };
@@ -1632,7 +1633,7 @@ document.getElementById("fam-familias").addEventListener("click", function (e) {
   AnaProvas.buscarTeste(a.dataset.busca);
 });
 
-fetch("dados/familias.json").then(function (r) { return r.json(); }).then(render);
+fetch("../dados/familias.json").then(function (r) { return r.json(); }).then(render);
 })();
 </script>
 

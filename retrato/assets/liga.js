@@ -9,7 +9,9 @@
 var Liga = (function () {
   "use strict";
 
-  var ABAS = ["faz", "regras", "busca", "global-health"];
+  /* O Ana OS carrega o mesmo motor com uma aba a mais (Cockpit), declarada antes
+     em window.LIGA_ABAS; a primeira da lista e a aba de chegada (ADR-0030). */
+  var ABAS = (window.LIGA_ABAS && window.LIGA_ABAS.slice()) || ["faz", "regras", "busca", "global-health"];
   var ganchos = { trocarAba: null, aoFiltro: null, lerFiltros: null };
   var ultimoHash = null;
   var timerAcesa = null;
@@ -24,7 +26,7 @@ var Liga = (function () {
     var i = h.indexOf("?");
     if (i !== -1) { caminho = h.slice(0, i); q = h.slice(i + 1); }
     var partes = caminho.split("/");
-    var aba = ABAS.indexOf(partes[0]) !== -1 ? partes[0] : "faz";
+    var aba = ABAS.indexOf(partes[0]) !== -1 ? partes[0] : ABAS[0];
     var alvo = partes[1] ? partes[1].replace(/[^A-Za-z0-9_.-]/g, "") : "";
     var filtros = {};
     if (q) {

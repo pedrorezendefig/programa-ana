@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ana OS · Mapa do SOP</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="assets/os.css">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/os.css">
 <style>
   /* ---- exclusivo do mapa do SOP (raias + SVG à mão) ---- */
   .cabeca { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -175,6 +175,7 @@
 </style>
 </head>
 <body>
+<!-- Arquivada em 09/set/2026 (ADR-0030): o Ana OS virou uma página só, Cockpit mais as quatro esferas do Retrato. Esta página segue intacta, fora do menu, por URL direta. -->
 
 <main>
   <section class="compacta">
@@ -250,10 +251,10 @@
   Mapa da proposta P7, em zonas desde o ADR-0012. A fonte do prompt vive em <code>ana/prompt/</code> (compilada por <code>compilar.py</code>); o prompt vivo, na plataforma fazer.ai agents.
 </footer>
 
-<script src="assets/nav.js" data-ambiente="local"></script>
-<script src="assets/liga.js"></script>
-<script src="assets/origem.js"></script>
-<script src="assets/md.js"></script>
+<script src="../assets/nav.js" data-ambiente="local"></script>
+<script src="../assets/liga.js"></script>
+<script src="../assets/origem.js"></script>
+<script src="../assets/md.js"></script>
 <script>
 "use strict";
 
@@ -344,7 +345,7 @@ var SEC_ID = {};
 var CAPS = [];
 
 async function carregar() {
-  DADOS = await fetch("dados/sop-fluxo.json").then(function (r) { return r.json(); });
+  DADOS = await fetch("../dados/sop-fluxo.json").then(function (r) { return r.json(); });
   DADOS.nos.forEach(function (n) { POR_ID[n.id] = n; });
   DADOS.nos.forEach(function (n) {
     if (n.secao && !NO_DA_SECAO[n.secao]) NO_DA_SECAO[n.secao] = n.id;
@@ -352,16 +353,16 @@ async function carregar() {
 
   await OrigemDaFerramenta.carregar();
   try {
-    var integ = await fetch("dados/integracao.json").then(function (r) { return r.json(); });
+    var integ = await fetch("../dados/integracao.json").then(function (r) { return r.json(); });
     integ.nos.forEach(function (n) { if (n.tool) NO_DA_INTEGRACAO[n.tool] = n.id; });
   } catch (e) { NO_DA_INTEGRACAO = {}; }
   try {
-    var circ = await fetch("dados/circuito.json").then(function (r) { return r.json(); });
+    var circ = await fetch("../dados/circuito.json").then(function (r) { return r.json(); });
     circ.tools.forEach(function (t) { TOOL_NO_CIRCUITO[t.id] = true; });
     circ.secoes.forEach(function (s) { SEC_ID[s.chave] = s.id; });
   } catch (e) { TOOL_NO_CIRCUITO = {}; SEC_ID = {}; }
   try {
-    var comp = await fetch("dados/comparacao.json").then(function (r) { return r.json(); });
+    var comp = await fetch("../dados/comparacao.json").then(function (r) { return r.json(); });
     comp.blocos.forEach(function (b) {
       b.capacidades.forEach(function (c) { CAPS.push({ id: c.id, titulo: c.titulo, secao_ids: c.secao_ids || [] }); });
     });

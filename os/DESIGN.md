@@ -151,3 +151,21 @@ O Retrato (`retrato/`) não usa o Ledger. Ele veste o design system do aplicativ
 | Movimento | fade-in-up 0,4 s nos cards ao entrar; troca de aba 250 ms; tudo desligado com `prefers-reduced-motion` |
 
 Selos de origem no Retrato: API do Hospital = azul-marinho, Global Health = âmbar, nativa = cinza. Fluxogramas na gramática do hospital (ADR-0024 de lá): cards numerados, decisões em âmbar, retornos em curva, terminais de início e fim. A logo `logo-hsm.png` fica no topo. O Ana OS continua no Ledger.
+
+## Ana OS: o esqueleto do Retrato vestido de Ledger (ADR-0030, 09/set/2026)
+
+O OS é uma página só (`os/index.html`), desenhada pelos motores JS do Retrato (`retrato/assets/`, servidos por `/retrato/`). O que é do esqueleto vem do Retrato; o que é roupa é Ledger, em `os/assets/esferas.css`:
+
+| Peça | No Retrato | No OS |
+|---|---|---|
+| Barra de abas | fixa no topo, vidro, abas em azul-marinho | flutuante com cantos de 20 px, vidro branco a 82% com fio, aba ativa em pill preto |
+| Filtros | chips brancos, ativo azul-marinho | chips brancos com fio, ativo preto; busca em `--cor-card-interno` |
+| Cards | brancos com borda e sombra premium, raio 12 px | brancos sem borda e sem sombra, raio 24 px (o `.card` do os.css) |
+| Selos de origem | hospital azul-marinho, GH âmbar, nativa cinza | hospital verde, GH azul, nativa areia (a tabela do ADR-0018) |
+| Estados | funciona verde, em parte azul-info, ainda não cinza | funciona verde-tinta/verde, em parte areia, ainda não fio/rótulo |
+| Decisão e recusa nos fluxogramas | âmbar | areia com texto `#6b6862` (o neutro-quente do Ledger) |
+| Fluxogramas | paleta do hospital dentro do `fluxo.js` | a mesma gramática, com a paleta trocada por `window.FLUXO_PALETA` (início em preto, fim em verde-tinta) |
+| Painel flutuante | vidro do app | card branco com a sombra `--sombra-flutuante`, a mesma do painel do grafo |
+| Fonte de medição dos SVG | HP Simplified | Inter (`window.FLUXO_FONTE`) |
+
+O Cockpit fica dentro da mesma página: mesa de ação em três colunas, grafo com os ids prefixados `grafo-` (para não colidir com o painel e o placar das esferas), radar em uma linha por item com a prioridade num círculo preto. A sidebar preta continua, agora só com o logo e as aplicações externas (ícone com tooltip). Regra de escrita: nenhuma moldura explica o desenho ao lado; uma linha curta por seção, e o resto é o próprio dado.

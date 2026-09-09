@@ -20,6 +20,7 @@ var RetratoSop = (function () {
   var R_CANTO = 10;
   var DIM_LARG = 0;
 
+  var FONTE_UI = window.FLUXO_FONTE || "'HP Simplified', sans-serif"; /* o OS mede com a fonte dele */
   var DADOS = null, FERR = {}, VERSAO = "";
   var POR_ID = {}, GEO = {}, FAIXAS = {}, ROTAS = [], CHIPS = {}, LONGA = [];
   var ZONAS_GEO = {}, ZONA_DA_RAIA = {}, ABRE_ZONA = {};
@@ -108,7 +109,7 @@ var RetratoSop = (function () {
       add(a.para, { i: i, alvo: a.de, entrada: true, rot: "← " + POR_ID[a.de].secao });
     });
 
-    medidor.font = "400 10px 'HP Simplified', sans-serif";
+    medidor.font = "400 10px " + FONTE_UI;
     Object.keys(CHIPS).forEach(function (id) {
       var c = CHIPS[id];
       c.lista.sort(function (x, y2) { return (x.entrada ? 0 : 1) - (y2.entrada ? 0 : 1); });
@@ -386,7 +387,7 @@ var RetratoSop = (function () {
 
   function no(n) {
     var g = GEO[n.id];
-    var fonte = n.tipo === "ferramenta" ? "400 11px ui-monospace, SFMono-Regular, Menlo, monospace" : "400 12px 'HP Simplified', sans-serif";
+    var fonte = n.tipo === "ferramenta" ? "400 11px ui-monospace, SFMono-Regular, Menlo, monospace" : "400 12px " + FONTE_UI;
     var linhas = quebrar(n.titulo, fonte, NO_L - 26, 3);
     var y0 = NO_A / 2 - (linhas.length - 1) * 7 + 7;
     var barra = (n.tipo === "mensagem" || n.tipo === "fim")

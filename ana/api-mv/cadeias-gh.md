@@ -1,6 +1,6 @@
 # Cadeias da API GH (homologação): as histórias encadeadas e o que cada uma prova
 
-> Documento de referência da página **Cadeias** do Ana OS (`os/cadeias.html`). Uma cadeia é uma
+> Documento de referência da aba **Global Health** do Ana OS (`os/index.html#global-health`, motor em `os/assets/cadeias-motor.js` desde o ADR-0030; a página original está em `os/arquivo/cadeias.html`). Uma cadeia é uma
 > sequência de chamadas em que a resposta de um elo alimenta o seguinte, contando uma história
 > real do hospital. Diferente da bancada (endpoint solto), a cadeia prova o encadeamento.
 > Ambiente: SOMENTE homologação (`dem.agenda.globalhealth.mv`). Produção jamais.

@@ -30,7 +30,7 @@ var Filtros = (function () {
 
   function vazio(aba) {
     var f = {};
-    (CONFIG[aba].grupos || []).forEach(function (g) { f[g.chave] = ""; });
+    ((CONFIG[aba] && CONFIG[aba].grupos) || []).forEach(function (g) { f[g.chave] = ""; }); /* aba sem filtro: só a busca */
     f.q = "";
     return f;
   }
@@ -98,7 +98,8 @@ var Filtros = (function () {
   function montarBarra(aba) {
     var cfg = CONFIG[aba], f = ESTADO[aba];
     var barra = document.getElementById("filtros");
-    if (!cfg || !barra) return;
+    if (!barra) return;
+    if (!cfg) { barra.innerHTML = ""; barra.classList.remove("com-filtro"); return; } /* aba sem filtro (o Cockpit do OS) */
     var h = '<div class="f-linha">' +
       '<label class="f-busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input type="search" id="f-q" placeholder="buscar nesta esfera" value="' + esc(f.q) + '" autocomplete="off" aria-label="Buscar"></label>';

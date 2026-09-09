@@ -7,7 +7,7 @@
   "use strict";
 
   var DOC = null;
-  var ABAS = ["faz", "regras", "busca", "global-health"];
+  var ABAS = Liga.abas; /* as do Retrato, ou as do Ana OS com o Cockpit (ADR-0030) */
   var ABA_ATUAL = null;
   var ROTULO_FAMILIA = { hospital: "API do Hospital", gh: "Global Health", nativa: "nativa da plataforma", "sem-leitura": "origem não lida", desconhecida: "destino não mapeado" };
   var SEC_POR_ID = {};
@@ -121,7 +121,7 @@
 
   /* ---------- abas ---------- */
   function mostrarAba(id, depois, imediato) {
-    if (ABAS.indexOf(id) === -1) id = "faz";
+    if (ABAS.indexOf(id) === -1) id = ABAS[0];
     if (ABA_ATUAL === id) { if (depois) depois(); return; }
     var anterior = ABA_ATUAL;
     ABA_ATUAL = id;
@@ -259,7 +259,8 @@
   /* ---------- esfera 3: onde ela busca ---------- */
   function renderBusca(b) {
     document.getElementById("busca-conferido").textContent =
-      "A lista de ferramentas foi lida na plataforma na data do retrato. Quais delas a Ana pode chamar foi conferido em " + dataBr(b.conferido_em) + ".";
+      (DOC.ao_vivo ? "A lista de ferramentas foi lida na plataforma agora." : "A lista de ferramentas foi lida na plataforma na data do retrato.") +
+      " Quais delas a Ana pode chamar foi conferido em " + dataBr(b.conferido_em) + ".";
     var i = 0;
     function grupo(id, rotulo, resumo, lista, ponto) {
       if (!lista.length) return "";
@@ -483,7 +484,8 @@
   async function carregar() {
     var carregando = document.getElementById("carregando");
     try {
-      DOC = await fetch("dados/retrato.json").then(function (r) {
+      /* o Ana OS aponta para /api/retrato, montado ao vivo pelo gerar.py (ADR-0030) */
+      DOC = await fetch(window.RETRATO_DADOS || "dados/retrato.json").then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
       });
@@ -493,8 +495,9 @@
     }
     carregando.remove();
     var data = dataBr(DOC.gerado_em);
-    document.getElementById("carimbo").textContent = "retrato de " + data;
-    document.getElementById("rodape").textContent = "Retrato de " + data + ". Programa Ana, Hospital São Matheus, VITTA TECH.";
+    var carimbo = DOC.ao_vivo ? "lido agora, " + String(DOC.lido_em || "").slice(11, 16) : "retrato de " + data;
+    document.getElementById("carimbo").textContent = carimbo;
+    document.getElementById("rodape").textContent = (DOC.ao_vivo ? "Montado ao vivo em " + data + " às " + String(DOC.lido_em || "").slice(11, 16) : "Retrato de " + data) + ". Programa Ana, Hospital São Matheus, VITTA TECH.";
     DOC.esferas.regras.secoes.forEach(function (s) { SEC_POR_ID[s.id] = s; });
 
     Filtros.configurar(DOC);
@@ -502,6 +505,8 @@
     renderBusca(DOC.esferas.busca);
     renderGh(DOC.esferas.global_health);
     await renderRegras(DOC.esferas.regras);
+    /* o Ana OS escuta isto para pôr a camada de operação por cima (ADR-0030) */
+    document.dispatchEvent(new CustomEvent("retrato:pronto", { detail: { doc: DOC } }));
 
     Liga.registrar({
       trocarAba: mostrarAba,
