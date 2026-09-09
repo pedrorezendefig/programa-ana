@@ -29,8 +29,8 @@
       "host": "dem.agenda.globalhealth.mv",
       "rotulo": "Global Health",
       "estado": "aguardando",
-      "estado_rotulo": "esperando a Global Health",
-      "nota": "Homologação. O catálogo está vazio desde julho: a massa de teste é a pendência GH19, pedida em 07/jul/2026."
+      "estado_rotulo": "consulta funciona, marcação ainda não",
+      "nota": "Homologação. Desde 26/ago/2026 a agenda de Cardiologia de teste está publicada (V31): consulta, convênio e horário respondem; a marcação (POST /horarios/agendar) ainda devolve 417 (V37)."
     }
   ],
   "faixas": [
@@ -589,7 +589,7 @@
         ],
         "quando_falha": "PASSO A2, sem repetir a chamada e sem sugerir horário de memória."
       },
-      "alerta": "A vitrine desta cadeia está travada pela GH19: o catálogo da homologação está vazio desde julho."
+      "alerta": "Desde 26/ago/2026 a cadeia entrega horário real de Cardiologia (V33); só a marcação final ainda não roda (V37)."
     },
     {
       "id": "T10",
@@ -633,8 +633,8 @@
         ],
         "quando_falha": "A Regra Híbrida vale igual: nada de horário de memória."
       },
-      "alerta": "Catálogo vazio desde 07/jul/2026. A massa de teste é a pendência GH19, cobrada em 12/ago.",
-      "tarefa": "GH19"
+      "alerta": "Agenda de Cardiologia publicada em 26/ago/2026 (V31). A marcação ainda devolve 417: é a V37.",
+      "tarefa": "V37"
     }
   ],
   "arestas": [

@@ -1,0 +1,1026 @@
+{
+  "sobre": "Curadoria do Retrato da Ana, lida por gerar.py. Tudo aqui é moldura em linguagem de diretor: o miolo literal (nós do SOP e trechos do prompt) vem dos JSON do Ana OS e não se toca. Sem travessão, sem código de tarefa, sem endereço de ambiente.",
+  "concessao": {
+    "conferido_em": "2026-09-09",
+    "como": "Lido na plataforma pela ferramenta de administração, na sessão de 09/09/2026: a lista das ferramentas que o agente da Ana pode chamar.",
+    "http_ids": [
+      "1",
+      "2",
+      "3",
+      "5",
+      "6",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14"
+    ],
+    "nativas": [
+      "handoff_to_human",
+      "private_note",
+      "set_custom_attribute",
+      "assign_label",
+      "kanban_move_card",
+      "update_kanban_task",
+      "skip_reply",
+      "get_current_time",
+      "react_to_message",
+      "resolve_conversation"
+    ],
+    "rag": [
+      "search_knowledge"
+    ]
+  },
+  "familias": {
+    "hospital": {
+      "rotulo": "API do Hospital",
+      "cor": "verde",
+      "resumo": "O aplicativo do próprio hospital: as tabelas oficiais de valores e a ouvidoria. A equipe edita numa tela própria e a Ana fala o dado novo na conversa seguinte."
+    },
+    "gh": {
+      "rotulo": "Global Health",
+      "cor": "azul",
+      "resumo": "A agenda online do hospital, no sistema da Global Health: cadastro de pacientes, especialidades, convênios, planos e horários livres."
+    },
+    "nativa": {
+      "rotulo": "nativa da plataforma",
+      "cor": "areia",
+      "resumo": "Ações dentro da própria central de atendimento: etiquetas, notas internas, funil, passagem para a equipe, base de conhecimento e relógio. Nada sai para fora."
+    }
+  },
+  "ferramentas": {
+    "consultar_precos_consultas": {
+      "descricao": "Valor e diferenciais das consultas particulares, na tabela oficial do hospital.",
+      "ordem": 1
+    },
+    "consultar_exames": {
+      "descricao": "Valor particular, preparo e local dos exames, na tabela oficial do hospital.",
+      "ordem": 2
+    },
+    "consultar_cirurgias_estimativas": {
+      "descricao": "Estimativa de valor das cirurgias, sempre com o aviso de avaliação médica.",
+      "ordem": 3
+    },
+    "consultar_convenios_especialidade": {
+      "descricao": "Tabela antiga de cobertura de convênio por especialidade. A Ana não usa mais: a cobertura vem da agenda online.",
+      "ordem": 4
+    },
+    "registrar_ouvidoria": {
+      "descricao": "Grava a manifestação de ouvidoria e devolve o número de protocolo que a Ana informa ao paciente.",
+      "ordem": 5
+    },
+    "consultar_protocolo_ouvidoria": {
+      "descricao": "Consulta uma manifestação já registrada, pelo número de protocolo, para o paciente que volta.",
+      "ordem": 6
+    },
+    "buscar_paciente_por_cpf": {
+      "descricao": "Encontra o cadastro do paciente na agenda online pelo CPF.",
+      "ordem": 10
+    },
+    "buscar_paciente_por_telefone": {
+      "descricao": "Encontra o cadastro pelo telefone, quando o paciente não tem o CPF à mão.",
+      "ordem": 11
+    },
+    "cadastrar_paciente": {
+      "descricao": "Cria o cadastro do paciente na agenda online. A Ana não usa hoje, de propósito: sem a marcação final, cadastrar só cria registro sem uso.",
+      "ordem": 12
+    },
+    "consultar_especialidades_agenda": {
+      "descricao": "Acha a especialidade pedida na agenda online.",
+      "ordem": 13,
+      "secoes_extra": [
+        "3.2"
+      ]
+    },
+    "consultar_convenios_agenda": {
+      "descricao": "Lista os convênios aceitos naquela especialidade. O particular é uma linha como as outras.",
+      "ordem": 14,
+      "secoes_extra": [
+        "2.3.1",
+        "3.2"
+      ]
+    },
+    "consultar_planos_convenio": {
+      "descricao": "Lista os planos do convênio escolhido.",
+      "ordem": 15,
+      "secoes_extra": [
+        "2.3.1",
+        "3.2"
+      ]
+    },
+    "consultar_horarios_livres": {
+      "descricao": "Devolve os horários livres da especialidade, para a Ana oferecer até cinco, com data, hora e médico.",
+      "ordem": 16,
+      "secoes_extra": [
+        "3.2"
+      ]
+    },
+    "consultar_prestadores_agenda": {
+      "descricao": "Diz quais profissionais atendem a especialidade na agenda online.",
+      "ordem": 17
+    },
+    "search_knowledge": {
+      "descricao": "Busca na base de conhecimento do hospital: endereço, horários, convênios aceitos, serviços.",
+      "ordem": 20
+    },
+    "handoff_to_human": {
+      "descricao": "Passa a conversa para a equipe humana, com o resumo do que aconteceu.",
+      "ordem": 21
+    },
+    "private_note": {
+      "descricao": "Grava uma nota interna na conversa, que o paciente não vê.",
+      "ordem": 22
+    },
+    "set_custom_attribute": {
+      "descricao": "Guarda nome, CPF e convênio no contato, para não pedir de novo na conversa seguinte.",
+      "ordem": 23
+    },
+    "assign_label": {
+      "descricao": "Aplica uma etiqueta à conversa (urgência, ouvidoria, particular, prontuário, fora do horário).",
+      "ordem": 24
+    },
+    "kanban_move_card": {
+      "descricao": "Move a conversa entre as etapas do funil de atendimento.",
+      "ordem": 25
+    },
+    "update_kanban_task": {
+      "descricao": "Atualiza o título e a descrição do card da conversa no funil.",
+      "ordem": 26
+    },
+    "get_current_time": {
+      "descricao": "Consulta a hora atual para as regras de horário comercial e fim de semana.",
+      "ordem": 27
+    },
+    "skip_reply": {
+      "descricao": "Não responde quando a mensagem não pede resposta (uma reação, uma confirmação vazia).",
+      "ordem": 28
+    },
+    "react_to_message": {
+      "descricao": "Reage a uma mensagem do paciente, sem escrever resposta.",
+      "ordem": 29
+    },
+    "resolve_conversation": {
+      "descricao": "Encerra a conversa na central de atendimento.",
+      "ordem": 30
+    }
+  },
+  "estados": {
+    "funciona": {
+      "rotulo": "funciona",
+      "classe": "funciona",
+      "descricao": "Está no ar e tem prova: conversa registrada ou bateria de testes."
+    },
+    "parcial": {
+      "rotulo": "em parte",
+      "classe": "parte",
+      "descricao": "Responde, mas com uma ressalva conhecida, descrita no item."
+    },
+    "gh": {
+      "rotulo": "em parte",
+      "classe": "parte",
+      "descricao": "O lado da Ana está pronto. O que falta depende do que o hospital publica na agenda online."
+    },
+    "planejado": {
+      "rotulo": "ainda não",
+      "classe": "ainda-nao",
+      "descricao": "Está escrito nas regras ou no desenho, e ainda não existe no ar."
+    }
+  },
+  "blocos": {
+    "Chegada e triagem": "O começo de toda conversa. Nada aqui depende de sistema externo: são as regras da Ana e as ações dentro da central de atendimento.",
+    "A Base Ana: o que ela sabe sobre o hospital": "As tabelas oficiais do hospital (consultas, exames e cirurgias), editadas pela equipe numa tela do aplicativo do hospital. A cobertura de convênio vem da agenda online.",
+    "Agendamento": "É aqui que a Global Health decide o que a Ana consegue fazer. A Ana já acha horário real na agenda online. A marcação final ainda é da equipe.",
+    "Ouvidoria": "A única coisa que a Ana grava fora da central de atendimento: o índice de protocolos do aplicativo do hospital, que aparece no painel da ouvidoria.",
+    "Apoio, dúvidas e encerramento": "O resto das regras. Tudo dentro da central de atendimento, sem dependência externa."
+  },
+  "capacidades": {
+    "C09": {
+      "titulo": "Cobertura de convênio por especialidade",
+      "secao": "Seções 3.2 e 5.A",
+      "estado": "funciona",
+      "tools": "consultar_especialidades_agenda, consultar_convenios_agenda, consultar_planos_convenio",
+      "faz": "Pergunta à agenda online quais convênios atendem a especialidade pedida. Convênio na lista: a Ana segue e oferece horário. Convênio fora da lista: ela diz que aquele convênio não é atendido naquela especialidade e oferece o particular. Especialidade sem agenda publicada: não afirma nem nega e orienta o portal de marcação.",
+      "prova": "Conversa de teste de 26/08/2026: Unimed em Cardiologia, com horário real devolvido pela agenda online.",
+      "falta": "Só uma especialidade está publicada na agenda online de testes. Para as outras, a Ana cai no caminho do portal."
+    },
+    "C11": {
+      "secao": "Base de dados do hospital",
+      "faz": "Mudança feita pela equipe na tela do aplicativo do hospital aparece na conversa seguinte, sem reinstalar nada e sem cópia atrasada."
+    },
+    "C12": {
+      "prova": "Provado em agosto de 2026 com uma falha real de acesso à API do Hospital: a Ana disse que não conseguiu consultar e encaminhou.",
+      "falta": "O teste não é repetido desde então. Reproduzir a falha exige derrubar de propósito a chave que serve três ferramentas ao mesmo tempo, com a Ana parada."
+    },
+    "C13": {
+      "estado": "funciona",
+      "prova": "A busca responde e encontra o cadastro de teste, conferido em 20/08/2026 e de novo em 08/09/2026.",
+      "falta": "A base de testes da agenda online tem poucos cadastros, então quase todo paciente volta como sem cadastro. A Ana segue mesmo assim e avisa a equipe no resumo."
+    },
+    "C14": {
+      "estado": "funciona",
+      "tools": "consultar_especialidades_agenda, consultar_convenios_agenda, consultar_planos_convenio, consultar_horarios_livres",
+      "faz": "Procura a especialidade na agenda online, escolhe a linha do particular e o plano, pega os horários livres e apresenta uma lista numerada de até cinco para o paciente escolher.",
+      "prova": "Conversa real de 08/09/2026: três horários reais de Cardiologia devolvidos numa resposta só, montados com a agenda online.",
+      "falta": "Só Cardiologia está publicada na agenda online de testes. Nas outras especialidades a Ana avisa que a agenda não retornou horários e encaminha à equipe."
+    },
+    "C15": {
+      "estado": "funciona",
+      "prova": "Conferido em 08/09/2026: a agenda online devolve os profissionais publicados em Cardiologia.",
+      "falta": "Profissional publicado não é profissional com horário livre. A Ana nunca promete que o nome citado tem vaga."
+    },
+    "C17": {
+      "falta": "A ferramenta existe, mas foi tirada da Ana de propósito: sem a marcação final automática, cadastrar só cria registro sem uso. Volta junto com a marcação de ponta a ponta."
+    },
+    "C18": {
+      "falta": "Esta parte das regras ainda não entra em vigor: fica fora do prompt até a marcação de ponta a ponta. As ferramentas de marcação ainda não existem. Hoje a agenda online recusa a marcação de teste, e ainda é preciso provar que a marcação chega ao banco do hospital."
+    },
+    "C19": {
+      "falta": "Mesma porta da marcação final: está no desenho, fora das regras em vigor, com as ferramentas por criar."
+    },
+    "C20": {
+      "titulo": "Agendamento por convênio",
+      "tools": "consultar_convenios_agenda, consultar_horarios_livres",
+      "faz": "Confirma a cobertura pela agenda online e, quando o convênio está na lista, oferece horário na própria conversa, como no particular. Quando a especialidade não tem agenda publicada, manda o link do portal de marcação e continua na conversa até o paciente dizer se conseguiu.",
+      "prova": "Conversas de teste de 26/08/2026 (Unimed, Cardiologia), com a etiqueta de agendamento por convênio aplicada e o card movido no funil.",
+      "falta": ""
+    },
+    "C22": {
+      "prova": "Protocolos reais gerados e conferidos no banco do hospital em agosto de 2026. A numeração continuou do último número usado, sem repetir."
+    },
+    "C23": {
+      "falta": "Ressalva conhecida: o número da conversa não chega ao painel, porque a plataforma não preenche esse campo. A ponte entre o painel e a conversa é procurar o número do protocolo na central de atendimento."
+    },
+    "C24": {
+      "prova": "Cenário endurecido em 21/08/2026: 3 de 3 com resposta idêntica. Ela encontra, informa número, data de abertura e prazo, e a proteção do status segurou."
+    },
+    "C25": {
+      "falta": "O comportamento está escrito nas regras, mas nunca foi testado. O teste exige apontar a gravação para um destino inexistente, com a Ana parada."
+    },
+    "C28": {
+      "prova": "A própria bateria de testes pegou o defeito da mensagem de fim de semana numa quarta-feira, e a correção entrou na versão seguinte das regras."
+    }
+  },
+  "zonas": {
+    "orquestradora": "Recebe toda mensagem: triagem de urgência, identificação do motivo, convênio, prontuário, dúvidas e confirmação. Decide para qual bloco a conversa vai e recebe de volta quando a jornada termina.",
+    "particular": "Valores, agendamento particular de consultas e exames, estimativas de cirurgia. É onde a agenda online é consultada, depois de nome e CPF validados.",
+    "ouvidoria": "Acolhimento de manifestações com os cuidados jurídicos, coleta estruturada e registro com protocolo.",
+    "nucleo": "Vale para os três blocos: a coleta de nome e CPF, a regra de fim de semana antes de passar para a equipe e o encerramento."
+  },
+  "integracao": {
+    "faixas": [
+      {
+        "id": "ida",
+        "rotulo": "A ida: o dado do hospital vira fala da Ana",
+        "resumo": "Alguém do hospital edita um valor na tela do aplicativo. Sem reinstalar nada e sem cache, a próxima conversa já usa o dado novo. Provado ao vivo, com a equipe editando e a sessão de teste medindo.",
+        "passos": [
+          {
+            "no": "H1",
+            "titulo": "A tela de dados de atendimento",
+            "texto": "Quem edita é a equipe do hospital, com login e papéis: preço, especialidade ativa ou inativa, preparo de exame. Não existe apagar: o que sai do ar é desativado."
+          },
+          {
+            "no": "H2",
+            "titulo": "O banco do aplicativo",
+            "texto": "Dono único dos dados de atendimento. Toda leitura da Ana chega aqui, sem cópia intermediária."
+          },
+          {
+            "no": "H3",
+            "titulo": "A porta de leitura da Ana",
+            "texto": "Serve as tabelas de valores com chave própria e só as linhas ativas. Se a chave vencer ou a rota mudar, a Ana não inventa valor: diz que não conseguiu consultar e encaminha."
+          },
+          {
+            "no": "T1",
+            "titulo": "Preços das consultas particulares",
+            "texto": "O valor oficial de uma consulta e a lista das especialidades ofertadas. O diferencial só aparece quando o paciente hesita."
+          },
+          {
+            "no": "T2",
+            "titulo": "Tabela de exames",
+            "texto": "Valor particular e, sobretudo, o preparo do exame, repassado inteiro: resumir a ponto de perder um passo é falha clínica."
+          },
+          {
+            "no": "T3",
+            "titulo": "Estimativas de cirurgias",
+            "texto": "A estimativa de um procedimento, sempre com o aviso de avaliação médica. Estimativa dita sem o aviso é erro."
+          },
+          {
+            "no": "A1",
+            "titulo": "A fala que o paciente lê",
+            "texto": "O único lugar onde o dado do hospital encontra o paciente: número em formato brasileiro, diferencial em tom de conversa, aviso quando é cirurgia."
+          }
+        ]
+      },
+      {
+        "id": "volta",
+        "rotulo": "A volta: a queixa do paciente vira protocolo",
+        "resumo": "O paciente relata uma queixa, a Ana grava no aplicativo do hospital e o número de protocolo nasce no banco, nunca na cabeça da Ana. A manifestação aparece no painel da ouvidoria com o mesmo número.",
+        "passos": [
+          {
+            "no": "V1",
+            "titulo": "O paciente relata uma queixa",
+            "texto": "O canal de ouvidoria abre dentro da mesma conversa, sem formulário e sem transferir antes de acolher."
+          },
+          {
+            "no": "T11",
+            "titulo": "Registrar a manifestação",
+            "texto": "Grava categoria, setor, resumo e datas. Nome, CPF e dado clínico ficam só na nota interna da conversa."
+          },
+          {
+            "no": "H4",
+            "titulo": "O número nasce no banco",
+            "texto": "O protocolo no formato ANO-NNNN é gerado pelo banco do hospital e devolvido na mesma resposta. A Ana nunca compõe nem estima esse número."
+          },
+          {
+            "no": "H5",
+            "titulo": "O painel da ouvidoria",
+            "texto": "A diretoria e as secretárias veem a fila de manifestações, com status aberto ou respondido."
+          },
+          {
+            "no": "V3",
+            "titulo": "O protocolo dito ao paciente",
+            "texto": "O paciente sai da conversa com um número que existe de verdade."
+          },
+          {
+            "no": "V2",
+            "titulo": "O paciente volta com o número",
+            "texto": "Quem já registrou e quer saber se andou."
+          },
+          {
+            "no": "T12",
+            "titulo": "Consultar o protocolo",
+            "texto": "Confirma que a manifestação existe e diz ao paciente a data de abertura e o prazo de retorno. Nunca lê o status de volta: dizer que já foi respondido a quem nunca recebeu retorno seria dano grave."
+          }
+        ]
+      },
+      {
+        "id": "parada",
+        "rotulo": "A fronteira: a agenda online da Global Health",
+        "resumo": "Oito ferramentas conversam com a agenda online: cadastro, especialidade, convênios, planos, horários e profissionais. A Ana já devolve horário real na conversa. A marcação final ainda é da equipe.",
+        "passos": [
+          {
+            "no": "T5",
+            "titulo": "Buscar paciente por CPF",
+            "texto": "Acha o cadastro do paciente na agenda para seguir com o agendamento."
+          },
+          {
+            "no": "T6",
+            "titulo": "Buscar paciente por telefone",
+            "texto": "Segundo caminho de identificação, quando não há CPF."
+          },
+          {
+            "no": "T7",
+            "titulo": "Cadastrar paciente",
+            "texto": "Existe, mas a Ana não chama hoje: sem a marcação final, cadastrar só cria registro sem uso."
+          },
+          {
+            "no": "T8",
+            "titulo": "Especialidades da agenda",
+            "texto": "Acha a especialidade pedida e o identificador que a busca de horários exige."
+          },
+          {
+            "no": "T9",
+            "titulo": "Horários livres",
+            "texto": "Mostra horários reais ao paciente, no máximo cinco por mensagem, com data, hora e médico."
+          },
+          {
+            "no": "T10",
+            "titulo": "Profissionais da agenda",
+            "texto": "Diz quem atende, quando o paciente pergunta por profissional."
+          },
+          {
+            "no": "G1",
+            "titulo": "A agenda online do hospital",
+            "texto": "O catálogo é publicado pelo hospital, não pela Ana: só aparece na conversa o que foi cadastrado e ativado na agenda online. Hoje, só Cardiologia."
+          }
+        ]
+      }
+    ]
+  },
+  "global_health": {
+    "vereditos": {
+      "funciona": {
+        "rotulo": "funciona",
+        "classe": "funciona"
+      },
+      "vazio": {
+        "rotulo": "funciona, resposta vazia esperada",
+        "classe": "funciona"
+      },
+      "recusa": {
+        "rotulo": "recusa de propósito",
+        "classe": "recusa"
+      },
+      "falha": {
+        "rotulo": "a agenda falha",
+        "classe": "falha"
+      },
+      "ainda-nao": {
+        "rotulo": "ainda não",
+        "classe": "ainda-nao"
+      },
+      "conversa": {
+        "rotulo": "só conversa, sem a Global Health",
+        "classe": "conversa"
+      },
+      "fora": {
+        "rotulo": "fora do escopo da Ana",
+        "classe": "fora"
+      }
+    },
+    "ana_hoje": {
+      "faz": "a Ana já faz",
+      "ainda-nao": "a Ana ainda não faz",
+      "nao-se-aplica": "não é papel da Ana"
+    },
+    "cadeias": [
+      {
+        "letra": "A",
+        "titulo": "Paciente novo: identificar e cadastrar",
+        "resumo": "A agenda online confirma que um CPF não existe, aceita o cadastro e devolve o paciente novo por CPF e por telefone. O elo do telefone é o caminho natural da Ana no WhatsApp.",
+        "elos": [
+          {
+            "id": "A1",
+            "titulo": "Buscar o CPF antes do cadastro",
+            "veredito": "vazio",
+            "texto": "A agenda responde que não há cadastro para esse CPF. Vazio não é erro: é o que libera o cadastro.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "ana0": "Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento.",
+              "paciente": "[nome completo], [CPF]",
+              "ferramentas": [
+                "buscar_paciente_por_cpf"
+              ],
+              "nota": "A Ana só busca depois de validar o nome (duas palavras) e o CPF (11 dígitos). Nascimento e telefone ela não pede."
+            }
+          },
+          {
+            "id": "A2",
+            "titulo": "Criar o cadastro",
+            "veredito": "funciona",
+            "texto": "A agenda aceita o cadastro e devolve o identificador na hora. Nome com número é recusado.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "cadastrar_paciente"
+              ],
+              "nota": "Hoje a Ana não cadastra. A ferramenta existe, mas foi tirada dela de propósito: sem a marcação final automática, cadastrar só cria registro sem uso. Ela segue o agendamento e avisa a equipe no resumo que o paciente não tem cadastro."
+            }
+          },
+          {
+            "id": "A3",
+            "titulo": "Reencontrar pelo CPF",
+            "veredito": "funciona",
+            "texto": "O cadastro que não existia segundos atrás volta completo.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "ferramentas": [
+                "buscar_paciente_por_cpf"
+              ],
+              "ana": "Confirma para mim: é para o agendamento no nome de [nome]?",
+              "nota": "Paciente com cadastro: a Ana confirma pelo nome que a agenda devolveu, sem ler o CPF de volta."
+            }
+          },
+          {
+            "id": "A4",
+            "titulo": "Reencontrar pelo telefone",
+            "veredito": "funciona",
+            "texto": "A agenda acha o paciente pelo telefone. É assim que a Ana pode identificar quem conversa quando não há CPF.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "ferramentas": [
+                "buscar_paciente_por_telefone"
+              ],
+              "nota": "Só quando o paciente quer agendar e não tem o CPF à mão. A busca por CPF é a preferencial."
+            }
+          },
+          {
+            "id": "A5",
+            "titulo": "Listar os agendamentos do paciente novo",
+            "veredito": "vazio",
+            "texto": "Lista vazia, o certo para paciente recém-criado.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "listar_agendamentos"
+              ],
+              "nota": "A Ana ainda não lista agendamentos. Quando existir, é o que evita marcar em duplicidade."
+            }
+          }
+        ]
+      },
+      {
+        "letra": "B",
+        "titulo": "Paciente já cadastrado",
+        "resumo": "Um cadastro de teste criado na agenda online em julho continua íntegro dois meses depois, sem carteiras e sem agendamentos, como esperado.",
+        "elos": [
+          {
+            "id": "B1",
+            "titulo": "Encontrar pelo CPF",
+            "veredito": "funciona",
+            "texto": "O cadastro volta íntegro: o dado persiste na agenda online.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "[nome completo], [CPF]",
+              "ferramentas": [
+                "buscar_paciente_por_cpf",
+                "set_custom_attribute"
+              ],
+              "ana": "Confirma para mim: é para o agendamento no nome de [nome]?",
+              "nota": "A Ana guarda nome e CPF no contato. Na conversa seguinte ela confirma pelo nome sem pedir o CPF de novo."
+            }
+          },
+          {
+            "id": "B2",
+            "titulo": "Carteiras de convênio do paciente",
+            "veredito": "vazio",
+            "texto": "Nunca foi criada carteira para este cadastro: lista vazia é coerência, não defeito.",
+            "ana_hoje": "nao-se-aplica",
+            "conversa": {
+              "nota": "A Ana não mexe com carteira de convênio. Quem cadastra carteira é a recepção."
+            }
+          },
+          {
+            "id": "B3",
+            "titulo": "Agendamentos do paciente",
+            "veredito": "vazio",
+            "texto": "Nenhum agendamento foi finalizado por este caminho ainda: lista vazia.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "listar_agendamentos"
+              ],
+              "nota": "Ainda sem ferramenta na Ana. No dia em que existir, é o que responde \"tenho consulta marcada?\"."
+            }
+          }
+        ]
+      },
+      {
+        "letra": "C",
+        "titulo": "Convênio: a cobertura vem da agenda",
+        "resumo": "O paciente diz o convênio. A Ana não olha mais tabela curada: pergunta à agenda online quais convênios atendem a especialidade, procura o nome, desce aos planos e busca horário. No fim, a agenda recusa uma carteira incompleta de propósito.",
+        "elos": [
+          {
+            "id": "C1",
+            "titulo": "Achar a especialidade na agenda",
+            "veredito": "funciona",
+            "texto": "A especialidade vira um item da agenda, com identificador. Sem ele nada a seguir anda.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "Tenho Unimed. Cardiologia cobre?",
+              "ferramentas": [
+                "consultar_especialidades_agenda"
+              ],
+              "nota": "Cobertura de convênio não é tabela: é a cadeia da agenda. O primeiro elo é o mesmo do particular."
+            }
+          },
+          {
+            "id": "C2",
+            "titulo": "Convênios aceitos nessa especialidade",
+            "veredito": "funciona",
+            "texto": "A lista é da especialidade, não do hospital inteiro. O particular é uma linha como as outras.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "ferramentas": [
+                "consultar_convenios_agenda"
+              ],
+              "ana": "Boa notícia: a Unimed atende Cardiologia aqui. Quer que eu veja os horários disponíveis para você?",
+              "nota": "A Ana procura o nome que o paciente disse na lista e nunca lê a lista inteira. Convênio ausente vira negativa clara, mais a oferta do particular, sem inventar."
+            }
+          },
+          {
+            "id": "C3",
+            "titulo": "Planos do convênio",
+            "veredito": "funciona",
+            "texto": "Os planos do convênio escolhido. A regra manda pegar o primeiro, a menos que o paciente tenha dito o nome do plano dele.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "ferramentas": [
+                "consultar_planos_convenio"
+              ],
+              "nota": "Plano é uso interno: a Ana não diz o nome ao paciente. Só pergunta se o paciente mencionar o plano dele."
+            }
+          },
+          {
+            "id": "C4",
+            "titulo": "Subdivisões do plano",
+            "veredito": "funciona",
+            "texto": "O último nível da árvore, quando o plano tem subdivisões.",
+            "ana_hoje": "nao-se-aplica",
+            "conversa": {
+              "nota": "A Ana não desce até aqui: a busca de horários aceita o plano direto."
+            }
+          },
+          {
+            "id": "C5",
+            "titulo": "Horários livres pelo convênio",
+            "veredito": "funciona",
+            "texto": "Exige especialidade, convênio e plano. A janela padrão da agenda é de 14 dias.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "sim",
+              "ferramentas": [
+                "consultar_horarios_livres"
+              ],
+              "ana": "Achei estes horários para Cardiologia pela Unimed:\n\n1) [data] às [hora] com [médico]\n2) [data] às [hora] com [médico]\n3) [data] às [hora] com [médico]\n\nMe diz o número da opção que você prefere?",
+              "nota": "Mesma cadeia do particular, com o convênio escolhido. Provado em 26/08/2026 com horário real."
+            }
+          },
+          {
+            "id": "C6",
+            "titulo": "Cadastrar uma carteira incompleta",
+            "veredito": "recusa",
+            "texto": "Sem o número da carteira, a agenda recusa e diz qual campo falta. É a regra de negócio do hospital funcionando.",
+            "ana_hoje": "nao-se-aplica",
+            "conversa": {
+              "nota": "A Ana nunca grava carteira. Este elo só prova que a agenda valida de verdade."
+            }
+          },
+          {
+            "id": "C7",
+            "titulo": "Excluir uma carteira",
+            "veredito": "fora",
+            "texto": "Fecha o ciclo da carteira. Só roda com uma carteira real criada antes.",
+            "ana_hoje": "nao-se-aplica",
+            "conversa": {
+              "nota": "Fora do escopo da Ana."
+            }
+          }
+        ]
+      },
+      {
+        "letra": "D",
+        "titulo": "Consulta particular: os horários, elo por elo",
+        "resumo": "A conversa real de 08/09/2026, reproduzida elo a elo: preço pela API do Hospital, identificação do paciente e a cadeia de quatro elos até a lista numerada de horários. Termina no que a Ana faz hoje (anota e passa para a equipe) e no que ainda não faz (marcar sozinha).",
+        "elos": [
+          {
+            "id": "D0",
+            "titulo": "O preço vem do hospital",
+            "veredito": "conversa",
+            "texto": "Não passa pela Global Health: o preço vem da tabela oficial do hospital.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "quanto ta a consulta de cardiologia?",
+              "ferramentas": [
+                "consultar_precos_consultas",
+                "assign_label"
+              ],
+              "ana": "A consulta de Cardiologia é R$ 380. Quer que eu veja os horários disponíveis para você?",
+              "nota": "Preço direto, sem diferencial na abertura (o diferencial só aparece na hesitação). Junto vai a etiqueta de paciente particular aquecido."
+            }
+          },
+          {
+            "id": "D1",
+            "titulo": "Identificar o paciente",
+            "veredito": "funciona",
+            "texto": "A busca de horários só roda depois de nome e CPF validados.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "sim",
+              "ana0": "Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento.",
+              "paciente2": "[nome completo], [CPF]",
+              "ferramentas": [
+                "buscar_paciente_por_cpf"
+              ],
+              "ana": "Confirma para mim: é para o agendamento no nome de [nome]?",
+              "nota": "Na conversa de 08/09 a busca voltou vazia e a Ana seguiu mesmo assim: cadastro não é pré-requisito hoje, e ela avisa a equipe no resumo."
+            }
+          },
+          {
+            "id": "D2",
+            "titulo": "Achar a especialidade",
+            "veredito": "funciona",
+            "texto": "A especialidade vira um item da agenda, com identificador.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "sim",
+              "ferramentas": [
+                "consultar_especialidades_agenda"
+              ],
+              "nota": "Na conversa de 08/09 foram quatro chamadas em 21 segundos, sem mensagem no meio. A Ana confere o nome devolvido antes de seguir, porque a busca casa por aproximação."
+            }
+          },
+          {
+            "id": "D3",
+            "titulo": "Escolher a linha do particular",
+            "veredito": "funciona",
+            "texto": "Entre os convênios da especialidade, a linha Particular.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "ferramentas": [
+                "consultar_convenios_agenda"
+              ],
+              "nota": "Escolha da Ana, sem perguntar ao paciente: a linha Particular da lista de convênios. O nome decide, porque há mais de uma linha marcada como particular."
+            }
+          },
+          {
+            "id": "D4",
+            "titulo": "Plano do particular",
+            "veredito": "funciona",
+            "texto": "Dois planos voltaram. A regra manda pegar o primeiro quando o paciente não disse o plano.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "ferramentas": [
+                "consultar_planos_convenio"
+              ],
+              "nota": "Ponto de decisão do programa: perguntar o plano ao paciente ou fixar um padrão."
+            }
+          },
+          {
+            "id": "D5",
+            "titulo": "Horários livres",
+            "veredito": "funciona",
+            "texto": "Com especialidade, convênio e plano, a agenda devolve os horários reais dos próximos 14 dias.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "ferramentas": [
+                "consultar_horarios_livres"
+              ],
+              "ana": "Perfeito! Achei estes horários para Cardiologia:\n\n1) [data] às [hora] com [médico]\n2) [data] às [hora] com [médico]\n3) [data] às [hora] com [médico]\n\nMe diz o número da opção que você prefere?",
+              "nota": "A mensagem é montada com a resposta real da agenda: no máximo cinco opções, com data, hora e médico. A conversa para aqui e espera o número."
+            }
+          },
+          {
+            "id": "D6",
+            "titulo": "Quem atende a especialidade",
+            "veredito": "funciona",
+            "texto": "Elo opcional: os profissionais publicados. Publicado não quer dizer com horário livre.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "quem atende cardiologia aí?",
+              "ferramentas": [
+                "consultar_prestadores_agenda"
+              ],
+              "ana": "Na agenda de Cardiologia atendem [profissionais publicados]. Quer que eu veja os horários?",
+              "nota": "Só quando o paciente pergunta quem atende. A Ana nunca promete que o nome citado tem horário."
+            }
+          },
+          {
+            "id": "D7",
+            "titulo": "Tipo da consulta (primeira ou retorno)",
+            "veredito": "funciona",
+            "texto": "O tipo da consulta que a marcação final exige.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "consultar_tipos_consulta"
+              ],
+              "nota": "Sem ferramenta na Ana hoje. Só entra junto com a marcação final."
+            }
+          },
+          {
+            "id": "D8",
+            "titulo": "Instruções do horário",
+            "veredito": "falha",
+            "texto": "As orientações do horário (preparo, chegada). A agenda falha nesta consulta mesmo com um horário real, medido em 08/09/2026. Pergunta aberta à Global Health.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "nota": "Sem ferramenta na Ana. Se um dia vier preparo por aqui, a Ana repassaria antes de confirmar."
+            }
+          },
+          {
+            "id": "D9",
+            "titulo": "O paciente escolhe e a equipe fecha",
+            "veredito": "conversa",
+            "texto": "Não passa pela Global Health: quatro ações dentro da central de atendimento.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "1",
+              "ferramentas": [
+                "private_note",
+                "assign_label",
+                "kanban_move_card",
+                "handoff_to_human"
+              ],
+              "ana": "Perfeito! Anotei sua preferência de horário. Nossa equipe vai entrar em contato em breve para confirmar tudo com você.",
+              "nota": "Hoje quem marca é a equipe. A Ana registra o horário escolhido numa nota interna, etiqueta a conversa, move o card para a fila comercial e passa para a equipe com o resumo: especialidade, valor, horário, tem ou não cadastro."
+            }
+          },
+          {
+            "id": "D10",
+            "titulo": "A marcação final",
+            "veredito": "ainda-nao",
+            "texto": "O único passo que grava na agenda do hospital. Hoje a Global Health recusa a marcação de teste. A marcação nunca é feita pela página de provas: é um ato deliberado, com conferência no banco do hospital.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "agendar_horario"
+              ],
+              "nota": "Quando as regras de marcação entrarem em vigor: resumo (especialidade, profissional, data, hora, valor), confirmação explícita, uma marcação só, protocolo devolvido pela agenda, sem passar pela equipe."
+            }
+          }
+        ]
+      },
+      {
+        "letra": "E",
+        "titulo": "Exame: preço e preparo funcionam, a agenda ainda não",
+        "resumo": "O exame tem o que a consulta não tem: perguntas de triagem que podem impedir a marcação, preparo e documentos anexos. Tudo depende de o exame estar publicado na agenda online, e hoje o catálogo de exames está vazio.",
+        "elos": [
+          {
+            "id": "E0",
+            "titulo": "Preço e preparo vêm do hospital",
+            "veredito": "conversa",
+            "texto": "Não passa pela Global Health: valor e preparo vêm da tabela de exames do hospital. É o que já funciona.",
+            "ana_hoje": "faz",
+            "conversa": {
+              "paciente": "quanto custa o ecocardiograma?",
+              "ferramentas": [
+                "consultar_exames"
+              ],
+              "ana": "O Ecocardiograma particular é R$ [valor da tabela]. Quer agendar?",
+              "nota": "Valor direto, sem despejar o preparo. O preparo só quando pedirem, com a mesma ferramenta."
+            }
+          },
+          {
+            "id": "E1",
+            "titulo": "Achar o exame na agenda",
+            "veredito": "vazio",
+            "texto": "A agenda online não tem exame publicado. É o mesmo mecanismo que destravou a Cardiologia: cadastro no sistema do hospital e ativação no painel da agenda.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "paciente": "sim, particular",
+              "ferramentas": [
+                "buscar_paciente_por_cpf",
+                "assign_label",
+                "kanban_move_card",
+                "handoff_to_human"
+              ],
+              "ana": "Anotei tudo, [primeiro nome]! Nossa equipe vai entrar em contato para combinar o horário e os detalhes do exame com você.",
+              "nota": "Hoje a Ana não consulta agenda de exame. Exame particular segue para a equipe: nome e CPF, busca do cadastro, etiqueta, card no setor responsável e passagem para a equipe."
+            }
+          },
+          {
+            "id": "E2",
+            "titulo": "Perguntas de triagem",
+            "veredito": "ainda-nao",
+            "texto": "O questionário que decide se pode agendar. Uma resposta que impede a realização bloqueia a marcação.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "nota": "Futuro: a Ana faria as perguntas uma a uma. Resposta que impede vira passagem para a equipe, sem agendar."
+            }
+          },
+          {
+            "id": "E3",
+            "titulo": "Preparo segundo a agenda",
+            "veredito": "ainda-nao",
+            "texto": "O preparo do exame segundo a agenda online (jejum, medicação).",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "consultar_exames"
+              ],
+              "nota": "Hoje o preparo já sai da tabela do hospital. Este elo seria a segunda fonte."
+            }
+          },
+          {
+            "id": "E4",
+            "titulo": "Convênios do exame",
+            "veredito": "ainda-nao",
+            "texto": "Os convênios do exame, como na consulta.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "consultar_convenios_agenda"
+              ],
+              "nota": "As regras mandam usar a mesma cadeia para cobertura de exame por convênio."
+            }
+          },
+          {
+            "id": "E5",
+            "titulo": "Horários do exame",
+            "veredito": "ainda-nao",
+            "texto": "Os horários do exame, com os mesmos três dados da consulta.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "consultar_horarios_livres"
+              ],
+              "nota": "Mesma lista numerada da consulta."
+            }
+          },
+          {
+            "id": "E6",
+            "titulo": "Documentos exigidos",
+            "veredito": "ainda-nao",
+            "texto": "Quais anexos o agendamento exige (pedido médico, carteirinha).",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "nota": "Futuro: a Ana pediria a foto do pedido médico e enviaria para a agenda."
+            }
+          },
+          {
+            "id": "E7",
+            "titulo": "A marcação final do exame",
+            "veredito": "ainda-nao",
+            "texto": "Como na consulta: o exame também grava na agenda do hospital. Nunca roda pela página de provas.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "agendar_horario"
+              ],
+              "nota": "Junto com a marcação da consulta."
+            }
+          }
+        ]
+      },
+      {
+        "letra": "F",
+        "titulo": "Gerir o agendado: consultar, remarcar, cancelar",
+        "resumo": "Depois de agendar, o paciente consulta, remarca e cancela pelo mesmo canal. A listagem já responde. Remarcar e cancelar gravam na agenda do hospital e ficam para a prova com conferência no banco.",
+        "elos": [
+          {
+            "id": "F1",
+            "titulo": "Listar os agendamentos",
+            "veredito": "vazio",
+            "texto": "A lista de agendamentos do paciente. Vazia porque nenhum foi finalizado por este caminho ainda.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "paciente": "quero cancelar minha consulta de cardiologia",
+              "ana0": "Claro. Me passa seu nome completo e CPF, por favor?",
+              "paciente2": "[nome completo], [CPF]",
+              "ferramentas": [
+                "buscar_paciente_por_cpf",
+                "private_note",
+                "kanban_move_card",
+                "handoff_to_human"
+              ],
+              "ana": "Anotei seu pedido de cancelamento, [primeiro nome]. Nossa equipe vai confirmar com você em breve.",
+              "nota": "Hoje a Ana não lista nem cancela. Ela identifica o paciente, registra o pedido (e o motivo, se dito) numa nota interna e passa para a equipe."
+            }
+          },
+          {
+            "id": "F2",
+            "titulo": "Detalhar um agendamento",
+            "veredito": "ainda-nao",
+            "texto": "O detalhe de um agendamento específico. Precisa de um agendamento real na lista.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "nota": "Futuro: a Ana confirma qual agendamento antes de agir."
+            }
+          },
+          {
+            "id": "F3",
+            "titulo": "Remarcar",
+            "veredito": "ainda-nao",
+            "texto": "Remarcar grava na agenda do hospital, como a marcação. Nunca roda pela página de provas.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "ferramentas": [
+                "reagendar_horario",
+                "assign_label"
+              ],
+              "nota": "Repetir a cadeia de horários, confirmação explícita, uma remarcação só, etiqueta de remarcação."
+            }
+          },
+          {
+            "id": "F4",
+            "titulo": "Cancelar",
+            "veredito": "ainda-nao",
+            "texto": "Cancelar também grava na agenda do hospital. Nunca roda pela página de provas.",
+            "ana_hoje": "ainda-nao",
+            "conversa": {
+              "paciente": "sim, pode cancelar",
+              "ferramentas": [
+                "cancelar_agendamento",
+                "assign_label",
+                "private_note"
+              ],
+              "ana": "Cancelado. Se quiser remarcar, é só me chamar por aqui.",
+              "nota": "Confirmar explicitamente qual agendamento, cancelar uma vez, etiqueta de cancelamento, motivo em nota interna."
+            }
+          }
+        ]
+      }
+    ],
+    "da": [
+      "Encontrar o cadastro do paciente por CPF ou por telefone.",
+      "Criar cadastro novo. A agenda aceita e valida (nome com número é recusado); a Ana ainda não usa, de propósito.",
+      "Dizer quais convênios atendem uma especialidade, e os planos de cada convênio.",
+      "Achar a especialidade na agenda e devolver horários reais, com data, hora e médico. Provado com Cardiologia na conversa de 08/09/2026.",
+      "Dizer quem atende uma especialidade.",
+      "Listar os agendamentos de um paciente.",
+      "Recusar dado incompleto, dizendo qual campo falta."
+    ],
+    "nao_da": [
+      "A marcação final: a agenda recusa a marcação de teste. A Ana anota o horário escolhido e passa para a equipe, que confirma.",
+      "Exames: nenhum exame publicado na agenda online. Só preço e preparo, pela tabela do hospital.",
+      "Remarcar e cancelar pela Ana: ainda não. Hoje ela registra o pedido e passa para a equipe.",
+      "Instruções do horário (preparo e chegada): a agenda falha nessa consulta, mesmo com um horário real.",
+      "O catálogo é publicado pelo hospital, não pela Ana: especialidade ou exame só aparece na conversa depois de cadastrado e ativado na agenda online. Hoje, só Cardiologia."
+    ]
+  },
+  "ferramentas_futuras": {
+    "listar_agendamentos": "ainda não existe: entra com a gestão do agendado",
+    "agendar_horario": "ainda não existe: entra com a marcação final",
+    "reagendar_horario": "ainda não existe: entra com a gestão do agendado",
+    "cancelar_agendamento": "ainda não existe: entra com a gestão do agendado",
+    "consultar_tipos_consulta": "ainda não existe: só faz sentido com a marcação final"
+  },
+  "nos_resumo": {
+    "S9": "A Ana não cadastra ninguém: não pergunta mais nada e apenas anota 'paciente sem cadastro no sistema' no resumo interno. Quem cadastra é a equipe, ao confirmar o agendamento."
+  },
+  "tipos": {
+    "tool": "Chamada de ferramenta"
+  }
+}

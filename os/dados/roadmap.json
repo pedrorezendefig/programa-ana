@@ -139,14 +139,14 @@
       "status": "fazer",
       "deps": [],
       "tema": "os",
-      "canal": "comigo",
+      "canal": "dispare",
       "canal_desde": "2026-09-09",
       "mesa": {
-        "destrava": "O diretor vê, num link, o que a Ana faz hoje, as regras dela, onde ela busca cada resposta e o que dá e não dá na Global Health. Sem servidor, sem segredo, com data carimbada.",
-        "gesto": "Sessão comigo para gerar o retrato (retrato/gerar.py) e montar as quatro abas; depois você roda 'vercel' na raiz e manda o link."
+        "destrava": "O diretor vê, num link, o que a Ana faz hoje, as regras dela, onde ela busca cada resposta e o que dá e não dá na Global Health. O site está pronto em retrato/; falta só publicar.",
+        "gesto": "Na raiz do repo: 'vercel' (primeira vez faz login e cria o projeto) e depois 'vercel --prod'. Abrir o link, conferir as quatro abas no celular, e me mandar o link para eu registrar no TODO.md."
       },
-      "nota": "Nasce do grilling de 09/set/2026 (ADR-0028). Quatro esferas: o que a Ana faz hoje, as regras da Ana (prompt completo e literal), onde ela busca a resposta, Global Health: o que dá e o que não dá. Pronto quando: o gerar.py passa na lista de proibidos, as quatro abas abrem por arquivo local, e o link da Vercel está no TODO.md.",
-      "prompt": "Execute a OS26 (ADR-0028): construa o Retrato da Ana em retrato/ (gerar.py que lê a plataforma e os JSON de os/dados/ e grava retrato/dados/retrato.json com data e a lista de proibidos; quatro abas nomeadas no topo com os tokens do os/DESIGN.md; vercel.json na raiz). Miolo literal, moldura de diretor. Ao terminar, me guie para publicar com 'vercel' e registre o link nos dois arquivos do roadmap."
+      "nota": "Nasce do grilling de 09/set/2026 (ADR-0028). Quatro esferas: o que a Ana faz hoje, as regras da Ana (prompt completo e literal), onde ela busca a resposta, Global Health: o que dá e o que não dá. Pronto quando: o gerar.py passa na lista de proibidos, as quatro abas abrem por arquivo local, e o link da Vercel está no TODO.md. Construído em 09/set/2026: gerar.py rodou contra a plataforma (14 ferramentas), lista de proibidos passou, quatro abas conferidas no navegador em 1360px e 390px. Falta o ato de publicar.",
+      "prompt": "Quero publicar o Retrato da Ana na Vercel (card OS26). Me guie: rodar python3 retrato/gerar.py de novo se o prompt ou os JSON mudaram, conferir com python3 -m http.server -d retrato 8778, depois 'vercel' e 'vercel --prod' na raiz (vercel.json já aponta para retrato/). Quando eu te der o link, registre no roadmap/TODO.md e feche a OS26 nos dois arquivos com a ficha."
     }
   ],
   "pendentes": [],

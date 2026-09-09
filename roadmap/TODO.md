@@ -29,7 +29,7 @@
 | V35 | `[ ]` | O app do hospital espelha a Global Health (no lugar da tabela de convênios) | P+E | nada |
 | V41 | `[ ]` | A Ana entra no WhatsApp real do hospital | P+C | nada |
 | OS25 | `[x]` | Ana OS com cinco abas, só leitura | C | nada |
-| OS26 | `[ ]` | Retrato da Ana no ar, na Vercel | C+P | nada |
+| OS26 | `[~]` | Retrato da Ana no ar, na Vercel | C+P | nada |
 
 ### V37 · A Global Health aceita a marcação `[ ]`
 Herda a P3. O `POST /horarios/agendar` devolve 417 porque a agenda de Cardiologia de teste não tem convênio vinculado no SoulMV TST. Gesto: pedir ao analista de TI o vínculo das agendas com PARTICULAR e UNIMED (aba Convênio do Cadastro de Agendas, tutorial pág. 3) e conferir no Painel GH que a aba "Convênios e planos" está vazia. Roteiro: `ana/api-mv/prompt-agendamento-fim-a-fim.md`, Passo 0.
@@ -64,7 +64,7 @@ Feita em 09/set/2026, na sessão do grilling. Conferida no navegador: cinco abas
 **Pronto quando:** menu com cinco itens, nenhuma página escreve, Bancada abre por URL, as cinco abas carregam sem erro.
 
 ### OS26 · Retrato da Ana no ar `[ ]`
-ADR-0028. Site estático em `retrato/`: `gerar.py` grava um JSON carimbado com a data e recusa CPF, paciente-sonda, URL de ambiente, token, credencial e ID de tarefa; quatro abas nomeadas (o que a Ana faz hoje, as regras da Ana, onde ela busca a resposta, Global Health: o que dá e o que não dá); tokens do `DESIGN.md`; `noindex`; `vercel.json` na raiz. Publicar é ato do Pedro.
+Construído em 09/set/2026 (`retrato/`, `vercel.json`): o `gerar.py` rodou contra a plataforma, a lista de proibidos passou, as quatro abas foram conferidas no navegador. **Falta só publicar** (`vercel` e `vercel --prod` na raiz) e registrar o link aqui. ADR-0028. Site estático em `retrato/`: `gerar.py` grava um JSON carimbado com a data e recusa CPF, paciente-sonda, URL de ambiente, token, credencial e ID de tarefa; quatro abas nomeadas (o que a Ana faz hoje, as regras da Ana, onde ela busca a resposta, Global Health: o que dá e o que não dá); tokens do `DESIGN.md`; `noindex`; `vercel.json` na raiz. Publicar é ato do Pedro.
 **Pronto quando:** o gerar.py passa na lista de proibidos, as quatro abas abrem por arquivo local, e o link da Vercel está aqui.
 
 ## Radar (fora do grafo de execução: pontos para lembrar ou tocar no futuro)
@@ -77,6 +77,8 @@ Bugs, hotfixes e higienes que **não impactam o objetivo** (montar a solução f
 | V36 | 5/10 | Remover a automação `/resolve` do Chatwoot antes do WhatsApp real | Regra id 9 criada em 08/set (mensagem recebida igual a `/resolve` resolve a conversa). Serve ao modo teste: `/resolve` fecha, `/teste` reabre com a Ana; nasceu do caso do Felipe (conversa #166, 11 dias presa na Fila Ouvidoria porque `handoff_to_human` cala o bot e `/teste` não atravessa conversa em fila humana). Provada na conversa 154 da inbox de API. Tocar quando: dia de ligar a Ana num número real (desativar ou apagar em Configurações > Automação) |
 | V7 | 2/10 | Revogar o token Cloudflare do onboarding (29/jul) | Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou |
 ## Log
+
+- **09/set/2026 (3):** **o Retrato da Ana existe (OS26 em curso).** `retrato/` com `gerar.py`, `curadoria.json`, página única de quatro abas e `vercel.json` na raiz. Retrato gerado contra a plataforma (14 ferramentas; 30 capacidades; 81 nós e 41 seções do prompt v6.4; 6 cadeias). Ressalvas registradas na ficha: a curadoria sobrescreve cinco estados da Comparação (C09, C13, C14, C15, C20) que o `comparacao.json` de 24/ago ainda não reflete; o mapa retrata o prompt v6.4 de 18/ago. Falta publicar.
 
 - **09/set/2026 (2):** **OS25 concluída: o Ana OS tem cinco abas e é só leitura.** Cockpit (mesa e grafo), Mecanismo (Circuito + Arquitetura + Integração), Mapa do SOP, Provas (Comparação + Testes + Famílias), Global Health (Cadeias). Bancada em `os/arquivo/`. Faixa de Ideias, botão "marquei" e `POST /api/roadmap` apagados; `/check`, `CLAUDE.md` e `CONTEXT.md` alinhados.
 
