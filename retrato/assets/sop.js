@@ -443,7 +443,8 @@ var RetratoSop = (function () {
       partes.push('<div class="raia-rot" data-raia="' + esc(r.id) + '" style="height:' + f.altura + "px;margin-bottom:" + FAIXA_GAP + 'px" tabindex="0" role="button"><div class="fixo">' +
         '<span class="conta">' + f.qtd + " passos</span>" +
         '<span class="nome">' + esc(r.rotulo) + "</span>" +
-        '<span class="nota">' + esc(r.nota) + "</span></div></div>");
+        '<span class="nota">' + esc(r.nota) + "</span>" +
+        '<button type="button" class="btn mini f-jornada" data-raia="' + esc(r.id) + '">percorrer a jornada</button></div></div>');
     });
     g.innerHTML = partes.join("");
   }
@@ -462,6 +463,11 @@ var RetratoSop = (function () {
       el.addEventListener("click", function () { focarRaia(el.dataset.raia); });
       el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); focarRaia(el.dataset.raia); } });
     });
+    document.querySelectorAll("#gutter .f-jornada").forEach(function (el) {
+      el.addEventListener("click", function (e) { e.stopPropagation(); percorrerRaia(el.dataset.raia); });
+      el.addEventListener("keydown", function (e) { e.stopPropagation(); });
+    });
+    atualizarBotoesJornada();
     document.querySelectorAll("#svg .zona-cab").forEach(function (el) {
       el.addEventListener("click", function () { mostrarZona(el.dataset.zona); });
       el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); mostrarZona(el.dataset.zona); } });
@@ -539,6 +545,7 @@ var RetratoSop = (function () {
       '<div class="card-interno" style="font-size:14px;">' + MdProsa.inline(n.resumo, {}) + "</div>" +
       secao + tools + trechos +
       lista("Chega de", entram, "de") + lista("Segue para", saem, "para") +
+      (JORNADA && JORNADA.raia === n.raia ? jornadaNoPainel() : "") +
       (fixando ? '<p class="fixado">Passo fixado. Esc ou o X fecham e liberam o mouse.</p>' : "");
 
     var painel = document.getElementById("painel");
@@ -588,6 +595,7 @@ var RetratoSop = (function () {
   function limparFixo() {
     FIXADO = null;
     limpar();
+    if (JORNADA && JORNADA.passeio.rodando()) { JORNADA.passeio.parar(); atualizarBotoesJornada(); }
   }
 
   function focarRaia(id) {
@@ -631,6 +639,106 @@ var RetratoSop = (function () {
     return { n: n, m: DADOS.nos.length };
   }
 
+  /* ---------- percorrer a jornada de uma raia (ADR-0029, decisão 4) ---------- */
+  var JORNADA = null;
+
+  function ordemJornada(rid) {
+    var deles = DADOS.nos.filter(function (n) { return n.raia === rid; })
+      .sort(function (a, b) { return a.col - b.col || a.linha - b.linha; });
+    var ids = {};
+    deles.forEach(function (n) { ids[n.id] = 1; });
+    var saem = {}, entra = {};
+    DADOS.arestas.forEach(function (a) {
+      if (!ids[a.de] || !ids[a.para]) return;
+      (saem[a.de] = saem[a.de] || []).push(a.para);
+      entra[a.para] = 1;
+    });
+    var inicio = deles.filter(function (n) { return !entra[n.id]; })[0] || deles[0];
+    var visto = {}, ordem = [];
+    function dfs(id) {
+      if (visto[id]) return;
+      visto[id] = 1; ordem.push(id);
+      (saem[id] || []).slice().sort(function (x, y) { return POR_ID[x].col - POR_ID[y].col || POR_ID[x].linha - POR_ID[y].linha; }).forEach(dfs);
+    }
+    if (inicio) dfs(inicio.id);
+    deles.forEach(function (n) { if (!visto[n.id]) dfs(n.id); });
+    return ordem;
+  }
+
+  function indiceAresta(de, para) {
+    for (var i = 0; i < DADOS.arestas.length; i++) if (DADOS.arestas[i].de === de && DADOS.arestas[i].para === para) return i;
+    return -1;
+  }
+
+  function limparJornada() {
+    document.querySelectorAll("#svg .no.percorrido").forEach(function (el) { el.classList.remove("percorrido"); });
+    document.querySelectorAll("#svg .percorrida").forEach(function (el) { el.classList.remove("percorrida"); });
+    document.querySelectorAll("#svg .fponto").forEach(function (el) { el.remove(); });
+  }
+
+  /* a jornada em curso ganha os botões dentro do painel (que é fixo e fica visível no celular) */
+  function jornadaNoPainel() {
+    if (!JORNADA) return "";
+    var i = JORNADA.passeio.indice(), t = JORNADA.passeio.total(), rod = JORNADA.passeio.rodando();
+    var rotulo = Fluxo.reduzido() ? "próximo passo" : rod ? "parar" : i >= t - 1 ? "percorrer de novo" : "continuar";
+    return '<div class="acoes"><span class="chip neutro">jornada: passo ' + (i + 1) + " de " + t + "</span>" +
+      '<button type="button" class="btn f-jornada-painel" data-raia="' + esc(JORNADA.raia) + '">' + rotulo + "</button></div>";
+  }
+
+  function atualizarBotoesJornada() {
+    var fp = document.querySelector("#painel .f-jornada-painel");
+    if (fp && JORNADA) {
+      var i = JORNADA.passeio.indice(), t = JORNADA.passeio.total(), rod = JORNADA.passeio.rodando();
+      fp.textContent = Fluxo.reduzido() ? "próximo passo" : rod ? "parar" : i >= t - 1 ? "percorrer de novo" : "continuar";
+    }
+    var rm = Fluxo.reduzido();
+    document.querySelectorAll("#gutter .f-jornada").forEach(function (b) {
+      var minha = JORNADA && JORNADA.raia === b.dataset.raia;
+      var rodando = minha && JORNADA.passeio.rodando();
+      var i = minha ? JORNADA.passeio.indice() : -1, t = minha ? JORNADA.passeio.total() : 0;
+      b.classList.toggle("on", !!minha);
+      if (rm) b.textContent = minha && i >= 0 ? "próximo passo (" + (i + 1) + " de " + t + ")" : "percorrer a jornada";
+      else b.textContent = rodando ? "parar (" + (i + 1) + " de " + t + ")" : minha && i >= 0 && i < t - 1 ? "continuar (" + (i + 1) + " de " + t + ")" : minha && i >= t - 1 ? "percorrer de novo" : "percorrer a jornada";
+    });
+  }
+
+  function percorrerRaia(rid) {
+    var svg = document.getElementById("svg");
+    if (JORNADA && JORNADA.raia === rid) {
+      if (Fluxo.reduzido()) { JORNADA.passeio.proximo(); atualizarBotoesJornada(); return; }
+      if (JORNADA.passeio.rodando()) { JORNADA.passeio.parar(); atualizarBotoesJornada(); return; }
+      if (JORNADA.passeio.indice() >= JORNADA.passeio.total() - 1) { limparFixo(); limparJornada(); JORNADA.passeio.recomecar(); }
+      else JORNADA.passeio.iniciar();
+      atualizarBotoesJornada();
+      return;
+    }
+    if (JORNADA) { JORNADA.passeio.parar(); limparJornada(); }
+    var ordem = ordemJornada(rid);
+    var passeio = Fluxo.passeador({
+      passos: ordem,
+      aoPasso: function (i, id, anterior) {
+        if (anterior >= 0) { var p = document.querySelector('#svg .no[data-id="' + ordem[anterior] + '"]'); if (p) p.classList.add("percorrido"); }
+        FIXADO = id;
+        mostrar(id, true);
+        var el = document.querySelector('#svg .no[data-id="' + id + '"]');
+        if (el) { try { el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "auto" }); } catch (x) { /* sem rolagem */ } }
+        atualizarBotoesJornada();
+      },
+      entre: function (i, j, depois) {
+        var idx = indiceAresta(ordem[i], ordem[j]);
+        var path = idx >= 0 ? svg.querySelector('.aresta[data-i="' + idx + '"]') : null;
+        if (idx >= 0) svg.querySelectorAll('[data-i="' + idx + '"]').forEach(function (el) { el.classList.add("percorrida"); });
+        return Fluxo.correrPonto(svg, path, Fluxo.MS_PASSO, depois);
+      },
+      aoLimpar: limparJornada,
+      aoFim: atualizarBotoesJornada,
+      aoParar: atualizarBotoesJornada
+    });
+    JORNADA = { raia: rid, passeio: passeio };
+    if (Fluxo.reduzido()) passeio.proximo(); else passeio.iniciar();
+    atualizarBotoesJornada();
+  }
+
   async function montar(regras, ferramentas, versao) {
     DADOS = regras; FERR = ferramentas || {}; VERSAO = versao || regras.versao || "";
     POR_ID = {}; SEC_ID = {};
@@ -645,6 +753,10 @@ var RetratoSop = (function () {
       if (!el || !el.classList || !el.classList.contains("no")) return;
       FIXADO = null;
       fixar(el.dataset.id);
+    });
+    document.getElementById("painel").addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest(".f-jornada-painel") : null;
+      if (b) percorrerRaia(b.dataset.raia);
     });
     document.getElementById("btn-fechar").onclick = limparFixo;
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") limparFixo(); });

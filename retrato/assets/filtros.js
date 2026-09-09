@@ -189,6 +189,7 @@ var Filtros = (function () {
         });
       }
     }
+    document.dispatchEvent(new CustomEvent("filtros:aplicado", { detail: { aba: aba, n: n, m: m } }));
     var conta = document.getElementById("f-conta");
     if (conta && ABA === aba) {
       var algum = Object.keys(f).some(function (k) { return !!f[k]; });

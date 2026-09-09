@@ -95,7 +95,18 @@
         <p id="busca-conferido"></p>
       </div>
     </div>
-    <h2>As ferramentas, por origem</h2>
+    <h2>O caminho de uma mensagem</h2>
+    <p class="lead" style="margin-bottom:12px;">Do paciente à resposta, passando pela ferramenta que a Ana escolhe. Clique numa origem (ou numa ferramenta do catálogo abaixo) para acender o caminho dela, e use "percorrer" para ver o ponto correr.</p>
+    <div class="card fluxo-card fade-in-up">
+      <div class="fluxo-cabeca">
+        <div class="f-grupo" id="caminho-origens" role="group" aria-label="Origem do caminho"></div>
+        <div class="fluxo-controles" id="caminho-controles"></div>
+      </div>
+      <div class="fluxo-palco" id="caminho-palco"></div>
+      <p class="caption" id="caminho-legenda" style="margin-top:10px;"></p>
+    </div>
+
+    <h2 style="margin-top: 40px;">As ferramentas, por origem</h2>
     <div id="grupos-tools"></div>
     <h2 style="margin-top: 40px;">Os três caminhos da integração</h2>
     <div id="faixas-int"></div>
@@ -131,6 +142,7 @@
 <script src="assets/md.js"></script>
 <script src="assets/liga.js"></script>
 <script src="assets/filtros.js"></script>
+<script src="assets/fluxo.js"></script>
 <script src="assets/sop.js"></script>
 <script src="assets/retrato.js"></script>
 </body>

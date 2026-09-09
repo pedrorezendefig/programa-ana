@@ -273,6 +273,7 @@
     grupos += grupo("sem-leitura", "Origem não lida", "Este retrato foi gerado sem ler a plataforma. Gere de novo antes de publicar.", b.sem_leitura || [], false);
     grupos += grupo("desconhecida", "Destino não mapeado", "", b.desconhecidas || [], false);
     document.getElementById("grupos-tools").innerHTML = grupos;
+    montarCaminho(b);
 
     var QUEM = { hospital: "aplicativo do hospital", ana: "a Ana", gh: "agenda online" };
     document.getElementById("faixas-int").innerHTML = b.faixas.map(function (fx) {
@@ -284,6 +285,63 @@
             "</div>";
         }).join("") + "</div></div>";
     }).join("");
+  }
+
+  /* o caminho de uma mensagem: paciente, WhatsApp, Ana, a ferramenta, a fonte, a resposta */
+  var CAMINHO = null;
+  function montarCaminho(b) {
+    var ORIGENS = { hospital: "API do Hospital", gh: "Global Health", nativa: "nativa da plataforma" };
+    var resumo = {};
+    b.grupos.forEach(function (g) { resumo[g.id] = g; });
+    var est = { nos: [
+      { id: "paciente", tipo: "inicio", texto: "O paciente escreve" },
+      { id: "whatsapp", tipo: "passo", texto: "O WhatsApp entrega a mensagem à central de atendimento" },
+      { id: "ana", tipo: "passo", texto: "A Ana lê a mensagem, aplica as regras e escolhe a ferramenta certa", sub: "Ela nunca responde valor, cobertura, preparo ou horário de memória." },
+      { id: "quem", tipo: "decisao", texto: "Quem tem a resposta?", ramos: [
+        { rotulo: "API do Hospital", tom: "hospital", no: { id: "fonte-hospital", tipo: "passo", texto: "O aplicativo do hospital responde", sub: "tabelas oficiais de valores e preparo, protocolos da ouvidoria" } },
+        { rotulo: "Global Health", tom: "gh", no: { id: "fonte-gh", tipo: "passo", texto: "A agenda online responde", sub: "cadastro, especialidades, convênios, planos, horários livres" } },
+        { rotulo: "nativa", tom: "nativa", no: { id: "fonte-nativa", tipo: "passo", texto: "A própria central de atendimento responde", sub: "etiqueta, nota interna, funil, base de conhecimento, hora" } }
+      ] },
+      { id: "monta", tipo: "passo", texto: "A ferramenta devolve o dado e a Ana monta a fala com o que a fonte devolveu", retorna_para: "ana", retorno_rotulo: "o paciente responde de novo" },
+      { id: "resposta", tipo: "fim", texto: "O paciente lê a resposta" }
+    ] };
+    var palco = document.getElementById("caminho-palco");
+    CAMINHO = Fluxo.montar(palco, est, { cardW: 300, fanW: 200, rotulo: "O caminho de uma mensagem", aoClicar: function (id) {
+      var m = /^fonte-(.+)$/.exec(id);
+      if (m) escolherOrigem(m[1]);
+    } });
+    var origens = document.getElementById("caminho-origens");
+    origens.innerHTML = '<span class="f-rot">Origem</span>' + Object.keys(ORIGENS).map(function (o) {
+      return '<button type="button" class="fchip" data-origem="' + o + '" aria-pressed="false"><span class="ponto-legenda ' + o + '"></span>' + esc(ORIGENS[o]) + "</button>";
+    }).join("");
+    origens.querySelectorAll(".fchip").forEach(function (bt) {
+      bt.addEventListener("click", function () { escolherOrigem(bt.dataset.origem); });
+    });
+    var ORIGEM = null, passeio = null, controles = null;
+    function caminhoDe(origem) { return ["paciente", "whatsapp", "ana", "quem", "fonte-" + origem, "monta", "resposta"]; }
+    function escolherOrigem(o) {
+      ORIGEM = o;
+      origens.querySelectorAll(".fchip").forEach(function (bt) {
+        var on = bt.dataset.origem === o;
+        bt.classList.toggle("on", on); bt.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      CAMINHO.acender(caminhoDe(o));
+      if (passeio) passeio.zerar();
+      passeio = Fluxo.percorredor(CAMINHO, caminhoDe(o));
+      controles = Fluxo.controles(document.getElementById("caminho-controles"), passeio);
+      var g = resumo[o];
+      document.getElementById("caminho-legenda").textContent = g ? ORIGENS[o] + ": " + g.resumo : "";
+    }
+    escolherOrigem("hospital");
+    CAMINHO.escolherOrigem = escolherOrigem;
+    document.getElementById("grupos-tools").addEventListener("click", function (e) {
+      if (e.target.closest("a")) return;
+      var card = e.target.closest(".tool-card");
+      if (!card || !ORIGENS[card.dataset.origem]) return;
+      escolherOrigem(card.dataset.origem);
+      var el = document.getElementById("caminho-palco");
+      if (el) { try { el.scrollIntoView({ block: "nearest", behavior: Liga.reduzido() ? "auto" : "smooth" }); } catch (x) { /* sem rolagem */ } }
+    });
   }
 
   function toolCard(t, i) {
@@ -315,16 +373,84 @@
       return '<span class="chip ' + esc(l.classe) + '">' + esc(l.rotulo) + "</span>";
     }).join("");
     document.getElementById("cadeias").innerHTML = g.cadeias.map(function (c, i) {
-      return '<div class="card cadeia fade-in-up" id="cad-' + esc(String(c.letra).toLowerCase()) + '" style="animation-delay:' + i * 50 + 'ms">' +
+      var letra = String(c.letra).toLowerCase();
+      return '<div class="card cadeia fade-in-up" id="cad-' + esc(letra) + '" data-letra="' + esc(letra) + '" style="animation-delay:' + i * 50 + 'ms">' +
         '<div class="cadeia-topo"><div class="letra">' + esc(c.letra) + '</div><div class="textos"><h3>' + esc(c.titulo) + "</h3><p>" + prosa(c.resumo) + "</p></div></div>" +
         ligacoes([
           { rotulo: "Ferramentas desta cadeia", itens: chipsTools(c.ferramentas) },
           { rotulo: "Seções das regras", itens: chipsSecoes(c.secoes) }
         ]) +
-        '<div class="colunas-cab"><span class="micro">o que a agenda online responde</span><span class="micro">a conversa da Ana neste elo</span></div>' +
-        c.elos.map(function (e) { return elo(e, c); }).join("") + "</div>";
+        '<div class="cadeia-corpo">' +
+          '<div class="fluxo-col"><div class="fluxo-cabeca"><span class="micro">a cadeia, elo a elo</span><div class="fluxo-controles" id="cad-' + esc(letra) + '-controles"></div></div>' +
+            '<div class="fluxo-palco" id="cad-' + esc(letra) + '-palco"></div></div>' +
+          '<div class="conversa-col"><span class="micro">a conversa da Ana neste elo</span>' +
+            '<p class="caption conversa-dica">Clique num elo do desenho, ou use "percorrer", para ver a conversa daquele momento.</p>' +
+            c.elos.map(function (e) { return elo(e, c); }).join("") + "</div>" +
+        "</div></div>";
     }).join("");
+    g.cadeias.forEach(montarCadeia);
   }
+
+  var CADEIAS = {};
+  function tipoElo(e) {
+    if (e.veredito === "recusa") return "decisao";
+    if (e.veredito === "falha") return "falha";
+    if (e.veredito === "ainda-nao" || e.veredito === "fora") return "tracejado";
+    return "passo";
+  }
+  function montarCadeia(c) {
+    var letra = String(c.letra).toLowerCase();
+    var ultimo = c.elos[c.elos.length - 1];
+    var nos = [{ id: "inicio", tipo: "inicio", texto: "Cadeia " + c.letra }];
+    c.elos.forEach(function (e) {
+      var no = { id: alvoElo(c.letra, e.id), tipo: tipoElo(e), texto: e.id + ". " + e.titulo, sub: e.veredito_rotulo + (e.ana_hoje === "faz" ? ". A Ana já faz." : e.ana_hoje === "ainda-nao" ? ". A Ana ainda não faz." : "") };
+      if (e.veredito === "recusa") no.ramos = [{ rotulo: "a agenda recusa e diz o campo que falta", tom: "ambar" }];
+      if (e.veredito === "conversa") no.tom = "hospital";
+      nos.push(no);
+    });
+    var fecha = ultimo && (ultimo.veredito === "ainda-nao" || ultimo.veredito === "fora");
+    nos.push({ id: "fim", tipo: fecha ? "fim-tracejado" : "fim", texto: fecha ? "Termina no que ainda não dá" : "Fim da cadeia" });
+    var palco = document.getElementById("cad-" + letra + "-palco");
+    var ctrl = Fluxo.montar(palco, { nos: nos }, { cardW: 300, minW: 340, rotulo: "Cadeia " + c.letra + ", elo a elo", aoClicar: function (id) { mostrarElo(letra, id, true); } });
+    var caminho = nos.map(function (x) { return x.id; });
+    var passeio = Fluxo.percorredor(ctrl, caminho, function (id) { mostrarElo(letra, id, false); });
+    var controles = Fluxo.controles(document.getElementById("cad-" + letra + "-controles"), passeio);
+    CADEIAS[letra] = { ctrl: ctrl, passeio: passeio, controles: controles };
+  }
+  function mostrarElo(letra, id, marcar) {
+    var card = document.getElementById("cad-" + letra);
+    if (!card) return;
+    var alvo = document.getElementById(id);
+    card.querySelectorAll(".conversa-col .elo.atual").forEach(function (x) { x.classList.remove("atual"); });
+    var dica = card.querySelector(".conversa-dica");
+    if (!alvo || !alvo.classList.contains("elo")) { if (dica) dica.hidden = false; return; }
+    alvo.classList.add("atual");
+    if (dica) dica.hidden = true;
+    if (marcar) {
+      var cd = CADEIAS[letra];
+      if (cd) { cd.passeio.parar(); cd.ctrl.marcar(id); cd.controles.atualizar(); }
+    }
+  }
+  function sincronizarCadeias() {
+    Object.keys(CADEIAS).forEach(function (letra) {
+      var card = document.getElementById("cad-" + letra);
+      if (!card) return;
+      var ids = [];
+      card.querySelectorAll(".conversa-col .elo.filtrado").forEach(function (x) { ids.push(x.id); });
+      CADEIAS[letra].ctrl.esmaecer(ids);
+    });
+  }
+  document.addEventListener("filtros:aplicado", function (e) { if (e.detail && e.detail.aba === "global-health") sincronizarCadeias(); });
+  document.addEventListener("liga:chegou", function (e) {
+    var el = e.detail && e.detail.el;
+    if (!el || !el.classList || !el.classList.contains("elo")) return;
+    var card = el.closest(".cadeia");
+    if (!card) return;
+    e.preventDefault();
+    mostrarElo(card.dataset.letra, el.id, true);
+    var no = CADEIAS[card.dataset.letra] && CADEIAS[card.dataset.letra].ctrl.noEl(el.id);
+    try { (no || card).scrollIntoView({ block: "center", behavior: Liga.reduzido() ? "auto" : "smooth" }); } catch (x) { /* sem rolagem */ }
+  });
 
   function elo(e, c) {
     var conv = e.conversa || {};
@@ -334,7 +460,7 @@
       '<span class="chip ' + esc(e.veredito) + '">' + esc(e.veredito_rotulo) + "</span></div>" +
       '<p class="explica">' + prosa(e.texto) + "</p>" +
       ((e.secoes || []).length ? '<div class="lig-chips elo-secoes"><span class="lig-rot">Regras</span>' + chipsSecoes(e.secoes).join("") + "</div>" : "");
-    return '<div class="elo" id="' + esc(alvoElo(c.letra, e.id)) + '" data-veredito="' + esc(e.veredito) + '" data-texto="' + esc(texto) + '"><div class="lado">' + lado + '</div><div class="lado">' + conversa(e) + "</div></div>";
+    return '<div class="elo" id="' + esc(alvoElo(c.letra, e.id)) + '" data-veredito="' + esc(e.veredito) + '" data-texto="' + esc(texto) + '"><div class="lado agenda">' + lado + '</div><div class="lado">' + conversa(e) + "</div></div>";
   }
 
   function conversa(e) {

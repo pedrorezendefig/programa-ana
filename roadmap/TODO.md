@@ -30,7 +30,7 @@
 | V41 | `[ ]` | A Ana entra no WhatsApp real do hospital | P+C | nada |
 | OS25 | `[x]` | Ana OS com cinco abas, só leitura | C | nada |
 | OS26 | `[~]` | Retrato da Ana no ar, na Vercel | C+P | nada |
-| OS27 | `[~]` | Tudo tem link: o Retrato veste o app do hospital, com filtros e fluxogramas, e o OS liga as abas | C | nada |
+| OS27 | `[x]` | Tudo tem link: o Retrato veste o app do hospital, com filtros e fluxogramas, e o OS liga as abas | C | nada |
 
 ### V37 · A Global Health aceita a marcação `[ ]`
 Herda a P3. O `POST /horarios/agendar` devolve 417 porque a agenda de Cardiologia de teste não tem convênio vinculado no SoulMV TST. Gesto: pedir ao analista de TI o vínculo das agendas com PARTICULAR e UNIMED (aba Convênio do Cadastro de Agendas, tutorial pág. 3) e conferir no Painel GH que a aba "Convênios e planos" está vazia. Roteiro: `ana/api-mv/prompt-agendamento-fim-a-fim.md`, Passo 0.
@@ -68,8 +68,8 @@ Feita em 09/set/2026, na sessão do grilling. Conferida no navegador: cinco abas
 Construído em 09/set/2026 (`retrato/`, `vercel.json`): o `gerar.py` rodou contra a plataforma, a lista de proibidos passou, as quatro abas foram conferidas no navegador. **Falta só publicar** (`vercel` e `vercel --prod` na raiz) e registrar o link aqui. ADR-0028. Site estático em `retrato/`: `gerar.py` grava um JSON carimbado com a data e recusa CPF, paciente-sonda, URL de ambiente, token, credencial e ID de tarefa; quatro abas nomeadas (o que a Ana faz hoje, as regras da Ana, onde ela busca a resposta, Global Health: o que dá e o que não dá); tokens do `DESIGN.md`; `noindex`; `vercel.json` na raiz. Publicar é ato do Pedro.
 **Pronto quando:** o gerar.py passa na lista de proibidos, as quatro abas abrem por arquivo local, e o link da Vercel está aqui.
 
-### OS27 · Tudo tem link, e o Retrato veste o app do hospital `[~]`
-ADR-0029 (segundo grilling de 09/set/2026). Contrato de links nos dois produtos (toda menção é link, todo link tem volta, a URL carrega destino e filtro), Retrato no design system do app do hospital (HP Simplified, azul-marinho, vidro só no que flutua, transição de aba de 250 ms), barra de filtros em toda esfera, três fluxogramas na gramática do hospital com percorrer (caminho de uma mensagem, cadeia elo a elo, jornada no mapa).
+### OS27 · Tudo tem link, e o Retrato veste o app do hospital `[x]`
+Feita em 09/set/2026, na mesma sessão. Verificação headless a 1360 e 390 px: console limpo, 768 links entre esferas e zero mortos, sete fluxogramas com percorrer (o caminho de uma mensagem e as seis cadeias) mais o percorrer de jornada em cada raia do mapa; no OS, `liga.js` com chegada acesa nas cinco abas. ADR-0029 (segundo grilling de 09/set/2026). Contrato de links nos dois produtos (toda menção é link, todo link tem volta, a URL carrega destino e filtro), Retrato no design system do app do hospital (HP Simplified, azul-marinho, vidro só no que flutua, transição de aba de 250 ms), barra de filtros em toda esfera, três fluxogramas na gramática do hospital com percorrer (caminho de uma mensagem, cadeia elo a elo, jornada no mapa).
 **Pronto quando:** clicar numa ferramenta na aba "faz" chega na aba "busca" com o card aceso e as ligações de volta; a URL carrega aba, alvo e filtro; os três fluxogramas percorrem; no OS, `comparacao.html#cap-<id>`, `circuito.html#tool-<nome>` e `sop.html#no-<id>` chegam acesos.
 
 ## Radar (fora do grafo de execução: pontos para lembrar ou tocar no futuro)
@@ -82,6 +82,8 @@ Bugs, hotfixes e higienes que **não impactam o objetivo** (montar a solução f
 | V36 | 5/10 | Remover a automação `/resolve` do Chatwoot antes do WhatsApp real | Regra id 9 criada em 08/set (mensagem recebida igual a `/resolve` resolve a conversa). Serve ao modo teste: `/resolve` fecha, `/teste` reabre com a Ana; nasceu do caso do Felipe (conversa #166, 11 dias presa na Fila Ouvidoria porque `handoff_to_human` cala o bot e `/teste` não atravessa conversa em fila humana). Provada na conversa 154 da inbox de API. Tocar quando: dia de ligar a Ana num número real (desativar ou apagar em Configurações > Automação) |
 | V7 | 2/10 | Revogar o token Cloudflare do onboarding (29/jul) | Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou |
 ## Log
+
+- **09/set/2026 (4):** **OS27 concluída: tudo tem link, e o Retrato veste o app do hospital (ADR-0029).** Segundo grilling da noite: contrato de links nos dois produtos, filtros por esfera com URL, vidro só no que flutua, Retrato com HP Simplified e azul-marinho, sete fluxogramas na gramática do hospital com percorrer. Falta só o ato de publicar (OS26).
 
 - **09/set/2026 (3):** **o Retrato da Ana existe (OS26 em curso).** `retrato/` com `gerar.py`, `curadoria.json`, página única de quatro abas e `vercel.json` na raiz. Retrato gerado contra a plataforma (14 ferramentas; 30 capacidades; 81 nós e 41 seções do prompt v6.4; 6 cadeias). Ressalvas registradas na ficha: a curadoria sobrescreve cinco estados da Comparação (C09, C13, C14, C15, C20) que o `comparacao.json` de 24/ago ainda não reflete; o mapa retrata o prompt v6.4 de 18/ago. Falta publicar.
 

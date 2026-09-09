@@ -5,6 +5,7 @@
    em âmbar, nativa em cinza. */
 
 * { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; }
 body {
   background: var(--cor-fundo); color: var(--cor-texto);
@@ -365,6 +366,33 @@ a.tool-pill:hover { border-color: var(--cor-principal-clara); background: #fffff
 .md-h { display: inline-block; margin-top: 2px; }
 .md-fence { color: var(--cor-texto-3); font-size: 11px; }
 
+/* ---------- fluxogramas na gramática do hospital (fluxo.js) ---------- */
+.fluxo-card { padding: 18px 20px 16px; }
+.fluxo-cabeca { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; margin-bottom: 10px; }
+.fluxo-controles { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.fluxo-palco { overflow-x: auto; padding: 4px 0 6px; }
+.fluxo-svg { display: block; max-width: 100%; height: auto; }
+.fno { cursor: pointer; transition: opacity .2s ease; }
+.fno:focus { outline: none; }
+.fhalo { opacity: 0; transition: opacity .15s ease, stroke .15s ease; }
+.fno:hover .fhalo, .fno:focus .fhalo { opacity: .6; }
+.fno.aceso .fhalo { opacity: .45; }
+.fno.atual .fhalo { opacity: 1; stroke: var(--cor-principal); }
+.fno.feito .fhalo { opacity: .7; stroke: var(--cor-verde-fio); }
+.fno.fora, .faresta.fora, .fchip-ramo.fora { opacity: .22; }
+.fno.esmaecido { opacity: .25; }
+.faresta { transition: stroke .2s ease, opacity .2s ease; }
+.faresta.aceso { stroke: var(--cor-principal-clara); }
+.faresta.aresta-feita { stroke: var(--cor-principal); }
+.fponto { fill: var(--cor-principal); stroke: #ffffff; stroke-width: 2; filter: drop-shadow(0 1px 2px rgba(15, 23, 42, .3)); }
+.btn.mini { font-size: 12px; padding: 5px 10px; }
+.btn.mini.on { background: var(--cor-principal); border-color: var(--cor-principal); color: #ffffff; }
+.f-estado { white-space: nowrap; }
+.gutter .raia-rot .f-jornada { align-self: flex-start; margin-top: 4px; }
+.no.percorrido .halo { opacity: .7; stroke: var(--cor-verde-fio); }
+.aresta.percorrida { stroke: var(--cor-principal); opacity: 1; }
+.seta.percorrida { fill: var(--cor-principal); opacity: 1; }
+
 /* ---------- esfera 3: onde ela busca ---------- */
 .grupo-tools { margin-bottom: 26px; }
 .grupo-tools .cab { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
@@ -393,8 +421,14 @@ a.tool-pill:hover { border-color: var(--cor-principal-clara); background: #fffff
 .cadeia-topo { display: flex; align-items: flex-start; gap: 16px; }
 .cadeia-topo .letra { width: 44px; height: 44px; border-radius: var(--raio-2xl); background: var(--cor-principal); color: #fff; display: flex; align-items: center; justify-content: center; font: 400 22px/1 var(--font); flex-shrink: 0; }
 .cadeia-topo .textos p { font-size: 13.5px; color: var(--cor-texto-2); margin-top: 6px; max-width: 80ch; }
-.colunas-cab { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0 8px; padding: 0 4px; }
-.elo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 14px 6px; border-top: 1px solid var(--cor-borda); border-radius: var(--raio-2xl); }
+.cadeia-corpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 420px); gap: 18px; margin-top: 16px; align-items: start; }
+.cadeia-corpo .fluxo-col { min-width: 0; }
+.cadeia-corpo .conversa-col { position: sticky; top: 130px; background: var(--cor-superficie-2); border-radius: var(--raio-3xl); padding: 14px 16px; min-height: 180px; max-height: calc(100vh - 150px); overflow-y: auto; }
+.conversa-col > .micro { display: block; margin-bottom: 8px; }
+.conversa-col .conversa-dica { margin-top: 6px; }
+.conversa-col .elo { display: none; }
+.conversa-col .elo.atual { display: flex; flex-direction: column; gap: 12px; animation: fade-in .2s ease-out both; }
+.elo { padding: 6px 0 0; }
 .elo .lado { min-width: 0; }
 .elo .cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .elo .num { font: 400 11px/1 var(--font-mono); background: var(--cor-principal-tinta); color: var(--cor-principal); padding: 4px 8px; border-radius: var(--raio-xl); }
@@ -425,7 +459,7 @@ a.tool-pill:hover { border-color: var(--cor-principal-clara); background: #fffff
   .abas button { padding: 9px 12px; font-size: 13.5px; }
   .f-linha { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
   .f-linha::-webkit-scrollbar { display: none; }
-  .f-grupo { flex-wrap: nowrap; }
+  .f-linha .f-grupo { flex-wrap: nowrap; }
   .f-busca { min-width: 170px; flex-shrink: 0; }
   .f-conta { margin-left: 4px; }
   h1 { font-size: 24px; }
@@ -436,8 +470,8 @@ a.tool-pill:hover { border-color: var(--cor-principal-clara); background: #fffff
   .gutter .raia-rot { height: auto !important; min-width: 190px; padding: 10px 12px; }
   .gutter .raia-rot .fixo { position: static; }
   .gutter .zona-g { display: none; }
-  .elo, .colunas-cab { grid-template-columns: 1fr; }
-  .colunas-cab .micro:last-child { display: none; }
+  .cadeia-corpo { grid-template-columns: 1fr; }
+  .cadeia-corpo .conversa-col { position: static; max-height: none; }
   .card { padding: 16px; }
   .grade.c2, .grade.c3 { grid-template-columns: 1fr; }
   .rodape { padding: 18px 12px 0; }
