@@ -8,8 +8,8 @@ Evolucao do server do Playground GH (ADR-0004), mesmas regras de seguranca:
     subpasta amostras/ (dado pessoal) nunca e servida.
 O que o OS acrescenta:
   - Paginas e assets (css/js/json/woff2) servidos de os/.
-  - /api/roadmap: leitura e a UNICA rota de escrita do servidor, restrita ao
-    arquivo os/dados/roadmap.json (backup .bak + escrita atomica).
+  - /api/roadmap: leitura de os/dados/roadmap.json. So leitura (ADR-0028):
+    card novo, card feito e canal movido nascem por sessao no terminal.
   - /api/docs e /docs/...: a Biblioteca, allowlist explicita de .md do repo.
     dados-locais/ e resultados/amostras/ ficam fora por construcao.
 
@@ -383,124 +383,11 @@ def caminho_doc(grupo, nome):
     return caminho
 
 
-# ---------- Roadmap (unica escrita do servidor) ----------
+# ---------- Roadmap (so leitura, ADR-0028) ----------
 
 def ler_roadmap():
     with open(ROADMAP_JSON, encoding="utf-8") as f:
         return json.load(f)
-
-
-CANAIS = ("dispare", "comigo", "aguardando")
-
-
-def _erro_canal(item, rotulo):
-    """Valida os campos da Mesa de acao (ADR-0011) num item aberto de qualquer faixa."""
-    if "canal" in item and item["canal"] not in CANAIS:
-        return "%s %s: canal deve ser um de %s" % (rotulo, item["id"], "/".join(CANAIS))
-    if "canal_desde" in item and not isinstance(item["canal_desde"], str):
-        return "%s %s: canal_desde deve ser texto (AAAA-MM-DD)" % (rotulo, item["id"])
-    if "mesa" in item:
-        m = item["mesa"]
-        if not isinstance(m, dict) or not isinstance(m.get("destrava"), str) \
-                or not isinstance(m.get("gesto"), str):
-            return "%s %s: mesa deve ser objeto com destrava e gesto (texto)" % (rotulo, item["id"])
-    return None
-
-
-def validar_roadmap(doc):
-    """Valida o documento inteiro do roadmap. Devolve None se ok, senao a mensagem."""
-    if not isinstance(doc, dict):
-        return "esperava um objeto JSON"
-    for chave in ("estagio", "atualizado"):
-        if not isinstance(doc.get(chave), str) or not doc[chave].strip():
-            return "campo '%s' deve ser texto nao vazio" % chave
-    if not isinstance(doc.get("tarefas"), list) or not isinstance(doc.get("pendentes"), list) \
-            or not isinstance(doc.get("ideias"), list):
-        return "tarefas, pendentes e ideias devem ser listas"
-    ids = set()
-    for t in doc["tarefas"]:
-        if not isinstance(t, dict) or not isinstance(t.get("id"), str) or not isinstance(t.get("titulo"), str):
-            return "cada tarefa precisa de id e titulo (texto)"
-        if t.get("status") not in ("feito", "fazer"):
-            return "tarefa %s: status deve ser 'feito' ou 'fazer' (bloqueio e derivado de deps)" % t["id"]
-        if not isinstance(t.get("dono"), str):
-            return "tarefa %s: dono deve ser texto" % t["id"]
-        if not isinstance(t.get("deps", []), list):
-            return "tarefa %s: deps deve ser lista" % t["id"]
-        if t["id"] in ids:
-            return "id de tarefa duplicado: %s" % t["id"]
-        ids.add(t["id"])
-        erro = _erro_canal(t, "tarefa")
-        if erro:
-            return erro
-    for p in doc["pendentes"]:
-        if not isinstance(p, dict) or not isinstance(p.get("id"), str) or not isinstance(p.get("titulo"), str):
-            return "cada pendente precisa de id e titulo (texto)"
-        if not isinstance(p.get("deps", []), list):
-            return "pendente %s: deps deve ser lista" % p["id"]
-        if "prompt" in p and not isinstance(p["prompt"], str):
-            return "pendente %s: prompt deve ser texto" % p["id"]
-        erro = _erro_canal(p, "pendente")
-        if erro:
-            return erro
-    # Propostas (ADR-0008): passos recomendados, sem status/dono ate serem puxados.
-    for pr in doc.get("propostas", []):
-        if not isinstance(pr, dict) or not isinstance(pr.get("id"), str) or not isinstance(pr.get("titulo"), str):
-            return "cada proposta precisa de id e titulo (texto)"
-        if not isinstance(pr.get("deps", []), list):
-            return "proposta %s: deps deve ser lista" % pr["id"]
-        if "prompt" in pr and not isinstance(pr["prompt"], str):
-            return "proposta %s: prompt deve ser texto" % pr["id"]
-        if "status" in pr or "dono" in pr:
-            return "proposta %s: proposta nao tem status nem dono (vira tarefa quando puxada)" % pr["id"]
-        if pr["id"] in ids:
-            return "id de proposta duplicado ou colidindo com tarefa: %s" % pr["id"]
-        ids.add(pr["id"])
-        erro = _erro_canal(pr, "proposta")
-        if erro:
-            return erro
-    # Radar: pontos fora do grafo de execucao (bugs/hotfixes nao criticos), com prioridade 1-10.
-    for r in doc.get("radar", []):
-        if not isinstance(r, dict) or not isinstance(r.get("id"), str) or not isinstance(r.get("titulo"), str):
-            return "cada item do radar precisa de id e titulo (texto)"
-        if not isinstance(r.get("prioridade"), int) or not 1 <= r["prioridade"] <= 10:
-            return "radar %s: prioridade deve ser inteiro de 1 a 10" % r["id"]
-        for chave in ("nota", "prompt"):
-            if chave in r and not isinstance(r[chave], str):
-                return "radar %s: %s deve ser texto" % (r["id"], chave)
-        if "status" in r or "deps" in r:
-            return "radar %s: item do radar nao tem status nem deps (esta fora do grafo)" % r["id"]
-        if r["id"] in ids:
-            return "id do radar duplicado ou colidindo com tarefa/proposta: %s" % r["id"]
-        ids.add(r["id"])
-        erro = _erro_canal(r, "radar")
-        if erro:
-            return erro
-    for i in doc["ideias"]:
-        if not isinstance(i, dict) or not isinstance(i.get("titulo"), str) or not i["titulo"].strip():
-            return "cada ideia precisa ao menos de titulo (texto)"
-        for chave in ("descricao", "link"):
-            if chave in i and not isinstance(i[chave], (str, type(None))):
-                return "ideia '%s': %s deve ser texto" % (i["titulo"], chave)
-    return None
-
-
-def gravar_roadmap(doc):
-    """A UNICA escrita do servidor: os/dados/roadmap.json, com backup e rename atomico."""
-    erro = validar_roadmap(doc)
-    if erro:
-        return {"ok": False, "erro": erro}
-    if os.path.isfile(ROADMAP_JSON):
-        with open(ROADMAP_JSON, "rb") as f:
-            anterior = f.read()
-        with open(ROADMAP_JSON + ".bak", "wb") as f:
-            f.write(anterior)
-    tmp = ROADMAP_JSON + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(doc, f, ensure_ascii=False, indent=2)
-        f.write("\n")
-    os.replace(tmp, ROADMAP_JSON)
-    return {"ok": True}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -611,7 +498,7 @@ class Handler(BaseHTTPRequestHandler):
             self._servir_estatico(path)
 
     def do_POST(self):
-        if self.path not in ("/api/gh", "/api/sql", "/api/roadmap"):
+        if self.path not in ("/api/gh", "/api/sql"):
             self._json({"erro": "rota desconhecida"}, 404)
             return
         try:
@@ -619,10 +506,6 @@ class Handler(BaseHTTPRequestHandler):
             pedido = json.loads(self.rfile.read(tamanho).decode("utf-8"))
         except (ValueError, TypeError):
             self._json({"erro": "body invalido: esperava JSON"}, 400)
-            return
-        if self.path == "/api/roadmap":
-            resultado = gravar_roadmap(pedido)
-            self._json(resultado, 200 if resultado["ok"] else 400)
             return
         if self.path == "/api/sql":
             self._json(rodar_sql(str(pedido.get("sql", ""))))

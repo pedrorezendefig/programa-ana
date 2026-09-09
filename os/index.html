@@ -33,9 +33,10 @@
   .painel-mesa .mesa-bloco p { font-size: 13.5px; line-height: 1.55; margin: 0; }
   .painel-mesa .acoes { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
 
-  /* tooltip de ficha no hover (padrão OS9) */
+  /* tooltip de ficha no hover (padrão OS9): a mesa e o grafo usam o mesmo desenho */
   .tooltip-ficha {
-    position: fixed; z-index: 120; width: 330px;
+    position: fixed; z-index: 120; width: 352px;
+    max-height: calc(100vh - 24px); overflow: hidden;
     background: var(--cor-tinta); color: #ffffff;
     border-radius: 14px; padding: 16px 18px;
     pointer-events: none; opacity: 0; transition: opacity .12s ease;
@@ -49,17 +50,183 @@
   }
   .tooltip-ficha .tt-rot:first-child { margin-top: 0; }
   .tooltip-ficha .tt-txt { font-size: 12.5px; line-height: 1.5; }
+  /* prévia do prompt no hover de nó aberto (OS16) */
+  .tooltip-ficha .tt-prompt {
+    background: rgba(255,255,255,.08); border-radius: 9px;
+    padding: 9px 11px; font-size: 11.5px; line-height: 1.5; color: #e4e4e4;
+  }
+  .tooltip-ficha .tt-acao {
+    margin-top: 9px; padding-top: 9px; border-top: 1px solid rgba(255,255,255,.14);
+    font-size: 11px; color: #9a9a9a;
+  }
 
-  .ideia-card { position: relative; }
-  .ideia-card.puxada { opacity: .55; }
-  .ideia-card .acoes-ideia { position: absolute; top: 18px; right: 18px; display: none; gap: 6px; }
-  .ideia-card:hover .acoes-ideia { display: flex; }
-  .ideia-card h4 { font: var(--peso-bold) 15px/1.35 var(--font-poppins); margin-bottom: 6px; }
-  .ideia-card p { font-size: 14px; color: var(--cor-rotulo); }
-  .ideia-card a.doc { font-size: 13px; color: var(--cor-azul); }
-  #form-ideia { display: none; margin-top: 16px; }
-  #form-ideia.aberto { display: block; }
-  #form-ideia .campos { display: grid; gap: 12px; margin-bottom: 14px; }
+  /* ---- Grafo de execução (ADR-0008, faixas por tema OS16), seção do cockpit desde o ADR-0028 ---- */
+  .palco { overflow-x: auto; padding-bottom: 8px; }
+  .grafo {
+    position: relative;
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 10px 6px 24px;
+    min-width: max-content;
+  }
+  .grafo svg.arestas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; overflow: visible;
+  }
+  .coluna { display: flex; flex-direction: column; gap: 14px; width: 224px; flex-shrink: 0; position: relative; z-index: 1; }
+  .coluna .titulo-col {
+    font: var(--peso-semibold) var(--texto-micro)/1.4 var(--font-inter);
+    letter-spacing: var(--tracking-micro); text-transform: uppercase;
+    color: var(--cor-rotulo); padding: 0 4px 2px;
+  }
+
+  .faixa {
+    position: relative; z-index: 1;
+    padding: 20px 0 24px;
+    border-top: 1px solid var(--cor-mudo);
+  }
+  .faixa:first-of-type { border-top: none; padding-top: 6px; }
+  .faixa.sem-aberto { opacity: .62; }
+  .faixa.sem-aberto:hover { opacity: 1; }
+  /* faixa concluída nasce recolhida: o foco é o que ainda falta */
+  .faixa.recolhida .faixa-colunas { display: none; }
+  .faixa-cabeca .alternar {
+    background: none; border: none; cursor: pointer; padding: 4px 8px;
+    font: var(--peso-semibold) 11.5px/1 var(--font-inter); color: var(--cor-rotulo);
+    border-radius: 8px;
+  }
+  .faixa-cabeca .alternar:hover { background: var(--cor-card-interno); color: var(--cor-tinta); }
+  .faixa-cabeca {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 16px; padding: 0 4px;
+    /* o grafo rola na horizontal; o cabeçalho fica ancorado e não estica junto */
+    position: sticky; left: 0; width: fit-content; max-width: 940px;
+  }
+  .faixa-cabeca h3 {
+    font: var(--peso-bold) 17px/1.3 var(--font-poppins);
+    letter-spacing: -0.3px; color: var(--cor-tinta); margin: 0;
+  }
+  .faixa-cabeca .faixa-sub { font-size: 12.5px; color: var(--cor-rotulo); flex: 1 1 240px; }
+  .faixa-cabeca .contador {
+    font: var(--peso-semibold) 12px/1 var(--font-mono);
+    padding: 6px 11px; border-radius: 999px;
+    background: var(--cor-tinta); color: #fff; white-space: nowrap;
+  }
+  .faixa-cabeca .contador.zerado { background: transparent; color: var(--cor-rotulo); box-shadow: inset 0 0 0 1.5px var(--cor-mudo); }
+  .faixa-colunas { display: flex; align-items: flex-start; gap: 56px; }
+
+  /* placar do que falta, acima do grafo */
+  .placar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .placar .peca {
+    background: var(--cor-card); border-radius: 14px; padding: 14px 18px;
+    min-width: 150px; cursor: pointer; border: none; text-align: left;
+    font-family: var(--font-inter); transition: transform .14s ease, box-shadow .14s ease;
+  }
+  .placar .peca:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--cor-mudo); }
+  .placar .peca .n { display: block; font: var(--peso-bold) 26px/1.1 var(--font-poppins); color: var(--cor-tinta); }
+  .placar .peca .rot { display: block; font-size: 12px; color: var(--cor-rotulo); margin-top: 3px; }
+  .placar .peca.destaque { background: var(--cor-tinta); }
+  .placar .peca.destaque .n { color: #fff; }
+  .placar .peca.destaque .rot { color: #b9b9b9; }
+
+  .no {
+    background: var(--cor-card);
+    border-radius: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease, opacity .3s ease;
+    opacity: 0; transform: translateY(8px);
+    animation: no-entrar .45s ease forwards;
+    position: relative;
+  }
+  @keyframes no-entrar { to { opacity: 1; transform: none; } }
+  .no:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--cor-mudo); }
+  .no.aberto { box-shadow: inset 0 0 0 1.5px var(--cor-tinta); }
+  .no .topo-no { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .no .id { font: var(--peso-bold) 12px/1 var(--font-mono); color: var(--cor-rotulo); }
+  .no .titulo { font: var(--peso-medio) 13.5px/1.4 var(--font-inter); color: var(--cor-tinta); }
+  .no .chip { padding: 4px 10px; font-size: 11px; margin-left: auto; }
+  .no .trava { font-size: 11.5px; color: var(--cor-rotulo); margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+  .no .trava svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+  .no.feito .titulo { color: var(--cor-rotulo); }
+  .no.bloqueada { opacity: 0; animation: no-entrar-bloq .45s ease forwards; cursor: pointer; }
+  @keyframes no-entrar-bloq { to { opacity: .58; transform: none; } }
+  .no.bloqueada:hover { opacity: .85; }
+  .no.proposta, .no.pendente-no { border: none; }
+  .no.proposta { outline: 1.5px dashed var(--cor-mudo); outline-offset: -1.5px; box-shadow: none; background: var(--cor-canvas); }
+  .no.proposta:hover { background: var(--cor-card); }
+
+  /* pulso da fronteira: um anel que respira */
+  .no.fronteira { box-shadow: 0 0 0 0 rgba(17,17,17,.28); animation: no-entrar .45s ease forwards, pulso 2.6s ease-out 1s infinite; }
+  @keyframes pulso {
+    0% { box-shadow: 0 0 0 0 rgba(17,17,17,.25); }
+    55% { box-shadow: 0 0 0 9px rgba(17,17,17,0); }
+    100% { box-shadow: 0 0 0 0 rgba(17,17,17,0); }
+  }
+
+  /* arestas */
+  .aresta { fill: none; stroke: var(--cor-mudo); stroke-width: 1.5; opacity: .55; }
+  .aresta.feita { opacity: .3; }
+  .aresta.ativa {
+    stroke: var(--cor-tinta); opacity: 1;
+    stroke-dasharray: 7 5;
+    animation: fluir 1.2s linear infinite;
+  }
+  @keyframes fluir { to { stroke-dashoffset: -24; } }
+  .seta { fill: var(--cor-mudo); }
+  .seta.ativa { fill: var(--cor-tinta); }
+
+  /* filtros (OS9) */
+  .filtros { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; margin: 0 0 16px; }
+  .filtros .grupo { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filtros .rot-grupo {
+    font: var(--peso-semibold) var(--texto-micro)/1 var(--font-inter);
+    letter-spacing: var(--tracking-micro); text-transform: uppercase;
+    color: var(--cor-rotulo); margin-right: 2px;
+  }
+  button.chip-filtro { cursor: pointer; border: none; font-family: var(--font-inter); transition: opacity .15s ease, transform .12s ease; }
+  button.chip-filtro:hover { transform: translateY(-1px); }
+  button.chip-filtro.desligado { opacity: .32; }
+  button.chip-filtro .n { font-weight: var(--peso-semibold); margin-left: 5px; }
+  .no.oculto { display: none; }
+
+  /* ficha por extenso no painel (OS9) */
+  .painel .ficha-bloco { background: var(--cor-card-interno); border-radius: var(--raio-interno); padding: 14px 16px; margin-top: 14px; }
+  .painel .ficha-bloco + .ficha-bloco { margin-top: 8px; }
+  .painel .ficha-bloco .micro { display: block; margin-bottom: 4px; }
+  .painel .ficha-bloco p { font-size: 13.5px; line-height: 1.55; }
+
+  /* painel lateral da ficha do nó */
+  .painel {
+    position: fixed; top: 16px; right: 16px; bottom: 16px;
+    width: min(400px, calc(100vw - 32px));
+    background: var(--cor-card);
+    border-radius: var(--raio-card);
+    box-shadow: 0 16px 44px -16px rgba(0,0,0,.3);
+    padding: 26px;
+    overflow-y: auto;
+    transform: translateX(calc(100% + 32px));
+    transition: transform .28s cubic-bezier(.2,.8,.25,1);
+    z-index: 95;
+  }
+  .painel.aberto { transform: none; }
+  .painel .fechar { position: absolute; top: 18px; right: 18px; }
+  .painel .titulo-no { font: var(--peso-bold) 19px/1.35 var(--font-poppins); letter-spacing: -0.3px; margin: 10px 0 14px; }
+  .painel .bloco { margin-top: 18px; }
+  .painel .deps-lista { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .painel .deps-lista .dep-linha { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+  .painel pre.prompt {
+    white-space: pre-wrap; word-break: break-word;
+    font-family: var(--font-inter); font-size: 13.5px; line-height: 1.6;
+    background: var(--cor-card-interno); color: var(--cor-tinta);
+    max-height: 320px; overflow-y: auto;
+  }
+  .painel .acoes { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .no, .no.bloqueada { opacity: 1; transform: none; animation: none; }
+    .no.bloqueada { opacity: .58; }
+  }
 
   .app-card .nome { font: var(--peso-bold) 16px/1.3 var(--font-poppins); }
   .app-card .desc { color: var(--cor-rotulo); font-size: 14px; margin-top: 5px; }
@@ -91,38 +258,38 @@
       <h2 style="margin: 0;">Mesa de ação</h2>
       <span class="caption direita">passe o mouse para a ficha; clique para o prompt</span>
     </div>
-    <p class="caption">Tudo que está aberto, agrupado por quem destrava: você em minutos, uma sessão comigo, ou terceiros (aqui mora a cobrança).</p>
+    <p class="caption">Tudo que está aberto, agrupado por quem destrava: você em minutos, uma sessão comigo, ou terceiros (aqui mora a cobrança). Card novo, card feito e canal movido nascem por sessão no terminal, nos dois arquivos (ADR-0028).</p>
     <div class="mesa-grid" id="mesa"></div>
     <div class="card painel-mesa" id="painel-mesa" style="display: none;"></div>
   </section>
 
-  <section class="compacta">
-    <div class="linha" style="margin-bottom: 14px;">
-      <h2 style="margin: 0;">Roadmap</h2>
-      <a class="btn claro mini direita" href="roadmap.html">Abrir o grafo de execução</a>
-    </div>
-    <p class="caption">O mapa completo (tarefas, pendentes e propostas, com o prompt de cada passo) vive na página Roadmap. A ficha narrativa é o <code>roadmap/TODO.md</code>.</p>
-  </section>
-
   <section>
-    <div class="linha" style="margin-bottom: 16px;">
-      <h2 style="margin: 0;">Ideias</h2>
-      <button class="btn primario mini direita" id="btn-nova-ideia">+ Ideia</button>
+    <div class="linha" style="margin-bottom: 6px;">
+      <h2 style="margin: 0;">Grafo de execução</h2>
+      <span class="caption direita">clique num nó para a ficha e o prompt do passo</span>
     </div>
-    <p class="caption">Cards livres: sem ID, dono ou dependência até serem puxados para o estágio (aí viram tarefa no TODO.md).</p>
-    <div class="card" id="form-ideia">
-      <div class="campos">
-        <div><label for="ideia-titulo">Título</label><input type="text" id="ideia-titulo" maxlength="120" placeholder="A ideia em uma frase"></div>
-        <div><label for="ideia-descricao">Descrição (opcional)</label><textarea id="ideia-descricao" rows="2" maxlength="500" placeholder="Duas linhas no máximo: o suficiente para lembrar"></textarea></div>
-        <div><label for="ideia-link">Link para doc (opcional)</label><input type="text" id="ideia-link" maxlength="300" placeholder="docs/adr/0007-ana-os.md, https://..."></div>
-      </div>
-      <div class="linha">
-        <button class="btn primario mini" id="btn-salvar-ideia">Salvar ideia</button>
-        <button class="btn claro mini" id="btn-cancelar-ideia">Cancelar</button>
-        <span class="caption" id="ideia-msg"></span>
+    <p class="caption" style="margin-bottom: 16px;">O caminho inteiro do estágio, por tema. O bloqueio é derivado das dependências, nunca escrito à mão.</p>
+    <div class="placar" id="placar" aria-label="O que falta, por tema"></div>
+    <div class="filtros" id="filtros" aria-label="Filtros do grafo"></div>
+    <div class="card" style="padding: 26px 22px;">
+      <div class="palco">
+        <div class="grafo" id="grafo">
+          <svg class="arestas" id="arestas"></svg>
+        </div>
       </div>
     </div>
-    <div class="grade c3" id="ideias" style="margin-top: 18px;"></div>
+    <p class="caption" style="margin-top: 12px;">
+      O grafo é dividido em <strong>faixas por tema</strong>, uma por área do programa, e dentro de cada faixa as
+      colunas separam o que já foi feito, o que está liberado para fazer agora e o que espera dependência. O contador
+      de cada faixa (e o placar acima) diz quantas tarefas ainda faltam ali.
+      <strong>Passe o mouse</strong> num cartão aberto para ver o que ele é, o que destrava, qual o seu gesto e a
+      prévia do prompt; num cartão concluído, a ficha do que ele entregou. O <strong>clique</strong> abre a ficha por
+      extenso com o prompt inteiro e o botão de copiar.
+      Propostas (tracejadas) são recomendações das sessões: não têm dono nem status até serem puxadas para o estágio
+      (aí viram tarefa no <code>roadmap/TODO.md</code>).
+      As setas ligam dependências dentro da mesma faixa; quando a dependência mora em outro tema, ela aparece no
+      cartão e na ficha, sem risco atravessando o desenho.
+    </p>
   </section>
 
   <section>
@@ -137,12 +304,21 @@
   </section>
 </main>
 
+<aside class="painel" id="painel" aria-label="Ficha do nó">
+  <button class="btn icone fechar" id="btn-fechar" aria-label="Fechar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div id="painel-corpo"></div>
+</aside>
+
 <footer class="os-rodape">
-  A ficha completa de cada tarefa vive em <code>roadmap/TODO.md</code> (o /check reconcilia com este cockpit).
+  A ficha completa de cada tarefa vive em <code>roadmap/TODO.md</code>; o espelho de dados é <code>os/dados/roadmap.json</code>.
+  O OS só lê: card novo, card feito e canal movido nascem por sessão no terminal (ADR-0028).
   O roadmap anterior está intacto em <code>roadmap/arquivo/</code>.
 </footer>
 
 <script src="assets/nav.js" data-ambiente="local"></script>
+<script src="assets/grafo.js"></script>
 <script>
 "use strict";
 function esc(s) {
@@ -160,6 +336,8 @@ async function carregar() {
   ]);
   ROADMAP = rRoad.roadmap;
   render();
+  Grafo.montar(ROADMAP);
+  renderRadar();
   renderApps(rApps.apps);
   status();
 }
@@ -193,7 +371,6 @@ function render() {
     { rotulo: "A fazer", num: aFazer.length, det: bloqueadas ? '<span class="ponto vermelho"></span>' + bloqueadas + " bloqueada" + (bloqueadas > 1 ? "s" : "") : '<span class="ponto verde"></span>nenhuma bloqueada' },
     { rotulo: "Propostas", num: propostas.length, det: proximaProposta ? "próxima: <strong>" + esc(proximaProposta.id) + "</strong>" : "nenhuma destravada" },
     { rotulo: "Pendentes", num: (d.pendentes || []).length, det: (d.pendentes || []).map(p => esc(p.id)).join(" · ") || "nenhuma" },
-    { rotulo: "Ideias", num: (d.ideias || []).length, det: "faixa editável aqui" },
     { rotulo: "Radar", num: (d.radar || []).length, det: (d.radar || []).map(r => esc(r.id)).join(" · ") || "limpo" },
   ];
   document.getElementById("stats").innerHTML = stats.map((s, i) =>
@@ -260,7 +437,7 @@ function renderMesa() {
   });
   const semCanal = itens.filter(i => !i.canal);
   document.getElementById("mesa").innerHTML = cols.join("") +
-    (semCanal.length ? '<p class="caption" style="grid-column: 1 / -1;">Sem canal (corrigir no /check): ' +
+    (semCanal.length ? '<p class="caption" style="grid-column: 1 / -1;">Sem canal (corrigir numa sessão no terminal): ' +
       semCanal.map(i => esc(i.id)).join(" · ") + '</p>' : "");
   document.querySelectorAll(".mesa-card").forEach(el => {
     const it = itens.find(i => i.id === el.dataset.mesaId);
@@ -287,7 +464,7 @@ function mostrarTip(it, el) {
   TIP.classList.add("visivel");
   const r = el.getBoundingClientRect();
   let x = r.right + 12;
-  if (x + 342 > window.innerWidth) x = Math.max(8, r.left - 342);
+  if (x + 364 > window.innerWidth) x = Math.max(8, r.left - 364);
   const y = Math.min(r.top, window.innerHeight - TIP.offsetHeight - 12);
   TIP.style.left = x + "px";
   TIP.style.top = Math.max(8, y) + "px";
@@ -316,36 +493,14 @@ window.abrirPainelMesa = function (id) {
     '<div class="acoes">' +
     (it.prompt ? '<button class="btn primario mini" onclick="copiarPrompt(this, \'' + esc(it.id) + '\')">' + rotuloPrompt + '</button>'
       : '<span class="chip bloqueada">sem prompt ainda</span>') +
-    (it.canal === "dispare" ? '<button class="btn claro mini" onclick="marcarDisparado(\'' + esc(it.id) + '\')">Marquei: disparado hoje</button>' : "") +
-    (it.faixa !== "radar" ? '<a class="btn claro mini" href="roadmap.html#' + esc(it.id) + '">Ver no grafo</a>' : "") +
-    '<span class="caption" id="mesa-msg"></span></div>';
+    (it.faixa !== "radar" ? '<button class="btn claro mini" onclick="Grafo.abrir(\'' + esc(it.id) + '\')">Ver no grafo</button>' : "") +
+    '<span class="caption">canal muda por sessão no terminal</span></div>';
   painel.style.display = "block";
 };
 
 window.fecharPainelMesa = function () {
   document.getElementById("painel-mesa").style.display = "none";
   document.querySelectorAll(".mesa-card.ativo").forEach(el => el.classList.remove("ativo"));
-};
-
-/* a única escrita da mesa (ADR-0011): mover canal de item aberto */
-window.marcarDisparado = async function (id) {
-  const listas = [ROADMAP.tarefas, ROADMAP.pendentes || [], ROADMAP.propostas || [], ROADMAP.radar || []];
-  let alvo = null;
-  listas.forEach(l => { alvo = alvo || l.find(n => n.id === id); });
-  if (!alvo || alvo.canal !== "dispare") return;
-  alvo.canal = "aguardando";
-  alvo.canal_desde = hojeLocal();
-  const r = await fetch("/api/roadmap", {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(ROADMAP),
-  }).then(x => x.json()).catch(() => ({ ok: false, erro: "servidor fora do ar" }));
-  if (r.ok) { renderMesa(); abrirPainelMesa(id); }
-  else {
-    const msg = document.getElementById("mesa-msg");
-    if (msg) msg.textContent = "erro ao gravar: " + (r.erro || "?");
-    const atual = await fetch("/api/roadmap").then(x => x.json()).catch(() => null);
-    if (atual && atual.ok) { ROADMAP = atual.roadmap; render(); }
-  }
 };
 
 /* ---- copiar prompt (o nó vem do ROADMAP em memória) ---- */
@@ -363,32 +518,6 @@ window.copiarPrompt = async function (btn, id) {
   btn.textContent = "Copiado ✓";
   setTimeout(() => { btn.textContent = original; }, 1600);
 };
-
-function linkDoc(l) {
-  if (/^https?:\/\//.test(l)) return l;
-  const m = l.match(/^docs\/adr\/(.+\.md)$/) || l.match(/^roadmap\/(.+\.md)$/) || l.match(/^ana\/api-mv\/(.+\.md)$/);
-  if (m) {
-    const grupo = l.startsWith("docs/adr/") ? "adr" : l.startsWith("roadmap/") ? "roadmap" : "api-mv";
-    return "arquivo/biblioteca.html#" + grupo + "/" + m[1];
-  }
-  return "arquivo/biblioteca.html";
-}
-
-function renderIdeias() {
-  document.getElementById("ideias").innerHTML = ROADMAP.ideias.map((i, idx) => {
-    const link = i.link
-      ? '<a class="doc" href="' + esc(linkDoc(i.link)) + '" target="_blank" rel="noopener">' + esc(i.link) + '</a>'
-      : '';
-    return '<div class="card hover ideia-card' + (i.puxada ? ' puxada' : '') + '">' +
-      '<div class="acoes-ideia">' +
-      '<button class="btn claro mini" onclick="editarIdeia(' + idx + ')">editar</button>' +
-      '<button class="btn claro mini" onclick="removerIdeia(' + idx + ')">remover</button></div>' +
-      '<h4>' + esc(i.titulo) + '</h4>' +
-      (i.descricao ? '<p>' + esc(i.descricao) + '</p>' : '') + link +
-      (i.puxada ? '<div style="margin-top:10px;"><span class="chip feito">puxada para o estágio</span></div>' : '') +
-      '</div>';
-  }).join("") || '<p class="caption">Nenhuma ideia ainda. O botão preto é o gesto de 5 segundos.</p>';
-}
 
 function renderRadar() {
   const itens = (ROADMAP.radar || []).slice().sort((a, b) => b.prioridade - a.prioridade);
@@ -423,60 +552,7 @@ async function status() {
   }
 }
 
-/* ---- Ideias: a única escrita do OS (rota /api/roadmap, restrita ao JSON).
-       O documento inteiro (com propostas e prompts) é preservado ao gravar. ---- */
-
-let editando = null; /* índice da ideia em edição, ou null */
-
-function abrirForm(ideia) {
-  document.getElementById("form-ideia").classList.add("aberto");
-  document.getElementById("ideia-titulo").value = ideia ? ideia.titulo : "";
-  document.getElementById("ideia-descricao").value = ideia && ideia.descricao ? ideia.descricao : "";
-  document.getElementById("ideia-link").value = ideia && ideia.link ? ideia.link : "";
-  document.getElementById("ideia-msg").textContent = "";
-  document.getElementById("ideia-titulo").focus();
-}
-
-document.getElementById("btn-nova-ideia").onclick = function () { editando = null; abrirForm(null); };
-document.getElementById("btn-cancelar-ideia").onclick = function () {
-  document.getElementById("form-ideia").classList.remove("aberto"); editando = null;
-};
-
-window.editarIdeia = function (idx) { editando = idx; abrirForm(ROADMAP.ideias[idx]); };
-
-window.removerIdeia = async function (idx) {
-  ROADMAP.ideias.splice(idx, 1);
-  await gravar("ideia removida");
-};
-
-document.getElementById("btn-salvar-ideia").onclick = async function () {
-  const titulo = document.getElementById("ideia-titulo").value.trim();
-  if (!titulo) { document.getElementById("ideia-msg").textContent = "título é obrigatório"; return; }
-  const nova = { titulo: titulo };
-  const desc = document.getElementById("ideia-descricao").value.trim();
-  const link = document.getElementById("ideia-link").value.trim();
-  if (desc) nova.descricao = desc;
-  if (link) nova.link = link;
-  if (editando === null) ROADMAP.ideias.unshift(nova);
-  else ROADMAP.ideias[editando] = Object.assign({}, ROADMAP.ideias[editando], nova);
-  const ok = await gravar("ideia salva");
-  if (ok) { document.getElementById("form-ideia").classList.remove("aberto"); editando = null; }
-};
-
-async function gravar(msgOk) {
-  const r = await fetch("/api/roadmap", {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(ROADMAP),
-  }).then(x => x.json()).catch(() => ({ ok: false, erro: "servidor fora do ar" }));
-  const msg = document.getElementById("ideia-msg");
-  if (r.ok) { msg.textContent = msgOk; render(); renderIdeias(); return true; }
-  msg.textContent = "erro: " + (r.erro || "?");
-  const atual = await fetch("/api/roadmap").then(x => x.json()).catch(() => null);
-  if (atual && atual.ok) { ROADMAP = atual.roadmap; render(); renderIdeias(); }
-  return false;
-}
-
-carregar().then(() => { renderIdeias(); renderRadar(); });
+carregar();
 </script>
 
 </body>

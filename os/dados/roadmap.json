@@ -122,17 +122,15 @@
       "id": "OS25",
       "titulo": "Ana OS com cinco abas, só leitura",
       "dono": "C",
-      "status": "fazer",
+      "status": "feito",
       "deps": [],
       "tema": "os",
-      "canal": "comigo",
-      "canal_desde": "2026-09-09",
-      "mesa": {
-        "destrava": "Um cockpit que cabe na cabeça: cinco perguntas, cinco abas, sem botão que escreve. O que era 11 abas vira Cockpit, Mecanismo, Mapa do SOP, Provas e Global Health (ADR-0028).",
-        "gesto": "Sessão comigo: unir as páginas, tirar a faixa de Ideias e o botão 'marquei', apagar a rota de escrita do servidor, arquivar a Bancada, ajustar o /check."
-      },
-      "nota": "Nasce do grilling de 09/set/2026 (ADR-0028). Pronto quando: o menu tem cinco itens, nenhuma página chama POST /api/roadmap, a Bancada abre por URL em os/arquivo/, e as cinco abas carregam sem erro no navegador.",
-      "prompt": "Execute a OS25 (ADR-0028): o Ana OS cai para cinco abas (Cockpit com o grafo abaixo da mesa; Mecanismo = Circuito + Arquitetura + Mapa da Integração; Mapa do SOP; Provas = Comparação + Testes manuais + Famílias; Global Health = Cadeias), a Bancada vai para os/arquivo/, toda escrita da tela some (Ideias, formulário, botão 'marquei: disparado', rota POST /api/roadmap) e o /check deixa de esperar ideias e escrita de tela. Suba o servidor e confira as cinco abas no navegador antes de fechar nos dois arquivos do roadmap."
+      "nota": "Feita em 09/set/2026 (ADR-0028), na mesma sessão do grilling. Conferida no navegador: cinco abas sem erro de console, POST /api/roadmap devolve 404, Bancada abre em os/arquivo/bancada.html.",
+      "ficha": {
+        "fez": "Uniu 11 abas em 5 (Cockpit com o grafo abaixo da mesa, Mecanismo, Mapa do SOP, Provas, Global Health), mandou a Bancada para os/arquivo/ e apagou toda escrita da tela: faixa de Ideias, botão 'marquei: disparado' e a rota POST /api/roadmap.",
+        "mudou": "O cockpit passou a responder cinco perguntas, uma por aba, e virou só leitura: card novo, card feito e canal movido nascem por sessão no terminal, nos dois arquivos.",
+        "valor": "Um cockpit que cabe na cabeça e não mente por botão: o que o Pedro vê na tela é sempre o que a sessão escreveu."
+      }
     },
     {
       "id": "OS26",

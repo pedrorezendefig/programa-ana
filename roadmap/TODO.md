@@ -28,7 +28,7 @@
 | V29 | `[ ]` | A bancada de cenários fecha 16 de 16 | C+P | nada |
 | V35 | `[ ]` | O app do hospital espelha a Global Health (no lugar da tabela de convênios) | P+E | nada |
 | V41 | `[ ]` | A Ana entra no WhatsApp real do hospital | P+C | nada |
-| OS25 | `[~]` | Ana OS com cinco abas, só leitura | C | nada |
+| OS25 | `[x]` | Ana OS com cinco abas, só leitura | C | nada |
 | OS26 | `[ ]` | Retrato da Ana no ar, na Vercel | C+P | nada |
 
 ### V37 · A Global Health aceita a marcação `[ ]`
@@ -59,8 +59,8 @@ Ficha íntegra no arquivo (ADR-0025). Não se executa neste repo: `~/PedroDev/Ho
 Não depende do agendamento: ela pode estrear informando preço, exame, convênio e ouvidoria, escalando a marcação para a secretária até a V39. Pré-requisitos: tirar a automação `/resolve` (V36 do radar), decidir o transbordo seletivo, inbox do número oficial vinculada ao agente 1, estreia assistida. Chatwoot já na versão corrente (V32). Data, transbordo e aviso aos pacientes são decisões do Pedro e do hospital.
 **Pronto quando:** uma conversa real de paciente, pelo número oficial, atendida pela Ana e visível no Chatwoot e no Langfuse.
 
-### OS25 · Ana OS com cinco abas, só leitura `[~]`
-ADR-0028. Cockpit (mesa e grafo), Mecanismo (Circuito + Arquitetura + Mapa da Integração), Mapa do SOP, Provas (Comparação + Testes + Famílias), Global Health (Cadeias). Bancada para `os/arquivo/`. Some toda escrita da tela e a rota `POST /api/roadmap`; o `/check` para de esperar ideias.
+### OS25 · Ana OS com cinco abas, só leitura `[x]`
+Feita em 09/set/2026, na sessão do grilling. Conferida no navegador: cinco abas sem erro de console, `POST /api/roadmap` devolve 404, Bancada abre em `os/arquivo/bancada.html`. O grafo virou módulo (`os/assets/grafo.js`) e ganhou o tema `canal`. ADR-0028. Cockpit (mesa e grafo), Mecanismo (Circuito + Arquitetura + Mapa da Integração), Mapa do SOP, Provas (Comparação + Testes + Famílias), Global Health (Cadeias). Bancada para `os/arquivo/`. Some toda escrita da tela e a rota `POST /api/roadmap`; o `/check` para de esperar ideias.
 **Pronto quando:** menu com cinco itens, nenhuma página escreve, Bancada abre por URL, as cinco abas carregam sem erro.
 
 ### OS26 · Retrato da Ana no ar `[ ]`
@@ -77,5 +77,7 @@ Bugs, hotfixes e higienes que **não impactam o objetivo** (montar a solução f
 | V36 | 5/10 | Remover a automação `/resolve` do Chatwoot antes do WhatsApp real | Regra id 9 criada em 08/set (mensagem recebida igual a `/resolve` resolve a conversa). Serve ao modo teste: `/resolve` fecha, `/teste` reabre com a Ana; nasceu do caso do Felipe (conversa #166, 11 dias presa na Fila Ouvidoria porque `handoff_to_human` cala o bot e `/teste` não atravessa conversa em fila humana). Provada na conversa 154 da inbox de API. Tocar quando: dia de ligar a Ana num número real (desativar ou apagar em Configurações > Automação) |
 | V7 | 2/10 | Revogar o token Cloudflare do onboarding (29/jul) | Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou |
 ## Log
+
+- **09/set/2026 (2):** **OS25 concluída: o Ana OS tem cinco abas e é só leitura.** Cockpit (mesa e grafo), Mecanismo (Circuito + Arquitetura + Integração), Mapa do SOP, Provas (Comparação + Testes + Famílias), Global Health (Cadeias). Bancada em `os/arquivo/`. Faixa de Ideias, botão "marquei" e `POST /api/roadmap` apagados; `/check`, `CLAUDE.md` e `CONTEXT.md` alinhados.
 
 - **09/set/2026:** **reset do roadmap (ADR-0028).** O grilling da noite decidiu dois produtos (o Ana OS local e o Retrato da Ana na Vercel), o OS de cinco abas só leitura, e um roadmap novo de nove cards escrito do ponto em que a Ana está. O estágio anterior foi arquivado inteiro em `roadmap/arquivo/TODO-estagio-viabilidade.md` e `roadmap-estagio-viabilidade.json`. A P3 virou V37, a P6 virou V39, a GH19 saiu do grafo, as ideias morreram. Nenhum card nasce mais pela tela.
