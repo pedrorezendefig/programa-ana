@@ -396,3 +396,14 @@ a.md-link { color: inherit; text-decoration: underline dotted; text-underline-of
 a.md-link:hover { text-decoration-style: solid; }
 a.md-link code { color: inherit; }
 .md-fence { color: var(--cor-mudo); font-size: 11px; }
+
+/* ---------------------------------------------- a chegada por link (ADR-0029)
+   assets/liga.js acende o alvo do #hash por 2 s: contorno de tinta e fundo interno,
+   como o card selecionado do Ledger. [id] porque só alvo com id acende, e para
+   ganhar do fundo do próprio componente. Em SVG (nó do Mapa do SOP), um halo. */
+[id].acesa {
+  box-shadow: inset 0 0 0 1.5px var(--cor-tinta);
+  background-color: var(--cor-card-interno);
+  transition: box-shadow .35s ease, background-color .35s ease;
+}
+svg [id].acesa { filter: drop-shadow(0 0 4px rgba(17, 17, 17, .55)); transition: filter .35s ease; }

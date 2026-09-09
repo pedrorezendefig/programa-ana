@@ -94,6 +94,9 @@
     background: #fff; border: 1px solid var(--cor-fio); border-radius: var(--raio-pill); padding: 5px 10px 5px 6px;
   }
   .tool-pill.nao { border-style: dashed; color: var(--cor-rotulo); }
+  a.tool-pill { text-decoration: none; }
+  a.tool-pill:hover { border-color: var(--cor-tinta); }
+  .elo .cab a.lig-sec { text-decoration: none; font-size: 11px; padding: 4px 10px; }
   .nota-hoje { font-size: 12px; color: var(--cor-rotulo); line-height: 1.5; margin-top: 4px; padding-left: 10px; border-left: 2px solid var(--cor-fio); }
   .nota-hoje strong { color: var(--cor-tinta); }
   .fora { font-size: 12.5px; color: var(--cor-rotulo); margin-top: 8px; }
@@ -217,6 +220,10 @@
 </main>
 
 <script src="assets/nav.js" data-ambiente="homolog" defer></script>
+<script src="assets/liga.js"></script>
+<!-- Índice ferramenta -> elos, lido por fetch pelo circuito.html (contrato de links, ADR-0029).
+     Cópia do que indiceDasCadeias() calcula abaixo; a página confere e avisa no console se divergir. -->
+<script id="cadeias-indice" type="application/json">{"cadeias":{"A":"Paciente novo: identificar e cadastrar","B":"Paciente conhecido: o sonda de julho","C":"Convênio: a cobertura vem da agenda (ADR-0025)","D":"Consulta particular: os horários, elo por elo","E":"Exame: preço e preparo funcionam, a agenda ainda não","F":"Gerir o agendado: consultar, remarcar, cancelar"},"ferramentas":{"buscar_paciente_por_cpf":[{"cadeia":"A","elo":"A1","ancora":"elo-A-1"},{"cadeia":"A","elo":"A3","ancora":"elo-A-3"},{"cadeia":"B","elo":"B1","ancora":"elo-B-1"},{"cadeia":"D","elo":"D1","ancora":"elo-D-1"},{"cadeia":"E","elo":"E1","ancora":"elo-E-1"},{"cadeia":"F","elo":"F1","ancora":"elo-F-1"}],"cadastrar_paciente":[{"cadeia":"A","elo":"A2","ancora":"elo-A-2"}],"buscar_paciente_por_telefone":[{"cadeia":"A","elo":"A4","ancora":"elo-A-4"}],"listar_agendamentos":[{"cadeia":"A","elo":"A5","ancora":"elo-A-5"},{"cadeia":"B","elo":"B3","ancora":"elo-B-3"},{"cadeia":"F","elo":"F1","ancora":"elo-F-1"}],"set_custom_attribute":[{"cadeia":"B","elo":"B1","ancora":"elo-B-1"}],"cadastrar_carteira":[{"cadeia":"B","elo":"B2","ancora":"elo-B-2"},{"cadeia":"C","elo":"C6","ancora":"elo-C-6"}],"consultar_especialidades_agenda":[{"cadeia":"C","elo":"C1","ancora":"elo-C-1"},{"cadeia":"D","elo":"D2","ancora":"elo-D-2"}],"consultar_convenios_agenda":[{"cadeia":"C","elo":"C2","ancora":"elo-C-2"},{"cadeia":"D","elo":"D3","ancora":"elo-D-3"},{"cadeia":"E","elo":"E4","ancora":"elo-E-4"}],"consultar_planos_convenio":[{"cadeia":"C","elo":"C3","ancora":"elo-C-3"},{"cadeia":"D","elo":"D4","ancora":"elo-D-4"}],"consultar_horarios_livres":[{"cadeia":"C","elo":"C5","ancora":"elo-C-5"},{"cadeia":"D","elo":"D5","ancora":"elo-D-5"},{"cadeia":"E","elo":"E5","ancora":"elo-E-5"}],"consultar_precos_consultas":[{"cadeia":"D","elo":"D0","ancora":"elo-D-0"}],"assign_label":[{"cadeia":"D","elo":"D0","ancora":"elo-D-0"},{"cadeia":"D","elo":"D9","ancora":"elo-D-9"},{"cadeia":"E","elo":"E1","ancora":"elo-E-1"},{"cadeia":"F","elo":"F3","ancora":"elo-F-3"},{"cadeia":"F","elo":"F4","ancora":"elo-F-4"}],"consultar_prestadores_agenda":[{"cadeia":"D","elo":"D6","ancora":"elo-D-6"}],"consultar_tipos_consulta":[{"cadeia":"D","elo":"D7","ancora":"elo-D-7"}],"handoff_to_human":[{"cadeia":"D","elo":"D9","ancora":"elo-D-9"},{"cadeia":"E","elo":"E1","ancora":"elo-E-1"},{"cadeia":"F","elo":"F1","ancora":"elo-F-1"}],"private_note":[{"cadeia":"D","elo":"D9","ancora":"elo-D-9"},{"cadeia":"F","elo":"F1","ancora":"elo-F-1"},{"cadeia":"F","elo":"F4","ancora":"elo-F-4"}],"kanban_move_card":[{"cadeia":"D","elo":"D9","ancora":"elo-D-9"},{"cadeia":"E","elo":"E1","ancora":"elo-E-1"},{"cadeia":"F","elo":"F1","ancora":"elo-F-1"}],"agendar_horario":[{"cadeia":"D","elo":"D10","ancora":"elo-D-10"},{"cadeia":"E","elo":"E7","ancora":"elo-E-7"}],"consultar_exames":[{"cadeia":"E","elo":"E0","ancora":"elo-E-0"},{"cadeia":"E","elo":"E3","ancora":"elo-E-3"}],"reagendar_horario":[{"cadeia":"F","elo":"F3","ancora":"elo-F-3"}],"cancelar_agendamento":[{"cadeia":"F","elo":"F4","ancora":"elo-F-4"}]},"elos":{"A1":{"cadeia":"A","ancora":"elo-A-1","secao":"Coleta","tools":["buscar_paciente_por_cpf"]},"A2":{"cadeia":"A","ancora":"elo-A-2","secao":null,"tools":["cadastrar_paciente"]},"A3":{"cadeia":"A","ancora":"elo-A-3","secao":"Coleta","tools":["buscar_paciente_por_cpf"]},"A4":{"cadeia":"A","ancora":"elo-A-4","secao":"Coleta","tools":["buscar_paciente_por_telefone"]},"A5":{"cadeia":"A","ancora":"elo-A-5","secao":null,"tools":["listar_agendamentos"]},"B1":{"cadeia":"B","ancora":"elo-B-1","secao":"Coleta","tools":["buscar_paciente_por_cpf","set_custom_attribute"]},"B2":{"cadeia":"B","ancora":"elo-B-2","secao":null,"tools":["cadastrar_carteira"]},"B3":{"cadeia":"B","ancora":"elo-B-3","secao":null,"tools":["listar_agendamentos"]},"C1":{"cadeia":"C","ancora":"elo-C-1","secao":"3.2","tools":["consultar_especialidades_agenda"]},"C2":{"cadeia":"C","ancora":"elo-C-2","secao":"3.2","tools":["consultar_convenios_agenda"]},"C3":{"cadeia":"C","ancora":"elo-C-3","secao":"3.2","tools":["consultar_planos_convenio"]},"C4":{"cadeia":"C","ancora":"elo-C-4","secao":null,"tools":[]},"C5":{"cadeia":"C","ancora":"elo-C-5","secao":"3.2","tools":["consultar_horarios_livres"]},"C6":{"cadeia":"C","ancora":"elo-C-6","secao":null,"tools":["cadastrar_carteira"]},"C7":{"cadeia":"C","ancora":"elo-C-7","secao":null,"tools":[]},"D0":{"cadeia":"D","ancora":"elo-D-0","secao":"2.3","tools":["consultar_precos_consultas","assign_label"]},"D1":{"cadeia":"D","ancora":"elo-D-1","secao":"Coleta","tools":["buscar_paciente_por_cpf"]},"D2":{"cadeia":"D","ancora":"elo-D-2","secao":"2.3.1","tools":["consultar_especialidades_agenda"]},"D3":{"cadeia":"D","ancora":"elo-D-3","secao":"2.3.1","tools":["consultar_convenios_agenda"]},"D4":{"cadeia":"D","ancora":"elo-D-4","secao":"2.3.1","tools":["consultar_planos_convenio"]},"D5":{"cadeia":"D","ancora":"elo-D-5","secao":"2.3.1","tools":["consultar_horarios_livres"]},"D6":{"cadeia":"D","ancora":"elo-D-6","secao":"2.3.1","tools":["consultar_prestadores_agenda"]},"D7":{"cadeia":"D","ancora":"elo-D-7","secao":null,"tools":["consultar_tipos_consulta"]},"D8":{"cadeia":"D","ancora":"elo-D-8","secao":null,"tools":[]},"D9":{"cadeia":"D","ancora":"elo-D-9","secao":"2.4A","tools":["handoff_to_human","private_note","assign_label","kanban_move_card"]},"D10":{"cadeia":"D","ancora":"elo-D-10","secao":null,"tools":["agendar_horario"]},"E0":{"cadeia":"E","ancora":"elo-E-0","secao":"6.B","tools":["consultar_exames"]},"E1":{"cadeia":"E","ancora":"elo-E-1","secao":"5.B","tools":["buscar_paciente_por_cpf","assign_label","kanban_move_card","handoff_to_human"]},"E2":{"cadeia":"E","ancora":"elo-E-2","secao":null,"tools":[]},"E3":{"cadeia":"E","ancora":"elo-E-3","secao":"5.D","tools":["consultar_exames"]},"E4":{"cadeia":"E","ancora":"elo-E-4","secao":"5.A","tools":["consultar_convenios_agenda"]},"E5":{"cadeia":"E","ancora":"elo-E-5","secao":null,"tools":["consultar_horarios_livres"]},"E6":{"cadeia":"E","ancora":"elo-E-6","secao":null,"tools":[]},"E7":{"cadeia":"E","ancora":"elo-E-7","secao":null,"tools":["agendar_horario"]},"F1":{"cadeia":"F","ancora":"elo-F-1","secao":null,"tools":["listar_agendamentos","buscar_paciente_por_cpf","private_note","kanban_move_card","handoff_to_human"]},"F2":{"cadeia":"F","ancora":"elo-F-2","secao":null,"tools":[]},"F3":{"cadeia":"F","ancora":"elo-F-3","secao":null,"tools":["reagendar_horario","assign_label"]},"F4":{"cadeia":"F","ancora":"elo-F-4","secao":null,"tools":["cancelar_agendamento","assign_label","private_note"]}}}</script>
 <script>
 "use strict";
 
@@ -341,12 +348,14 @@ const precisaConv = (c) => precisaItem(c) || (c.idConvenio ? null : "precisa do 
 const precisaPlano = (c) => precisaConv(c) || (c.idPlano ? null : "precisa do id do plano (elo dos planos)");
 const precisaHorario = (c) => c.horarios && c.horarios.length ? null : "precisa de um horário real (elo dos horários)";
 
-/* Elos reaproveitados: a cadeia de quatro elos da Seção 2.3.1 aparece na C (convênio) e na D (particular). */
+/* Elos reaproveitados: a cadeia de quatro elos da Seção 2.3.1 aparece na C (convênio) e na D (particular).
+   Cada elo pode declarar `secao` (a chave da seção do prompt naquele momento, como está no
+   circuito.json); o link para a seção só nasce se ela existir lá (contrato de links, ADR-0029). */
 
-function eloEspecialidade(id, conversa) {
-  /* refs: quem alimenta quem, por letra da cadeia (C1..C5 ou D2..D5) */
+function eloEspecialidade(id, conversa, refs) {
+  /* refs: quem alimenta quem, por letra da cadeia (C1..C5 ou D2..D5), e a seção do prompt */
   return {
-    id: id, metodo: "GET", caminho: "/consultas?pesquisa=CARDIOLOGIA", tool: T.esp,
+    id: id, metodo: "GET", caminho: "/consultas?pesquisa=CARDIOLOGIA", tool: T.esp, secao: refs.secao,
     explica: "Elo 1 da cadeia da Seção 2.3.1: a especialidade vira um item agendável com id. Sem esse id nada a jusante anda.",
     entradas: () => [{ campo: "pesquisa", valor: "CARDIOLOGIA", de: "o paciente", porque: "a especialidade que o paciente pediu, em CAIXA ALTA e sem acento (regra da descrição da tool 8)" }],
     precisa: () => null,
@@ -369,7 +378,7 @@ function eloEspecialidade(id, conversa) {
 function eloConvenios(id, escolha, conversa, refs) {
   /* escolha: {modo:"particular"} ou {modo:"nome", nome:"Unimed"} */
   return {
-    id: id, metodo: "GET", caminho: "/convenios?idItemAgendamento={idItem}&size=100", tool: T.conv,
+    id: id, metodo: "GET", caminho: "/convenios?idItemAgendamento={idItem}&size=100", tool: T.conv, secao: refs.secao,
     explica: "Elo 2: os convênios aceitos por ESTE item (a lista é escopada pela especialidade, ADR-0025). O particular é uma linha como as outras, com a marca particular = true.",
     entradas: (c) => [{ campo: "idItemAgendamento", valor: c.idItem, de: refs.item, porque: "o id que a especialidade devolveu; a lista muda de item para item" },
       { campo: "size", valor: 100, de: "a tool", porque: "a API pagina em 10; a tool 13 pede 100 fixo para a lista vir inteira" }],
@@ -401,7 +410,7 @@ function eloConvenios(id, escolha, conversa, refs) {
 
 function eloPlanos(id, conversa, refs) {
   return {
-    id: id, metodo: "GET", caminho: "/convenios/{idConvenio}/planos?idItemAgendamento={idItem}", tool: T.planos,
+    id: id, metodo: "GET", caminho: "/convenios/{idConvenio}/planos?idItemAgendamento={idItem}", tool: T.planos, secao: refs.secao,
     explica: "Elo 3: os planos do convênio escolhido. A regra da tool 14 manda pegar o PRIMEIRO da lista, a menos que o paciente tenha dito o nome do plano dele.",
     entradas: (c) => [{ campo: "idConvenio", valor: c.idConvenio, de: refs.conv, porque: "o id da linha escolhida na lista de convênios; vai no caminho da URL" },
       { campo: "idItemAgendamento", valor: c.idItem, de: refs.item, porque: "o mesmo item, para a API filtrar os planos válidos nessa especialidade" }],
@@ -424,7 +433,7 @@ function eloPlanos(id, conversa, refs) {
 
 function eloHorarios(id, conversa, refs) {
   return {
-    id: id, metodo: "GET", caminho: "/agendas/v2?idItemAgendamento&idConvenio&idPlano", tool: T.horarios,
+    id: id, metodo: "GET", caminho: "/agendas/v2?idItemAgendamento&idConvenio&idPlano", tool: T.horarios, secao: refs.secao,
     explica: "Elo 4, o último: exige os TRÊS ids. Faltando um, HTTP 500. Id inventado NÃO dá erro: devolve agendas vazio, que parece agenda sem horário. A Ana não manda data: a janela de 14 dias é padrão da GH.",
     entradas: (c) => [{ campo: "idItemAgendamento", valor: c.idItem, de: refs.item, porque: "a especialidade" },
       { campo: "idConvenio", valor: c.idConvenio, de: refs.conv, porque: "a linha de convênio escolhida" },
@@ -448,8 +457,8 @@ function eloHorarios(id, conversa, refs) {
   };
 }
 
-const REFS_C = { item: "C1", conv: "C2", plano: "C3" };
-const REFS_D = { item: "D2", conv: "D3", plano: "D4" };
+const REFS_C = { item: "C1", conv: "C2", plano: "C3", secao: "3.2" };
+const REFS_D = { item: "D2", conv: "D3", plano: "D4", secao: "2.3.1" };
 
 /* ---------- as seis cadeias ---------- */
 
@@ -461,7 +470,7 @@ const CADEIAS = [
     preparar(ctx) { const p = pessoaSintetica(); ctx.p = p; ctx.cpf = p.cpf; ctx.tel = p.telefone; },
     elos: [
       {
-        id: "A1", metodo: "GET", caminho: "/pessoas?cpf={cpf}", tool: T.cpf,
+        id: "A1", metodo: "GET", caminho: "/pessoas?cpf={cpf}", tool: T.cpf, secao: "Coleta",
         explica: "Fotografia do antes: esse CPF acabou de ser sorteado, então o certo é voltar vazio.",
         entradas: (c) => [{ campo: "cpf", valor: c.cpf, de: "o paciente", porque: "na Ana é o CPF que o paciente digitou, validado (11 dígitos) e sem pontos; aqui é sorteado com dígito verificador válido" }],
         precisa: () => null,
@@ -505,7 +514,7 @@ const CADEIAS = [
         },
       },
       {
-        id: "A3", metodo: "GET", caminho: "/pessoas?cpf={cpf}", tool: T.cpf,
+        id: "A3", metodo: "GET", caminho: "/pessoas?cpf={cpf}", tool: T.cpf, secao: "Coleta",
         explica: "A releitura: o cadastro que não existia segundos atrás agora tem que voltar completo.",
         entradas: (c) => [{ campo: "cpf", valor: c.cpf, de: "A2", porque: "o mesmo CPF do cadastro" }],
         precisa: (c) => c.id ? null : "precisa do cadastro criado em A2",
@@ -523,7 +532,7 @@ const CADEIAS = [
         },
       },
       {
-        id: "A4", metodo: "GET", caminho: "/pessoas?telefone={telefone}", tool: T.tel,
+        id: "A4", metodo: "GET", caminho: "/pessoas?telefone={telefone}", tool: T.tel, secao: "Coleta",
         explica: "O elo de ouro: achar o paciente pelo telefone. É assim que a Ana identifica quem conversa quando não há CPF.",
         entradas: (c) => [{ campo: "telefone", valor: c.tel, de: "A2", porque: "só dígitos, com DDD, sem +55; na Ana vem do próprio contato do WhatsApp" }],
         precisa: (c) => c.id ? null : "precisa do cadastro criado em A2",
@@ -565,7 +574,7 @@ const CADEIAS = [
     resumo: "Persistência: o paciente-sonda (id 1681) foi criado pela API em 07/jul. Dois meses depois continua lá, íntegro, com carteiras e agendamentos coerentemente vazios.",
     elos: [
       {
-        id: "B1", metodo: "GET", caminho: "/pessoas?cpf=66301102770", tool: T.cpf,
+        id: "B1", metodo: "GET", caminho: "/pessoas?cpf=66301102770", tool: T.cpf, secao: "Coleta",
         explica: "O sonda TESTE INTEGRACAO ANA VITTA. Voltar íntegro prova que o dado persiste no SaaS da GH.",
         entradas: () => [{ campo: "cpf", valor: SONDA.cpf, de: "o paciente", porque: "o CPF de teste fixo, criado de propósito em 07/jul (nunca CPF real)" }],
         precisa: () => null,
@@ -623,7 +632,7 @@ const CADEIAS = [
         paciente: "Tenho Unimed. Cardiologia cobre?",
         tools: [T.esp],
         nota: "Cobertura de convênio não é tabela: é a cadeia da agenda (Seção 3.2). O primeiro elo é o mesmo do particular.",
-      }),
+      }, REFS_C),
       eloConvenios("C2", { modo: "nome", nome: "Unimed" }, {
         tools: [T.conv],
         ana: (c) => c.convenioAusente
@@ -689,7 +698,7 @@ const CADEIAS = [
     resumo: "A conversa real de 08/set no Telegram, reproduzida elo a elo: preço pela API do Hospital, identificação do paciente, e a cadeia de quatro elos da Seção 2.3.1 até a lista numerada de horários. Termina no que a Ana faz hoje (anota e passa para a equipe) e no que ainda não faz (marcar sozinha).",
     elos: [
       {
-        id: "D0", soConversa: true, tool: T.precos,
+        id: "D0", soConversa: true, tool: T.precos, secao: "2.3",
         explica: "Fora desta página: o preço vem da API do Hospital, não da Global Health. A Ana responde o valor direto e oferece a agenda.",
         conversa: {
           paciente: "quanto ta a consulta de cardiologia?",
@@ -699,7 +708,7 @@ const CADEIAS = [
         },
       },
       {
-        id: "D1", metodo: "GET", caminho: "/pessoas?cpf=66301102770", tool: T.cpf,
+        id: "D1", metodo: "GET", caminho: "/pessoas?cpf=66301102770", tool: T.cpf, secao: "Coleta",
         explica: "Identificação antes da agenda: a Seção 2.3.1 só roda depois de nome e CPF validados. Aqui usamos o sonda, para o paciente existir.",
         entradas: () => [{ campo: "cpf", valor: SONDA.cpf, de: "o paciente", porque: "CPF digitado, validado e sem pontos. Na conversa de 08/set a busca voltou vazia e a Ana seguiu mesmo assim (cadastro não é pré-requisito hoje)" }],
         precisa: () => null,
@@ -724,7 +733,7 @@ const CADEIAS = [
         paciente: "sim",
         tools: [T.esp],
         nota: "Turno de 08/set às 11:33: quatro chamadas em 21 segundos, sem mensagem no meio. A primeira é esta. A Ana confere o nome “Consulta Cardiologica” antes de seguir: UROLOGIA e outras devolvem o item de Cardiologia por aproximação (trava da tool 8).",
-      }),
+      }, REFS_D),
       eloConvenios("D3", { modo: "particular" }, {
         tools: [T.conv],
         nota: "Escolha do modelo, sem perguntar ao paciente: a linha Particular (id 3). A lista tem 33 convênios e duas linhas com particular = true (Particular e Funcionario). O nome decidiu.",
@@ -741,7 +750,7 @@ const CADEIAS = [
         nota: "A mensagem acima é montada com a resposta real deste elo (no máximo 5, com data, hora e médico). O turno TERMINA aqui: a Ana espera o número (PASSO 3).",
       }, REFS_D),
       {
-        id: "D6", metodo: "GET", caminho: "/prestadores?idItemAgendamento={idItem}", tool: T.prest,
+        id: "D6", metodo: "GET", caminho: "/prestadores?idItemAgendamento={idItem}", tool: T.prest, secao: "2.3.1",
         explica: "Elo OPCIONAL, fora da cadeia: quem atende a especialidade. Publicado não quer dizer com horário livre (Charles aparece aqui e não tem vaga).",
         entradas: (c) => [{ campo: "idItemAgendamento", valor: c.idItem, de: "D2", porque: "a especialidade" }],
         precisa: precisaItem,
@@ -788,7 +797,7 @@ const CADEIAS = [
         conversa: { nota: "Sem ferramenta na Ana. Se um dia vier preparo por aqui, a Ana repassaria antes de confirmar." },
       },
       {
-        id: "D9", soConversa: true, tool: T.handoff,
+        id: "D9", soConversa: true, tool: T.handoff, secao: "2.4A",
         explica: "Fora da GH: o paciente escolhe o número. A Ana registra a escolha e passa para a equipe. Quatro ferramentas nativas, nenhuma chamada à Global Health.",
         conversa: {
           paciente: "1",
@@ -819,7 +828,7 @@ const CADEIAS = [
     resumo: "O que o exame tem que a consulta não tem: triagem que pode impedir (impedeRealizacao = S escala para humano), preparo e anexos que sobem para o S3 da GH. Tudo depende do exame publicado na agenda online, e hoje o catálogo de exames está vazio: o mesmo mecanismo que destravou a Cardiologia (cadastro no Soul + botão no Painel GH).",
     elos: [
       {
-        id: "E0", soConversa: true, tool: T.exames,
+        id: "E0", soConversa: true, tool: T.exames, secao: "6.B",
         explica: "Fora desta página: valor e preparo vêm da tabela de exames da API do Hospital. É o que já funciona.",
         conversa: {
           paciente: "quanto custa o ecocardiograma?",
@@ -829,7 +838,7 @@ const CADEIAS = [
         },
       },
       {
-        id: "E1", metodo: "GET", caminho: "/exames?pesquisa=ECOCARDIOGRAMA", tool: null,
+        id: "E1", metodo: "GET", caminho: "/exames?pesquisa=ECOCARDIOGRAMA", tool: null, secao: "5.B",
         explica: "Seria o elo 1 da cadeia do exame: o idExame que alimenta triagem, preparo e anexos. Hoje volta vazio.",
         entradas: () => [{ campo: "pesquisa", valor: "ECOCARDIOGRAMA", de: "o paciente", porque: "o nome do exame, em caixa alta, como na especialidade" }],
         precisa: () => null,
@@ -862,7 +871,7 @@ const CADEIAS = [
         conversa: { nota: "Futuro: a Ana faria as perguntas uma a uma; resposta que impede = escalada, sem agendar." },
       },
       {
-        id: "E3", metodo: "GET", caminho: "/exames/instrucaoGeral?idItemAgendamento={idExame}", tool: null,
+        id: "E3", metodo: "GET", caminho: "/exames/instrucaoGeral?idItemAgendamento={idExame}", tool: null, secao: "5.D",
         explica: "O preparo do exame segundo a agenda online (jejum, medicação).",
         entradas: (c) => [{ campo: "idItemAgendamento", valor: c.idExame, de: "E1", porque: "o mesmo id do exame, no nome que o doc oficial usa" }],
         precisa: (c) => c.idExame ? null : "precisa de um exame publicado (E1)",
@@ -874,7 +883,7 @@ const CADEIAS = [
         conversa: { tools: [T.exames], nota: "Hoje o preparo já sai da tabela do Hospital (Seção 5.D). Este elo seria a segunda fonte." },
       },
       {
-        id: "E4", metodo: "GET", caminho: "/convenios?idItemAgendamento={idExame}&size=100", tool: T.conv,
+        id: "E4", metodo: "GET", caminho: "/convenios?idItemAgendamento={idExame}&size=100", tool: T.conv, secao: "5.A",
         explica: "Os convênios do exame, escopados pelo item, como na consulta.",
         entradas: (c) => [{ campo: "idItemAgendamento", valor: c.idExame, de: "E1", porque: "o exame é um item agendável como a especialidade" }],
         precisa: (c) => c.idExame ? null : "precisa de um exame publicado (E1)",
@@ -976,6 +985,50 @@ const CADEIAS = [
   },
 ];
 
+/* ---------- índice para o Mecanismo (contrato de links, ADR-0029) ----------
+   ferramenta -> elos que a chamam (na chamada da API ou na conversa da Ana) e
+   elo -> seção do prompt declarada. As cadeias são código, não JSON, então o
+   circuito.html lê a cópia estática no <script id="cadeias-indice"> desta página,
+   por fetch. Ao carregar, esta página confere a cópia contra o cálculo vivo e avisa
+   no console se divergir. Para regerar: no console desta página,
+   copy(JSON.stringify(indiceDasCadeias())) e cole no bloco. */
+function idElo(elo) { return "elo-" + elo.id.charAt(0) + "-" + elo.id.slice(1); }
+
+function indiceDasCadeias() {
+  const cadeias = {}, ferramentas = {}, elos = {};
+  CADEIAS.forEach(cadeia => {
+    cadeias[cadeia.letra] = cadeia.titulo;
+    cadeia.elos.forEach(elo => {
+      const nomes = [];
+      if (elo.tool) nomes.push(elo.tool.nome);
+      ((elo.conversa && elo.conversa.tools) || []).forEach(t => { if (nomes.indexOf(t.nome) === -1) nomes.push(t.nome); });
+      nomes.forEach(n => { (ferramentas[n] = ferramentas[n] || []).push({ cadeia: cadeia.letra, elo: elo.id, ancora: idElo(elo) }); });
+      elos[elo.id] = { cadeia: cadeia.letra, ancora: idElo(elo), secao: elo.secao || null, tools: nomes };
+    });
+  });
+  return { cadeias, ferramentas, elos };
+}
+
+function conferirIndice() {
+  const el = document.getElementById("cadeias-indice");
+  let escrito = null;
+  try { escrito = JSON.stringify(JSON.parse(el.textContent)); } catch (e) { escrito = null; }
+  if (escrito !== JSON.stringify(indiceDasCadeias())) {
+    console.warn("cadeias-indice desatualizado: o Mecanismo vai ler ligações velhas. Regere o bloco (comentário acima de indiceDasCadeias).");
+  }
+}
+
+/* O que existe no Mecanismo (circuito.json): só ferramenta e seção de lá viram link.
+   Ferramenta que ainda não nasceu (agendar_horario, listar_agendamentos) fica sem link. */
+const CIRC = { tools: {}, secoes: {} };
+async function carregarCircuito() {
+  try {
+    const c = await (await fetch("dados/circuito.json")).json();
+    c.tools.forEach(t => { CIRC.tools[t.id] = true; });
+    c.secoes.forEach(s => { CIRC.secoes[s.chave] = s.id; });
+  } catch (e) { /* sem o circuito, os elos ficam sem link: nada inventado */ }
+}
+
 /* ---------- render ---------- */
 
 const raiz = document.getElementById("cadeias");
@@ -987,7 +1040,17 @@ function esc(s) {
 function toolPill(t) {
   const cls = "tool-pill" + (t.tem ? "" : " nao");
   const titulo = t.tem ? ORIGEM_TXT[t.origem] + ": a Ana pode chamar" : (t.motivo || "a Ana não pode chamar");
-  return '<span class="' + cls + '" title="' + esc(titulo) + '"><span class="selo-origem ' + t.origem + '">' + ORIGEM_TXT[t.origem] + "</span>" + esc(t.nome) + (t.tem ? "" : " · não tem") + "</span>";
+  const miolo = '<span class="selo-origem ' + t.origem + '">' + ORIGEM_TXT[t.origem] + "</span>" + esc(t.nome) + (t.tem ? "" : " · não tem");
+  if (CIRC.tools[t.nome]) {
+    return '<a class="' + cls + '" href="circuito.html#tool-' + esc(t.nome) + '" title="' + esc(titulo) + ' · a ficha no Mecanismo">' + miolo + "</a>";
+  }
+  return '<span class="' + cls + '" title="' + esc(titulo) + '">' + miolo + "</span>";
+}
+
+function linkSecao(elo) {
+  const id = elo.secao ? CIRC.secoes[elo.secao] : null;
+  if (!id) return "";
+  return '<a class="chip contorno lig-sec" href="circuito.html#sec-' + esc(id) + '" title="a seção do prompt neste momento">Seção ' + esc(elo.secao) + "</a>";
 }
 
 function txt(v, ctx) { return typeof v === "function" ? v(ctx) : v; }
@@ -1023,15 +1086,15 @@ function renderSaidas(saidas) {
 
 function renderElo(ci, ei) {
   const cadeia = CADEIAS[ci], elo = cadeia.elos[ei], ctx = cadeia.ctx;
-  const el = document.getElementById("elo-" + ci + "-" + ei);
+  const el = document.getElementById(idElo(elo));
   const res = cadeia.resultados[ei];
   let api = '<div class="cab"><span class="num">' + elo.id + "</span>";
   if (elo.soConversa) {
-    api += '<span class="chip pendente">só conversa</span></div>';
+    api += '<span class="chip pendente">só conversa</span>' + linkSecao(elo) + "</div>";
     api += '<p class="explica">' + elo.explica + "</p>";
     api += '<p class="fora">Ferramenta fora da Global Health: ' + toolPill(elo.tool) + "</p>";
   } else {
-    api += '<span class="metodo ' + elo.metodo.toLowerCase() + '">' + elo.metodo + '</span><span class="path">' + esc(elo.caminho) + "</span></div>";
+    api += '<span class="metodo ' + elo.metodo.toLowerCase() + '">' + elo.metodo + '</span><span class="path">' + esc(elo.caminho) + "</span>" + linkSecao(elo) + "</div>";
     api += '<p class="explica">' + elo.explica + "</p>";
     api += renderEntradas(elo, ctx);
     const motivo = elo.regra ? null : (elo.precisa ? elo.precisa(ctx) : null);
@@ -1075,7 +1138,7 @@ function montar() {
     if (cadeia.preparar) cadeia.preparar(cadeia.ctx);
     const card = document.createElement("div");
     card.className = "card cadeia";
-    card.id = "cadeia-" + cadeia.letra;
+    card.id = "cad-" + cadeia.letra;
     card.innerHTML =
       '<div class="cadeia-topo">' +
         '<div class="letra">' + cadeia.letra + "</div>" +
@@ -1086,13 +1149,14 @@ function montar() {
         "</div>" + (cadeia.escrita ? '<span class="nota-escrita">' + cadeia.escrita + "</span>" : "") + "</div>" +
       "</div>" +
       '<div class="colunas-cab"><span class="micro">a chamada na Global Health</span><span class="micro">a conversa da Ana neste elo</span></div>' +
-      '<div class="elos">' + cadeia.elos.map((_, ei) => '<div class="elo" id="elo-' + ci + "-" + ei + '"></div>').join("") + "</div>" +
+      '<div class="elos">' + cadeia.elos.map(elo => '<div class="elo" id="' + idElo(elo) + '"></div>').join("") + "</div>" +
       '<p class="placar" hidden></p>';
     raiz.appendChild(card);
     renderCadeia(ci);
   });
+  conferirIndice();
 }
-montar();
+carregarCircuito().then(montar);
 
 /* ---------- execução ---------- */
 
@@ -1102,7 +1166,7 @@ async function rodarElo(ci, ei) {
   if (elo.regra) { cadeia.resultados[ei] = { estado: "regra", detalhe: "" }; renderElo(ci, ei); return; }
   const motivo = elo.precisa ? elo.precisa(ctx) : null;
   if (motivo) { cadeia.resultados[ei] = { estado: "bloqueado", detalhe: motivo }; renderElo(ci, ei); return; }
-  const el = document.getElementById("elo-" + ci + "-" + ei);
+  const el = document.getElementById(idElo(elo));
   const acoes = el.querySelector(".acoes");
   if (acoes) acoes.innerHTML = '<span class="chip pendente">rodando...</span>';
   let r;

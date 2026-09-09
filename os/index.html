@@ -215,6 +215,9 @@
   .painel .bloco { margin-top: 18px; }
   .painel .deps-lista { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
   .painel .deps-lista .dep-linha { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+  /* cada dependência leva ao nó dela (contrato de links, ADR-0029) */
+  .painel .deps-lista .dep-linha strong { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+  .painel .deps-lista .dep-linha strong:hover { text-decoration-style: solid; }
   .painel pre.prompt {
     white-space: pre-wrap; word-break: break-word;
     font-family: var(--font-inter); font-size: 13.5px; line-height: 1.6;
@@ -318,6 +321,7 @@
 </footer>
 
 <script src="assets/nav.js" data-ambiente="local"></script>
+<script src="assets/liga.js"></script>
 <script src="assets/grafo.js"></script>
 <script>
 "use strict";
@@ -537,6 +541,26 @@ function renderApps(apps) {
     '<div class="desc">' + esc(a.desc) + '</div>' +
     '<div class="url">' + esc(a.url) + '</div></a>').join("");
 }
+
+/* Contrato de links (ADR-0029): index.html#<id do roadmap> abre a ficha do nó no grafo
+   (o grafo.js já dá id="no-<id>" a cada cartão), reabrindo a faixa concluída se ele
+   estiver nela; e cada dependência listada na ficha leva ao nó dela. */
+Liga.resolver(function (id) { return document.getElementById("no-" + id); });
+Liga.aoAbrir(function (id, el) {
+  if (!el.classList.contains("no")) return;
+  const faixa = el.closest(".faixa.recolhida");
+  if (faixa) {
+    const btn = faixa.querySelector(".alternar");
+    if (btn) btn.click(); else faixa.classList.remove("recolhida");
+  }
+  Grafo.abrir(el.id.replace(/^no-/, ""));
+});
+document.getElementById("painel-corpo").addEventListener("click", function (e) {
+  const dep = e.target.closest(".dep-linha strong");
+  if (!dep) return;
+  const id = dep.textContent.trim();
+  if (document.getElementById("no-" + id)) Liga.ir(id);
+});
 
 async function status() {
   const el = document.getElementById("status-strip");

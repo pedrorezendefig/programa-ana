@@ -30,6 +30,7 @@
 | V41 | `[ ]` | A Ana entra no WhatsApp real do hospital | P+C | nada |
 | OS25 | `[x]` | Ana OS com cinco abas, só leitura | C | nada |
 | OS26 | `[~]` | Retrato da Ana no ar, na Vercel | C+P | nada |
+| OS27 | `[~]` | Tudo tem link: o Retrato veste o app do hospital, com filtros e fluxogramas, e o OS liga as abas | C | nada |
 
 ### V37 · A Global Health aceita a marcação `[ ]`
 Herda a P3. O `POST /horarios/agendar` devolve 417 porque a agenda de Cardiologia de teste não tem convênio vinculado no SoulMV TST. Gesto: pedir ao analista de TI o vínculo das agendas com PARTICULAR e UNIMED (aba Convênio do Cadastro de Agendas, tutorial pág. 3) e conferir no Painel GH que a aba "Convênios e planos" está vazia. Roteiro: `ana/api-mv/prompt-agendamento-fim-a-fim.md`, Passo 0.
@@ -66,6 +67,10 @@ Feita em 09/set/2026, na sessão do grilling. Conferida no navegador: cinco abas
 ### OS26 · Retrato da Ana no ar `[ ]`
 Construído em 09/set/2026 (`retrato/`, `vercel.json`): o `gerar.py` rodou contra a plataforma, a lista de proibidos passou, as quatro abas foram conferidas no navegador. **Falta só publicar** (`vercel` e `vercel --prod` na raiz) e registrar o link aqui. ADR-0028. Site estático em `retrato/`: `gerar.py` grava um JSON carimbado com a data e recusa CPF, paciente-sonda, URL de ambiente, token, credencial e ID de tarefa; quatro abas nomeadas (o que a Ana faz hoje, as regras da Ana, onde ela busca a resposta, Global Health: o que dá e o que não dá); tokens do `DESIGN.md`; `noindex`; `vercel.json` na raiz. Publicar é ato do Pedro.
 **Pronto quando:** o gerar.py passa na lista de proibidos, as quatro abas abrem por arquivo local, e o link da Vercel está aqui.
+
+### OS27 · Tudo tem link, e o Retrato veste o app do hospital `[~]`
+ADR-0029 (segundo grilling de 09/set/2026). Contrato de links nos dois produtos (toda menção é link, todo link tem volta, a URL carrega destino e filtro), Retrato no design system do app do hospital (HP Simplified, azul-marinho, vidro só no que flutua, transição de aba de 250 ms), barra de filtros em toda esfera, três fluxogramas na gramática do hospital com percorrer (caminho de uma mensagem, cadeia elo a elo, jornada no mapa).
+**Pronto quando:** clicar numa ferramenta na aba "faz" chega na aba "busca" com o card aceso e as ligações de volta; a URL carrega aba, alvo e filtro; os três fluxogramas percorrem; no OS, `comparacao.html#cap-<id>`, `circuito.html#tool-<nome>` e `sop.html#no-<id>` chegam acesos.
 
 ## Radar (fora do grafo de execução: pontos para lembrar ou tocar no futuro)
 

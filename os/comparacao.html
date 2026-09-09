@@ -336,13 +336,17 @@
   #pop .checagem.c-nao .lit { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); }
   #pop .prompt-links { display: flex; flex-wrap: wrap; gap: 6px; margin: 11px 0 0; padding-top: 9px; border-top: 1px solid var(--cor-fio); align-items: center; }
   #pop .prompt-links .rot { font: var(--peso-semibold) 9.5px/1 var(--font-inter); letter-spacing: .07em; text-transform: uppercase; color: var(--cor-mudo); }
-  #testes .link-sec, #pop .link-sec {
+  .link-sec {
     display: inline-flex; align-items: center; gap: 5px; text-decoration: none;
     border-radius: var(--raio-pill); padding: 4px 11px;
     background: var(--cor-azul-tinta); color: var(--cor-azul);
     font: var(--peso-semibold) 11px/1.35 var(--font-inter);
   }
-  #testes .link-sec:hover, #pop .link-sec:hover { filter: brightness(.95); }
+  .link-sec:hover { filter: brightness(.95); }
+  /* ligações do card de capacidade (contrato de links, ADR-0029) */
+  .cap .ligacoes { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 0; align-items: center; }
+  .cap .ligacoes .rot { font: var(--peso-semibold) 9.5px/1 var(--font-inter); letter-spacing: .07em; text-transform: uppercase; color: var(--cor-mudo); margin-right: 2px; }
+  .cap .det-val a.md-link { color: inherit; }
   #pop .selos { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 0; }
 
   #testes .vazio { padding: 30px 6px; color: var(--cor-mudo); font-size: 13px; }
@@ -453,7 +457,6 @@
   #familias .link-teste:hover { filter: brightness(.95); }
   #familias .chip-preparo { border-radius: var(--raio-pill); padding: 4px 10px; background: var(--cor-areia); color: #6b6862; font: var(--peso-medio) 11px/1.35 var(--font-inter); }
   #familias details.cen { scroll-margin-top: 16px; }
-  #familias details.cen.destacada { outline: 2px solid var(--cor-tinta); outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -673,14 +676,16 @@
 </footer>
 
 <script src="assets/nav.js" data-ambiente="local"></script>
+<script src="assets/liga.js"></script>
 <script src="assets/origem.js"></script>
 <script>
 "use strict";
-/* ADR-0028: as três seções leem a mesma carga uma vez só e conversam por este objeto. */
+/* ADR-0028: as três seções leem a mesma carga uma vez só e conversam por este objeto.
+   A chegada pelo #hash (#cap-C14, #fam-D2) é do assets/liga.js (ADR-0029). */
 var AnaProvas = {
   origem: OrigemDaFerramenta.carregar(),
   comparacao: fetch("dados/comparacao.json").then(function (r) { return r.json(); }),
-  hashInicial: location.hash,
+  circuito: fetch("dados/circuito.json").then(function (r) { return r.json(); }),
   abrirFamilia: null,
   buscarTeste: null
 };
@@ -722,9 +727,44 @@ function selosDe(O, texto) {
   return h ? '<div class="selos">' + h + "</div>" : "";
 }
 
-Promise.all([AnaProvas.origem, AnaProvas.comparacao]).then(function (par) {
-  const O = par[0], d = par[1];
+Promise.all([AnaProvas.origem, AnaProvas.comparacao, AnaProvas.circuito.catch(function () { return null; })]).then(function (par) {
+  const O = par[0], d = par[1], circ = par[2];
   const todas = d.blocos.reduce(function (a, b) { return a.concat(b.capacidades); }, []);
+
+  /* o contrato de links (ADR-0029), derivado do circuito.json: a seção vira link para o
+     Mecanismo, a ferramenta que a seção chama (ou que a prosa cita e existe lá) também */
+  const SEC = {}, TOOLS = {};
+  ((circ && circ.secoes) || []).forEach(function (s) { SEC[s.id] = s; });
+  ((circ && circ.tools) || []).forEach(function (t) { TOOLS[t.id] = true; });
+  function toolsDa(c) {
+    const lista = [];
+    (c.secao_ids || []).forEach(function (id) {
+      ((SEC[id] && SEC[id].tools) || []).forEach(function (t) { if (lista.indexOf(t) === -1) lista.push(t); });
+    });
+    String(c.tools || "").replace(/[a-z0-9_]{4,}/g, function (n) { if (TOOLS[n] && lista.indexOf(n) === -1) lista.push(n); return n; });
+    return lista;
+  }
+  function ligacoesDe(c) {
+    const secs = (c.secao_ids || []).filter(function (id) { return SEC[id]; }).map(function (id) {
+      return '<a class="link-sec" href="circuito.html#sec-' + esc(id) + '" title="' + esc(SEC[id].rotulo) + '">§ ' + esc(SEC[id].chave) + " ↗</a>";
+    }).join("");
+    const tools = toolsDa(c).map(function (t) {
+      return '<a class="link-sec" href="circuito.html#tool-' + esc(t) + '" title="a ficha da ferramenta no Mecanismo">' + esc(t) + " ↗</a>";
+    }).join("");
+    const qtd = (c.testes || []).length;
+    const testes = '<a class="link-sec" href="#q=' + encodeURIComponent(c.id) + '" data-testes="' + esc(c.id) + '">' +
+      (qtd ? qtd + (qtd > 1 ? " testes" : " teste") + " desta capacidade" : "na lista de testes") + " ↗</a>";
+    return '<div class="ligacoes">' +
+      (secs ? '<span class="rot">no prompt</span>' + secs : "") +
+      (tools ? '<span class="rot">ferramentas</span>' + tools : "") +
+      '<span class="rot">testes</span>' + testes + "</div>";
+  }
+  /* a prosa das ferramentas cita nomes: cada nome que existe no Mecanismo vira link */
+  function prosaTools(texto) {
+    return esc(texto).replace(/[a-z0-9_]{4,}/g, function (n) {
+      return TOOLS[n] ? '<a class="md-link" href="circuito.html#tool-' + n + '">' + n + "</a>" : n;
+    });
+  }
   const rotulo = {};
   const descricao = {};
   d.estados.forEach(function (e) { rotulo[e.chave] = e.rotulo; descricao[e.chave] = e.descricao; });
@@ -781,7 +821,8 @@ Promise.all([AnaProvas.origem, AnaProvas.comparacao]).then(function (par) {
       const qtd = (c.testes || []).length;
       const flash = c.estado === "funciona" ? "" :
         '<p class="falta-flash">' + esc(c.falta || "") + "</p>";
-      return '<button class="cap e-' + c.estado + '" data-estado="' + c.estado + '" type="button">' +
+      /* div, não button: o card carrega links dentro (link dentro de button não é HTML válido) */
+      return '<div class="cap e-' + c.estado + '" id="cap-' + esc(c.id) + '" data-estado="' + c.estado + '" role="button" tabindex="0" aria-expanded="false">' +
         '<div class="topo">' +
           '<span class="id">' + esc(c.id) + "</span>" +
           '<span class="titulo">' + esc(c.titulo) + "</span>" +
@@ -791,8 +832,9 @@ Promise.all([AnaProvas.origem, AnaProvas.comparacao]).then(function (par) {
         (qtd ? '<span class="qtd-testes">' + qtd + (qtd > 1 ? " testes para fazer na mão" : " teste para fazer na mão") + "</span>" : "") +
         selosDe(O, c.tools) +
         '<p class="faz">' + esc(c.faz) + "</p>" + flash +
+        ligacoesDe(c) +
         '<div class="detalhe">' +
-          detLinha("ferramentas", c.tools) +
+          (c.tools ? '<div class="det-linha"><span class="det-rot">ferramentas</span><span class="det-val">' + prosaTools(c.tools) + "</span></div>" : "") +
           detLinha("prova", c.prova) +
           detLinha("o que falta", c.falta) +
           detLinha("no Telegram", c.telegram
@@ -800,7 +842,7 @@ Promise.all([AnaProvas.origem, AnaProvas.comparacao]).then(function (par) {
             : "não dá para testar só conversando: precisa de edição no admin, de janela com a Ana parada, ou ainda não existe.") +
           testes +
         "</div>" +
-      "</button>";
+      "</div>";
     }).join("");
     return '<section class="bloco">' +
       '<div class="bloco-cab"><h2>' + esc(b.nome) + "</h2>" +
@@ -877,10 +919,31 @@ Promise.all([AnaProvas.origem, AnaProvas.comparacao]).then(function (par) {
       linhas + "</div></section>";
   }).join("");
 
-  // abrir e fechar a ficha de uma capacidade
+  // abrir e fechar a ficha de uma capacidade (clique num link dentro dela não fecha nada)
+  function alternar(cap) {
+    cap.classList.toggle("aberta");
+    cap.setAttribute("aria-expanded", cap.classList.contains("aberta") ? "true" : "false");
+  }
   document.getElementById("blocos").addEventListener("click", function (ev) {
+    const link = ev.target.closest("a");
+    if (link && link.dataset.testes && AnaProvas.buscarTeste) {
+      ev.preventDefault();
+      AnaProvas.buscarTeste(link.dataset.testes);
+      return;
+    }
+    if (link) return;
     const alvo = ev.target.closest(".cap");
-    if (alvo) alvo.classList.toggle("aberta");
+    if (alvo) alternar(alvo);
+  });
+  document.getElementById("blocos").addEventListener("keydown", function (ev) {
+    if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList && ev.target.classList.contains("cap")) {
+      ev.preventDefault();
+      alternar(ev.target);
+    }
+  });
+  /* chegada em #cap-<id> (assets/liga.js): a ficha abre antes de rolar */
+  Liga.aoAbrir(function (id, el) {
+    if (id.indexOf("cap-") === 0 && el.classList.contains("cap") && !el.classList.contains("aberta")) alternar(el);
   });
 
   // filtro pelo placar
@@ -1212,7 +1275,11 @@ function linksPrompt(it) {
     return '<a class="link-sec" href="circuito.html#sec-' + esc(id) + '">§ ' + esc(SECOES[id].rotulo) + " ↗</a>";
   }).join("");
   if (!chips && it.secao) chips = '<span class="chip-cw preparo">' + esc(it.secao) + " (fora do prompt compilado)</span>";
-  return chips ? '<div class="prompt-links"><span class="rot">no prompt</span>' + chips + "</div>" : "";
+  /* a volta para a capacidade desta página (ADR-0029): so os testes que nascem de uma */
+  var cap = it.tipo !== "maquina"
+    ? '<span class="rot">capacidade</span><a class="link-sec" href="#cap-' + esc(it.id) + '">' + esc(it.id) + " ↗</a>"
+    : "";
+  return (chips || cap) ? '<div class="prompt-links">' + (chips ? '<span class="rot">no prompt</span>' + chips : "") + cap + "</div>" : "";
 }
 
 function popConteudo(it) {
@@ -1416,7 +1483,7 @@ document.getElementById("btn-limpar").addEventListener("click", function () {
 async function carregar() {
   O = await AnaProvas.origem;
   var comp = await AnaProvas.comparacao;
-  var circ = await fetch("dados/circuito.json").then(function (r) { return r.json(); });
+  var circ = await AnaProvas.circuito.catch(function () { return { secoes: [] }; });
   (circ.secoes || []).forEach(function (s) {
     SECOES[s.id] = { chave: s.chave, rotulo: s.rotulo, ordem: s.ordem };
   });
@@ -1549,15 +1616,11 @@ function cenHtml(c, rodadas) {
     "</div></details>";
 }
 
-/* ADR-0028: a lista de Testes chama isto ao clicar no codigo do cenario */
+/* ADR-0028: a lista de Testes chama isto ao clicar no codigo do cenario. Quem abre o
+   <details>, rola e acende e o assets/liga.js (ADR-0029). */
 function abrirFamilia(id) {
-  var el = document.getElementById("fam-" + id);
-  if (!el) return false;
-  el.open = true;
-  el.classList.add("destacada");
-  setTimeout(function () { el.classList.remove("destacada"); }, 2200);
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
-  history.replaceState(null, "", "#fam-" + id);
+  if (!document.getElementById("fam-" + id)) return false;
+  Liga.ir("fam-" + id);
   return true;
 }
 AnaProvas.abrirFamilia = abrirFamilia;
@@ -1569,11 +1632,7 @@ document.getElementById("fam-familias").addEventListener("click", function (e) {
   AnaProvas.buscarTeste(a.dataset.busca);
 });
 
-fetch("dados/familias.json").then(function (r) { return r.json(); }).then(function (d) {
-  render(d);
-  var m = /^#fam-(.+)$/.exec(AnaProvas.hashInicial || "");
-  if (m) abrirFamilia(decodeURIComponent(m[1]));
-});
+fetch("dados/familias.json").then(function (r) { return r.json(); }).then(render);
 })();
 </script>
 

@@ -182,13 +182,18 @@
   .secao-prompt .conta-trechos { font-size: 12px; color: var(--cor-rotulo); margin-left: auto; white-space: nowrap; }
   .secao-prompt .papel { font-size: 13.5px; color: var(--cor-rotulo); margin-top: 10px; }
   .secao-prompt .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-  button.badge-tool {
-    cursor: pointer; border: none; border-radius: var(--raio-pill);
-    background: var(--cor-tinta); color: #ffffff;
+  a.badge-tool {
+    display: inline-block; cursor: pointer; border-radius: var(--raio-pill);
+    background: var(--cor-tinta); color: #ffffff; text-decoration: none;
     font: var(--peso-medio) 11px/1 var(--font-mono); padding: 5px 11px;
     transition: transform .12s ease;
   }
-  button.badge-tool:hover { transform: translateY(-1px); }
+  a.badge-tool:hover { transform: translateY(-1px); }
+  /* ligações (contrato de links, ADR-0029): chips que levam a nó do SOP, capacidade ou elo */
+  .ligacoes { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
+  .ligacoes .micro { margin-right: 2px; }
+  .ligacoes a.chip, .chips-sec a.chip { text-decoration: none; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .tool-card .conta-lig { font-size: 11.5px; color: var(--cor-mudo); margin-top: 8px; }
   .det-trecho { margin-top: 10px; }
   .det-trecho summary {
     cursor: pointer; font: var(--peso-medio) 13px/1.4 var(--font-inter); color: var(--cor-tinta);
@@ -204,8 +209,6 @@
     padding: 12px 16px; margin-top: 10px;
     font-size: 12.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word;
   }
-  .secao-prompt.acesa { box-shadow: inset 0 0 0 1.5px var(--cor-tinta); }
-
   /* painel lateral (base compartilhada entre a ficha da ferramenta e a ficha do elo) */
   .painel {
     position: fixed; top: 16px; right: 16px; bottom: 16px;
@@ -326,7 +329,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .tool-card, button.badge-tool, button.chip-caminho, .indice-secoes a { transition: none; }
+    .tool-card, a.badge-tool, button.chip-caminho, .indice-secoes a { transition: none; }
   }
 </style>
 </head>
@@ -555,6 +558,7 @@
 </footer>
 
 <script src="assets/nav.js" data-ambiente="local"></script>
+<script src="assets/liga.js"></script>
 <script src="assets/origem.js"></script>
 <script src="assets/md.js"></script>
 <script>
@@ -621,9 +625,67 @@ document.addEventListener("click", function (e) {
   irPara(hash.slice(1));
 });
 
+/* As voltas do contrato de links (ADR-0029), derivadas do que as outras páginas já sabem:
+   capacidade -> seções (secao_ids do comparacao.json), nó do SOP -> seção (sop-fluxo.json)
+   e ferramenta -> elos das cadeias (o bloco #cadeias-indice do cadeias.html, lido por
+   fetch, porque as cadeias são código e não JSON). Fonte que faltar deixa a lista vazia:
+   nenhuma ligação é inventada. */
+const LIG = { caps: [], sop: [], cadeias: null };
+
+async function carregarLigacoes() {
+  const seguro = function (p, vazio) { return p.catch(function () { return vazio; }); };
+  const [comp, sop, cad] = await Promise.all([
+    seguro(fetch("dados/comparacao.json").then(function (r) { return r.json(); }), null),
+    seguro(fetch("dados/sop-fluxo.json").then(function (r) { return r.json(); }), null),
+    seguro(fetch("cadeias.html").then(function (r) { return r.text(); }), "")
+  ]);
+  if (comp && comp.blocos) {
+    comp.blocos.forEach(function (b) {
+      b.capacidades.forEach(function (c) {
+        LIG.caps.push({ id: c.id, titulo: c.titulo, secao_ids: c.secao_ids || [], tools: String(c.tools || "") });
+      });
+    });
+  }
+  if (sop && sop.nos) LIG.sop = sop.nos.map(function (n) { return { id: n.id, secao: n.secao, titulo: n.titulo }; });
+  const m = /<script id="cadeias-indice" type="application\/json">([\s\S]*?)<\/script>/.exec(cad);
+  if (m) { try { LIG.cadeias = JSON.parse(m[1]); } catch (e) { LIG.cadeias = null; } }
+}
+
+function capsDasSecoes(ids) {
+  return LIG.caps.filter(function (c) {
+    return c.secao_ids.some(function (id) { return ids.indexOf(id) !== -1; });
+  });
+}
+function capsDaTool(t) {
+  /* pelas seções que a chamam, e pela prosa "ferramentas" da capacidade que a cita
+     (o mesmo par de regras que o card das Provas usa na ida) */
+  const ids = (t.secoes || []).map(function (chave) { return SEC_POR_CHAVE[chave]; }).filter(Boolean);
+  const cita = new RegExp("(^|[^a-z0-9_])" + t.id + "($|[^a-z0-9_])");
+  return LIG.caps.filter(function (c) {
+    return c.secao_ids.some(function (id) { return ids.indexOf(id) !== -1; }) || cita.test(c.tools);
+  });
+}
+function elosDaTool(t) {
+  return (LIG.cadeias && LIG.cadeias.ferramentas && LIG.cadeias.ferramentas[t.id]) || [];
+}
+function nosDaSecao(s) {
+  return LIG.sop.filter(function (n) { return n.secao === s.chave; });
+}
+function curto(txt, n) {
+  txt = String(txt || "");
+  return txt.length > n ? txt.slice(0, n - 1) + "…" : txt;
+}
+function chipsLig(rotulo, itens) {
+  if (!itens.length) return "";
+  return '<div class="ligacoes"><span class="micro">' + rotulo + "</span>" + itens.map(function (i) {
+    return '<a class="chip contorno" href="' + esc(i.href) + '" title="' + esc(i.titulo || i.texto) + '">' + esc(i.texto) + "</a>";
+  }).join("") + "</div>";
+}
+
 async function carregar() {
   D = await fetch("/dados/circuito.json").then(function (r) { return r.json(); });
   D.secoes.forEach(function (s) { SEC_POR_CHAVE[s.chave] = s.id; });
+  await carregarLigacoes();
   await window.ORIGEM_PRONTA;
   VIVO = OrigemDaFerramenta.vivo() || { ok: false, erro: "o servidor do Ana OS não respondeu" };
   document.getElementById("meta-prompt").textContent =
@@ -639,7 +701,7 @@ async function carregar() {
   renderCircuito();
   renderTools();
   renderSecoes();
-  if (location.hash) irPara(location.hash.slice(1));
+  /* a chegada pelo #hash é do assets/liga.js: ele espera isto renderizar e abre pelos ganchos abaixo */
 }
 
 /* ---------- tooltip de ficha (padrão OS9) ---------- */
@@ -924,12 +986,18 @@ function renderTools() {
   alvo.innerHTML = GRUPOS.map(function (g) {
     const doGrupo = D.tools.filter(function (t) { return t.tipo === g[0]; });
     let cards = doGrupo.map(function (t) {
+      /* o card inteiro abre a ficha, onde as ligações viram link; aqui só a contagem */
+      const nSec = (t.secoes || []).length, nCap = capsDaTool(t).length, nElo = elosDaTool(t).length;
+      const conta = [];
+      if (nSec) conta.push(nSec + (nSec === 1 ? " seção" : " seções"));
+      if (nCap) conta.push(nCap + (nCap === 1 ? " capacidade" : " capacidades"));
+      if (nElo) conta.push(nElo + (nElo === 1 ? " elo" : " elos") + " das cadeias");
       return '<div class="tool-card" data-tool="' + esc(t.id) + '" id="tool-' + esc(t.id) + '" tabindex="0" role="button" aria-label="' + esc(t.id) + '">' +
         '<div class="topo"><span class="nome">' + esc(t.id) + "</span>" +
         '<span class="' + CHIP_TIPO[t.tipo] + '">' + ROT_TIPO[t.tipo] + "</span></div>" +
         '<div class="selos-origem">' + OrigemDaFerramenta.cartao(t.id) + "</div>" +
-        /* sem links aqui: o card inteiro ja e clicavel e abre a ficha */
-        '<div class="faz">' + MdProsa.inline(t.faz, {}) + "</div></div>";
+        '<div class="faz">' + MdProsa.inline(t.faz, {}) + "</div>" +
+        (conta.length ? '<div class="conta-lig">' + esc(conta.join(" · ")) + "</div>" : "") + "</div>";
     }).join("");
     return '<div class="grupo-tools"><span class="micro">' + esc(g[1]) + '</span><div class="cards-tools">' + cards + "</div></div>";
   }).join("");
@@ -972,7 +1040,26 @@ function abrirTool(id) {
     ? '<div class="bloco"><span class="micro">Seções do prompt que chamam</span><div class="chips-sec">' +
       t.secoes.map(function (chave) {
         const sec = D.secoes.find(function (s) { return s.chave === chave; });
-        return '<span class="chip contorno" data-sec="' + esc(sec ? sec.id : "") + '">' + esc(sec ? sec.rotulo : chave) + "</span>";
+        return sec
+          ? '<a class="chip contorno" href="#sec-' + esc(sec.id) + '" data-sec="' + esc(sec.id) + '">' + esc(sec.rotulo) + "</a>"
+          : '<span class="chip contorno">' + esc(chave) + "</span>";
+      }).join("") + "</div></div>"
+    : "";
+
+  /* as voltas (ADR-0029): quem depende desta ferramenta, em outras páginas */
+  const caps = capsDaTool(t);
+  const capsHtml = caps.length
+    ? '<div class="bloco"><span class="micro">Capacidades que dependem dela</span><div class="chips-sec">' +
+      caps.map(function (c) {
+        return '<a class="chip contorno" href="comparacao.html#cap-' + esc(c.id) + '" title="' + esc(c.titulo) + '">' + esc(c.id) + " · " + esc(curto(c.titulo, 42)) + "</a>";
+      }).join("") + "</div></div>"
+    : "";
+  const elos = elosDaTool(t);
+  const elosHtml = elos.length
+    ? '<div class="bloco"><span class="micro">Cadeias da Global Health que a usam</span><div class="chips-sec">' +
+      elos.map(function (e) {
+        const tit = (LIG.cadeias.cadeias && LIG.cadeias.cadeias[e.cadeia]) || "";
+        return '<a class="chip contorno" href="cadeias.html#' + esc(e.ancora) + '" title="Cadeia ' + esc(e.cadeia) + (tit ? " · " + esc(tit) : "") + '">elo ' + esc(e.elo) + "</a>";
       }).join("") + "</div></div>"
     : "";
 
@@ -981,11 +1068,12 @@ function abrirTool(id) {
     '<div class="nome-tool">' + esc(t.id) + "</div>" +
     '<p style="font-size:14px;">' + MdProsa.inline(t.faz, MD_RESOLVE) + "</p>" +
     '<div class="bloco"><span class="micro">Chamada</span><code>' + esc(chamadaDe(t)) + "</code></div>" +
-    exemplo + desfechos + secoes +
+    exemplo + desfechos + secoes + capsHtml + elosHtml +
     '<div class="bloco caption">Quer ver ao vivo? A aba <a href="cadeias.html">Global Health</a> roda a API GH elo a elo.</div>';
 
-  document.querySelectorAll("#painel-corpo .chips-sec .chip").forEach(function (el) {
-    el.addEventListener("click", function () {
+  document.querySelectorAll("#painel-corpo .chips-sec a[data-sec]").forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.preventDefault();
       fecharPainel();
       irPara("sec-" + el.dataset.sec);
     });
@@ -1001,9 +1089,17 @@ function renderSecoes() {
   alvo.innerHTML = D.secoes.map(function (s) {
     const badges = s.tools.length
       ? '<div class="badges">' + s.tools.map(function (t) {
-          return '<button class="badge-tool" data-tool="' + esc(t) + '">' + esc(t) + "</button>";
+          return '<a class="badge-tool" href="#tool-' + esc(t) + '" data-tool="' + esc(t) + '">' + esc(t) + "</a>";
         }).join("") + "</div>"
       : "";
+    /* as voltas (ADR-0029): os nós do Mapa do SOP desta seção e as capacidades que a citam */
+    const ligacoes =
+      chipsLig("Nós do Mapa do SOP", nosDaSecao(s).map(function (n) {
+        return { href: "sop.html#no-" + n.id, texto: n.id + " · " + curto(n.titulo, 38), titulo: n.titulo };
+      })) +
+      chipsLig("Capacidades", capsDasSecoes([s.id]).map(function (c) {
+        return { href: "comparacao.html#cap-" + c.id, texto: c.id + " · " + curto(c.titulo, 38), titulo: c.titulo };
+      }));
     const trechos = s.trechos.map(function (tr, i) {
       const rot = "trecho " + (i + 1) + (tr.linhas ? " · linhas " + esc(tr.linhas) + " do export " + esc(D.meta.versao_prompt) : "");
       return '<details class="det-trecho"><summary><span class="zig">▶</span>' + rot + "</summary>" +
@@ -1012,15 +1108,13 @@ function renderSecoes() {
     return '<details class="secao-prompt" id="sec-' + esc(s.id) + '">' +
       '<summary class="cab"><span class="zig">▶</span><h3>' + esc(s.rotulo) + "</h3>" +
       '<span class="conta-trechos">' + s.trechos.length + (s.trechos.length === 1 ? " trecho literal" : " trechos literais") + "</span></summary>" +
-      '<div class="papel">' + MdProsa.inline(s.papel, MD_RESOLVE) + "</div>" + badges + trechos + "</details>";
+      '<div class="papel">' + MdProsa.inline(s.papel, MD_RESOLVE) + "</div>" + badges + ligacoes + trechos + "</details>";
   }).join("");
 
   alvo.querySelectorAll(".badge-tool").forEach(function (btn) {
     btn.addEventListener("click", function (e) {
       e.preventDefault();
-      const card = document.getElementById("tool-" + btn.dataset.tool);
-      if (card) card.scrollIntoView({ block: "center" });
-      abrirTool(btn.dataset.tool);
+      irPara("tool-" + btn.dataset.tool);
     });
   });
 
@@ -1053,26 +1147,17 @@ function renderSecoes() {
   });
 }
 
-/* ---------- navegação interna ---------- */
+/* ---------- navegação interna ----------
+   Quem rola, abre e acende é o assets/liga.js (ADR-0029). Esta página só ensina a ele
+   o que abrir em cada alvo: a ficha da ferramenta em #tool-<nome>, a seção do prompt
+   em #sec-<id> (um <details>, que o liga abre sozinho) e o cartão fixado da fronteira
+   em #int-<id>. */
 
-function irPara(hash) {
-  if (hash.indexOf("tool-") === 0) {
-    const id = hash.slice(5);
-    const card = document.getElementById("tool-" + id);
-    if (card) card.scrollIntoView({ block: "center" });
-    abrirTool(id);
-    return;
-  }
-  const el = document.getElementById(hash);
-  if (!el) return;
-  if (el.classList.contains("secao-prompt")) {
-    el.open = true;
-    el.classList.add("acesa");
-    setTimeout(function () { el.classList.remove("acesa"); }, 2200);
-  }
-  el.scrollIntoView({ block: el.tagName === "SECTION" ? "start" : "center" });
-  history.replaceState(null, "", "#" + hash);
-}
+function irPara(hash) { Liga.ir(hash); }
+
+Liga.aoAbrir(function (id) {
+  if (id.indexOf("tool-") === 0 && D) abrirTool(id.slice(5));
+});
 
 function fecharPainel() {
   document.getElementById("painel").classList.remove("aberto");
@@ -1183,7 +1268,7 @@ function medidaDoNo(no, soVigente) {
 function cartao(no) {
   var est = estadoDoNo(no);
   var med = medidaDoNo(no, true);
-  var html = '<button class="no tipo-' + esc(no.tipo) + '" data-no="' + esc(no.id) + '" type="button">';
+  var html = '<button class="no tipo-' + esc(no.tipo) + '" id="int-' + esc(no.id) + '" data-no="' + esc(no.id) + '" type="button">';
   html += '<span class="tipo">' + esc(no.tipo) + "</span>";
   html += '<span class="titulo">' + esc(no.titulo) + "</span>";
   /* O selo de origem e o mesmo objeto nas tres paginas (ADR-0018), e ele ja carrega
@@ -1354,7 +1439,7 @@ function corpoPainel(no) {
 
   h += '<div class="acoes">';
   if (no.ancora) {
-    h += '<a class="btn claro" href="sop.html#' + esc(no.ancora.no) + '">o trecho do prompt (Seção '
+    h += '<a class="btn claro" href="sop.html#no-' + esc(no.ancora.no) + '">o trecho do prompt (Seção '
       + esc(no.ancora.secao) + ")</a>";
   }
   if (no.tool) {
@@ -1506,7 +1591,6 @@ async function carregar() {
   document.getElementById("faixas").innerHTML = DADOS.faixas.map(montarFaixa).join("");
   ligarEventos();
   requestAnimationFrame(desenharArestas);
-  abrirDaAncora();
 }
 
 async function montarChatwoot() {
@@ -1551,15 +1635,14 @@ async function montarChatwoot() {
 }
 
 /* O outro lado do caminho de volta (ADR-0018): o Mapa do SOP linka para
-   circuito.html#<id do no da integracao>, e aqui a pagina rola ate ele e abre a ficha fixada. */
-function abrirDaAncora() {
-  var id = (location.hash || "").replace("#", "");
-  if (!id) return;
-  var el = document.querySelector('[data-no="' + id.replace(/"/g, "") + '"]');
-  if (!el) return;
-  el.scrollIntoView({ block: "center", behavior: "smooth" });
-  el.click();
-}
+   circuito.html#int-<id do no da integracao>. O assets/liga.js rola e acende; aqui a
+   pagina fixa a ficha. O hash antigo, so com o id do no, continua valendo. */
+Liga.resolver(function (id) {
+  return /^[A-Z]+\d+$/.test(id) ? document.getElementById("int-" + id) : null;
+});
+Liga.aoAbrir(function (id, el) {
+  if (el && el.classList.contains("no") && el.dataset.no && FIXADO !== el.dataset.no) el.click();
+});
 
 carregar();
 })();

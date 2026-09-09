@@ -147,6 +147,22 @@
       },
       "nota": "Nasce do grilling de 09/set/2026 (ADR-0028). Quatro esferas: o que a Ana faz hoje, as regras da Ana (prompt completo e literal), onde ela busca a resposta, Global Health: o que dá e o que não dá. Pronto quando: o gerar.py passa na lista de proibidos, as quatro abas abrem por arquivo local, e o link da Vercel está no TODO.md. Construído em 09/set/2026: gerar.py rodou contra a plataforma (14 ferramentas), lista de proibidos passou, quatro abas conferidas no navegador em 1360px e 390px. Falta o ato de publicar.",
       "prompt": "Quero publicar o Retrato da Ana na Vercel (card OS26). Me guie: rodar python3 retrato/gerar.py de novo se o prompt ou os JSON mudaram, conferir com python3 -m http.server -d retrato 8778, depois 'vercel' e 'vercel --prod' na raiz (vercel.json já aponta para retrato/). Quando eu te der o link, registre no roadmap/TODO.md e feche a OS26 nos dois arquivos com a ficha."
+    },
+    {
+      "id": "OS27",
+      "titulo": "Tudo tem link: o Retrato veste o app do hospital, com filtros e fluxogramas, e o OS liga as abas",
+      "dono": "C",
+      "status": "fazer",
+      "deps": [],
+      "tema": "os",
+      "canal": "comigo",
+      "canal_desde": "2026-09-09",
+      "mesa": {
+        "destrava": "Navegação fluida nos dois produtos: toda menção é link com volta, filtros em cada esfera do Retrato, três fluxogramas com percorrer, e o Retrato na cara do app que o diretor já usa (ADR-0029).",
+        "gesto": "Sessão comigo (em curso em 09/set): dois agentes, um no retrato/ e outro no os/. Depois conferir no navegador e commitar."
+      },
+      "nota": "Nasce do segundo grilling de 09/set/2026 (ADR-0029). Pronto quando: no Retrato, clicar numa ferramenta na aba 'faz' chega na aba 'busca' com o card aceso e com as ligações de volta; a URL carrega aba, alvo e filtro; os três fluxogramas percorrem; o Retrato usa HP Simplified e azul-marinho. No OS, comparacao.html#cap-<id>, circuito.html#tool-<nome> e sop.html#no-<id> chegam acesos.",
+      "prompt": "Execute a OS27 (ADR-0029): contrato de links nos dois produtos (Retrato e Ana OS), Retrato vestindo o design system do app do hospital (~/PedroDev/Hospital/hospital-reunioes/frontend/src/app/globals.css), barra de filtros em toda esfera com filtro na URL, três fluxogramas na gramática do hospital com botão de percorrer, vidro só na barra de abas e nos painéis, transição de aba de 250 ms. Confira no navegador e feche nos dois arquivos do roadmap."
     }
   ],
   "pendentes": [],
