@@ -128,3 +128,26 @@ Nós são cards brancos compactos (raio 16px) em colunas da esquerda para a dire
   --sombra-sidebar: 0 12px 28px -12px rgba(0,0,0,.35);
 }
 ```
+
+## Retrato da Ana: veste o app do hospital (ADR-0029, 09/set/2026)
+
+O Retrato (`retrato/`) não usa o Ledger. Ele veste o design system do aplicativo do hospital, porque é o sistema que o diretor já usa. Os tokens vivem em `retrato/assets/hospital.css`, copiados do `frontend/src/app/globals.css` do app:
+
+| Papel | Valor |
+|---|---|
+| Fonte (corpo e títulos) | HP Simplified, só o peso 400; títulos crescem em tamanho |
+| Principal | `#2B2E7E` (azul-marinho da logo) |
+| Principal clara | `#3B6FB6` |
+| Principal escura | `#1A1C4E` |
+| Texto | `#1E293B`; secundário `#64748B` |
+| Borda | `#E2E8F0` |
+| Verde (ok) | `#88D7A4` |
+| Âmbar (atenção, decisão, Global Health) | `#FFC067` |
+| Vermelho (erro) | `#FC9D9D` |
+| Azul-info | `#7CC2F2` |
+| Raios | 1 a 12 px (corporativo); pill só em chip |
+| Sombra | premium: `0 10px 25px -5px rgba(0,0,0,.08), 0 8px 10px -6px rgba(0,0,0,.08)` |
+| Vidro | branco a 80% com desfoque de 12 px, só na barra de abas fixa e nos painéis flutuantes |
+| Movimento | fade-in-up 0,4 s nos cards ao entrar; troca de aba 250 ms; tudo desligado com `prefers-reduced-motion` |
+
+Selos de origem no Retrato: API do Hospital = azul-marinho, Global Health = âmbar, nativa = cinza. Fluxogramas na gramática do hospital (ADR-0024 de lá): cards numerados, decisões em âmbar, retornos em curva, terminais de início e fim. A logo `logo-hsm.png` fica no topo. O Ana OS continua no Ledger.
