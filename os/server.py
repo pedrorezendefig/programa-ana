@@ -54,6 +54,7 @@ ESTATICOS = {
     ".js": "text/javascript; charset=utf-8",
     ".json": "application/json; charset=utf-8",
     ".woff2": "font/woff2",
+    ".svg": "image/svg+xml",
     ".md": "text/markdown; charset=utf-8",
 }
 ABSORCAO_EXTENSOES = {".csv", ".md"}
