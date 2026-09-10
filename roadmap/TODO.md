@@ -9,7 +9,7 @@
 
 ---
 
-## Estado (09/set/2026)
+## Estado (10/set/2026)
 
 **Onde a Ana está, em uma linha:** ela atende no Telegram de teste, lê preços, exames e cirurgias do app do hospital, registra ouvidoria com protocolo, identifica o paciente na Global Health, decide cobertura de convênio pela agenda online e entrega horário real de Cardiologia. Ela **não** marca a consulta (a API recusa com 417) e **não** está no WhatsApp do hospital.
 
@@ -87,6 +87,8 @@ Bugs, hotfixes e higienes que **não impactam o objetivo** (montar a solução f
 | V36 | 5/10 | Tirar a automação `/resolve` do Chatwoot antes do WhatsApp real | Regra id 9 criada em 08/set (mensagem recebida igual a `/resolve` resolve a conversa). Serve ao modo teste: `/resolve` fecha, `/teste` reabre com a Ana; nasceu do caso do Felipe (conversa #166, 11 dias presa na Fila Ouvidoria porque `handoff_to_human` cala o bot e `/teste` não atravessa conversa em fila humana). Provada na conversa 154 da inbox de API. Tocar quando: dia de ligar a Ana num número real (desativar ou apagar em Configurações > Automação) |
 | V7 | 2/10 | Revogar o token da Cloudflare usado no onboarding de 29/jul | Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou |
 ## Log
+
+- **10/set/2026:** **o `/check` ganha o passo 0 e o termômetro.** `ligar-e-medir.py` sobe o Ana OS (8777) e o Retrato (8778) se estiverem fora do ar e mede o estágio pelo roadmap.json: 3 de 11 cards (27%). Modo leve para "liga meus OS". Nenhum card mudou de status. Nesta sessão a rede não alcançou a plataforma (Chatwoot e fazer.ai agents sem resposta): versão do Chatwoot e agente 1 não conferidos. Retrato ainda não publicado (OS26 segue em curso).
 
 - **09/set/2026 (5):** **OS28 concluída: o Ana OS é uma página só (ADR-0030).** Terceiro grilling da noite: Cockpit mais as quatro esferas do Retrato, com os mesmos nomes, desenhadas pelos motores do Retrato sobre `/api/retrato` (o `gerar.py` ao vivo), na roupa Ledger, com a camada de operação por cima (chamada real, Chatwoot, testes por capacidade, famílias, rodar elo). Cinco páginas antigas em `os/arquivo/`. Radar reescrito em linguagem de gente (V10, V7, V36).
 

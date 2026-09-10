@@ -1,6 +1,6 @@
 ---
 name: check
-description: Checagem de progresso do Programa Ana (Hospital São Matheus) neste repositório. Use SEMPRE que o usuário disser "/check", "check", "faz um check", "checa aí", "como estamos", "status do projeto", "o que falta", "próximos passos", "onde paramos", "retomar", ou quando ele voltar relatando um avanço externo (ex.: "chegou o token da Global Health", "rodei as queries", "o ultracode terminou", "falei com o analista", "o Felipe respondeu"). A skill lê o TODO, o git, o diretório e a instância fazer.ai agents, atualiza o estado do roadmap/TODO.md, sincroniza o os/dados/roadmap.json (o espelho do Ana OS), e devolve orientação de co-worker organizada por canal de ação: o que disparar hoje, o que sentar comigo, o que cobrar de terceiros.
+description: Checagem de progresso do Programa Ana (Hospital São Matheus) neste repositório. Use SEMPRE que o usuário disser "/check", "check", "faz um check", "checa aí", "como estamos", "status do projeto", "o que falta", "próximos passos", "onde paramos", "retomar", "liga meus OS", "liga o Ana OS", "liga o Retrato", "sobe o OS", ou quando ele voltar relatando um avanço externo (ex.: "chegou o token da Global Health", "rodei as queries", "o ultracode terminou", "falei com o analista", "o Felipe respondeu"). A skill liga o Ana OS (8777) e o Retrato (8778) se estiverem fora do ar, mede o estágio em porcentagem real (cards feitos sobre o total do roadmap.json), lê o TODO, o git, o diretório e a instância fazer.ai agents, atualiza o estado do roadmap/TODO.md, sincroniza o os/dados/roadmap.json (o espelho do Ana OS), e devolve orientação de co-worker organizada por canal de ação: o que disparar hoje, o que sentar comigo, o que cobrar de terceiros.
 ---
 
 # Check: o ritual de progresso do Programa Ana
@@ -29,6 +29,7 @@ Todo check deve:
 
 ## Rotina (nesta ordem)
 
+0. **Ligar os OS e medir.** Rode `python3 .claude/skills/check/scripts/ligar-e-medir.py`. Ele sobe o Ana OS (`python3 os/server.py`, porta 8777) e o Retrato (`http.server` em `retrato/`, porta 8778) só se a porta estiver fechada (logs em `/tmp/ana-os-logs/`), e imprime o **termômetro**: cards `feito` sobre o total de `tarefas` do `roadmap.json`, os abertos por canal, os bloqueados por `deps` e os que estão sem canal. O número do termômetro é esse, não uma estimativa sua: "3 de 11 = 27%" vai para o relatório como saiu do script. Se um dos dois não subir, diga no relatório e siga. (`--so-medir` só mede, sem ligar.)
 1. **Ler o estado declarado.** `roadmap/TODO.md` inteiro. Primeira vez na sessão: leia também `README.md` e `CONTEXT.md` para falar a língua do projeto.
 2. **Ver o que mudou de fato.** `git log --oneline -15` e `git status --short`. Compare com a data da "Fronteira de agora". Commits novos = progresso real; arquivos não commitados = trabalho no meio do caminho (pergunte antes de mexer).
 3. **Varrer o diretório por cacos.** Arquivos novos soltos na raiz são insumos que o Pedro largou para digerir (padrão dele). Proponha o destino: briefings em `ana/briefings/`, banco/API em `ana/api-mv/`, pós-atendimento em `pos-atendimento/`. Digira o conteúdo antes de arquivar: um caco pode mudar a árvore de tarefas.
@@ -48,13 +49,19 @@ Todo check deve:
 
 **Estado em uma frase:** ...
 
+**Termômetro do estágio:** N de M cards feitos (P%), número do script. Faltam: (títulos curtos dos abertos, numa linha)
+
+**Próximos passos, em ordem:** 1. ... 2. ... 3. ... (os três de maior alavancagem, em linguagem de ação, com o ID como etiqueta)
+
+**OS no ar:** Ana OS `http://localhost:8777` · Retrato `http://localhost:8778` (ou "não subiu: motivo")
+
 **O que mudou desde o último check:** (commits, cacos novos, respostas externas)
 
 **Dispare hoje** (você sozinho, em paralelo):
-- [ID] tarefa em linguagem de ação — por que agora / o que exatamente enviar
+- [ID] tarefa em linguagem de ação: por que agora / o que exatamente enviar
 
 **Sente comigo** (uma sessão resolve):
-- [ID] tarefa — o que a sessão entrega
+- [ID] tarefa: o que a sessão entrega
 
 **Aguardando terceiros:**
 - [ID] item · com quem · há quantos dias · cobrança sugerida (script pronto se > 1 semana)
@@ -64,7 +71,11 @@ Todo check deve:
 **Risco que mais me preocupa hoje:** ... (um só, com o porquê)
 ```
 
-Adapte com bom senso: se uma coluna está vazia, diga em uma linha e siga. O Ana OS é o complemento visual do relatório: aponte que o roadmap.json foi atualizado e que o Pedro pode abrir `localhost:8777` (subindo com `python3 os/server.py` se preciso) para ver o cockpit (uma página só desde o ADR-0030, com cinco abas no topo: Cockpit, O que a Ana faz hoje, As regras da Ana, Onde ela busca a resposta, Global Health).
+Adapte com bom senso: se uma coluna está vazia, diga em uma linha e siga. O Ana OS é o complemento visual do relatório: aponte que o roadmap.json foi atualizado e que o Pedro pode abrir `localhost:8777` (o passo 0 já subiu) para ver o cockpit (uma página só desde o ADR-0030, com cinco abas no topo: Cockpit, O que a Ana faz hoje, As regras da Ana, Onde ela busca a resposta, Global Health).
+
+## Modo leve ("liga meus OS")
+
+Quando o gatilho for só ligar os OS ("liga meus OS", "liga o Ana OS", "liga o Retrato", "sobe o OS"), o Pedro quer o cockpit no ar e um resumo curto, não o ritual inteiro. Faça o passo 0, leia o TODO e o `git log -5`, e devolva **só o cabeçalho** do relatório: estado em uma frase, termômetro, próximos três passos e os dois links. Nada de reconciliar, editar ou commitar nesse modo, a menos que o git ou o Pedro mostrem que algo mudou desde a data do "Estado" no TODO.md; aí o check inteiro roda.
 
 ## Como gerar sugestões que prestam
 
