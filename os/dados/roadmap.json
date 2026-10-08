@@ -1,6 +1,6 @@
 {
   "estagio": "Agendar de verdade e chegar ao WhatsApp",
-  "atualizado": "2026-09-10",
+  "atualizado": "2026-10-08",
   "tarefas": [
     {
       "id": "V37",
@@ -113,7 +113,7 @@
       "canal_desde": "2026-09-09",
       "mesa": {
         "destrava": "A Ana atendendo o número que os pacientes usam de verdade. Hoje ela só atende o Telegram de teste.",
-        "gesto": "Sessão comigo para fechar os pré-requisitos, um a um: tirar a automação /resolve do Chatwoot (V36 do radar), decidir o transbordo seletivo (o que vai para humano e quando), ligar o número na inbox do Chatwoot e vincular à Ana, e um roteiro de estreia assistida com você olhando cada conversa. O Chatwoot já está na versão corrente (V32)."
+        "gesto": "Sessão comigo para fechar os pré-requisitos, um a um: tirar a automação /resolve do Chatwoot (V36 do radar), decidir o transbordo seletivo (o que vai para humano e quando), ligar o número na inbox do Chatwoot e vincular à Ana, e um roteiro de estreia assistida com você olhando cada conversa. Antes da estreia, subir o Chatwoot: em 08/out estava 16 versões atrás (a .145 traz a App Secret da Meta para WhatsApp Cloud manual), e subir apaga o hotfix da V8."
       },
       "nota": "Não depende do agendamento: a Ana pode estrear informando preço, exame, convênio e ouvidoria, e escalando o agendamento para a secretária até a V39 fechar. Decisões que são do Pedro e do hospital: a data, o transbordo e o aviso aos pacientes. Pronto quando: uma conversa real de paciente, pelo número oficial, atendida pela Ana e visível no Chatwoot e no Langfuse.",
       "prompt": "Vamos preparar a estreia da Ana no WhatsApp real do hospital (card V41). Leia o CONTEXT.md (Canal principal, Transbordo seletivo, Chatwoot Pro) e o ADR-0024, liste comigo os pré-requisitos em ordem (remover a automação /resolve, V36; regra de transbordo; inbox do WhatsApp oficial no Chatwoot vinculada ao agente 1; roteiro de estreia assistida) e conduza cada um com aprovação minha a cada mutação. Nada em modo autônomo. Ao fechar, atualize os dois arquivos do roadmap."

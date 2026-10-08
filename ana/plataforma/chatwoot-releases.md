@@ -54,3 +54,16 @@ Situação medida no dia: instância em `4.16.0-fazer-ai-pro.111` (de 29/jul/202
 3. **O caminho cruza três merges oficiais** (Chatwoot 4.16.1, 4.16.2 e 4.17.0), então tem migração de banco.
 4. **A `.120` muda a fila.** Combinar com o hospital antes, se alguém já usa a aba "Não atribuídas" para saber o que precisa de gente.
 5. **Congelamento do Chatwoot.** A decisão de 06/jul congela **configuração** (etapas, tags, estados, nomes) durante a fase de testes. Subir versão não é configurar, então não conflita, mas a `.120` muda comportamento de fila sem ninguém configurar nada: é exatamente o tipo de coisa que o congelamento existe para não deixar acontecer de surpresa.
+
+## A leitura de 08/out/2026 (de .130 a .145)
+
+Instalada: `4.17.0-fazer-ai-pro.129`. Última: `v4.18.0-fazer-ai-pro.145` (06/out). Atraso: 16 versões, com um merge de versão (4.17 para 4.18), então tem migração de banco. Só o que bate na lente:
+
+- **`.137`: automação que reabre conversa com bot solta o bot.** A conversa vai para "Não atribuídas" e entra na atribuição automática. Toca o caminho da Ana (pergunta 1) e o modo teste: a regra `/resolve` e o `/teste` (V36 do radar) precisam ser re-testados depois de subir.
+- **`.136`: automação avalia o texto ao qual o evento se refere.** Edição ou recuperação atrasada não dispara a regra errada. Toca a regra `/resolve` (pergunta 1), para melhor.
+- **`.138`: atribuição para bots só oferece os bots da caixa e registra quem atribuiu.** Toca o que o hospital vê (pergunta 3).
+- **`.142`: responder e resolver logo depois mantém a conversa resolvida**, em vez de voltar para a fila sem responsável. Toca o handoff (pergunta 1) e a fila (pergunta 3).
+- **`.145`: segurança no WhatsApp.** Webhook de entrada conferido. Caixa WhatsApp Cloud configurada à mão passa a exigir a App Secret da Meta. Toca a V41 direto: se a estreia usar a API oficial com configuração manual, a chave entra no checklist.
+- **`.145`: botão no painel do contato abre a conversa no fazer.ai agents.** Ajuda a operação da estreia (pergunta 3).
+
+Cautela de sempre: nota de release não é prova. Subir apaga o hotfix de `base_controller.rb` (ver as cautelas acima); anotar o digest antes e testar a V8 e a `/resolve` depois.

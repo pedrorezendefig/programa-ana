@@ -9,9 +9,11 @@
 
 ---
 
-## Estado (10/set/2026)
+## Estado (08/out/2026)
 
 **Onde a Ana está, em uma linha:** ela atende no Telegram de teste, lê preços, exames e cirurgias do app do hospital, registra ouvidoria com protocolo, identifica o paciente na Global Health, decide cobertura de convênio pela agenda online e entrega horário real de Cardiologia. Ela **não** marca a consulta (a API recusa com 417) e **não** está no WhatsApp do hospital.
+
+**Depois de quatro semanas parado (check de 08/out/2026).** Nenhum commit entre 10/set e 08/out e nenhum card mudou. A plataforma segue como estava: agente 1 em modo teste, gpt-5.6-luna, última edição em 08/set, inboxes Telegram e API. O Chatwoot ficou 16 versões atrás. O Retrato segue sem publicar.
 
 **O reset (grilling de 09/set/2026, ADR-0028).** O Pedro pediu um roadmap enxuto, nítido e visual, escrito do ponto em que o programa está. O estágio anterior foi arquivado inteiro e nasceram nove cards, título em linguagem de ação, sem código da Global Health. Tudo que estava aberto entrou num deles ou morreu: a P3 virou a V37, a P6 virou a V39, a V29 e a V35 seguem com o mesmo ID, a GH19 (resolvida em 26/ago) saiu do grafo, e as duas ideias antigas morreram (uma já puxada, a outra morta com a massa). Cards a mais só depois de o Pedro ver a esfera de capacidades do Retrato.
 
@@ -58,7 +60,7 @@ Ficha íntegra no arquivo (ADR-0025). Não se executa neste repo: `~/PedroDev/Ho
 **Pronto quando:** a tela mostra os quatro blocos e `GET /api/ana/convenios` deixa de existir.
 
 ### V41 · A Ana entra no WhatsApp real do hospital `[ ]`
-Não depende do agendamento: ela pode estrear informando preço, exame, convênio e ouvidoria, escalando a marcação para a secretária até a V39. Pré-requisitos: tirar a automação `/resolve` (V36 do radar), decidir o transbordo seletivo, inbox do número oficial vinculada ao agente 1, estreia assistida. Chatwoot já na versão corrente (V32). Data, transbordo e aviso aos pacientes são decisões do Pedro e do hospital.
+Não depende do agendamento: ela pode estrear informando preço, exame, convênio e ouvidoria, escalando a marcação para a secretária até a V39. Pré-requisitos: tirar a automação `/resolve` (V36 do radar), decidir o transbordo seletivo, inbox do número oficial vinculada ao agente 1, estreia assistida. Antes da estreia, subir o Chatwoot: em 08/out estava 16 versões atrás (a `.145` exige a App Secret da Meta em WhatsApp Cloud manual), e subir apaga o hotfix da V8. Data, transbordo e aviso aos pacientes são decisões do Pedro e do hospital.
 **Pronto quando:** uma conversa real de paciente, pelo número oficial, atendida pela Ana e visível no Chatwoot e no Langfuse.
 
 ### OS25 · Ana OS com cinco abas, só leitura `[x]`
@@ -87,6 +89,8 @@ Bugs, hotfixes e higienes que **não impactam o objetivo** (montar a solução f
 | V36 | 5/10 | Tirar a automação `/resolve` do Chatwoot antes do WhatsApp real | Regra id 9 criada em 08/set (mensagem recebida igual a `/resolve` resolve a conversa). Serve ao modo teste: `/resolve` fecha, `/teste` reabre com a Ana; nasceu do caso do Felipe (conversa #166, 11 dias presa na Fila Ouvidoria porque `handoff_to_human` cala o bot e `/teste` não atravessa conversa em fila humana). Provada na conversa 154 da inbox de API. Tocar quando: dia de ligar a Ana num número real (desativar ou apagar em Configurações > Automação) |
 | V7 | 2/10 | Revogar o token da Cloudflare usado no onboarding de 29/jul | Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou |
 ## Log
+
+- **08/out/2026:** **check de retomada, depois de quatro semanas sem mexer.** Nenhum card mudou: 3 de 11 (27%). Plataforma conferida ao vivo: agente 1 ligado, modo teste, gpt-5.6-luna, prompt editado pela última vez em 08/set; inboxes Telegram (SaoMatheusBot) e API (E2E), sem WhatsApp. Desde 10/set: 4 conversas, todas no Telegram. Chatwoot `4.17.0-fazer-ai-pro.129` contra `.145` publicada (16 versões, leitura em `ana/plataforma/chatwoot-releases.md`); a ficha da V41 deixa de dizer "versão corrente". Retrato sem `.vercel/`: OS26 segue sem publicar. Caco: `contrato/hospital/` com o PDF do jurídico de 04/set (fora do roadmap).
 
 - **10/set/2026:** **o `/check` ganha o passo 0 e o termômetro.** `ligar-e-medir.py` sobe o Ana OS (8777) e o Retrato (8778) se estiverem fora do ar e mede o estágio pelo roadmap.json: 3 de 11 cards (27%). Modo leve para "liga meus OS". Nenhum card mudou de status. Nesta sessão a rede não alcançou a plataforma (Chatwoot e fazer.ai agents sem resposta): versão do Chatwoot e agente 1 não conferidos. Retrato ainda não publicado (OS26 segue em curso).
 
