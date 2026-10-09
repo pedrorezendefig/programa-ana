@@ -43,3 +43,5 @@ Decisão do Pedro (grilling de 09/out/2026, na volta depois de quatro semanas pa
 - O Retrato não muda: ele nunca mostrou o roadmap (ADR-0028, decisão 3).
 - Sem rede ou sem `gh` autenticado, o Cockpit mostra o motivo em vez da mesa. O OS é o lugar do agora (ADR-0017), então não há cache em disco.
 - O repo tem que continuar privado: os corpos das issues citam o hospital, o ambiente de homologação e os nomes das ferramentas.
+- A seção `## Prompt` é texto que o Pedro cola numa sessão do Claude Code. Quem escreve numa issue escreve, na prática, uma instrução para a sessão. Hoje só o Pedro tem acesso de escrita ao repo; se entrar colaborador, revisar o prompt antes de colar vira regra, e o Cockpit mostra quem editou por último na linha do tempo.
+- O `os/server.py` só aceita pedidos com `Host` local (localhost ou 127.0.0.1): barreira contra DNS rebinding, já que as rotas passam a expor o conteúdo das issues e o detalhe de cada uma.

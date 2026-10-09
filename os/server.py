@@ -528,7 +528,18 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._arquivo(caminho, ESTATICOS[os.path.splitext(rel)[1].lower()])
 
+    def _host_local(self):
+        """Barreira contra DNS rebinding: um site malicioso pode fazer o navegador resolver
+        um dominio dele para 127.0.0.1 e ler as rotas daqui. So aceita Host local."""
+        host = (self.headers.get("Host") or "").split(":")[0].lower()
+        if host in ("localhost", "127.0.0.1", "[::1]", "::1"):
+            return True
+        self._json({"erro": "host nao permitido"}, 403)
+        return False
+
     def do_GET(self):
+        if not self._host_local():
+            return
         path = urllib.parse.urlparse(self.path).path
         if path == "/api/status":
             st = teste_token()
@@ -569,6 +580,8 @@ class Handler(BaseHTTPRequestHandler):
             self._servir_estatico(path)
 
     def do_POST(self):
+        if not self._host_local():
+            return
         if self.path not in ("/api/gh", "/api/sql"):
             self._json({"erro": "rota desconhecida"}, 404)
             return
