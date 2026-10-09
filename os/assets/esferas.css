@@ -475,6 +475,25 @@ footer.rodape { max-width: var(--largura-conteudo); margin: 56px auto 0; border-
 .mesa-card .rodape-card { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 .mesa-card.ativo { box-shadow: inset 0 0 0 2px var(--cor-tinta); }
 .mesa-vazia { font-size: 13px; color: var(--cor-rotulo); }
+/* filtros e funil do Cockpit (ADR-0031): mesma gramática dos filtros das esferas */
+.filtros-cockpit { margin: 10px 0 12px; }
+.filtros-cockpit .f-select select { font: 500 13px/1.3 var(--font-inter); padding: 5px 8px; border: 1px solid #e6e4e0; border-radius: 8px; background: #fff; color: var(--cor-tinta); }
+.filtros-cockpit .f-busca input { font: 500 13px/1.3 var(--font-inter); padding: 5px 8px; border: 1px solid #e6e4e0; border-radius: 8px; background: #fff; min-width: 180px; }
+.funil { display: grid; grid-template-columns: minmax(150px, 1.4fr) repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.funil .funil-card { border: 1px solid #e6e4e0; border-radius: var(--raio-card, 12px); padding: 12px 14px; background: #fff; text-align: left; cursor: pointer; font: inherit; color: inherit; }
+.funil .funil-card.total { border-width: 2px; border-color: var(--cor-tinta); }
+.funil .funil-card.on { background: var(--cor-tinta); color: #fff; }
+.funil .funil-card .n { display: block; font: var(--peso-bold) 26px/1 var(--font-poppins); }
+.funil .funil-card .r { display: block; font: var(--peso-semibold) 11px/1.3 var(--font-inter); letter-spacing: .04em; text-transform: uppercase; margin-top: 6px; opacity: .8; }
+.funil .funil-card .s { display: block; font-size: 11.5px; margin-top: 2px; opacity: .7; }
+.mesa-card .areas { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.mesa-card .areas .chip { font-size: 10px; }
+.painel-mesa .linha-tempo { list-style: none; margin: 0; padding: 0; }
+.painel-mesa .linha-tempo li { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 10px; padding: 6px 0; border-top: 1px solid #e6e4e0; font-size: 13px; }
+.painel-mesa .linha-tempo li:first-child { border-top: 0; }
+.painel-mesa .linha-tempo .q { color: var(--cor-rotulo); font: 500 12px/1.5 var(--font-mono); }
+.painel-mesa .linha-tempo .comentario { white-space: pre-wrap; background: var(--cor-card-interno); border-radius: 8px; padding: 8px 10px; }
+.painel-mesa .corpo-md { white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; }
 .painel-mesa { margin-top: var(--gap-cards); }
 .painel-mesa .mesa-bloco { background: var(--cor-card-interno); border-radius: var(--raio-interno); padding: 14px 16px; margin-top: 12px; }
 .painel-mesa .mesa-bloco .micro { display: block; margin-bottom: 4px; }

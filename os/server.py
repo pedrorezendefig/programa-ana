@@ -8,8 +8,9 @@ Evolucao do server do Playground GH (ADR-0004), mesmas regras de seguranca:
     subpasta amostras/ (dado pessoal) nunca e servida.
 O que o OS acrescenta:
   - Paginas e assets (css/js/json/woff2) servidos de os/.
-  - /api/roadmap: leitura de os/dados/roadmap.json. So leitura (ADR-0028):
-    card novo, card feito e canal movido nascem por sessao no terminal.
+  - /api/roadmap: o roadmap lido das Issues do GitHub pelo `gh` (ADR-0031), via
+    os/roadmap_github.py. So leitura: card novo, canal movido e card feito sao
+    comandos `gh` na sessao do terminal. /api/issue/<n>: o detalhe de uma issue.
   - /api/retrato: as quatro esferas montadas ao vivo pelo retrato/gerar.py (ADR-0030).
   - /retrato/<x>.js|.css: os motores do Retrato da Ana, fonte unica para os dois produtos.
   - /api/docs e /docs/...: a Biblioteca, allowlist explicita de .md do repo.
@@ -24,6 +25,7 @@ Ambiente: SOMENTE homologacao. Producao e proibida neste app.
 """
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -42,7 +44,6 @@ SQL_MAX_LINHAS = 200
 OS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(OS_DIR)
 ABSORCAO_DIR = os.path.join(REPO_DIR, "ana", "api-mv", "absorcao-producao", "resultados")
-ROADMAP_JSON = os.path.join(OS_DIR, "dados", "roadmap.json")
 # Cenarios da bancada (ADR-0020): a pagina Testes manuais le o arquivo que vive
 # fora de os/. Leitura de UM arquivo fixo, nunca de uma pasta.
 CENARIOS_JSON = os.path.join(REPO_DIR, "ana", "bancada", "cenarios", "integracao.json")
@@ -432,11 +433,13 @@ def caminho_doc(grupo, nome):
     return caminho
 
 
-# ---------- Roadmap (so leitura, ADR-0028) ----------
+# ---------- Roadmap (so leitura; a fonte e o GitHub, ADR-0031) ----------
+sys.path.insert(0, OS_DIR)
+import roadmap_github  # noqa: E402
+
 
 def ler_roadmap():
-    with open(ROADMAP_JSON, encoding="utf-8") as f:
-        return json.load(f)
+    return roadmap_github.montar()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -548,7 +551,12 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/roadmap":
             try:
                 self._json({"ok": True, "roadmap": ler_roadmap()})
-            except (OSError, ValueError) as e:
+            except (OSError, ValueError, RuntimeError) as e:
+                self._json({"ok": False, "erro": str(e)}, 500)
+        elif re.match(r"^/api/issue/\d+$", path):
+            try:
+                self._json(roadmap_github.detalhe(int(path.rsplit("/", 1)[1])))
+            except (OSError, ValueError, RuntimeError) as e:
                 self._json({"ok": False, "erro": str(e)}, 500)
         elif path == "/api/retrato":
             doc = ler_retrato()

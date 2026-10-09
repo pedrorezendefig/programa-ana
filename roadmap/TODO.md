@@ -1,94 +1,24 @@
 # TODO - Programa Ana: agendar de verdade e chegar ao WhatsApp
 
-> Verdade **narrativa** do estágio atual. O espelho de **dados** é `os/dados/roadmap.json`, renderizado pelo **Ana OS** (`python3 os/server.py` e abrir `localhost:8777`; ADR-0007). Regra de sempre: ao mudar um status aqui, mude lá (e vice-versa). O OS é só leitura (ADR-0028): card novo, card feito e canal movido nascem só por sessão no terminal, nos dois arquivos.
+> Verdade **narrativa** do estágio atual: o parágrafo "Estado" e o log. Os **cards** moram nas Issues do GitHub do repo privado `pedrorezendefig/programa-ana` (ADR-0031, 09/out/2026): labels `area:` (categoria), `canal:` (dispare/comigo/aguardando), `radar`; corpo com Destrava, Gesto, Pronto quando, Prompt, Bloqueada por e Nota; ficha de conclusão no comentário de fechamento; o milestone é o estágio. O **Ana OS** (`python3 os/server.py`, `localhost:8777`, aba Cockpit) e o `/check` leem essas issues pelo `gh`. Não existe mais tabela de tarefas aqui nem `roadmap.json`: mexer num card é `gh issue ...` na sessão do terminal, mais uma linha no log abaixo.
 >
-> O estágio anterior (testes de viabilidade no fazer.ai agents, V1 a V36 e OS1 a OS24, 30/jul a 08/set/2026) está **intacto em `roadmap/arquivo/TODO-estagio-viabilidade.md`** e o roadmap.json dele em `roadmap/arquivo/roadmap-estagio-viabilidade.json`: é história e acervo (fichas, log, decisões), não fronteira de trabalho. O roadmap mais antigo (trilhas A a G) segue em `roadmap/arquivo/` também.
-
-**Status:** `[ ]` a fazer · `[~]` em curso · `[x]` feito · `[!]` bloqueada
-**Donos:** **(P)** Pedro · **(C)** Claude (sessões) · **(E)** Externo
+> O estágio anterior (testes de viabilidade no fazer.ai agents, V1 a V36 e OS1 a OS24, 30/jul a 08/set/2026) está **intacto em `roadmap/arquivo/TODO-estagio-viabilidade.md`** e o roadmap.json dele em `roadmap/arquivo/roadmap-estagio-viabilidade.json`. A última versão do roadmap.json deste estágio, antes da migração para o GitHub, está em `roadmap/arquivo/roadmap-2026-10-09-antes-do-github.json`. Tudo isso é história e acervo, não fronteira de trabalho.
 
 ---
 
-## Estado (08/out/2026)
+## Estado (09/out/2026)
 
 **Onde a Ana está, em uma linha:** ela atende no Telegram de teste, lê preços, exames e cirurgias do app do hospital, registra ouvidoria com protocolo, identifica o paciente na Global Health, decide cobertura de convênio pela agenda online e entrega horário real de Cardiologia. Ela **não** marca a consulta (a API recusa com 417) e **não** está no WhatsApp do hospital.
 
-**Depois de quatro semanas parado (check de 08/out/2026).** Nenhum commit entre 10/set e 08/out e nenhum card mudou. A plataforma segue como estava: agente 1 em modo teste, gpt-5.6-luna, última edição em 08/set, inboxes Telegram e API. O Chatwoot ficou 16 versões atrás. O Retrato segue sem publicar.
+**O roadmap mora no GitHub (grilling de 09/out/2026, ADR-0031).** Na volta depois de quatro semanas parado, o Pedro pediu o mesmo conceito do Hospital OS: cards como Issues, lidas ao vivo pelo `gh`, com categorias (Global Health, Ana, fazer.ai, Chatwoot, app do hospital, OS) e tudo atribuído a ele para medir o tamanho de cada coisa. Nasceram 14 issues: #1 a #3 fechadas (OS25, OS27, OS28, com a ficha no comentário), #4 a #11 abertas (V37, V40, V29, V35, V41, OS26, V38, V39) e #12 a #14 no radar (V10, V7, V36). O termômetro segue 3 de 11 (27%). O ID antigo está na primeira linha do corpo de cada issue (`Antes: V37`).
 
-**O reset (grilling de 09/set/2026, ADR-0028).** O Pedro pediu um roadmap enxuto, nítido e visual, escrito do ponto em que o programa está. O estágio anterior foi arquivado inteiro e nasceram nove cards, título em linguagem de ação, sem código da Global Health. Tudo que estava aberto entrou num deles ou morreu: a P3 virou a V37, a P6 virou a V39, a V29 e a V35 seguem com o mesmo ID, a GH19 (resolvida em 26/ago) saiu do grafo, e as duas ideias antigas morreram (uma já puxada, a outra morta com a massa). Cards a mais só depois de o Pedro ver a esfera de capacidades do Retrato.
+**O analista de TI já foi acionado (09/out):** o Pedro pediu que ele clone a produção do MV para o ambiente de teste, o que deve trazer o vínculo das agendas com os convênios (#4) e, se o Painel GH de homologação publicar, a agenda de exames (#5). As duas estão em `canal:aguardando`. Complemento a mandar: confirmar o vínculo de convênio e a publicação no Painel GH, e perguntar se o clone anonimiza os pacientes (dados reais na TST que os scripts e a bancada consultam).
 
-**As três frentes que andam em paralelo:** (1) agendamento na Global Health, que começa por um pedido ao analista (V37) e destrava a prova no banco (V38) e a marcação de ponta a ponta (V39), com a agenda de exames (V40) ao lado; (2) o hospital e o canal, o espelho da GH no app (V35) e a estreia no WhatsApp real (V41); (3) o cockpit e o Retrato (OS25, OS26, OS28), que é o que o diretor vê e o que um arquiteto lê.
+**As três frentes que andam em paralelo:** (1) agendamento na Global Health, que espera o analista (#4, #5) e destrava a prova no banco (#10) e a marcação de ponta a ponta (#11); (2) o hospital e o canal, o espelho da GH no app (#7) e a estreia no WhatsApp real (#8, que exige subir o Chatwoot, 16 versões atrás em 08/out); (3) o cockpit e o Retrato: o Retrato está pronto e só falta publicar (#9).
 
-## Tarefas do estágio
-
-| ID | St | Tarefa | Dono | Depende de |
-|---|---|---|---|---|
-| V37 | `[ ]` | A Global Health aceita a marcação (hoje ela recusa com 417) | P+E | nada |
-| V38 | `[ ]` | A marcação aparece no banco do MV (a prova de que ela é real) | C+P | V37 |
-| V39 | `[ ]` | A Ana marca, remarca e cancela uma consulta de ponta a ponta | C+P | V37 |
-| V40 | `[ ]` | A Global Health publica a agenda de exames na homologação | P+E | nada |
-| V29 | `[ ]` | A bancada de cenários fecha 16 de 16 | C+P | nada |
-| V35 | `[ ]` | O app do hospital espelha a Global Health (no lugar da tabela de convênios) | P+E | nada |
-| V41 | `[ ]` | A Ana entra no WhatsApp real do hospital | P+C | nada |
-| OS25 | `[x]` | Ana OS com cinco abas, só leitura | C | nada |
-| OS26 | `[~]` | Retrato da Ana no ar, na Vercel | C+P | nada |
-| OS27 | `[x]` | Tudo tem link: o Retrato veste o app do hospital, com filtros e fluxogramas, e o OS liga as abas | C | nada |
-| OS28 | `[x]` | O Ana OS vira uma página só: o esqueleto do Retrato vestido de Ledger, com a camada de operação | C | nada |
-
-### V37 · A Global Health aceita a marcação `[ ]`
-Herda a P3. O `POST /horarios/agendar` devolve 417 porque a agenda de Cardiologia de teste não tem convênio vinculado no SoulMV TST. Gesto: pedir ao analista de TI o vínculo das agendas com PARTICULAR e UNIMED (aba Convênio do Cadastro de Agendas, tutorial pág. 3) e conferir no Painel GH que a aba "Convênios e planos" está vazia. Roteiro: `ana/api-mv/prompt-agendamento-fim-a-fim.md`, Passo 0.
-**Pronto quando:** a Cadeia D fecha com o agendar em 200 e um id de agendamento devolvido.
-
-### V38 · A marcação aparece no banco do MV `[ ]`
-A pergunta GH-18. Fato oficial da MV: a API grava no Soul só na finalização, o único ponto em que faz sentido procurar no Oracle. Logo depois da V37: agendar pela Cadeia D e consultar a Base TST (`query-mv.py`) pelo id e pelo paciente-sonda.
-**Pronto quando:** um SELECT na TST devolve a marcação feita pela API, registrada no roteiro.
-
-### V39 · A Ana marca, remarca e cancela de ponta a ponta `[ ]`
-Herda a P6. Fachada de agenda (ADR-0009): tools de finalização e gestão no grant, Seções 2.5 e 2.6 fora do gate, volta da tool de cadastro (ADR-0014). Nunca em modo autônomo; prompt em `ana/api-mv/prompt-agendamento-fim-a-fim.md`.
-**Pronto quando:** no Telegram, a Ana marca, remarca e cancela uma consulta de Cardiologia da agenda de teste, cada ato visível na Cadeia F e no Langfuse.
-
-### V40 · A Global Health publica a agenda de exames `[ ]`
-Hoje a Cadeia E para no catálogo: só existe a agenda de Cardiologia. Pedir ao analista uma agenda de exame de teste pelo mesmo caminho da V31 (agenda pública no SoulMV TST com prestador, ativação no Painel GH).
-**Pronto quando:** `GET /exames` devolve um item agendável e a Cadeia E chega ao horário.
-
-### V29 · A bancada fecha 16 de 16 `[ ]`
-Ficha íntegra no arquivo. E1, E3 e D4 quebram de propósito a credencial `vault:6` ou a tool 11; precisam de janela com a Ana parada e restauração imediata.
-**Pronto quando:** os três com veredito na tabela da rodada, credencial e tool 11 restauradas.
-
-### V35 · O app do hospital espelha a Global Health `[ ]`
-Ficha íntegra no arquivo (ADR-0025). Não se executa neste repo: `~/PedroDev/Hospital`, prompt em `ana/api-hospital/pedido-espelho-gh.md`. Só a tabela de convênios sai; as outras três alimentam as tools 1 a 3.
-**Pronto quando:** a tela mostra os quatro blocos e `GET /api/ana/convenios` deixa de existir.
-
-### V41 · A Ana entra no WhatsApp real do hospital `[ ]`
-Não depende do agendamento: ela pode estrear informando preço, exame, convênio e ouvidoria, escalando a marcação para a secretária até a V39. Pré-requisitos: tirar a automação `/resolve` (V36 do radar), decidir o transbordo seletivo, inbox do número oficial vinculada ao agente 1, estreia assistida. Antes da estreia, subir o Chatwoot: em 08/out estava 16 versões atrás (a `.145` exige a App Secret da Meta em WhatsApp Cloud manual), e subir apaga o hotfix da V8. Data, transbordo e aviso aos pacientes são decisões do Pedro e do hospital.
-**Pronto quando:** uma conversa real de paciente, pelo número oficial, atendida pela Ana e visível no Chatwoot e no Langfuse.
-
-### OS25 · Ana OS com cinco abas, só leitura `[x]`
-Feita em 09/set/2026, na sessão do grilling. Conferida no navegador: cinco abas sem erro de console, `POST /api/roadmap` devolve 404, Bancada abre em `os/arquivo/bancada.html`. O grafo virou módulo (`os/assets/grafo.js`) e ganhou o tema `canal`. ADR-0028. Cockpit (mesa e grafo), Mecanismo (Circuito + Arquitetura + Mapa da Integração), Mapa do SOP, Provas (Comparação + Testes + Famílias), Global Health (Cadeias). Bancada para `os/arquivo/`. Some toda escrita da tela e a rota `POST /api/roadmap`; o `/check` para de esperar ideias.
-**Pronto quando:** menu com cinco itens, nenhuma página escreve, Bancada abre por URL, as cinco abas carregam sem erro.
-
-### OS26 · Retrato da Ana no ar `[ ]`
-Construído em 09/set/2026 (`retrato/`, `vercel.json`): o `gerar.py` rodou contra a plataforma, a lista de proibidos passou, as quatro abas foram conferidas no navegador. **Falta só publicar** (`vercel` e `vercel --prod` na raiz) e registrar o link aqui. ADR-0028. Site estático em `retrato/`: `gerar.py` grava um JSON carimbado com a data e recusa CPF, paciente-sonda, URL de ambiente, token, credencial e ID de tarefa; quatro abas nomeadas (o que a Ana faz hoje, as regras da Ana, onde ela busca a resposta, Global Health: o que dá e o que não dá); tokens do `DESIGN.md`; `noindex`; `vercel.json` na raiz. Publicar é ato do Pedro.
-**Pronto quando:** o gerar.py passa na lista de proibidos, as quatro abas abrem por arquivo local, e o link da Vercel está aqui.
-
-### OS27 · Tudo tem link, e o Retrato veste o app do hospital `[x]`
-Feita em 09/set/2026, na mesma sessão. Verificação headless a 1360 e 390 px: console limpo, 768 links entre esferas e zero mortos, sete fluxogramas com percorrer (o caminho de uma mensagem e as seis cadeias) mais o percorrer de jornada em cada raia do mapa; no OS, `liga.js` com chegada acesa nas cinco abas. ADR-0029 (segundo grilling de 09/set/2026). Contrato de links nos dois produtos (toda menção é link, todo link tem volta, a URL carrega destino e filtro), Retrato no design system do app do hospital (HP Simplified, azul-marinho, vidro só no que flutua, transição de aba de 250 ms), barra de filtros em toda esfera, três fluxogramas na gramática do hospital com percorrer (caminho de uma mensagem, cadeia elo a elo, jornada no mapa).
-**Pronto quando:** clicar numa ferramenta na aba "faz" chega na aba "busca" com o card aceso e as ligações de volta; a URL carrega aba, alvo e filtro; os três fluxogramas percorrem; no OS, `comparacao.html#cap-<id>`, `circuito.html#tool-<nome>` e `sop.html#no-<id>` chegam acesos (desde a OS28 a gramática do OS é a do Retrato: `index.html#faz/cap-<id>`, `#busca/tool-<nome>`, `#regras/no-<id>`).
-
-### OS28 · O Ana OS vira uma página só `[x]`
-Feita em 09/set/2026 (ADR-0030), no terceiro grilling da noite. O Pedro pediu um OS mais simples, mais enxuto e mais navegável, parecido com o Retrato, escrito para um arquiteto (ele e quem pegar o programa depois). Decisões: só o esqueleto do Retrato (abas no topo, filtros, painel, fluxogramas com percorrer), a roupa continua Ledger; as quatro esferas com os mesmos nomes e a mesma ordem do Retrato, mais o Cockpit na frente; regra de corte (o OS mostra o que o Retrato mostra, mais o ao vivo, a prova crua e o Cockpit, nada além); o OS segue lendo o dado vivo, por `/api/retrato` (o `gerar.py` chamado em processo pelo server); os motores JS do Retrato são fonte única (servidos por `/retrato/`); Cockpit só com mesa, grafo e radar em linha, aplicações na sidebar. Nasceram `os/assets/esferas.css`, `cockpit.js`, `os-esferas.js` (a camada de operação) e `cadeias-motor.js` (o motor das cadeias, sem DOM). As cinco páginas anteriores foram para `os/arquivo/` intactas. Passe de escrita humana nas descrições do roadmap, com foco no radar. Verificação headless a 1360 e 390 px: console limpo, sem rolagem horizontal, 774 links e nenhum morto, elo B1 rodado de verdade, chegada acesa por link. Regressão do Retrato: zero erros, 768 links.
-**Pronto quando:** as cinco abas abrem numa página só sem erro; clicar numa ferramenta chega no card aceso com as ligações de volta; um elo da Global Health roda na homologação e mostra a resposta crua; o Retrato continua igual.
-
-## Radar (fora do grafo de execução: pontos para lembrar ou tocar no futuro)
-
-Bugs, hotfixes e higienes que **não impactam o objetivo** (montar a solução funcional). Não aparecem no grafo de execução do Ana OS; vivem na faixa `radar` do `roadmap.json` e na seção Radar da home. **Prioridade** de 1 (ignorável) a 10 (crítico) = quanto impacta e quanta atenção dar. Item do radar só volta a ser tarefa se o Pedro puxar.
-
-| ID | Prio | Ponto | Nota |
-|---|---|---|---|
-| V10 | 3/10 | Mandar à fazer.ai o relato dos quatro bugs da plataforma | Mensagem final descartada em turno com `resolve_conversation` (contornado: tool fora dos grants) e dessincronização da lista de inboxes (já corrigida via `instance_sync_inboxes`). Sem impacto atual; o report é a alavanca dos fixes upstream, mesmo canal do bug report do V8. Somar (12/ago): **expor `reasoning_effort` no modelConfig** (bloqueia o gpt-5.6-luna com tools, ADR-0013); e somar (12/ago, tarde): **a interpolação do body foi RE-TESTADA na 1.4.1 e o bug persiste** (nome do campo precisa ser idêntico à chave do JSON; com API que aceita campo ausente, como o NocoDB, a falha é silenciosa: linha criada vazia com HTTP 200). A normalização de `input_schema` em JSON Schema padrão segue sem re-teste. O achado do teto de 50k morreu: o teto atual é 100k configurável. Somar (14/ago, V21): **output de HTTP tool truncado em 4.000 chars fixos** (`maxResponseChars` de `src/graph/tools/http.ts`, sem env nem config); resposta maior esconde o fim da tabela do modelo e causa loop de re-chamadas; pedir limite configurável |
-| V36 | 5/10 | Tirar a automação `/resolve` do Chatwoot antes do WhatsApp real | Regra id 9 criada em 08/set (mensagem recebida igual a `/resolve` resolve a conversa). Serve ao modo teste: `/resolve` fecha, `/teste` reabre com a Ana; nasceu do caso do Felipe (conversa #166, 11 dias presa na Fila Ouvidoria porque `handoff_to_human` cala o bot e `/teste` não atravessa conversa em fila humana). Provada na conversa 154 da inbox de API. Tocar quando: dia de ligar a Ana num número real (desativar ou apagar em Configurações > Automação) |
-| V7 | 2/10 | Revogar o token da Cloudflare usado no onboarding de 29/jul | Movida do Pendente para o radar em 06/ago por decisão do Pedro: o token ainda tem uso previsto, não pertence ao roadmap. Verificado em 06/ago: não está salvo em nenhum serviço, e revogar não apaga os DNS já criados (agents/langfuse/coolify). Tocar quando o Pedro declarar que o uso acabou |
 ## Log
+
+- **09/out/2026:** **o roadmap sai dos arquivos e vai para o GitHub (ADR-0031).** Grilling de retomada: 12 decisões, todas no recomendado. 14 issues criadas em `pedrorezendefig/programa-ana` (labels `area:` e `canal:`, `radar`, milestone do estágio, corpo nas seções, as 3 feitas fechadas com ficha), todas atribuídas ao Pedro. O Cockpit do Ana OS virou a aba do GitHub: `os/roadmap_github.py` monta o `/api/roadmap` pelo `gh` (cache de 60 s) e serve `/api/issue/<n>`; `cockpit.js` ganhou filtros com contagem (canal, área, estado, busca), funil e o card da issue com linha do tempo e comentários; o grafo passou a usar as seis áreas como faixas e perdeu os filtros de dono, pendente e proposta. O `/check` (`ligar-e-medir.py`) mede pelo GitHub. `roadmap.json` arquivado; `CLAUDE.md`, `README.md`, `CONTEXT.md` e a skill alinhados. V37 e V40 (#4, #5) movidas para `canal:aguardando`: o Pedro já falou com o analista. Verificação headless do Cockpit a 1360 e 390 px: console limpo.
 
 - **08/out/2026:** **check de retomada, depois de quatro semanas sem mexer.** Nenhum card mudou: 3 de 11 (27%). Plataforma conferida ao vivo: agente 1 ligado, modo teste, gpt-5.6-luna, prompt editado pela última vez em 08/set; inboxes Telegram (SaoMatheusBot) e API (E2E), sem WhatsApp. Desde 10/set: 4 conversas, todas no Telegram. Chatwoot `4.17.0-fazer-ai-pro.129` contra `.145` publicada (16 versões, leitura em `ana/plataforma/chatwoot-releases.md`); a ficha da V41 deixa de dizer "versão corrente". Retrato sem `.vercel/`: OS26 segue sem publicar. Caco: `contrato/hospital/` com o PDF do jurídico de 04/set (fora do roadmap).
 

@@ -21,17 +21,17 @@
   let NOS = [];        /* [{id, titulo, tipo, estado, dono, nota, resumo, ficha, prompt, deps, travas, tema, mesa, canal}] */
   let FRONTEIRA = null;
 
-  /* ---- temas (OS16): as áreas do programa, na ordem em que importam hoje.
-     O tema de cada item vive no os/dados/roadmap.json (campo "tema"). ---- */
+  /* ---- temas: as áreas do programa, na ordem em que importam hoje (ADR-0031).
+     O tema de cada item é a primeira label `area:` da issue no GitHub. ---- */
   const TEMAS = [
-    ["agenda",    "Agenda Global Health",       "A integração com o MV pela API da Global Health: identificação, disponibilidade e marcação."],
-    ["canal",     "Canal principal (WhatsApp)", "A estreia da Ana no número real do hospital: Chatwoot, transbordo e a estreia assistida."],
-    ["base",      "Base Ana no Hospital",       "A fonte dos dados que a Ana consulta, hoje no app do hospital (ADR-0015, fechado na V26)."],
-    ["ouvidoria", "Ouvidoria",                  "O canal de manifestações e o protocolo ANO-NNNN que a Ana informa ao paciente."],
-    ["cerebro",   "Cérebro da Ana",             "Qual motor responde e como ele pensa: modelo, prompt e os roteiros que provam o comportamento."],
-    ["os",        "Ana OS (cockpit)",           "O painel do programa: roadmap, mapas, circuito e a documentação viva."]
+    ["global-health", "Global Health",      "A integração com o MV pela API da Global Health: identificação, disponibilidade e marcação."],
+    ["ana",           "Ana",                "Prompt, ferramentas e comportamento da Ana: o que ela responde e como prova."],
+    ["chatwoot",      "Chatwoot",           "O canal: inbox, automações, versão e a estreia no WhatsApp real."],
+    ["fazer-ai",      "fazer.ai agents",    "A plataforma onde a Ana roda: bugs, limites e pedidos à fazer.ai."],
+    ["app-hospital",  "App do hospital",    "A API e as telas do app que a Ana lê (repo Hospital)."],
+    ["os",            "Ana OS e Retrato",   "O cockpit do programa e o site do diretor."]
   ];
-  const OUTRO_TEMA = ["outro", "Sem tema", "Itens ainda não classificados por área."];
+  const OUTRO_TEMA = ["outro", "Sem área", "Issues ainda sem label area: no GitHub."];
   function infoTema(chave) {
     for (const t of TEMAS) if (t[0] === chave) return t;
     return OUTRO_TEMA;
@@ -55,16 +55,16 @@
     return true;
   }
 
-  const ROT_CAT = [["feito", "feito"], ["fazer", "a fazer"], ["bloqueada", "bloqueada"], ["pendente", "pendente"], ["proposta", "proposta"]];
-  const ROT_DONO = [["P", "Pedro"], ["C", "Claude"], ["E", "Externo"]];
+  /* pendente e proposta morreram no ADR-0031 (o GitHub só tem issue aberta ou fechada);
+     o dono também: o canal da mesa diz quem move. Só o status filtra. */
+  const ROT_CAT = [["feito", "feito"], ["fazer", "a fazer"], ["bloqueada", "bloqueada"]];
 
   function renderFiltros() {
     const alvo = document.getElementById("grafo-filtros");
-    const contaCat = {}, contaDono = { P: 0, C: 0, E: 0 };
+    const contaCat = {};
     NOS.forEach(function (n) {
       const c = categoriaDe(n);
       contaCat[c] = (contaCat[c] || 0) + 1;
-      donosDe(n).forEach(function (d) { if (contaDono[d] != null) contaDono[d]++; });
     });
     alvo.innerHTML =
       '<div class="grupo"><span class="rot-grupo">Status</span>' +
@@ -73,17 +73,10 @@
         return '<button class="chip ' + par[0] + ' chip-filtro' + (lig ? "" : " desligado") +
           '" data-grupo="cat" data-chave="' + par[0] + '" aria-pressed="' + lig + '">' +
           par[1] + '<span class="n">' + (contaCat[par[0]] || 0) + "</span></button>";
-      }).join("") + "</div>" +
-      '<div class="grupo"><span class="rot-grupo">Dono</span>' +
-      ROT_DONO.map(function (par) {
-        const lig = FILTRO.dono.has(par[0]);
-        return '<button class="chip contorno chip-filtro' + (lig ? "" : " desligado") +
-          '" data-grupo="dono" data-chave="' + par[0] + '" aria-pressed="' + lig + '">' +
-          par[1] + '<span class="n">' + contaDono[par[0]] + "</span></button>";
       }).join("") + "</div>";
     alvo.querySelectorAll(".chip-filtro").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        const conjunto = btn.dataset.grupo === "cat" ? FILTRO.cat : FILTRO.dono;
+        const conjunto = FILTRO.cat;
         if (conjunto.has(btn.dataset.chave)) conjunto.delete(btn.dataset.chave);
         else conjunto.add(btn.dataset.chave);
         btn.classList.toggle("desligado");

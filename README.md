@@ -8,7 +8,7 @@ Repositório de trabalho da VITTA TECH para os agentes de IA do Hospital São Ma
 - As tabelas de negócio (preços de consultas, exames, estimativas de cirurgia, cobertura de convênios) vivem no **NocoDB** e são lidas ao vivo pela Ana via tools HTTP.
 - O estágio de **testes de viabilidade foi concluído em 06/ago/2026**: os 10 cenários principais do Roteiro de cenários passaram (`roadmap/roteiro-cenarios.md`).
 - A integração com o sistema MV do hospital (API Global Health) é o próximo horizonte, ainda em desenho (pendência GH1 no roadmap).
-- O estado vivo do programa mora em `roadmap/TODO.md` (narrativa) e `os/dados/roadmap.json` (dados do cockpit). Os dois andam sempre juntos.
+- O estado vivo do programa mora nas Issues do GitHub (`pedrorezendefig/programa-ana`, ADR-0031); `roadmap/TODO.md` guarda a narrativa (estado e log).
 
 ## Mapa do repositório
 
@@ -121,7 +121,7 @@ Depois, numa sessão Claude Code aberta neste diretório, rode `/check`: ele con
 - Banco Oracle: somente leitura, sempre pelo `query-mv.py` (ele recusa o que não for SELECT). Produção é só o Pedro, manualmente.
 - API Global Health: somente homologação nas ferramentas locais. Produção jamais.
 - Mudança em prompt ou ferramentas da Ana: sempre com aprovação explícita antes de aplicar, e registrada no roadmap.
-- Avançou ou criou tarefa do roadmap? Atualize `roadmap/TODO.md` E `os/dados/roadmap.json` juntos (mesmo ID).
+- Avançou ou criou tarefa do roadmap? Mexa na issue pelo `gh` (labels `area:`/`canal:`, corpo nas seções, ficha ao fechar) e registre uma linha no log do `roadmap/TODO.md`.
 
 ## URLs do programa (todas atrás de login)
 

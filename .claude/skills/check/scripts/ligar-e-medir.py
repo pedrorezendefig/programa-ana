@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Passo 0 do /check: liga o Ana OS (8777) e o Retrato (8778) se estiverem fora do ar,
-e mede o estagio pelo os/dados/roadmap.json (cards feitos sobre o total).
+e mede o estagio pelas Issues do GitHub (ADR-0031): issues fechadas sobre o total,
+sem contar as de label `radar`. Le o GitHub pelo mesmo modulo que o Ana OS usa
+(os/roadmap_github.py), para o /check e o cockpit nunca divergirem.
 
 Uso: python3 .claude/skills/check/scripts/ligar-e-medir.py [--so-medir]
-So le o roadmap.json; nunca escreve nada.
+So le; nunca escreve nada.
 """
-import json
 import os
 import socket
 import subprocess
@@ -19,6 +20,9 @@ SERVICOS = [
     ("Retrato", 8778, ["python3", "-m", "http.server", "-d", "retrato", "8778", "--bind", "127.0.0.1"]),
 ]
 CANAIS = [("dispare", "Dispare hoje"), ("comigo", "Sente comigo"), ("aguardando", "Aguardando terceiros")]
+
+sys.path.insert(0, os.path.join(RAIZ, "os"))
+import roadmap_github  # noqa: E402
 
 
 def aberta(porta):
@@ -43,21 +47,30 @@ def ligar():
         print(f"{nome}: {estado}  http://localhost:{porta}")
 
 
+def dias(data):
+    if not data:
+        return None
+    return max(0, int((time.time() - time.mktime(time.strptime(data, "%Y-%m-%d"))) // 86400))
+
+
 def medir():
-    with open(os.path.join(RAIZ, "os", "dados", "roadmap.json"), encoding="utf-8") as f:
-        d = json.load(f)
-    tarefas = d.get("tarefas", [])
-    feitas = [t for t in tarefas if t.get("status") == "feito"]
-    abertas = [t for t in tarefas if t.get("status") != "feito"]
+    try:
+        d = roadmap_github.montar(fresco=True)
+    except Exception as e:  # sem rede ou sem gh autenticado: o check segue e relata
+        print(f"\nNAO CONSEGUI LER O GITHUB ({e}). Confira `gh auth status` e a rede.")
+        return
+    tarefas = d["tarefas"]
+    feitas = [t for t in tarefas if t["status"] == "feito"]
+    abertas = [t for t in tarefas if t["status"] != "feito"]
     total = len(tarefas)
     pct = round(100 * len(feitas) / total) if total else 0
     feitos_ids = {t["id"] for t in feitas}
 
     print()
-    print(f"Termometro do estagio \"{d.get('estagio', '?')}\" (roadmap.json de {d.get('atualizado', '?')}):")
-    print(f"  {len(feitas)} de {total} cards feitos = {pct}%  |  faltam {len(abertas)}")
+    print(f"Termometro do estagio \"{d['estagio']}\" (Issues de {d['repo']}, lidas agora):")
+    print(f"  {len(feitas)} de {total} issues fechadas = {pct}%  |  faltam {len(abertas)}")
     if feitas:
-        print("  feitos: " + ", ".join(f"{t['id']} {t['titulo']}" for t in feitas))
+        print("  feitas: " + ", ".join(f"#{t['id']} {t['titulo']}" for t in feitas))
     print()
     print("O que falta, por canal:")
     for chave, rotulo in CANAIS:
@@ -67,18 +80,25 @@ def medir():
         print(f"  {rotulo}:")
         for t in itens:
             trava = [dep for dep in t.get("deps", []) if dep not in feitos_ids]
-            sufixo = f"  [bloqueada: espera {', '.join(trava)}]" if trava else ""
+            sufixo = f"  [bloqueada: espera #{', #'.join(trava)}]" if trava else ""
+            idade = dias(t.get("canal_desde"))
+            idade_txt = f"  (neste canal ha {idade} dia{'s' if idade != 1 else ''})" if idade is not None and chave == "aguardando" else ""
+            areas = ", ".join(t.get("areas") or []) or "sem area"
+            print(f"    - [#{t['id']}{' ' + t['antes'] if t.get('antes') else ''}] {t['titulo']}{sufixo}{idade_txt}  [{areas}]")
             gesto = (t.get("mesa") or {}).get("gesto", "")
-            print(f"    - [{t['id']}] {t['titulo']}{sufixo}")
             if gesto:
                 print(f"        gesto: {gesto}")
+            faltas = [f for f, ok in (("gesto", gesto), ("prompt", t.get("prompt"))) if not ok]
+            if faltas:
+                print(f"        DEFEITO: sem {' e sem '.join(faltas)} no corpo da issue")
     sem_canal = [t for t in abertas if t.get("canal") not in dict(CANAIS)]
     if sem_canal:
-        print("  SEM CANAL (defeito de dados): " + ", ".join(t["id"] for t in sem_canal))
-    pend = d.get("pendentes", [])
-    radar = d.get("radar", [])
+        print("  SEM LABEL canal: (defeito): " + ", ".join("#" + t["id"] for t in sem_canal))
+    radar = [r for r in d.get("radar", []) if r["status"] != "feito"]
     print()
-    print(f"Fora do termometro: {len(pend)} pendente(s), {len(radar)} item(ns) no radar.")
+    print(f"Fora do termometro: {len(radar)} item(ns) no radar"
+          + (": " + ", ".join(f"#{r['id']} (prio {r.get('prioridade')}/10)" for r in radar) if radar else "") + ".")
+    print(f"Cockpit: http://localhost:8777/index.html#cockpit  |  Issues: https://github.com/{d['repo']}/issues")
 
 
 if __name__ == "__main__":
