@@ -2,9 +2,9 @@
    pergunta só: o que eu faço agora. Lê GET /api/roadmap, que o server monta das Issues
    do repo pelo `gh`, e não grava nada: card novo, canal movido e card feito são
    comandos `gh` na sessão do terminal. Filtros (canal, área, estado, busca, com a
-   contagem em cada opção), o funil, a mesa de ação por canal (ADR-0011), o grafo de
-   execução (grafo.js), o radar em uma linha por item e o card da issue com corpo,
-   linha do tempo e comentários (GET /api/issue/<n>). */
+   contagem em cada opção, num menu próprio), o funil, a mesa de ação em raias por
+   canal (ADR-0011), cada issue uma linha que abre no lugar com a ficha, o prompt e a
+   linha do tempo (GET /api/issue/<n>), o grafo de execução (grafo.js) e o radar. */
 
 (function () {
   "use strict";
@@ -23,7 +23,7 @@
 
   const CANAIS_META = {
     dispare: { titulo: "Dispare hoje", desc: "depende só de você, em minutos" },
-    comigo: { titulo: "Sente comigo", desc: "uma sessão no terminal resolve" },
+    comigo: { titulo: "Sente comigo", desc: "o Claude Code resolve numa sessão no terminal" },
     aguardando: { titulo: "Aguardando terceiros", desc: "já foi pedido; aqui se cobra" },
   };
   const AREAS_META = {
@@ -86,37 +86,60 @@
     return todosItens().filter(it => passa(it, f)).length;
   }
 
-  /* ---- filtros: canal, área, estado e busca; cada opção diz quantos traria ---- */
+  /* ---- filtros: canal, área, estado e busca; menu próprio (sem o <select> nativo),
+     cada opção diz quantos traria ---- */
+  let MENU = null; /* a chave do menu aberto */
   function renderFiltros() {
     const alvo = document.getElementById("filtros-cockpit");
     if (!alvo) return;
     const padrao = !FILTRO.canal && !FILTRO.area && FILTRO.estado === "abertas" && !FILTRO.q;
-    function select(chave, rotulo, opcoes, todas) {
-      return '<label class="f-grupo f-select"><span class="f-rot">' + rotulo + '</span>' +
-        '<select data-chave="' + chave + '" aria-label="' + rotulo + '">' +
-        (todas != null ? '<option value="">' + esc(todas) + " (" + conta(chave, "") + ")</option>" : "") +
-        opcoes.map(o => '<option value="' + esc(o[0]) + '"' + (FILTRO[chave] === o[0] ? " selected" : "") + ">" +
-          esc(o[1]) + " (" + conta(chave, o[0]) + ")</option>").join("") + "</select></label>";
+    function menu(chave, rotulo, opcoes, todas) {
+      if (todas != null) opcoes = [["", todas]].concat(opcoes);
+      const atual = opcoes.find(o => o[0] === FILTRO[chave]) || opcoes[0];
+      const ligado = todas != null ? !!FILTRO[chave] : FILTRO[chave] !== "abertas";
+      return '<div class="dd' + (MENU === chave ? " aberto" : "") + '" data-menu="' + chave + '">' +
+        '<button type="button" class="dd-btn' + (ligado ? " on" : "") + '" aria-haspopup="listbox" aria-expanded="' + (MENU === chave) + '">' +
+        '<span class="dd-rot">' + rotulo + '</span><span class="dd-val">' + esc(atual[1]) + '</span>' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>' +
+        '<div class="dd-menu" role="listbox" aria-label="' + rotulo + '">' + opcoes.map(o => {
+          const n = conta(chave, o[0]); const on = FILTRO[chave] === o[0];
+          return '<button type="button" class="dd-opt' + (on ? " on" : "") + '" role="option" aria-selected="' + on + '" data-v="' + esc(o[0]) + '"' + (n ? "" : " data-zero") + '>' +
+            '<span class="dd-txt">' + esc(o[1]) + '</span><span class="dd-n">' + n + "</span></button>";
+        }).join("") + "</div></div>";
     }
     alvo.innerHTML = '<div class="f-linha">' +
       '<label class="f-busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input type="search" id="fc-q" placeholder="buscar nas issues" value="' + esc(FILTRO.q) + '" autocomplete="off" aria-label="Buscar"></label>' +
-      select("canal", "Canal", Object.keys(CANAIS_META).map(c => [c, CANAIS_META[c].titulo]), "todos") +
-      select("area", "Área", Object.keys(AREAS_META).map(a => [a, AREAS_META[a]]), "todas") +
-      select("estado", "Estado", ESTADOS, null) +
+      menu("canal", "Canal", Object.keys(CANAIS_META).map(c => [c, CANAIS_META[c].titulo]), "todos") +
+      menu("area", "Área", Object.keys(AREAS_META).map(a => [a, AREAS_META[a]]), "todas") +
+      menu("estado", "Estado", ESTADOS, null) +
       '<span class="f-conta">' + filtrados().length + " de " + todosItens().length + "</span>" +
       (padrao ? "" : '<button type="button" class="btn mini f-limpar" id="fc-limpar">limpar</button>') + "</div>";
     const q = document.getElementById("fc-q");
     q.addEventListener("input", () => { FILTRO.q = q.value; renderTudo(true); });
     q.addEventListener("keydown", e => { if (e.key === "Escape") { q.value = ""; FILTRO.q = ""; renderTudo(); } });
-    alvo.querySelectorAll("select[data-chave]").forEach(s => {
-      s.addEventListener("change", () => { FILTRO[s.dataset.chave] = s.value; renderTudo(); });
+    alvo.querySelectorAll(".dd").forEach(dd => {
+      const chave = dd.dataset.menu;
+      dd.querySelector(".dd-btn").addEventListener("click", e => { e.stopPropagation(); MENU = MENU === chave ? null : chave; marcarMenu(); });
+      dd.querySelectorAll(".dd-opt").forEach(o => o.addEventListener("click", e => {
+        e.stopPropagation(); FILTRO[chave] = o.dataset.v; MENU = null; renderTudo();
+      }));
     });
     const lp = document.getElementById("fc-limpar");
     if (lp) lp.onclick = () => { FILTRO.canal = ""; FILTRO.area = ""; FILTRO.estado = "abertas"; FILTRO.q = ""; renderTudo(); };
   }
+  /* abre e fecha o menu sem redesenhar a barra */
+  function marcarMenu() {
+    document.querySelectorAll("#filtros-cockpit .dd").forEach(dd => {
+      const on = dd.dataset.menu === MENU;
+      dd.classList.toggle("aberto", on);
+      dd.querySelector(".dd-btn").setAttribute("aria-expanded", String(on));
+    });
+  }
+  document.addEventListener("click", () => { if (MENU !== null) { MENU = null; marcarMenu(); } });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && MENU !== null) { MENU = null; marcarMenu(); } });
 
-  /* ---- funil: o total pendente e a quebra por canal; clicar filtra ---- */
+  /* ---- funil: uma faixa compacta com o total e a quebra por canal; clicar filtra ---- */
   function renderFunil() {
     const alvo = document.getElementById("funil");
     if (!alvo) return;
@@ -124,128 +147,48 @@
     const abertas = abertos.filter(i => i.faixa === "tarefa");
     const tot = ROADMAP.totais || {};
     const cards = [
-      { n: abertas.length, r: "pendentes", s: (tot.feitas || 0) + " de " + (tot.total || 0) + " feitas" + (tot.radar ? " · +" + tot.radar + " no radar" : ""), cls: "total", on: FILTRO.estado === "abertas" && !FILTRO.canal, acao: () => { FILTRO.estado = "abertas"; FILTRO.canal = ""; } },
+      { n: abertas.length, r: "pendentes", s: (tot.feitas || 0) + " de " + (tot.total || 0) + " feitas", cls: "total", on: FILTRO.estado === "abertas" && !FILTRO.canal, acao: () => { FILTRO.estado = "abertas"; FILTRO.canal = ""; } },
     ].concat(Object.keys(CANAIS_META).map(c => ({
-      n: abertos.filter(i => i.canal === c).length, r: CANAIS_META[c].titulo, s: CANAIS_META[c].desc,
+      n: abertos.filter(i => i.canal === c).length, r: CANAIS_META[c].titulo, cls: "canal-" + c,
       on: FILTRO.canal === c, acao: () => { FILTRO.canal = FILTRO.canal === c ? "" : c; FILTRO.estado = "abertas"; },
     }))).concat([
-      { n: abertas.filter(i => i.travas.length).length, r: "bloqueadas", s: "esperam outra issue", on: FILTRO.estado === "bloqueadas", acao: () => { FILTRO.estado = FILTRO.estado === "bloqueadas" ? "abertas" : "bloqueadas"; FILTRO.canal = ""; } },
-      { n: (ROADMAP.radar || []).filter(i => i.status === "fazer").length, r: "radar", s: "fora do grafo", on: false, acao: () => { document.getElementById("radar").scrollIntoView({ block: "start", behavior: Liga.reduzido() ? "auto" : "smooth" }); } },
+      { n: abertas.filter(i => i.travas.length).length, r: "bloqueadas", on: FILTRO.estado === "bloqueadas", acao: () => { FILTRO.estado = FILTRO.estado === "bloqueadas" ? "abertas" : "bloqueadas"; FILTRO.canal = ""; } },
+      { n: (ROADMAP.radar || []).filter(i => i.status === "fazer").length, r: "radar", on: false, acao: () => { document.getElementById("radar").scrollIntoView({ block: "start", behavior: Liga.reduzido() ? "auto" : "smooth" }); } },
     ]);
     alvo.innerHTML = cards.map((c, i) =>
-      '<button type="button" class="funil-card ' + (c.cls || "") + (c.on ? " on" : "") + '" data-i="' + i + '">' +
-      '<span class="n">' + c.n + '</span><span class="r">' + esc(c.r) + '</span><span class="s">' + esc(c.s) + "</span></button>").join("");
+      '<button type="button" class="funil-card ' + (c.cls || "") + (c.on ? " on" : "") + '" data-i="' + i + '" aria-pressed="' + c.on + '">' +
+      '<span class="n">' + c.n + '</span><span class="r">' + esc(c.r) + '</span>' + (c.s ? '<span class="s">' + esc(c.s) + "</span>" : "") + "</button>").join("");
     alvo.querySelectorAll(".funil-card").forEach(el => {
       el.addEventListener("click", () => { cards[+el.dataset.i].acao(); renderTudo(); });
     });
   }
 
-  /* ---- mesa de ação ---- */
-  function chipsAreas(it) {
-    return (it.areas || []).length ? '<div class="areas">' + it.areas.map(a => '<span class="chip neutro">' + esc(AREAS_META[a] || a) + "</span>").join("") + "</div>" : "";
-  }
-  function cardMesa(it) {
+  /* ---- a mesa: uma raia por canal, empilhadas; cada issue é uma linha compacta
+     (o formato do Hospital OS) que abre no lugar com a ficha, o prompt e a linha do tempo ---- */
+  const ABERTOS = new Set();       /* ids das linhas abertas */
+  const RAIAS_FECHADAS = new Set(); /* canais com a raia recolhida */
+  const TEMPO = {};                 /* linha do tempo já lida, por número da issue */
+
+  function chipsLinha(it) {
     const dias = diasDesde(it.canal_desde);
-    const chips = ['<span class="chip ' + (it.faixa === "radar" ? "tag" : it.status === "feito" ? "feito" : "fazer") + '">' + (it.status === "feito" ? "feita" : it.faixa) + "</span>"];
-    if (it.em_curso) chips.push('<span class="chip fazer">em curso</span>');
+    const chips = (it.areas || []).map(a => '<span class="chip neutro">' + esc(AREAS_META[a] || a) + "</span>");
+    if (it.faixa === "radar") chips.push('<span class="chip tag">radar' + (it.prioridade != null ? " " + it.prioridade + "/10" : "") + "</span>");
+    if (it.status === "feito") chips.push('<span class="chip feito">feita' + (it.fechada_em ? " em " + dataBr(it.fechada_em) : "") + "</span>");
+    if (it.em_curso) chips.push('<span class="chip preto">em curso</span>');
     if (it.status === "fazer" && it.travas.length) chips.push('<span class="chip bloqueada">aguarda #' + it.travas.join(", #") + "</span>");
-    if (it.canal === "aguardando" && dias !== null)
-      chips.push('<span class="chip ' + (dias >= 14 ? "tag" : "bloqueada") + '">há ' + dias + " dia" + (dias === 1 ? "" : "s") + "</span>");
-    if (it.faixa === "radar" && it.prioridade != null) chips.push('<span class="chip bloqueada">prioridade ' + it.prioridade + "/10</span>");
-    if (it.status === "fazer" && !it.prompt) chips.push('<span class="chip tag">sem prompt ainda</span>');
+    if (it.status === "fazer" && dias !== null)
+      chips.push('<span class="chip ' + (it.canal === "aguardando" && dias >= 14 ? "tag" : "fora") + '">há ' + dias + " dia" + (dias === 1 ? "" : "s") + "</span>");
+    if (it.status === "fazer" && !it.prompt) chips.push('<span class="chip tag">sem prompt</span>');
     if (it.status === "fazer" && !(it.mesa && it.mesa.gesto)) chips.push('<span class="chip tag">sem gesto</span>');
-    return '<div class="card hover mesa-card" data-mesa-id="' + esc(it.id) + '" tabindex="0" role="button">' +
-      '<span class="id-faixa" title="' + esc(it.antes ? "antes: " + it.antes : "") + '">#' + esc(it.id) + (it.antes ? ' <span class="micro">' + esc(it.antes) + "</span>" : "") + '</span>' +
-      '<h4>' + esc(it.titulo) + '</h4>' + chipsAreas(it) +
-      '<div class="rodape-card">' + chips.join("") + '</div></div>';
+    return chips.join("");
   }
 
-  function renderMesa() {
-    const itens = filtrados();
-    const abertos = itens.filter(i => i.status === "fazer");
-    const feitos = itens.filter(i => i.status === "feito");
-    let cols = Object.keys(CANAIS_META).map(canal => {
-      const doCanal = abertos.filter(i => i.canal === canal)
-        .sort((a, b) => (diasDesde(b.canal_desde) || 0) - (diasDesde(a.canal_desde) || 0));
-      if (FILTRO.canal && FILTRO.canal !== canal) return "";
-      const meta = CANAIS_META[canal];
-      return '<div class="mesa-col" data-canal="' + canal + '">' +
-        '<div class="col-cabeca"><h3>' + meta.titulo + '</h3><span class="conta">' + doCanal.length + '</span></div>' +
-        '<span class="caption">' + meta.desc + '</span>' +
-        (doCanal.map(cardMesa).join("") || '<p class="mesa-vazia">nada aqui agora.</p>') +
-        '</div>';
-    });
-    if (FILTRO.estado === "feitas" || FILTRO.estado === "todas") {
-      cols.push('<div class="mesa-col" data-canal="feitas">' +
-        '<div class="col-cabeca"><h3>Feitas</h3><span class="conta">' + feitos.length + '</span></div>' +
-        '<span class="caption">issues fechadas, com a ficha no hover</span>' +
-        (feitos.map(cardMesa).join("") || '<p class="mesa-vazia">nenhuma ainda.</p>') + '</div>');
-    }
-    if (FILTRO.estado === "feitas") cols = cols.slice(-1);
-    const semCanal = abertos.filter(i => !i.canal);
-    document.getElementById("mesa").innerHTML = cols.join("") +
-      (semCanal.length ? '<p class="caption" style="grid-column: 1 / -1;">Sem label canal: (corrigir com <code>gh issue edit N --add-label canal:...</code>): ' +
-        semCanal.map(i => "#" + esc(i.id)).join(" · ") + '</p>' : "");
-    document.querySelectorAll(".mesa-card").forEach(el => {
-      const it = itens.find(i => i.id === el.dataset.mesaId);
-      el.addEventListener("mouseenter", () => mostrarTip(it, el));
-      el.addEventListener("mouseleave", esconderTip);
-      el.addEventListener("focus", () => mostrarTip(it, el));
-      el.addEventListener("blur", esconderTip);
-      el.addEventListener("click", () => abrirPainelMesa(it.id));
-      el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirPainelMesa(it.id); } });
-    });
-  }
-
-  /* tooltip de ficha no hover (padrão OS9): a mesa e o grafo usam o mesmo desenho */
-  const TIP = document.createElement("div");
-  TIP.className = "tooltip-ficha";
-  document.body.appendChild(TIP);
-
-  function mostrarTip(it, el) {
-    let html = "";
-    if (it.status === "feito" && it.ficha) {
-      html = '<div class="tt-rot">O que fez</div><div class="tt-txt">' + esc(it.ficha.fez) + "</div>" +
-        '<div class="tt-rot">O que mudou</div><div class="tt-txt">' + esc(it.ficha.mudou) + "</div>" +
-        '<div class="tt-rot">O valor</div><div class="tt-txt">' + esc(it.ficha.valor) + "</div>";
-    } else if (it.mesa) {
-      html = '<div class="tt-rot">Destrava</div><div class="tt-txt">' + esc(it.mesa.destrava) + "</div>" +
-        '<div class="tt-rot">O gesto</div><div class="tt-txt">' + esc(it.mesa.gesto) + "</div>";
-    } else if (it.nota) {
-      html = '<div class="tt-rot">Nota</div><div class="tt-txt">' + esc(it.nota) + "</div>";
-    } else return;
-    TIP.innerHTML = html;
-    TIP.classList.add("visivel");
-    const r = el.getBoundingClientRect();
-    let x = r.right + 12;
-    if (x + 364 > window.innerWidth) x = Math.max(8, r.left - 364);
-    const y = Math.min(r.top, window.innerHeight - TIP.offsetHeight - 12);
-    TIP.style.left = x + "px";
-    TIP.style.top = Math.max(8, y) + "px";
-  }
-  function esconderTip() { TIP.classList.remove("visivel"); }
-  document.addEventListener("scroll", esconderTip, true);
-
-  /* ---- o card da issue: corpo, ações e a linha do tempo lida do GitHub ---- */
   function bloco(rotulo, texto) {
     return texto ? '<div class="mesa-bloco"><span class="micro">' + rotulo + '</span><p>' + esc(texto) + '</p></div>' : "";
   }
-  function abrirPainelMesa(id) {
-    const it = porId(id);
-    const painel = document.getElementById("painel-mesa");
-    if (!it) { painel.hidden = true; return; }
-    document.querySelectorAll(".mesa-card, .radar-linha").forEach(el =>
-      el.classList.toggle("ativo", el.dataset.mesaId === id));
-    const dias = diasDesde(it.canal_desde);
+  function corpoLinha(it) {
     const rotuloPrompt = it.canal === "comigo" ? "Copiar prompt de sessão" : "Copiar prompt de terminal";
-    const micro = ["#" + it.id + (it.antes ? " (antes " + it.antes + ")" : ""), it.faixa === "radar" ? "radar" : (it.status === "feito" ? "feita" + (it.fechada_em ? " em " + dataBr(it.fechada_em) : "") : "tarefa")]
-      .concat(it.canal ? [CANAIS_META[it.canal].titulo.toLowerCase() + (dias !== null ? " há " + dias + " dia" + (dias === 1 ? "" : "s") : "")] : [])
-      .concat((it.areas || []).map(a => AREAS_META[a] || a));
-    painel.innerHTML =
-      '<div class="linha"><div>' +
-      '<span class="micro">' + esc(micro.join(" · ")) + '</span>' +
-      '<h3 style="margin: 4px 0 0;">' + esc(it.titulo) + '</h3></div>' +
-      '<button class="btn mini direita" type="button" id="fechar-mesa">fechar</button></div>' +
+    return '<div class="lin-corpo">' +
       (it.status === "feito" && it.ficha
         ? bloco("O que fez", it.ficha.fez) + bloco("O que mudou", it.ficha.mudou) + bloco("O valor", it.ficha.valor)
         : (it.mesa ? bloco("Destrava", it.mesa.destrava) + bloco("O gesto", it.mesa.gesto) : "")) +
@@ -255,42 +198,104 @@
       }).join("<br>") + '</p></div>' : "") +
       bloco("Nota de registro", it.nota) +
       '<div class="acoes">' +
-      (it.prompt ? '<button class="btn mini principal" type="button" id="copiar-mesa">' + rotuloPrompt + '</button>'
-        : (it.status === "fazer" ? '<span class="chip tag">sem prompt ainda</span>' : "")) +
-      (it.faixa !== "radar" ? '<button class="btn mini" type="button" id="ver-grafo">Ver no grafo</button>' : "") +
+      (it.prompt ? '<button class="btn mini principal" type="button" data-copiar="' + esc(it.id) + '">' + rotuloPrompt + '</button>' : "") +
+      (it.faixa !== "radar" ? '<button class="btn mini" type="button" data-grafo="' + esc(it.id) + '">Ver no grafo</button>' : "") +
       (it.url ? '<a class="btn mini" href="' + esc(it.url) + '" target="_blank" rel="noopener">Abrir no GitHub ↗</a>' : "") +
       '<span class="caption">o estado muda por <code>gh</code> na sessão do terminal</span></div>' +
-      '<div class="mesa-bloco" id="linha-tempo"><span class="micro">Linha do tempo</span><p class="caption">lendo o GitHub...</p></div>';
-    painel.hidden = false;
-    document.getElementById("fechar-mesa").onclick = fecharPainelMesa;
-    const bc = document.getElementById("copiar-mesa");
-    if (bc) bc.onclick = () => copiarPrompt(bc, it);
-    const bg = document.getElementById("ver-grafo");
-    if (bg) bg.onclick = () => Grafo.abrir(it.id);
-    painel.scrollIntoView({ block: "nearest", behavior: Liga.reduzido() ? "auto" : "smooth" });
-    carregarLinhaDoTempo(it.numero);
+      '<div class="mesa-bloco linha-tempo-bloco" data-tempo="' + esc(it.numero) + '">' + htmlTempo(it.numero) + "</div></div>";
   }
 
+  function linha(it, idx) {
+    const aberto = ABERTOS.has(it.id);
+    return '<article class="lin' + (aberto ? " aberta" : "") + '" id="lin-' + esc(it.id) + '">' +
+      '<span class="lin-idx">' + String(idx + 1).padStart(2, "0") + '</span>' +
+      '<div class="lin-main">' +
+      '<button type="button" class="lin-cabeca" data-abrir="' + esc(it.id) + '" aria-expanded="' + aberto + '">' +
+      '<span class="lin-num">#' + esc(it.id) + '</span><span class="lin-tit">' + esc(it.titulo) + "</span>" +
+      (it.antes ? '<span class="lin-antes">antes ' + esc(it.antes) + "</span>" : "") + "</button>" +
+      '<div class="lin-chips">' + chipsLinha(it) + "</div>" +
+      (aberto ? corpoLinha(it) : "") + "</div>" +
+      (it.url ? '<a class="lin-go" href="' + esc(it.url) + '" target="_blank" rel="noopener" aria-label="abrir a issue #' + esc(it.id) + ' no GitHub">↗</a>' : "") +
+      "</article>";
+  }
+
+  function raia(chave, titulo, desc, itens) {
+    const fechada = RAIAS_FECHADAS.has(chave);
+    return '<section class="raia" data-canal="' + chave + '">' +
+      '<button type="button" class="raia-cabeca" data-raia="' + chave + '" aria-expanded="' + !fechada + '">' +
+      '<svg class="raia-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+      '<span class="raia-tit">' + esc(titulo) + '</span><span class="raia-n">' + itens.length + '</span>' +
+      '<span class="raia-desc">' + esc(desc) + "</span></button>" +
+      (fechada ? "" : '<div class="raia-corpo">' + (itens.map(linha).join("") || '<p class="mesa-vazia">nada aqui agora.</p>') + "</div>") +
+      "</section>";
+  }
+
+  function renderMesa() {
+    const itens = filtrados();
+    const abertos = itens.filter(i => i.status === "fazer");
+    const feitos = itens.filter(i => i.status === "feito");
+    let raias = FILTRO.estado === "feitas" ? [] : Object.keys(CANAIS_META).map(canal => {
+      if (FILTRO.canal && FILTRO.canal !== canal) return "";
+      const doCanal = abertos.filter(i => i.canal === canal)
+        .sort((a, b) => (diasDesde(b.canal_desde) || 0) - (diasDesde(a.canal_desde) || 0));
+      return raia(canal, CANAIS_META[canal].titulo, CANAIS_META[canal].desc, doCanal);
+    });
+    if (FILTRO.estado === "feitas" || FILTRO.estado === "todas")
+      raias.push(raia("feitas", "Feitas", "issues fechadas, com a ficha", feitos));
+    const semCanal = abertos.filter(i => !i.canal);
+    const alvo = document.getElementById("mesa");
+    alvo.innerHTML = raias.join("") +
+      (semCanal.length ? '<p class="caption">Sem label canal: (corrigir com <code>gh issue edit N --add-label canal:...</code>): ' +
+        semCanal.map(i => "#" + esc(i.id)).join(" · ") + '</p>' : "");
+    alvo.querySelectorAll("[data-raia]").forEach(b => b.addEventListener("click", () => {
+      const c = b.dataset.raia;
+      if (RAIAS_FECHADAS.has(c)) RAIAS_FECHADAS.delete(c); else RAIAS_FECHADAS.add(c);
+      renderMesa();
+    }));
+    alvo.querySelectorAll("[data-abrir]").forEach(b => b.addEventListener("click", () => {
+      const id = b.dataset.abrir;
+      if (ABERTOS.has(id)) ABERTOS.delete(id); else ABERTOS.add(id);
+      renderMesa();
+    }));
+    alvo.querySelectorAll("[data-copiar]").forEach(b => b.addEventListener("click", () => copiarPrompt(b, porId(b.dataset.copiar))));
+    alvo.querySelectorAll("[data-grafo]").forEach(b => b.addEventListener("click", () => Grafo.abrir(b.dataset.grafo)));
+    alvo.querySelectorAll("[data-tempo]").forEach(el => { if (!TEMPO[el.dataset.tempo]) carregarLinhaDoTempo(el.dataset.tempo); });
+  }
+
+  /* abre a linha de um item vindo de fora da mesa (o radar): tira do caminho
+     o filtro que a esconderia, abre a raia e a linha, e rola até ela */
+  function abrirNaMesa(id) {
+    const it = porId(id);
+    if (!it) return;
+    if (!passa(it, FILTRO)) { FILTRO.canal = ""; FILTRO.area = ""; FILTRO.q = ""; FILTRO.estado = it.status === "feito" ? "todas" : "abertas"; }
+    RAIAS_FECHADAS.delete(it.status === "feito" ? "feitas" : it.canal);
+    ABERTOS.add(id);
+    renderTudo();
+    const el = document.getElementById("lin-" + id);
+    if (el) el.scrollIntoView({ block: "center", behavior: Liga.reduzido() ? "auto" : "smooth" });
+  }
+
+  /* ---- a linha do tempo lida do GitHub, guardada para não reler a cada desenho ---- */
+  function htmlTempo(numero) {
+    const t = TEMPO[numero];
+    if (!t || t.lendo) return '<span class="micro">Linha do tempo</span><p class="caption">lendo o GitHub...</p>';
+    if (t.erro) return '<span class="micro">Linha do tempo</span><p class="caption">não consegui ler o GitHub: ' + esc(t.erro) + "</p>";
+    return '<span class="micro">Linha do tempo (' + t.lista.length + ")</span>" +
+      '<ul class="linha-tempo">' + t.lista.map(e =>
+        '<li><span class="q">' + esc(dataHoraBr(e.quando)) + "</span><span" + (e.tipo === "comentario" ? ' class="comentario"' : "") + ">" +
+        (e.quem ? "<strong>" + esc(e.quem) + "</strong> " : "") + esc(e.texto) + "</span></li>").join("") + "</ul>";
+  }
   async function carregarLinhaDoTempo(numero) {
-    const alvo = document.getElementById("linha-tempo");
+    TEMPO[numero] = { lendo: true }; /* evita disparar duas leituras da mesma issue */
     try {
       const d = await fetch("/api/issue/" + numero).then(r => r.json());
       if (!d.ok) throw new Error(d.erro || "falhou");
-      if (!alvo || !alvo.isConnected) return;
-      alvo.innerHTML = '<span class="micro">Linha do tempo (' + d.linha_do_tempo.length + ")</span>" +
-        '<ul class="linha-tempo">' + d.linha_do_tempo.map(e =>
-          '<li><span class="q">' + esc(dataHoraBr(e.quando)) + "</span><span" + (e.tipo === "comentario" ? ' class="comentario"' : "") + ">" +
-          (e.quem ? "<strong>" + esc(e.quem) + "</strong> " : "") + esc(e.texto) + "</span></li>").join("") + "</ul>";
+      TEMPO[numero] = { lista: d.linha_do_tempo };
     } catch (e) {
-      if (alvo) alvo.innerHTML = '<span class="micro">Linha do tempo</span><p class="caption">não consegui ler o GitHub: ' + esc(e.message) + "</p>";
+      TEMPO[numero] = { erro: e.message };
     }
+    document.querySelectorAll('[data-tempo="' + numero + '"]').forEach(el => { el.innerHTML = htmlTempo(numero); });
   }
-
-  function fecharPainelMesa() {
-    document.getElementById("painel-mesa").hidden = true;
-    document.querySelectorAll(".mesa-card.ativo, .radar-linha.ativo").forEach(el => el.classList.remove("ativo"));
-  }
-
   async function copiarPrompt(btn, it) {
     if (!it || !it.prompt) return;
     try { await navigator.clipboard.writeText(it.prompt); }
@@ -316,7 +321,7 @@
       '<span class="chip bloqueada">' + esc(r.canal ? CANAIS_META[r.canal].titulo.toLowerCase() : "sem canal") + '</span>' +
       '</button>').join("") || '<p class="caption">Radar limpo: nada pendurado fora do grafo.</p>';
     alvo.querySelectorAll(".radar-linha").forEach(el => {
-      el.addEventListener("click", () => abrirPainelMesa(el.dataset.mesaId));
+      el.addEventListener("click", () => abrirNaMesa(el.dataset.mesaId));
     });
   }
 
