@@ -3,7 +3,9 @@
    Faz: estado e bloco. Regras: raia, tipo de nó e ferramenta (os nós que não a
    chamam esmaecem; as seções que não a chamam somem). Busca: origem e "pode
    chamar hoje". Global Health: veredito. O filtro vai para a URL
-   (#<aba>?estado=ainda-nao&q=...) e volta dela ao carregar. */
+   (#<aba>?estado=ainda-nao&q=...) e volta dela ao carregar.
+   Ligar um chip (ou escolher no select) também leva até o primeiro item que
+   bate, com o destaque rápido da chegada por link (ADR-0032, decisão 7). */
 
 var Filtros = (function () {
   "use strict";
@@ -128,7 +130,7 @@ var Filtros = (function () {
       b.addEventListener("click", function () { alternar(aba, b.dataset.chave, b.dataset.valor); });
     });
     barra.querySelectorAll("select[data-chave]").forEach(function (s) {
-      s.addEventListener("change", function () { definir(aba, s.dataset.chave, s.value); });
+      s.addEventListener("change", function () { definir(aba, s.dataset.chave, s.value); if (s.value) levar(aba); });
     });
     document.getElementById("f-limpar").addEventListener("click", function () { limpar(aba); });
     atualizarBarra(aba);
@@ -211,7 +213,37 @@ var Filtros = (function () {
   }
 
   function alternar(aba, chave, valor) {
-    definir(aba, chave, ESTADO[aba][chave] === valor ? "" : valor);
+    var liga = ESTADO[aba][chave] !== valor;
+    definir(aba, chave, liga ? valor : "");
+    if (liga) levar(aba);
+  }
+
+  /* o primeiro item visível que bate: nas regras, o nó mais à esquerda do
+     fluxograma (depois o mais alto); nas outras esferas, o primeiro na ordem da página */
+  function primeiro(aba) {
+    var cfg = CONFIG[aba];
+    if (!cfg) return null;
+    if (cfg.especial === "regras") {
+      var nos = Array.prototype.slice.call(document.querySelectorAll("#svg .no:not(.apagado)"));
+      nos.sort(function (a, b) {
+        var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+        return ra.left - rb.left || ra.top - rb.top;
+      });
+      return nos[0] || null;
+    }
+    return document.querySelector(cfg.itens.split(",").map(function (s) { return s.trim() + ":not(.filtrado)"; }).join(",")) || null;
+  }
+
+  /* um comportamento só para todo chip de filtro: rola até o item e o acende.
+     Durante a rolagem o mouse parado passa por cima de nós do fluxograma; LEVANDO
+     avisa o hover do Mapa do SOP para não abrir o painel por engano. */
+  var LEVANDO_ATE = 0;
+  function levar(aba, el) {
+    el = el || primeiro(aba);
+    if (!el) return;
+    LEVANDO_ATE = Date.now() + 1200;
+    if (window.Liga) Liga.chegar(el, "filtro");
+    else try { el.scrollIntoView({ block: "center" }); } catch (x) { /* sem rolagem */ }
   }
 
   function limpar(aba) {
@@ -247,5 +279,5 @@ var Filtros = (function () {
   }
 
   return { configurar: configurar, mostrar: mostrar, aplicar: aplicar, definir: definir, alternar: alternar,
-           limpar: limpar, daUrl: daUrl, ativos: ativos, escondido: escondido, slug: slug, valor: function (aba, chave) { return ESTADO[aba] ? ESTADO[aba][chave] : ""; } };
+           limpar: limpar, daUrl: daUrl, levar: levar, levando: function () { return Date.now() < LEVANDO_ATE; }, ativos: ativos, escondido: escondido, slug: slug, valor: function (aba, chave) { return ESTADO[aba] ? ESTADO[aba][chave] : ""; } };
 })();

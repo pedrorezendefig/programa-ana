@@ -454,7 +454,7 @@ var RetratoSop = (function () {
   function ligarEventos() {
     document.querySelectorAll("#svg .no").forEach(function (el) {
       var id = el.dataset.id;
-      el.addEventListener("mouseenter", function () { if (!FIXADO) mostrar(id, false); });
+      el.addEventListener("mouseenter", function () { if (!FIXADO && !(window.Filtros && Filtros.levando())) mostrar(id, false); });
       el.addEventListener("focus", function () { if (!FIXADO) mostrar(id, false); });
       el.addEventListener("mouseleave", function () { if (!FIXADO) limpar(); });
       el.addEventListener("click", function () { fixar(id); });
@@ -752,6 +752,7 @@ var RetratoSop = (function () {
     document.addEventListener("liga:chegou", function (e) {
       var el = e.detail && e.detail.el;
       if (!el || !el.classList || !el.classList.contains("no")) return;
+      if (e.detail.origem === "filtro") return; /* filtro só rola e acende; não fixa o painel */
       FIXADO = null;
       fixar(el.dataset.id);
     });

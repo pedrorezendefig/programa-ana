@@ -82,6 +82,11 @@
         btn.classList.toggle("desligado");
         btn.setAttribute("aria-pressed", conjunto.has(btn.dataset.chave));
         aplicarFiltros();
+        /* ligar um status leva até o primeiro nó dele (ADR-0032, decisão 7) */
+        if (conjunto.has(btn.dataset.chave) && window.Filtros) {
+          const alvo = NOS.find(n => categoriaDe(n) === btn.dataset.chave && visivel(n));
+          if (alvo) Filtros.levar(null, document.getElementById("no-" + alvo.id));
+        }
       });
     });
   }

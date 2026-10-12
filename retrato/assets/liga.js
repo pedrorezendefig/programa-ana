@@ -76,16 +76,20 @@ var Liga = (function () {
     }
   }
 
-  function chegar(alvo) {
+  /* alvo: id ou o próprio elemento; origem "filtro" quando quem chama é um chip
+     de filtro (Filtros.levar), para o ouvinte só rolar e acender, sem abrir painel */
+  function chegar(alvo, origem) {
     if (!alvo) return false;
-    var el = document.getElementById(alvo);
+    var el = typeof alvo === "string" ? document.getElementById(alvo) : alvo;
     if (!el) return false;
     abrirDetails(el);
     if (window.Filtros && Filtros.escondido(el)) Filtros.limpar(ler().aba);
-    var ev = new CustomEvent("liga:chegou", { detail: { el: el, alvo: alvo }, cancelable: true });
+    var ev = new CustomEvent("liga:chegou", { detail: { el: el, alvo: el.id || alvo, origem: origem || "link" }, cancelable: true });
     document.dispatchEvent(ev);
     if (!ev.defaultPrevented) {
-      try { el.scrollIntoView({ block: "center", behavior: reduzido() ? "auto" : "smooth" }); }
+      /* alvo mais alto que meia tela vai pelo topo (o scroll-margin-top livra a barra fixa) */
+      var alto = el.getBoundingClientRect().height > window.innerHeight * 0.5;
+      try { el.scrollIntoView({ block: alto ? "start" : "center", behavior: reduzido() ? "auto" : "smooth" }); }
       catch (e) { el.scrollIntoView(); }
     }
     acender(el);
