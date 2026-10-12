@@ -18,6 +18,8 @@
 
 ## Log
 
+- **12/out/2026 (3):** **#16 concluída (ADR-0032).** As famílias da bancada saíram da tela (`os/arquivo/familias.html`), o Divergímetro foi para `ana/bancada/arquivo/`, `ana/bancada/cenarios/capacidades.json` tem 35 cenários (30 automáticos, 5 manuais; o C22-1 só roda com `--com-escrita`) e o `e2e.py` grava `ana/bancada/conversas/<id>.json`. Primeira gravação, C05-1: falhou porque a Ana não aplicou a etiqueta `particular-aquecido`. Feita por agente em worktree, em paralelo com a #15 e a #12.
+
 - **12/out/2026 (2):** **o relato da #12 está pronto** em `ana/plataforma/relato-fazer-ai-achados-plataforma.md`, conferido na instância 1.15.0. Só dois pedidos sobram para a fazer.ai (body em modo antigo nas tools 7 e 11; resolve_conversation no follow-up); o corte de 4.000 caracteres some ao subir para 1.36.0 ou mais. A #12 foi para `canal:dispare`: falta o Pedro enviar.
 
 - **12/out/2026:** **a mesa do Cockpit vira raias empilhadas.** No formato do Hospital OS: uma raia por canal, cada issue numa linha compacta que abre no lugar (ficha, prompt, linha do tempo), filtros num menu próprio claro no lugar do `<select>` nativo, funil em pílulas. O #13 (revogar o token da Cloudflare) foi fechado como não planejado por decisão do Pedro.
