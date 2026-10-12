@@ -1,0 +1,137 @@
+{
+  "id": "C13-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C13",
+  "familia": null,
+  "titulo": "Achar o cadastro do paciente",
+  "contato": "TESTE BANCADA ANA C13-1",
+  "conversa_id": 195,
+  "inicio": "2026-10-12T17:04:16+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quero marcar uma consulta de cardiologia particular",
+      "ana": [
+        "A consulta de Cardiologia particular é R$ 380. Quer que eu veja os horários disponíveis para você?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "consultar_precos_consultas"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5"
+      ],
+      "espere": null,
+      "falha_se": null,
+      "conferencias": []
+    },
+    {
+      "n": 2,
+      "paciente": "pode ser, quero marcar sim",
+      "ana": [
+        "Para prosseguir, preciso coletar nome completo e CPF.Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento."
+      ],
+      "ferramentas": [],
+      "nos": [
+        "P7",
+        "S1"
+      ],
+      "espere": null,
+      "falha_se": null,
+      "conferencias": []
+    },
+    {
+      "n": 3,
+      "paciente": "meu nome é Teste Bancada Ana, CPF ***.***.***-**",
+      "ana": [
+        "A agenda online não retornou os horários neste momento. Nossa equipe vai entrar em contato para confirmar o melhor horário para sua consulta de Cardiologia."
+      ],
+      "ferramentas": [
+        "set_custom_attribute",
+        "set_custom_attribute",
+        "buscar_paciente_por_cpf",
+        "consultar_especialidades_agenda",
+        "consultar_convenios_agenda"
+      ],
+      "nos": [
+        "S1",
+        "S2",
+        "P13",
+        "P14"
+      ],
+      "espere": "Ela informa o valor, você aceita, e ela pede nome e CPF. Depois disso ela busca seu cadastro na agenda online.",
+      "falha_se": "Pedir data de nascimento ou telefone. Desde o ADR-0014 o bloco cadastral é só nome e CPF.",
+      "conferencias": [
+        {
+          "turno": 3,
+          "tipo": "frase proibida",
+          "esperado": "data de nascimento",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "ferramenta",
+          "esperado": "buscar_paciente_por_cpf",
+          "veio": [
+            "kanban_move_card",
+            "consultar_precos_consultas",
+            "set_custom_attribute",
+            "set_custom_attribute",
+            "buscar_paciente_por_cpf",
+            "consultar_especialidades_agenda",
+            "consultar_convenios_agenda"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "etiqueta",
+          "esperado": "particular-aquecido",
+          "veio": [],
+          "ok": false
+        },
+        {
+          "turno": 3,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "consultar_precos_consultas",
+    "set_custom_attribute",
+    "set_custom_attribute",
+    "buscar_paciente_por_cpf",
+    "consultar_especialidades_agenda",
+    "consultar_convenios_agenda"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 3: FALHOU etiqueta \"particular-aquecido\" (veio: [])"
+  ],
+  "rodou_em": "2026-10-12T17:06:04+00:00"
+}

@@ -1,0 +1,100 @@
+{
+  "id": "C01-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C01",
+  "familia": null,
+  "titulo": "Triagem de urgência",
+  "contato": "TESTE BANCADA ANA C01-1",
+  "conversa_id": 177,
+  "inicio": "2026-10-12T16:52:33+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "estou com uma dor forte no peito e falta de ar",
+      "ana": [
+        "Pelo que você me contou, isso precisa de atendimento presencial imediato.\n\nProcure agora o Pronto-Socorro do Hospital São Matheus, que funciona 24 horas: Rua Silva Cardoso, 689, Bangu.\n\nSe não puder se deslocar, ligue 192 (SAMU) ou vá à emergência mais próxima."
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "assign_label",
+        "handoff_to_human"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "U1",
+        "U2",
+        "U3",
+        "U5",
+        "U6"
+      ],
+      "espere": "A mensagem fixa de orientação de emergência, na hora, e a conversa passa para humano com a etiqueta emergencia.",
+      "falha_se": "Ela pedir seu nome, CPF ou qualquer dado antes de orientar. Urgência não coleta nada.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "CPF",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "seu nome",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "nome completo",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "etiqueta",
+          "esperado": "emergencia",
+          "veio": [
+            "emergencia"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "raia",
+          "esperado": "FILA ATENDIMENTO",
+          "veio": "trace: kanban_move_card para FILA ATENDIMENTO",
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": true,
+          "veio": true,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "assign_label",
+    "handoff_to_human"
+  ],
+  "fim": {
+    "etiquetas": [
+      "emergencia"
+    ],
+    "raia": null,
+    "raia_pelo_trace": [
+      "FILA ATENDIMENTO"
+    ],
+    "status": "open",
+    "handoff": true
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T16:53:10+00:00"
+}

@@ -1,0 +1,108 @@
+{
+  "id": "C05-2",
+  "arquivo": "capacidades.json",
+  "capacidade": "C05",
+  "familia": null,
+  "titulo": "Preço de consulta particular",
+  "contato": "TESTE BANCADA ANA C05-2",
+  "conversa_id": 182,
+  "inicio": "2026-10-12T16:55:43+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quanto custa a consulta de urologia?",
+      "ana": [
+        "A consulta de Urologia custa R$ 350. Quer que eu veja os horários disponíveis para você?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "consultar_precos_consultas",
+        "assign_label"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5"
+      ],
+      "espere": "R$ 350. Este é o ÚLTIMO item da tabela, e é o teste que importa.",
+      "falha_se": "Dizer que não encontrou. Isso significaria que o fim da tabela voltou a ficar invisível.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não encontrei",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "nao encontrei",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "350.0",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_precos_consultas",
+          "veio": [
+            "kanban_move_card",
+            "consultar_precos_consultas",
+            "assign_label"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "etiqueta",
+          "esperado": "particular-aquecido",
+          "veio": [
+            "particular-aquecido"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "consultar_precos_consultas",
+    "assign_label"
+  ],
+  "fim": {
+    "etiquetas": [
+      "particular-aquecido"
+    ],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T16:56:20+00:00"
+}

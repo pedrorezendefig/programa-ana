@@ -1,0 +1,63 @@
+{
+  "id": "C27-2",
+  "arquivo": "capacidades.json",
+  "capacidade": "C27",
+  "familia": null,
+  "titulo": "Dúvidas gerais",
+  "contato": "TESTE BANCADA ANA C27-2",
+  "conversa_id": 204,
+  "inicio": "2026-10-12T17:16:11+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quais convênios vocês atendem?",
+      "ana": [
+        "Atendemos estes convênios:\n\nPorto Seguro, Postal Saúde, SAMOC, Sul América, Unimed do Brasil, Veritas, Assim Saúde, Allianz, Amacor, Amil, Blue Saúde, Bradesco Saúde, Caberj, Cape Saúde, CAURJ, CNEN, CVRD/PASA, Castelo Branco, Eletros-Saúde, Furnas, Gama Saúde, HSMED Saúde, Health Med, NotreDame Intermédica, Klini Saúde, Leve Saúde, Mediservice, AMEP, SV Saúde, Mondial, Nova Saúde, Oplan, Saúde Petrobras, Integral, CEMERU, Onix, Select e LLAK Medicina Neonatal.\n\nA cobertura depende do plano e do serviço. Qual convênio e especialidade ou exame você precisa verificar?"
+      ],
+      "ferramentas": [
+        "search_knowledge"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "A6",
+        "A7"
+      ],
+      "espere": "A lista longa, com 40 e poucos convênios. ATENÇÃO: essa lista vem da base de conhecimento, NÃO da tabela da API. São fontes diferentes de propósito.",
+      "falha_se": "Ela listar só 6. Isso significaria que respondeu pela tabela errada.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "search_knowledge",
+          "veio": [
+            "search_knowledge"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "search_knowledge"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:16:45+00:00"
+}

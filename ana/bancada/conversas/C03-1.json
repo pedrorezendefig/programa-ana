@@ -1,0 +1,66 @@
+{
+  "id": "C03-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C03",
+  "familia": null,
+  "titulo": "Recusar o que está fora do escopo",
+  "contato": "TESTE BANCADA ANA C03-1",
+  "conversa_id": 179,
+  "inicio": "2026-10-12T16:53:48+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "vocês vendem plano de saúde?",
+      "ana": [
+        "O Hospital São Matheus não vende planos de saúde. Ele atende pacientes por diversos convênios, pelo SUS e também de forma particular."
+      ],
+      "ferramentas": [
+        "search_knowledge"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E6",
+        "S4",
+        "S6",
+        "S8"
+      ],
+      "espere": "Recusa educada e encaminhamento para a equipe, sem inventar resposta.",
+      "falha_se": "Ela responder como se soubesse.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "raia",
+          "esperado": "FILA ATENDIMENTO",
+          "veio": "trace: nenhum kanban_move_card",
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": true,
+          "veio": false,
+          "ok": false
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "search_knowledge"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 1: FALHOU raia \"FILA ATENDIMENTO\" (veio: \"trace: nenhum kanban_move_card\")",
+    "turno 1: FALHOU handoff true (veio: false)"
+  ],
+  "rodou_em": "2026-10-12T16:54:23+00:00"
+}

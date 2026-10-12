@@ -5,17 +5,19 @@
   "familia": null,
   "titulo": "Preço de consulta particular",
   "contato": "TESTE BANCADA ANA C05-1",
-  "conversa_id": 172,
-  "inicio": "2026-10-12T16:46:11+00:00",
+  "conversa_id": 181,
+  "inicio": "2026-10-12T16:55:03+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quanto custa a consulta de cardiologia?",
       "ana": [
-        "A consulta de Cardiologia custa R$ 380. Quer que eu veja os horários disponíveis para você?"
+        "A consulta de cardiologia custa R$ 380. Quer que eu veja os horários disponíveis para você?"
       ],
       "ferramentas": [
-        "consultar_precos_consultas"
+        "consultar_precos_consultas",
+        "kanban_move_card",
+        "assign_label"
       ],
       "nos": [
         "E1",
@@ -52,7 +54,9 @@
           "tipo": "ferramenta",
           "esperado": "consultar_precos_consultas",
           "veio": [
-            "consultar_precos_consultas"
+            "consultar_precos_consultas",
+            "kanban_move_card",
+            "assign_label"
           ],
           "ok": true
         },
@@ -60,8 +64,10 @@
           "turno": 1,
           "tipo": "etiqueta",
           "esperado": "particular-aquecido",
-          "veio": [],
-          "ok": false
+          "veio": [
+            "particular-aquecido"
+          ],
+          "ok": true
         },
         {
           "turno": 1,
@@ -74,17 +80,22 @@
     }
   ],
   "tools": [
-    "consultar_precos_consultas"
+    "consultar_precos_consultas",
+    "kanban_move_card",
+    "assign_label"
   ],
   "fim": {
-    "etiquetas": [],
+    "etiquetas": [
+      "particular-aquecido"
+    ],
     "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
     "status": "pending",
     "handoff": false
   },
-  "veredito": "falhou",
-  "falhas": [
-    "turno 1: FALHOU etiqueta \"particular-aquecido\" (veio: [])"
-  ],
-  "rodou_em": "2026-10-12T16:46:49+00:00"
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T16:55:39+00:00"
 }

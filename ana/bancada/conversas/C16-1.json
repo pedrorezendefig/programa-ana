@@ -1,0 +1,166 @@
+{
+  "id": "C16-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C16",
+  "familia": null,
+  "titulo": "Levar o caso para a equipe com resumo",
+  "contato": "TESTE BANCADA ANA C16-1",
+  "conversa_id": 198,
+  "inicio": "2026-10-12T17:10:26+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quero marcar uma consulta de cardiologia particular",
+      "ana": [
+        "A consulta particular de cardiologia é R$ 380. Quer que eu veja os horários disponíveis para você?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "consultar_precos_consultas",
+        "kanban_move_card",
+        "assign_label"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5"
+      ],
+      "espere": null,
+      "falha_se": null,
+      "conferencias": []
+    },
+    {
+      "n": 2,
+      "paciente": "pode ser, quero marcar sim",
+      "ana": [
+        "Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento."
+      ],
+      "ferramentas": [],
+      "nos": [
+        "P7",
+        "S1"
+      ],
+      "espere": null,
+      "falha_se": null,
+      "conferencias": []
+    },
+    {
+      "n": 3,
+      "paciente": "meu nome é Teste Bancada Ana, CPF ***.***.***-**",
+      "ana": [
+        "Prontinho, Teste! A agenda online não me retornou horários agora, então nossa equipe vai entrar em contato para confirmar o melhor horário com você."
+      ],
+      "ferramentas": [
+        "set_custom_attribute",
+        "set_custom_attribute",
+        "buscar_paciente_por_cpf",
+        "consultar_especialidades_agenda",
+        "consultar_convenios_agenda",
+        "handoff_to_human"
+      ],
+      "nos": [
+        "S1",
+        "S2",
+        "P13",
+        "P14",
+        "P15",
+        "P10",
+        "S4",
+        "S6",
+        "S8"
+      ],
+      "espere": "Uma mensagem única dizendo que a equipe entra em contato, a etiqueta agendamento-particular aplicada e o card movido no Chatwoot.",
+      "falha_se": "Prometer que o horário está marcado, reservado ou garantido. Quem confirma é a equipe.",
+      "conferencias": [
+        {
+          "turno": 3,
+          "tipo": "frase proibida",
+          "esperado": "está marcado",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "frase proibida",
+          "esperado": "está agendado",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "frase proibida",
+          "esperado": "garantido",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "frase proibida",
+          "esperado": "reservado",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "etiqueta",
+          "esperado": "agendamento-particular",
+          "veio": [
+            "particular-aquecido"
+          ],
+          "ok": false
+        },
+        {
+          "turno": 3,
+          "tipo": "raia",
+          "esperado": "FILA COMERCIAL",
+          "veio": "trace: kanban_move_card para AGUARDANDO CONFIRMAÇÃO",
+          "ok": false
+        },
+        {
+          "turno": 3,
+          "tipo": "handoff",
+          "esperado": true,
+          "veio": true,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "consultar_precos_consultas",
+    "kanban_move_card",
+    "assign_label",
+    "set_custom_attribute",
+    "set_custom_attribute",
+    "buscar_paciente_por_cpf",
+    "consultar_especialidades_agenda",
+    "consultar_convenios_agenda",
+    "handoff_to_human"
+  ],
+  "fim": {
+    "etiquetas": [
+      "particular-aquecido"
+    ],
+    "raia": null,
+    "raia_pelo_trace": [
+      "AGUARDANDO CONFIRMAÇÃO"
+    ],
+    "status": "open",
+    "handoff": true
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 3: FALHOU etiqueta \"agendamento-particular\" (veio: [\"particular-aquecido\"])",
+    "turno 3: FALHOU raia \"FILA COMERCIAL\" (veio: \"trace: kanban_move_card para AGUARDANDO CONFIRMAÇÃO\")"
+  ],
+  "rodou_em": "2026-10-12T17:12:14+00:00"
+}

@@ -1,0 +1,88 @@
+{
+  "id": "C06-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C06",
+  "familia": null,
+  "titulo": "Valor de exame particular",
+  "contato": "TESTE BANCADA ANA C06-1",
+  "conversa_id": 184,
+  "inicio": "2026-10-12T16:57:01+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quanto custa a colonoscopia particular?",
+      "ana": [
+        "A colonoscopia particular custa R$ 580.\n\nÉ necessário pedido médico e preparo intestinal, com dieta sem resíduos 2 dias antes, laxativo prescrito pelo médico e jejum absoluto de 8 horas. O exame é realizado com sedação e precisa de acompanhante.\n\nQuer agendar?"
+      ],
+      "ferramentas": [
+        "consultar_exames",
+        "kanban_move_card",
+        "assign_label"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "X1",
+        "X9"
+      ],
+      "espere": "R$ 580. É o primeiro item da tabela de exames.",
+      "falha_se": "Não encontrar.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não encontrei",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "nao encontrei",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_exames",
+          "veio": [
+            "consultar_exames",
+            "kanban_move_card",
+            "assign_label"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "consultar_exames",
+    "kanban_move_card",
+    "assign_label"
+  ],
+  "fim": {
+    "etiquetas": [
+      "particular-aquecido"
+    ],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T16:57:39+00:00"
+}

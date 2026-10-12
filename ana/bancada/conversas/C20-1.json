@@ -1,0 +1,97 @@
+{
+  "id": "C20-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C20",
+  "familia": null,
+  "titulo": "Agendamento por convênio: orientar o portal",
+  "contato": "TESTE BANCADA ANA C20-1",
+  "conversa_id": 199,
+  "inicio": "2026-10-12T17:12:17+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "tenho Unimed e quero marcar pediatria",
+      "ana": [
+        "A agenda online não publicou Pediatria no momento. Você pode tentar agendar pelo portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dificuldade ou dúvida sobre a cobertura da Unimed, me avisa que a equipe te ajuda, combinado?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "set_custom_attribute",
+        "consultar_especialidades_agenda",
+        "search_knowledge"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "C1",
+        "C2",
+        "C3",
+        "C6",
+        "C7"
+      ],
+      "espere": "Confirmação da cobertura e o link do portal de marcação. Ela NÃO passa para humano aqui: continua na conversa até você dizer se conseguiu.",
+      "falha_se": "Passar direto para humano sem oferecer o portal.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_convenios_especialidade",
+          "veio": [
+            "kanban_move_card",
+            "set_custom_attribute",
+            "consultar_especialidades_agenda",
+            "search_knowledge"
+          ],
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "etiqueta",
+          "esperado": "agendamento-convenio",
+          "veio": [],
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "raia",
+          "esperado": "AGUARDANDO CONFIRMAÇÃO",
+          "veio": "trace: kanban_move_card para EM ATENDIMENTO — ANA",
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "set_custom_attribute",
+    "consultar_especialidades_agenda",
+    "search_knowledge"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 1: FALHOU ferramenta \"consultar_convenios_especialidade\" (veio: [\"kanban_move_card\", \"set_custom_attribute\", \"consultar_especialidades_agenda\", \"search_knowledge\"])",
+    "turno 1: FALHOU etiqueta \"agendamento-convenio\" (veio: [])",
+    "turno 1: FALHOU raia \"AGUARDANDO CONFIRMAÇÃO\" (veio: \"trace: kanban_move_card para EM ATENDIMENTO — ANA\")"
+  ],
+  "rodou_em": "2026-10-12T17:13:02+00:00"
+}

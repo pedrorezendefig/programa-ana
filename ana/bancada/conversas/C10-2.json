@@ -1,0 +1,85 @@
+{
+  "id": "C10-2",
+  "arquivo": "capacidades.json",
+  "capacidade": "C10",
+  "familia": null,
+  "titulo": "Item fora da tabela não vira negativa",
+  "contato": "TESTE BANCADA ANA C10-2",
+  "conversa_id": 193,
+  "inicio": "2026-10-12T17:02:57+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quanto custa a ressonância magnética?",
+      "ana": [
+        "Não encontrei a ressonância magnética na lista oficial de valores. Posso encaminhar sua solicitação à equipe para confirmarem o preço e a disponibilidade?"
+      ],
+      "ferramentas": [
+        "consultar_exames"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "X1",
+        "X9"
+      ],
+      "espere": "O mesmo padrão: não achei na tabela, quer que eu encaminhe?",
+      "falha_se": "Dizer que o hospital não faz ressonância.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não fazemos",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não realizamos",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não temos ressonância",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_exames",
+          "veio": [
+            "consultar_exames"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "consultar_exames"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:03:32+00:00"
+}

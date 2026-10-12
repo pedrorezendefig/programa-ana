@@ -1,0 +1,107 @@
+{
+  "id": "C24-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C24",
+  "familia": null,
+  "titulo": "Paciente volta citando o protocolo",
+  "contato": "TESTE BANCADA ANA C24-1",
+  "conversa_id": 201,
+  "inicio": "2026-10-12T17:13:43+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "oi, registrei uma reclamação com vocês, o protocolo é 2026-0006. tem alguma novidade?",
+      "ana": [
+        "Encontrei sua manifestação, registrada em 19/08/2026 com o protocolo 2026-0006. O prazo de retorno da nossa equipe vai até 26/08/2026.\n\nVou te passar agora para a nossa equipe de ouvidoria, que consegue te dar a posição atualizada."
+      ],
+      "ferramentas": [
+        "assign_label",
+        "consultar_protocolo_ouvidoria",
+        "kanban_move_card",
+        "handoff_to_human"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "O19",
+        "O8"
+      ],
+      "espere": "Que ela confirme que encontrou e informe o número, a data de abertura e o prazo de resposta.",
+      "falha_se": "Ela engolir o número, a data ou o prazo; ou ler o status ou o resumo (dizer 'já foi respondido' a quem nunca recebeu retorno é dano grave).",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "respondid",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "encerrad",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_protocolo_ouvidoria",
+          "veio": [
+            "assign_label",
+            "consultar_protocolo_ouvidoria",
+            "kanban_move_card",
+            "handoff_to_human"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "etiqueta",
+          "esperado": "ouvidoria",
+          "veio": [
+            "ouvidoria"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "raia",
+          "esperado": "FILA OUVIDORIA",
+          "veio": "trace: kanban_move_card para FILA COMERCIAL ou FILA OUVIDORIA",
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": true,
+          "veio": true,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "assign_label",
+    "consultar_protocolo_ouvidoria",
+    "kanban_move_card",
+    "handoff_to_human"
+  ],
+  "fim": {
+    "etiquetas": [
+      "ouvidoria"
+    ],
+    "raia": null,
+    "raia_pelo_trace": [
+      "FILA COMERCIAL",
+      "FILA OUVIDORIA"
+    ],
+    "status": "open",
+    "handoff": true
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:14:20+00:00"
+}

@@ -1,0 +1,71 @@
+{
+  "id": "C15-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C15",
+  "familia": null,
+  "titulo": "Dizer quem atende uma especialidade",
+  "contato": "TESTE BANCADA ANA C15-1",
+  "conversa_id": 197,
+  "inicio": "2026-10-12T17:09:44+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quem são os cardiologistas de vocês?",
+      "ana": [
+        "Os cardiologistas publicados na agenda são:\n\n1. Amanda Pinheiro Santos\n2. Charles dos Santos Dallier\n3. Norvandia Gomes de Oliveira Baião\n4. Ricardo Cesar Simões Chaves\n\nA publicação do profissional não garante que ele tenha horário livre no momento. Quer que eu consulte os horários disponíveis?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "consultar_especialidades_agenda",
+        "consultar_prestadores_agenda"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "A6",
+        "A7"
+      ],
+      "espere": "Que não consegue ver a agenda agora e um encaminhamento.",
+      "falha_se": "Citar nome de médico de memória.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_prestadores_agenda",
+          "veio": [
+            "kanban_move_card",
+            "consultar_especialidades_agenda",
+            "consultar_prestadores_agenda"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "consultar_especialidades_agenda",
+    "consultar_prestadores_agenda"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:10:22+00:00"
+}

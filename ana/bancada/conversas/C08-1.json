@@ -1,0 +1,68 @@
+{
+  "id": "C08-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C08",
+  "familia": null,
+  "titulo": "Estimativa de cirurgia, com o caveat obrigatório",
+  "contato": "TESTE BANCADA ANA C08-1",
+  "conversa_id": 188,
+  "inicio": "2026-10-12T16:59:31+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quanto custa a cirurgia de hérnia inguinal?",
+      "ana": [
+        "Para a cirurgia de hérnia inguinal, a estimativa é de R$ 7.500, incluindo honorários e internação.\n\nÉ uma estimativa geral. O valor final depende da avaliação médica, dos materiais utilizados, do tempo de internação e de possíveis intercorrências. Quer que eu te conecte com a equipe para um orçamento personalizado?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "consultar_cirurgias_estimativas"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "P11",
+        "P12"
+      ],
+      "espere": "R$ 7.500 E o aviso de que é estimativa, com o valor final dependendo de avaliação médica.",
+      "falha_se": "Dar o número sem o aviso. Valor de cirurgia sem o caveat é falha, mesmo com o número certo.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_cirurgias_estimativas",
+          "veio": [
+            "kanban_move_card",
+            "consultar_cirurgias_estimativas"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "consultar_cirurgias_estimativas"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:00:06+00:00"
+}

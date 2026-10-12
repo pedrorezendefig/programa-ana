@@ -1,0 +1,129 @@
+{
+  "id": "C26-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C26",
+  "familia": null,
+  "titulo": "Prontuário médico",
+  "contato": "TESTE BANCADA ANA C26-1",
+  "conversa_id": 202,
+  "inicio": "2026-10-12T17:14:23+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "preciso pegar meu prontuário médico",
+      "ana": [
+        "Para solicitar seu prontuário, reúna a documentação necessária e envie para prontuario@hospitalsaomatheus.com.br\n\nNossa equipe vai orientar sobre o requerimento e os documentos obrigatórios, iniciando o processo após receber a documentação completa."
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "assign_label"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "A1",
+        "A2"
+      ],
+      "espere": null,
+      "falha_se": null,
+      "conferencias": []
+    },
+    {
+      "n": 2,
+      "paciente": "é para uso pessoal",
+      "ana": [
+        "Entendi, é para uso pessoal. Vou encaminhar sua solicitação à equipe responsável, que vai orientar você sobre o requerimento e os documentos necessários."
+      ],
+      "ferramentas": [
+        "assign_label",
+        "kanban_move_card",
+        "handoff_to_human"
+      ],
+      "nos": [
+        "A3",
+        "A4",
+        "S4",
+        "S6",
+        "S8"
+      ],
+      "espere": "Ela pergunta a finalidade, orienta os documentos e encaminha.",
+      "falha_se": "Prometer envio por WhatsApp.",
+      "conferencias": [
+        {
+          "turno": 2,
+          "tipo": "frase proibida",
+          "esperado": "enviar pelo WhatsApp",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 2,
+          "tipo": "frase proibida",
+          "esperado": "envio pelo WhatsApp",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 2,
+          "tipo": "frase proibida",
+          "esperado": "mandar pelo WhatsApp",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 2,
+          "tipo": "frase proibida",
+          "esperado": "envio por aqui",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 2,
+          "tipo": "etiqueta",
+          "esperado": "prontuario",
+          "veio": [
+            "prontuario"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 2,
+          "tipo": "raia",
+          "esperado": "SETOR RESPONSÁVEL",
+          "veio": "trace: kanban_move_card para SETOR RESPONSÁVEL",
+          "ok": true
+        },
+        {
+          "turno": 2,
+          "tipo": "handoff",
+          "esperado": true,
+          "veio": true,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "assign_label",
+    "assign_label",
+    "kanban_move_card",
+    "handoff_to_human"
+  ],
+  "fim": {
+    "etiquetas": [
+      "prontuario"
+    ],
+    "raia": null,
+    "raia_pelo_trace": [
+      "SETOR RESPONSÁVEL"
+    ],
+    "status": "open",
+    "handoff": true
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:15:30+00:00"
+}

@@ -1,0 +1,108 @@
+{
+  "id": "C09-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C09",
+  "familia": null,
+  "titulo": "Cobertura de convênio por especialidade",
+  "contato": "TESTE BANCADA ANA C09-1",
+  "conversa_id": 190,
+  "inicio": "2026-10-12T17:00:48+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "meu convênio é a Amil, vocês cobrem cardiologia?",
+      "ana": [
+        "Não consegui confirmar a cobertura da Amil para cardiologia agora. Se quiser, posso encaminhar sua dúvida para a equipe confirmar diretamente com você."
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "consultar_especialidades_agenda",
+        "consultar_convenios_agenda"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "C1",
+        "C2",
+        "C3",
+        "C6",
+        "C7"
+      ],
+      "espere": "Que atendemos, MAIS a ressalva da tabela: cobre consultas e exames, cirurgias sujeitas a autorização.",
+      "falha_se": "Ela dizer só 'atendemos pelo Amil em Cardiologia' e parar aí. É o defeito conhecido: a ressalva some numa conversa e aparece na outra. Vale repetir o teste 3 vezes em conversas separadas.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "observacao",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "cobre: true",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_convenios_especialidade",
+          "veio": [
+            "kanban_move_card",
+            "consultar_especialidades_agenda",
+            "consultar_convenios_agenda"
+          ],
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "etiqueta",
+          "esperado": "agendamento-convenio",
+          "veio": [],
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "raia",
+          "esperado": "AGUARDANDO CONFIRMAÇÃO",
+          "veio": "trace: kanban_move_card para EM ATENDIMENTO — ANA",
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "consultar_especialidades_agenda",
+    "consultar_convenios_agenda"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 1: FALHOU ferramenta \"consultar_convenios_especialidade\" (veio: [\"kanban_move_card\", \"consultar_especialidades_agenda\", \"consultar_convenios_agenda\"])",
+    "turno 1: FALHOU etiqueta \"agendamento-convenio\" (veio: [])",
+    "turno 1: FALHOU raia \"AGUARDANDO CONFIRMAÇÃO\" (veio: \"trace: kanban_move_card para EM ATENDIMENTO — ANA\")"
+  ],
+  "rodou_em": "2026-10-12T17:01:35+00:00"
+}

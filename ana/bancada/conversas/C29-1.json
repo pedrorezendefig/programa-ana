@@ -1,0 +1,78 @@
+{
+  "id": "C29-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C29",
+  "familia": null,
+  "titulo": "Encerramento",
+  "contato": "TESTE BANCADA ANA C29-1",
+  "conversa_id": 205,
+  "inicio": "2026-10-12T17:16:48+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "qual o endereço de vocês?",
+      "ana": [
+        "Nosso endereço é Rua Silva Cardoso, 689, Bangu, Rio de Janeiro/RJ.\n\nPronto-Socorro adulto, pediátrico e ortopédico funcionam 24 horas.  \nMapa: maps.app.goo.gl/T95BxBrVPiRKLtHq8"
+      ],
+      "ferramentas": [
+        "search_knowledge"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "A6",
+        "A7"
+      ],
+      "espere": null,
+      "falha_se": null,
+      "conferencias": []
+    },
+    {
+      "n": 2,
+      "paciente": "obrigado, era só isso",
+      "ana": [
+        "Por nada! Foi um prazer te atender. Qualquer dúvida, é só chamar."
+      ],
+      "ferramentas": [],
+      "nos": [
+        "S6",
+        "S7"
+      ],
+      "espere": "Encerramento cordial, sem prometer o que não pode.",
+      "falha_se": "Continuar puxando assunto.",
+      "conferencias": [
+        {
+          "turno": 2,
+          "tipo": "raia",
+          "esperado": "ENCERRADO RESOLVIDO",
+          "veio": "trace: nenhum kanban_move_card",
+          "ok": false
+        },
+        {
+          "turno": 2,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "search_knowledge"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 2: FALHOU raia \"ENCERRADO RESOLVIDO\" (veio: \"trace: nenhum kanban_move_card\")"
+  ],
+  "rodou_em": "2026-10-12T17:17:55+00:00"
+}

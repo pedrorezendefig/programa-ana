@@ -1,0 +1,63 @@
+{
+  "id": "C27-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C27",
+  "familia": null,
+  "titulo": "Dúvidas gerais",
+  "contato": "TESTE BANCADA ANA C27-1",
+  "conversa_id": 203,
+  "inicio": "2026-10-12T17:15:33+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "qual o endereço de vocês?",
+      "ana": [
+        "Estamos na Rua Silva Cardoso, 689, Bangu, Rio de Janeiro/RJ.\n\nGoogle Maps: maps.app.goo.gl/T95BxBrVPiRKLtHq8"
+      ],
+      "ferramentas": [
+        "search_knowledge"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "A6",
+        "A7"
+      ],
+      "espere": "Rua Silva Cardoso, 689, Bangu, Rio de Janeiro, com o link do mapa.",
+      "falha_se": "Endereço errado ou inventado.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "search_knowledge",
+          "veio": [
+            "search_knowledge"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "search_knowledge"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:16:08+00:00"
+}

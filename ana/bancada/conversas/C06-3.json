@@ -1,0 +1,64 @@
+{
+  "id": "C06-3",
+  "arquivo": "capacidades.json",
+  "capacidade": "C06",
+  "familia": null,
+  "titulo": "Valor de exame particular",
+  "contato": "TESTE BANCADA ANA C06-3",
+  "conversa_id": 186,
+  "inicio": "2026-10-12T16:58:16+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quais exames vocês fazem e quanto custa cada um particular?",
+      "ana": [
+        "Estes são os exames particulares disponíveis e os valores:\n\nColonoscopia: R$ 580\nEcocardiograma: R$ 320\nEletrocardiograma, ECG: R$ 80\nEndoscopia Digestiva Alta: R$ 480\nHemograma Completo: R$ 45\nHolter 24h: R$ 280\nMAPA 24h: R$ 260\nRaio-X, RX: R$ 120\nTomografia Computadorizada, TC: R$ 580\nUltrassonografia Abdominal: R$ 220"
+      ],
+      "ferramentas": [
+        "consultar_exames"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "X1",
+        "X9"
+      ],
+      "espere": "Os 10 com valor, de Colonoscopia a Ultrassonografia Abdominal.",
+      "falha_se": "Faltar qualquer um.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_exames",
+          "veio": [
+            "consultar_exames"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "consultar_exames"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T16:58:50+00:00"
+}

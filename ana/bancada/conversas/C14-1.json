@@ -1,0 +1,118 @@
+{
+  "id": "C14-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C14",
+  "familia": null,
+  "titulo": "Oferecer horários reais para escolher",
+  "contato": "TESTE BANCADA ANA C14-1",
+  "conversa_id": 196,
+  "inicio": "2026-10-12T17:06:07+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quero marcar uma consulta de cardiologia particular",
+      "ana": [
+        "A consulta de cardiologia particular é R$ 380. Quer que eu veja os horários disponíveis para você?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "consultar_precos_consultas"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5"
+      ],
+      "espere": null,
+      "falha_se": null,
+      "conferencias": []
+    },
+    {
+      "n": 2,
+      "paciente": "pode ser, quero marcar sim",
+      "ana": [
+        "Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento."
+      ],
+      "ferramentas": [
+        "handoff_to_human"
+      ],
+      "nos": [
+        "P7",
+        "S1"
+      ],
+      "espere": null,
+      "falha_se": null,
+      "conferencias": []
+    },
+    {
+      "n": 3,
+      "paciente": "meu nome é Teste Bancada Ana, CPF ***.***.***-**",
+      "ana": [],
+      "ferramentas": [],
+      "nos": [
+        "S1",
+        "S2",
+        "P13",
+        "P14",
+        "P15"
+      ],
+      "espere": "Hoje: ela avisa com transparência que a agenda online não retornou horários e passa para a equipe. Isso é o comportamento CERTO com o catálogo vazio.",
+      "falha_se": "Ela inventar horários, ou insistir chamando a ferramenta várias vezes. Quando a GH19 destravar, aqui aparece uma lista numerada de até 5 horários reais.",
+      "conferencias": [
+        {
+          "turno": 3,
+          "tipo": "ferramenta",
+          "esperado": "consultar_especialidades_agenda",
+          "veio": [
+            "kanban_move_card",
+            "consultar_precos_consultas",
+            "handoff_to_human"
+          ],
+          "ok": false
+        },
+        {
+          "turno": 3,
+          "tipo": "repeticao de ferramenta",
+          "esperado": "no maximo 2x por turno",
+          "veio": 1,
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": true,
+          "ok": false
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "consultar_precos_consultas",
+    "handoff_to_human"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "open",
+    "handoff": true
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 3: FALHOU ferramenta \"consultar_especialidades_agenda\" (veio: [\"kanban_move_card\", \"consultar_precos_consultas\", \"handoff_to_human\"])",
+    "turno 3: FALHOU handoff false (veio: true)"
+  ],
+  "rodou_em": "2026-10-12T17:09:40+00:00"
+}

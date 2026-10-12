@@ -1,0 +1,91 @@
+{
+  "id": "C21-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C21",
+  "familia": null,
+  "titulo": "Acolher e coletar a manifestação",
+  "contato": "TESTE BANCADA ANA C21-1",
+  "conversa_id": 200,
+  "inicio": "2026-10-12T17:13:05+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quero fazer uma reclamação, esperei três horas na recepção ontem",
+      "ana": [
+        "Sinto muito que você tenha passado por essa espera. Obrigada por nos contar.\n\nVou registrar seu relato com todo o cuidado para que seja apurado pelos setores responsáveis.\n\nMe passa seu nome completo e CPF? E me diz também: aconteceu com você ou com outra pessoa?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "assign_label"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "O1",
+        "O2",
+        "O3"
+      ],
+      "espere": "Acolhimento sem se defender, e a coleta uma pergunta por vez.",
+      "falha_se": "Prometer apuração, prazo de resolução ou culpar alguém.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "vamos apurar",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "será apurad",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "resolveremos",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "etiqueta",
+          "esperado": "ouvidoria",
+          "veio": [
+            "ouvidoria"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "assign_label"
+  ],
+  "fim": {
+    "etiquetas": [
+      "ouvidoria"
+    ],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:13:39+00:00"
+}

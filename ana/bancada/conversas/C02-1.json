@@ -1,0 +1,78 @@
+{
+  "id": "C02-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C02",
+  "familia": null,
+  "titulo": "Saudação e leitura do motivo",
+  "contato": "TESTE BANCADA ANA C02-1",
+  "conversa_id": 178,
+  "inicio": "2026-10-12T16:53:14+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "oi, boa tarde",
+      "ana": [
+        "Olá! Aqui é a Ana, assistente virtual do Hospital São Matheus.\n\nTudo bem?\n\nComo posso te ajudar hoje?"
+      ],
+      "ferramentas": [],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "espere": "Uma saudação curta e UMA pergunta sobre o que você precisa.",
+      "falha_se": "Um menu de opções numeradas, ou duas perguntas na mesma mensagem.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "1)",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "1 -",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "2)",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "raia",
+          "esperado": "EM ATENDIMENTO ANA",
+          "veio": "trace: nenhum kanban_move_card",
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 1: FALHOU raia \"EM ATENDIMENTO ANA\" (veio: \"trace: nenhum kanban_move_card\")"
+  ],
+  "rodou_em": "2026-10-12T16:53:45+00:00"
+}

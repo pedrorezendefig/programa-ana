@@ -1,0 +1,77 @@
+{
+  "id": "C08-2",
+  "arquivo": "capacidades.json",
+  "capacidade": "C08",
+  "familia": null,
+  "titulo": "Estimativa de cirurgia, com o caveat obrigatório",
+  "contato": "TESTE BANCADA ANA C08-2",
+  "conversa_id": 189,
+  "inicio": "2026-10-12T17:00:09+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quanto custa a cirurgia de apendicite por videolaparoscopia?",
+      "ana": [
+        "Para a apendicectomia videolaparoscópica, os custos costumam ficar em torno de R$ 8.300, incluindo honorários e internação.\n\nÉ uma estimativa geral. O valor definitivo depende da avaliação médica presencial e pode variar conforme materiais utilizados, tempo de internação e possíveis intercorrências. Quer que eu te conecte com nossa equipe para um orçamento personalizado?"
+      ],
+      "ferramentas": [
+        "consultar_cirurgias_estimativas"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "P11",
+        "P12"
+      ],
+      "espere": "R$ 8.300 com o mesmo aviso. Este teste também prova que ela traduz o nome popular (apendicite) para o nome da tabela (Apendicectomia).",
+      "falha_se": "Dizer que não achou. Foi um defeito real, corrigido na V23.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não encontrei",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "nao encontrei",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_cirurgias_estimativas",
+          "veio": [
+            "consultar_cirurgias_estimativas"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "consultar_cirurgias_estimativas"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:00:44+00:00"
+}

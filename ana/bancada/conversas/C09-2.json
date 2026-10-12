@@ -1,0 +1,91 @@
+{
+  "id": "C09-2",
+  "arquivo": "capacidades.json",
+  "capacidade": "C09",
+  "familia": null,
+  "titulo": "Cobertura de convênio por especialidade",
+  "contato": "TESTE BANCADA ANA C09-2",
+  "conversa_id": 191,
+  "inicio": "2026-10-12T17:01:38+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "tenho Unimed, quais especialidades vocês cobrem por ela?",
+      "ana": [
+        "A Unimed é aceita no Hospital São Matheus, mas a cobertura depende do seu plano e da especialidade. Para verificar certinho, qual especialidade você precisa?"
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "search_knowledge"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "C1",
+        "C2",
+        "C3",
+        "C6",
+        "C7"
+      ],
+      "espere": "As 5: Cardiologia, Ginecologia, Obstetrícia, Ortopedia e Pediatria, cada uma com a observação.",
+      "falha_se": "Faltar alguma.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_convenios_especialidade",
+          "veio": [
+            "kanban_move_card",
+            "search_knowledge"
+          ],
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "etiqueta",
+          "esperado": "agendamento-convenio",
+          "veio": [],
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "raia",
+          "esperado": "AGUARDANDO CONFIRMAÇÃO",
+          "veio": "trace: kanban_move_card para EM ATENDIMENTO — ANA",
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "search_knowledge"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 1: FALHOU ferramenta \"consultar_convenios_especialidade\" (veio: [\"kanban_move_card\", \"search_knowledge\"])",
+    "turno 1: FALHOU etiqueta \"agendamento-convenio\" (veio: [])",
+    "turno 1: FALHOU raia \"AGUARDANDO CONFIRMAÇÃO\" (veio: \"trace: kanban_move_card para EM ATENDIMENTO — ANA\")"
+  ],
+  "rodou_em": "2026-10-12T17:02:16+00:00"
+}

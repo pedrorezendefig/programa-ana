@@ -1,0 +1,88 @@
+{
+  "id": "C10-1",
+  "arquivo": "capacidades.json",
+  "capacidade": "C10",
+  "familia": null,
+  "titulo": "Item fora da tabela não vira negativa",
+  "contato": "TESTE BANCADA ANA C10-1",
+  "conversa_id": 192,
+  "inicio": "2026-10-12T17:02:19+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "quanto custa a consulta de reumatologia?",
+      "ana": [
+        "Não encontrei Reumatologia na tabela oficial de valores. Posso encaminhar sua solicitação à equipe para confirmar o valor e a disponibilidade?"
+      ],
+      "ferramentas": [
+        "consultar_precos_consultas"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "P1",
+        "P2",
+        "P3",
+        "P6"
+      ],
+      "espere": "Que não encontrou na tabela oficial e uma oferta de encaminhar para a equipe confirmar.",
+      "falha_se": "Dizer que o hospital NÃO ATENDE reumatologia. A tabela é a de particular, não é o catálogo do hospital. Esse foi o erro mais grave já pego no programa.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não atendemos",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não temos reumatologia",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não oferecemos",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_precos_consultas",
+          "veio": [
+            "consultar_precos_consultas"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "consultar_precos_consultas"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-12T17:02:54+00:00"
+}

@@ -1,0 +1,98 @@
+{
+  "id": "C10-3",
+  "arquivo": "capacidades.json",
+  "capacidade": "C10",
+  "familia": null,
+  "titulo": "Item fora da tabela não vira negativa",
+  "contato": "TESTE BANCADA ANA C10-3",
+  "conversa_id": 194,
+  "inicio": "2026-10-12T17:03:35+00:00",
+  "turnos": [
+    {
+      "n": 1,
+      "paciente": "meu plano é a Porto Seguro Saúde, vocês cobrem dermatologia?",
+      "ana": [
+        "Atendemos Porto Seguro Saúde no hospital, mas a dermatologia não está publicada na agenda online no momento. Para confirmar a cobertura e verificar o agendamento, acesse: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dificuldade ou dúvida de cobertura, me avisa que a equipe te ajuda."
+      ],
+      "ferramentas": [
+        "kanban_move_card",
+        "consultar_especialidades_agenda",
+        "search_knowledge"
+      ],
+      "nos": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E7",
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "espere": "Que o convênio é atendido, mas essa combinação não está na tabela, e uma oferta de confirmar com a equipe.",
+      "falha_se": "Dizer que a Porto Seguro 'não consta' ou empurrar você para o particular. Foi um defeito real, corrigido na V23.",
+      "conferencias": [
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não consta",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não aceitamos",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não atendemos",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "consultar_convenios_especialidade",
+          "veio": [
+            "kanban_move_card",
+            "consultar_especialidades_agenda",
+            "search_knowledge"
+          ],
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "handoff",
+          "esperado": false,
+          "veio": false,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "tools": [
+    "kanban_move_card",
+    "consultar_especialidades_agenda",
+    "search_knowledge"
+  ],
+  "fim": {
+    "etiquetas": [],
+    "raia": null,
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
+    "status": "pending",
+    "handoff": false
+  },
+  "veredito": "falhou",
+  "falhas": [
+    "turno 1: FALHOU ferramenta \"consultar_convenios_especialidade\" (veio: [\"kanban_move_card\", \"consultar_especialidades_agenda\", \"search_knowledge\"])"
+  ],
+  "rodou_em": "2026-10-12T17:04:13+00:00"
+}
