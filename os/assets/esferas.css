@@ -166,40 +166,15 @@ footer.rodape { max-width: var(--largura-conteudo); margin: 56px auto 0; border-
 .cap .falta { background: var(--cor-areia); border-radius: var(--raio-interno); padding: 10px 14px; font-size: 13px; }
 .cap .falta strong { color: var(--cor-neutro-texto); }
 
-/* os testes manuais de cada capacidade e as famílias da bancada (camada de operação) */
+/* os testes de cada capacidade (camada de operação); as famílias da bancada foram para os/arquivo/familias.html (ADR-0032) */
 .testes-cap { margin-top: 4px; }
-.testes-cap > summary, .cen > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; font: var(--peso-medio) 13px/1.4 var(--font-inter); flex-wrap: wrap; }
-.testes-cap > summary::-webkit-details-marker, .cen > summary::-webkit-details-marker { display: none; }
-.testes-cap[open] > summary .zig, .cen[open] > summary .zig { transform: rotate(90deg); }
+.testes-cap > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; font: var(--peso-medio) 13px/1.4 var(--font-inter); flex-wrap: wrap; }
+.testes-cap > summary::-webkit-details-marker { display: none; }
+.testes-cap[open] > summary .zig { transform: rotate(90deg); }
 .teste { background: var(--cor-card-interno); border-radius: var(--raio-interno); padding: 10px 14px; margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
 .t-linha { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; font-size: 13px; align-items: baseline; }
 .t-rot { font: var(--peso-semibold) 10.5px/1.6 var(--font-inter); letter-spacing: .06em; text-transform: uppercase; color: var(--cor-rotulo); }
 .t-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-.fam-placar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--gap-cards); margin-bottom: 18px; }
-.familia { margin-bottom: 14px; }
-.fam-cab { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 12px; }
-.fam-cab .letra { width: 44px; height: 44px; border-radius: var(--raio-interno); background: var(--cor-tinta); color: #ffffff; display: grid; place-items: center; font: var(--peso-bold) 22px/1 var(--font-poppins); flex-shrink: 0; }
-.fam-cab .miolo { flex: 1; min-width: 0; }
-.fam-cab h3 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.fam-cab .promessa { font-size: 14px; }
-.progresso { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-.barra-p { flex: 1; height: 6px; background: var(--cor-fio); border-radius: 999px; overflow: hidden; max-width: 260px; }
-.barra-p .cheio { height: 100%; background: var(--cor-verde); }
-.cen { border-top: 1px solid var(--cor-fio); padding: 10px 0; }
-.cen > summary .id { font: var(--peso-bold) 12px/1 var(--font-mono); color: var(--cor-rotulo); }
-.cen > summary .tit { flex: 1 1 200px; }
-.cen > summary .hoje { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--cor-rotulo); }
-.bolinha { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--cor-mudo); flex-shrink: 0; }
-.bolinha.verde { background: var(--cor-verde); }
-.bolinha.ressalva { background: var(--cor-neutro-texto); }
-.bolinha.vermelho { background: var(--cor-vermelho); }
-.cen-corpo { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-.cen-corpo .sub { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
-.cen-corpo .sub > .micro { margin-bottom: 2px; }
-.cen-corpo .var { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
-.cen-corpo .var .vid { font: var(--peso-semibold) 11.5px/1.4 var(--font-mono); color: var(--cor-rotulo); }
-.cen-corpo .evento { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 13px; }
-.cen-corpo .perigo { background: var(--cor-vermelho-tinta); color: var(--cor-vermelho); border-radius: var(--raio-interno); padding: 8px 12px; font-size: 13px; }
 
 /* ---------- esfera: as regras (mapa do SOP) ---------- */
 .aviso { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 28px; }

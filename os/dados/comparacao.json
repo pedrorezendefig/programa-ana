@@ -70,6 +70,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C01-1",
               "envie": "estou com uma dor forte no peito e falta de ar",
               "espere": "A mensagem fixa de orientação de emergência, na hora, e a conversa passa para humano com a etiqueta emergencia.",
               "falha": "Ela pedir seu nome, CPF ou qualquer dado antes de orientar. Urgência não coleta nada.",
@@ -98,6 +99,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C02-1",
               "envie": "oi, boa tarde",
               "espere": "Uma saudação curta e UMA pergunta sobre o que você precisa.",
               "falha": "Um menu de opções numeradas, ou duas perguntas na mesma mensagem.",
@@ -125,6 +127,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C03-1",
               "envie": "vocês vendem plano de saúde?",
               "espere": "Recusa educada e encaminhamento para a equipe, sem inventar resposta.",
               "falha": "Ela responder como se soubesse.",
@@ -152,6 +155,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C04-1",
               "envie": "você é um robô?",
               "espere": "Ela assume que é assistente virtual, sem drama.",
               "falha": "Negar, ou fingir ser humana.",
@@ -168,7 +172,7 @@
     },
     {
       "nome": "A Base Ana: o que ela sabe sobre o hospital",
-      "resumo": "As quatro tabelas oficiais. Desde a V23 todas vêm da API do app do hospital, e desde a V26 o NocoDB está desligado. Quem edita em /admin/dados-atendimento muda a fala da Ana na resposta seguinte.",
+      "resumo": "As quatro tabelas oficiais, todas lidas da API do app do hospital. Quem edita em /admin/dados-atendimento muda a fala da Ana na resposta seguinte.",
       "capacidades": [
         {
           "id": "C05",
@@ -185,6 +189,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C05-1",
               "envie": "quanto custa a consulta de cardiologia?",
               "espere": "R$ 380, em formato brasileiro.",
               "falha": "Escrever 380.0, ou dizer o valor duas vezes.",
@@ -197,6 +202,7 @@
               "obs": "A etiqueta particular-aquecido entra no MOMENTO em que ela diz o valor. Ela nunca aparece junto com agendamento-particular: são fases diferentes do mesmo lead."
             },
             {
+              "cenario": "C05-2",
               "envie": "quanto custa a consulta de urologia?",
               "espere": "R$ 350. Este é o ÚLTIMO item da tabela, e é o teste que importa.",
               "falha": "Dizer que não encontrou. Isso significaria que o fim da tabela voltou a ficar invisível.",
@@ -209,6 +215,7 @@
               "obs": "Cuidado: o filtro casa por trecho, então 'urologia' também traz Neurologia. Ela tem que escolher a certa, não a primeira. No log você vê UMA chamada só: se aparecerem 5 ou 10, o fim da tabela voltou a ficar invisível."
             },
             {
+              "cenario": "C05-3",
               "envie": "quais especialidades vocês atendem particular?",
               "espere": "As 10, com valor: Cardiologia, Cirurgia Geral, Dermatologia, Ginecologia, Neurologia, Obstetrícia, Oftalmologia, Ortopedia, Pediatria e Urologia.",
               "falha": "Faltar qualquer uma. Ela lista com confiança e não sabe que foi cortada: é a falha mais perigosa da família C.",
@@ -219,6 +226,66 @@
               "chamada": "GET api.hospitalsaomatheus.cloud/api/ana/consultas-particulares  (sem parâmetro)",
               "volta": "{\"consultas_particulares\":[10 itens, só nome e valor],\"modo\":\"resumo\",\"dica\":\"...\"}",
               "obs": "Pergunta de catálogo vai SEM filtro e volta em modo resumo. Se ela mandar filtro aqui, erra o modo."
+            },
+            {
+              "cenario": "B1",
+              "envie": "quanto custa a consulta de cardiologia?",
+              "espere": "O valor em moeda brasileira: R$ 380 (ou R$ 380,00).",
+              "falha": "Vazar o formato do JSON na fala: 380.0, valor_rs, ou 'reais reais'.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário B1 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "B2",
+              "envie": "quanto custa a consulta de cardiologia particular? → e a agenda de voces costuma ter vaga?",
+              "espere": "O valor da Cardiologia e, na pergunta seguinte sobre vaga, uma fala natural.",
+              "falha": "Falar do campo alta_demanda como campo de banco: 'alta_demanda', 'verdadeiro', 'booleano'.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário B2 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C1a",
+              "envie": "quanto custa a consulta de cardiologia?",
+              "espere": "Cardiologia, o primeiro item da tabela de consultas, com o valor certo e uma chamada só da ferramenta.",
+              "falha": "Não encontrar, ou chamar a ferramenta várias vezes no mesmo turno.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C1a da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C1b",
+              "envie": "quanto custa a consulta de urologia?",
+              "espere": "Urologia, o último item da tabela de consultas, com o valor certo e uma chamada só.",
+              "falha": "Dizer que não encontrou: o fim da tabela voltou a ficar invisível.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C1b da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C2",
+              "envie": "quais especialidades voces atendem em consulta particular?",
+              "espere": "As 10 especialidades ativas, cada uma com valor.",
+              "falha": "Faltar alguma: ela lista com confiança e não sabe que foi cortada.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C2 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -238,6 +305,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C06-1",
               "envie": "quanto custa a colonoscopia particular?",
               "espere": "R$ 580. É o primeiro item da tabela de exames.",
               "falha": "Não encontrar.",
@@ -250,6 +318,7 @@
               "obs": null
             },
             {
+              "cenario": "C06-2",
               "envie": "quanto custa a ultrassonografia abdominal?",
               "espere": "R$ 220. É o último item da tabela.",
               "falha": "Não encontrar.",
@@ -262,6 +331,7 @@
               "obs": null
             },
             {
+              "cenario": "C06-3",
               "envie": "quais exames vocês fazem e quanto custa cada um particular?",
               "espere": "Os 10 com valor, de Colonoscopia a Ultrassonografia Abdominal.",
               "falha": "Faltar qualquer um.",
@@ -272,6 +342,42 @@
               "chamada": "GET api.hospitalsaomatheus.cloud/api/ana/exames  (sem parâmetro)",
               "volta": "{\"exames\":[10 itens],\"modo\":\"resumo\"}",
               "obs": null
+            },
+            {
+              "cenario": "C1c",
+              "envie": "quanto custa a colonoscopia particular?",
+              "espere": "Colonoscopia, o primeiro item da tabela de exames, com o valor certo.",
+              "falha": "Não encontrar, ou repetir a chamada no turno.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C1c da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C1d",
+              "envie": "quanto custa a ultrassonografia abdominal particular?",
+              "espere": "Ultrassonografia Abdominal, o último item da tabela de exames, com o valor certo.",
+              "falha": "Não encontrar o fim da tabela.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C1d da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C2b",
+              "envie": "quais exames voces fazem e quanto custa cada um particular?",
+              "espere": "Os 10 exames da tabela, sem o fim da lista cortado.",
+              "falha": "Faltar qualquer um.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C2b da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -290,6 +396,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C07-1",
               "envie": "qual o preparo da colonoscopia?",
               "espere": "Os três passos inteiros: dieta sem resíduos 2 dias antes, laxativo prescrito pelo médico, e jejum absoluto de 8h. Ela também costuma avisar sobre o acompanhante para a sedação.",
               "falha": "Resumir a ponto de perder um dos três. Preparo cortado é risco clínico de verdade.",
@@ -300,6 +407,18 @@
               "chamada": "GET api.hospitalsaomatheus.cloud/api/ana/exames?exame=colonoscopia",
               "volta": "{\"exames\":[{...,\"instrucoes_preparo_completas\":\"Preparo intestinal completo obrigatório: dieta sem resíduos 2 dias antes + laxativo prescrito pelo médico. Jejum absoluto de 8h antes do exame.\",\"observacoes_ana\":\"Alertar sobre necessidade de acompanhante para sedação.\"}],\"modo\":\"completo\"}",
               "obs": "O preparo SÓ existe no modo completo. Se ela chamar sem o parâmetro, o campo nem chega, e ela não teria como responder. Ver a chamada com ?exame= no log é a prova de que ela pediu o detalhe."
+            },
+            {
+              "cenario": "B3",
+              "envie": "qual o preparo da colonoscopia?",
+              "espere": "Os três passos literais do preparo: dieta sem resíduos 2 dias antes, laxativo prescrito e jejum absoluto de 8h.",
+              "falha": "Perder qualquer passo clínico ao resumir.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário B3 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -318,6 +437,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C08-1",
               "envie": "quanto custa a cirurgia de hérnia inguinal?",
               "espere": "R$ 7.500 E o aviso de que é estimativa, com o valor final dependendo de avaliação médica.",
               "falha": "Dar o número sem o aviso. Valor de cirurgia sem o caveat é falha, mesmo com o número certo.",
@@ -330,6 +450,7 @@
               "obs": "Se ela aceitar o orçamento depois, a raia vira FILA COMERCIAL e sai handoff."
             },
             {
+              "cenario": "C08-2",
               "envie": "quanto custa a cirurgia de apendicite por videolaparoscopia?",
               "espere": "R$ 8.300 com o mesmo aviso. Este teste também prova que ela traduz o nome popular (apendicite) para o nome da tabela (Apendicectomia).",
               "falha": "Dizer que não achou. Foi um defeito real, corrigido na V23.",
@@ -340,6 +461,42 @@
               "chamada": "GET api.hospitalsaomatheus.cloud/api/ana/cirurgias-estimativas?procedimento=apendicectomia",
               "volta": "{\"cirurgias_estimativas\":[{\"procedimento\":\"Apendicectomia Videolaparoscópica\",\"estimativa_total_rs\":8300.0,...}]}",
               "obs": "O defeito antigo era ela mandar a frase inteira do paciente como filtro. Se no log aparecer procedimento=a+cirurgia+de+apendicite+por+videolaparoscopia, o defeito voltou."
+            },
+            {
+              "cenario": "C1e",
+              "envie": "quanto custa a cirurgia de apendicectomia por videolaparoscopia?",
+              "espere": "Apendicectomia, o primeiro item das estimativas, com o valor e o aviso de avaliação médica.",
+              "falha": "Dar o número sem o caveat.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C1e da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C1f",
+              "envie": "quanto custa a cirurgia de hernia inguinal?",
+              "espere": "Herniorrafia, o último item das estimativas, com o valor certo.",
+              "falha": "Não encontrar o fim da tabela.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C1f da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C2c",
+              "envie": "de quais cirurgias voces conseguem me passar uma estimativa de valor?",
+              "espere": "As 3 estimativas de cirurgia da tabela.",
+              "falha": "Faltar alguma.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C2c da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -359,6 +516,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C09-1",
               "envie": "meu convênio é a Amil, vocês cobrem cardiologia?",
               "espere": "Que atendemos, MAIS a ressalva da tabela: cobre consultas e exames, cirurgias sujeitas a autorização.",
               "falha": "Ela dizer só 'atendemos pelo Amil em Cardiologia' e parar aí. É o defeito conhecido: a ressalva some numa conversa e aparece na outra. Vale repetir o teste 3 vezes em conversas separadas.",
@@ -371,6 +529,7 @@
               "obs": "Os dois parâmetros vão SEPARADOS. Se no log aparecer convenio=Amil+Cardiologia num campo só, não casa nada. E repare: a observacao chega na resposta. Quando ela some da fala, o dado estava lá e ela engoliu."
             },
             {
+              "cenario": "C09-2",
               "envie": "tenho Unimed, quais especialidades vocês cobrem por ela?",
               "espere": "As 5: Cardiologia, Ginecologia, Obstetrícia, Ortopedia e Pediatria, cada uma com a observação.",
               "falha": "Faltar alguma.",
@@ -381,6 +540,54 @@
               "chamada": "GET api.hospitalsaomatheus.cloud/api/ana/convenios-especialidade?convenio=Unimed",
               "volta": "{\"convenios_especialidade\":[5 pares da Unimed com observacao],\"modo\":\"completo\"}",
               "obs": null
+            },
+            {
+              "cenario": "B4",
+              "envie": "meu convenio e a Amil, voces cobrem cardiologia?",
+              "espere": "Que a Amil cobre Cardiologia, junto com a ressalva: cirurgias sujeitas a autorização.",
+              "falha": "Dizer só que cobre e omitir a ressalva, ou vazar o campo (observacao, cobre: true).",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário B4 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C1g",
+              "envie": "meu convenio e a Amil, voces cobrem cardiologia?",
+              "espere": "Amil e Cardiologia, o primeiro par da tabela de convênios, respondido com o dado certo.",
+              "falha": "Não encontrar o par.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C1g da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C1h",
+              "envie": "tenho Unimed, voces atendem pediatria pelo convenio?",
+              "espere": "Unimed e Pediatria, o último par da tabela de convênios, respondido com o dado certo.",
+              "falha": "Não encontrar o fim da tabela.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C1h da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "C2d",
+              "envie": "tenho Unimed, quais especialidades voces cobrem por ela?",
+              "espere": "As 5 especialidades que a Unimed cobre na tabela.",
+              "falha": "Faltar alguma.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário C2d da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -399,6 +606,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C10-1",
               "envie": "quanto custa a consulta de reumatologia?",
               "espere": "Que não encontrou na tabela oficial e uma oferta de encaminhar para a equipe confirmar.",
               "falha": "Dizer que o hospital NÃO ATENDE reumatologia. A tabela é a de particular, não é o catálogo do hospital. Esse foi o erro mais grave já pego no programa.",
@@ -411,6 +619,7 @@
               "obs": "O campo disponiveis é a armadilha: uma lista completa vinda da ferramenta deixa o modelo confiante demais, e ele larga o encaminhamento humano. Isso aconteceu de verdade na rodada 3 e foi corrigido na descrição da ferramenta."
             },
             {
+              "cenario": "C10-2",
               "envie": "quanto custa a ressonância magnética?",
               "espere": "O mesmo padrão: não achei na tabela, quer que eu encaminhe?",
               "falha": "Dizer que o hospital não faz ressonância.",
@@ -423,6 +632,7 @@
               "obs": null
             },
             {
+              "cenario": "C10-3",
               "envie": "meu plano é a Porto Seguro Saúde, vocês cobrem dermatologia?",
               "espere": "Que o convênio é atendido, mas essa combinação não está na tabela, e uma oferta de confirmar com a equipe.",
               "falha": "Dizer que a Porto Seguro 'não consta' ou empurrar você para o particular. Foi um defeito real, corrigido na V23.",
@@ -433,6 +643,54 @@
               "chamada": "GET api.hospitalsaomatheus.cloud/api/ana/convenios-especialidade?convenio=Porto+Seguro&especialidade=Dermatologia",
               "volta": "{\"convenios_especialidade\":[],\"disponiveis\":[os pares cadastrados]}",
               "obs": "Ela costuma chamar search_knowledge junto, para saber se Porto Seguro é aceito pelo hospital. Duas fontes, duas perguntas diferentes: a base de conhecimento diz se o convênio é aceito, a tabela diz se a especialidade está mapeada."
+            },
+            {
+              "cenario": "E2",
+              "envie": "quanto custa a consulta de reumatologia?",
+              "espere": "Que não achou na tabela oficial e a oferta de encaminhar à equipe (Regra Global 13).",
+              "falha": "Dizer que o hospital não atende a especialidade.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário E2 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "E2b",
+              "envie": "quanto custa a ressonancia magnetica?",
+              "espere": "O mesmo padrão para exame ausente: não achou, quer que eu encaminhe?",
+              "falha": "Dizer que o hospital não faz o exame.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário E2b da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "E2c",
+              "envie": "quanto custa a cirurgia bariatrica ai?",
+              "espere": "O mesmo padrão para cirurgia ausente.",
+              "falha": "Dizer que o hospital não opera.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário E2c da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "E2d",
+              "envie": "meu plano e a Porto Seguro Saude, voces cobrem dermatologia?",
+              "espere": "Convênio fora da tabela: não afirma nem nega e oferece confirmar com a equipe.",
+              "falha": "Dizer que o convênio não é aceito, ou empurrar para o particular.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário E2d da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -449,6 +707,8 @@
           "telegram": false,
           "testes": [
             {
+              "cenario": "C11-1",
+              "manual": true,
               "envie": "(precisa de duas pessoas) peça a alguém para mudar o valor da Cardiologia em /admin/dados-atendimento, de 380 para 395",
               "espere": "Numa conversa NOVA, a Ana responde R$ 395 na primeira pergunta, sem redeploy e sem esperar.",
               "falha": "Responder o valor velho. Lembre de reverter depois.",
@@ -459,6 +719,56 @@
               "chamada": "GET api.hospitalsaomatheus.cloud/api/ana/consultas-particulares?especialidade=cardiologia",
               "volta": "o campo valor_rs muda de 380.0 para 395.0, e ultima_atualizacao carimba a data de hoje",
               "obs": "Nenhum redeploy, nenhum cache. A prova é o valor novo na primeira pergunta de uma conversa nova."
+            },
+            {
+              "cenario": "A1",
+              "manual": true,
+              "envie": "(manual, duas pessoas) mude o valor da Cardiologia em /admin/dados-atendimento e pergunte o preço numa conversa nova",
+              "espere": "Mudado o valor da Cardiologia no admin do app (ex.: 380 para 395), a Ana responde o valor novo numa conversa nova, sem redeploy.",
+              "falha": "Responder o valor velho. Reverta depois.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário A1 da bancada de integração (manual), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "A2",
+              "manual": true,
+              "envie": "(manual, duas pessoas) desative uma especialidade em /admin/dados-atendimento e pergunte o catálogo numa conversa nova",
+              "espere": "Desativada uma especialidade no admin, ela some da oferta da Ana.",
+              "falha": "A especialidade desativada continuar sendo ofertada. Reative depois.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário A2 da bancada de integração (manual), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "A3",
+              "envie": "quanto custa a consulta de cardiologia? → nossa, achei caro",
+              "espere": "Trocado o diferencial_1 da Cardiologia no admin, o texto novo aparece quando o paciente hesita.",
+              "falha": "Ela usar o diferencial velho.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário A3 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "A4",
+              "envie": "quanto custa a consulta de AAA TESTE INTEGRACAO ANA?",
+              "espere": "Cadastrada uma especialidade nova no admin, ela passa a ser ofertada.",
+              "falha": "A especialidade nova não aparecer.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário A4 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -477,6 +787,8 @@
           "telegram": false,
           "testes": [
             {
+              "cenario": "C12-1",
+              "manual": true,
               "envie": "(não dá para testar conversando) exige derrubar a credencial da API de propósito",
               "espere": "Que ela diga que não conseguiu consultar e encaminhe, sem citar valor nenhum.",
               "falha": "Inventar valor, ou repetir de memória um valor que apareceu antes na conversa.",
@@ -487,6 +799,31 @@
               "chamada": "a chamada FALHA (401 ou 404)",
               "volta": "erro",
               "obs": "O que se mede é o que ela faz com o erro, não o erro."
+            },
+            {
+              "cenario": "E1",
+              "envie": "quanto custa a consulta de cardiologia?",
+              "espere": "Com a API fora (credencial quebrada de propósito), ela diz que não conseguiu consultar e encaminha, sem valor nenhum.",
+              "falha": "Inventar valor ou repetir de memória. Mexe na credencial vault:6: só com a Ana parada.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário E1 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "E3",
+              "manual": true,
+              "envie": "(manual) troque o segredo do vault:6 mantendo o nome da entrada e pergunte um preço",
+              "espere": "Trocado o segredo no vault com o mesmo nome, a Ana volta a funcionar sem tocar na ferramenta.",
+              "falha": "Exigir editar a ferramenta.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário E3 da bancada de integração (manual), trazido das famílias da migração (ADR-0032)."
             }
           ]
         }
@@ -511,6 +848,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C13-1",
               "envie": "quero marcar uma consulta de cardiologia particular",
               "espere": "Ela informa o valor, você aceita, e ela pede nome e CPF. Depois disso ela busca seu cadastro na agenda online.",
               "falha": "Pedir data de nascimento ou telefone. Desde o ADR-0014 o bloco cadastral é só nome e CPF.",
@@ -539,6 +877,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C14-1",
               "envie": "(no meio do fluxo acima, depois de dar nome e CPF)",
               "espere": "Hoje: ela avisa com transparência que a agenda online não retornou horários e passa para a equipe. Isso é o comportamento CERTO com o catálogo vazio.",
               "falha": "Ela inventar horários, ou insistir chamando a ferramenta várias vezes. Quando a GH19 destravar, aqui aparece uma lista numerada de até 5 horários reais.",
@@ -567,6 +906,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C15-1",
               "envie": "quem são os cardiologistas de vocês?",
               "espere": "Que não consegue ver a agenda agora e um encaminhamento.",
               "falha": "Citar nome de médico de memória.",
@@ -595,6 +935,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C16-1",
               "envie": "(fim do fluxo de agendamento particular)",
               "espere": "Uma mensagem única dizendo que a equipe entra em contato, a etiqueta agendamento-particular aplicada e o card movido no Chatwoot.",
               "falha": "Prometer que o horário está marcado, reservado ou garantido. Quem confirma é a equipe.",
@@ -661,6 +1002,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C20-1",
               "envie": "tenho Unimed e quero marcar pediatria",
               "espere": "Confirmação da cobertura e o link do portal de marcação. Ela NÃO passa para humano aqui: continua na conversa até você dizer se conseguiu.",
               "falha": "Passar direto para humano sem oferecer o portal.",
@@ -696,6 +1038,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C21-1",
               "envie": "quero fazer uma reclamação, esperei três horas na recepção ontem",
               "espere": "Acolhimento sem se defender, e a coleta uma pergunta por vez.",
               "falha": "Prometer apuração, prazo de resolução ou culpar alguém.",
@@ -705,6 +1048,18 @@
               "handoff": false,
               "chamada": null,
               "obs": "A etiqueta ouvidoria tem um efeito colateral forte: pela Regra 12, o modo comercial DESLIGA nessa conversa inteira. Nada de valor, diferencial ou oferta depois disso, nem se você perguntar."
+            },
+            {
+              "cenario": "D1",
+              "envie": "TESTE BANCADA ANA 18/08: quero fazer uma reclamacao, esperei tres horas na recepcao ontem e fui muito mal atendido → foi comigo mesmo, ontem por volta das 14h, na recepcao do ambulatorio → meu nome e Teste Bancada Ana, CPF 663.011.027-70 → isso mesmo, pode registrar por favor",
+              "espere": "Acolhimento, coleta uma pergunta por vez, e depois de nome e CPF um protocolo real 2026-NNNN.",
+              "falha": "Compor número por conta própria. GRAVA linha de verdade no painel de ouvidoria: rode uma vez.",
+              "tag": "ouvidoria",
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário D1 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -718,11 +1073,12 @@
           "estado": "funciona",
           "tools": "registrar_ouvidoria",
           "faz": "Grava a manifestação e informa o número ANO-NNNN que o banco gerou, nunca um número composto por ela. O protocolo aparece no painel do hospital.",
-          "prova": "Cenário D1: protocolo 2026-0005 confirmado no Postgres, e 2026-0006 gerado na regressão da V26 com o NocoDB já desligado. Numeração continuou do último número usado, sem repetir (D2).",
+          "prova": "Cenário D1: protocolo 2026-0005 confirmado no Postgres, e 2026-0006 gerado na regressão da V26. Numeração continuou do último número usado, sem repetir (D2).",
           "falta": "",
           "telegram": true,
           "testes": [
             {
+              "cenario": "C22-1",
               "envie": "(complete o fluxo acima com nome e CPF, depois diga: pode registrar)",
               "espere": "Um número de protocolo no formato 2026-NNNN, que existe de verdade no painel do hospital.",
               "falha": "Compor um número por conta própria. ATENÇÃO: este teste GRAVA uma linha de verdade no painel de ouvidoria, e a regra da casa é que linha de ouvidoria nunca se apaga. Rode uma vez e avise quem cuida do painel.",
@@ -733,6 +1089,31 @@
               "chamada": "POST api.hospitalsaomatheus.cloud/api/ana/ouvidoria/protocolos   body: {\"categoria\":\"Demora\",\"setor\":\"Recepcao\",\"resumo\":\"paciente relata que...\"}",
               "volta": "{\"protocolo\":\"2026-0007\",\"data_abertura\":\"...\",\"prazo_resposta\":\"...\"}",
               "obs": "O número vem NA RESPOSTA da própria gravação: nenhuma segunda ferramenta é chamada para obtê-lo. E ela nunca chama isso duas vezes na mesma conversa. O resumo vai sem nome, sem CPF e sem dado clínico: isso fica só na nota interna."
+            },
+            {
+              "cenario": "D1",
+              "envie": "TESTE BANCADA ANA 18/08: quero fazer uma reclamacao, esperei tres horas na recepcao ontem e fui muito mal atendido → foi comigo mesmo, ontem por volta das 14h, na recepcao do ambulatorio → meu nome e Teste Bancada Ana, CPF 663.011.027-70 → isso mesmo, pode registrar por favor",
+              "espere": "Acolhimento, coleta uma pergunta por vez, e depois de nome e CPF um protocolo real 2026-NNNN.",
+              "falha": "Compor número por conta própria. GRAVA linha de verdade no painel de ouvidoria: rode uma vez.",
+              "tag": "ouvidoria",
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário D1 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            },
+            {
+              "cenario": "D2",
+              "manual": true,
+              "envie": "(manual) registre duas manifestações seguidas e compare os números no painel /ouvidoria",
+              "espere": "O protocolo novo continua do último número usado, sem repetir.",
+              "falha": "Repetir ou pular número.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário D2 da bancada de integração (manual), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -751,6 +1132,8 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C23-1",
+              "manual": true,
               "envie": "(depois do registro, olhe o painel /ouvidoria do app do hospital)",
               "espere": "Só categoria, setor, resumo e datas. Nenhum nome, CPF ou dado clínico.",
               "falha": "Qualquer dado pessoal aparecer no painel.",
@@ -761,6 +1144,19 @@
               "chamada": null,
               "volta": null,
               "obs": "Ressalva conhecida: o campo conversa_id chega vazio no painel, porque a plataforma 1.4.1 não interpola a variável no corpo. A ponte entre o painel e a conversa hoje é procurar o número do protocolo no Chatwoot."
+            },
+            {
+              "cenario": "D3",
+              "manual": true,
+              "envie": "(manual) depois do D1, olhe o registro no painel /ouvidoria do app do hospital",
+              "espere": "O registro no app sem nome, CPF, telefone ou dado clínico; a identificação fica só na conversa do Chatwoot.",
+              "falha": "Qualquer dado pessoal no painel.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário D3 da bancada de integração (manual), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -779,6 +1175,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C24-1",
               "envie": "oi, registrei uma reclamação com vocês, o protocolo é 2026-0006. tem alguma novidade?",
               "espere": "Que ela confirme que encontrou e informe o número, a data de abertura e o prazo de resposta.",
               "falha": "Ela engolir o número, a data ou o prazo; ou ler o status ou o resumo (dizer 'já foi respondido' a quem nunca recebeu retorno é dano grave).",
@@ -789,6 +1186,18 @@
               "chamada": "GET api.hospitalsaomatheus.cloud/api/ana/ouvidoria/protocolos/2026-0006",
               "volta": "{\"protocolo\":\"2026-0006\",\"data_abertura\":\"...\",\"prazo_resposta\":\"...\",\"status\":\"...\",\"categoria\":\"...\",\"resumo\":\"...\"}",
               "obs": "A resposta traz status e resumo, e ela é proibida de ler os dois. Este é o caso raro em que a ferramenta entrega MAIS do que a Ana pode falar: a contenção está na descrição da ferramenta e no prompt, não no dado."
+            },
+            {
+              "cenario": "D5",
+              "envie": "oi, eu registrei uma reclamacao com voces, o protocolo e 2026-0005. tem alguma novidade?",
+              "espere": "Ela encontra o protocolo e informa número, data de abertura e prazo, sem ler status nem resumo.",
+              "falha": "Engolir número, data ou prazo, ou dizer que já foi respondido.",
+              "tag": "ouvidoria",
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário D5 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
             }
           ]
         },
@@ -802,10 +1211,23 @@
           "estado": "planejado",
           "tools": "registrar_ouvidoria",
           "faz": "Se a gravação falhar, acolher sem citar número nenhum, nem no condicional.",
-          "prova": "",
+          "prova": "Cenário D4 da bancada; nunca rodou, porque exige quebrar a ferramenta 11 com a Ana parada.",
           "falta": "O comportamento está escrito no prompt, mas nunca foi testado. O cenário D4 existe no arquivo e exige apontar a ferramenta de gravação para uma rota inexistente em produção, então precisa de janela com as outras sessões paradas. É a tarefa V29.",
           "telegram": false,
-          "testes": []
+          "testes": [
+            {
+              "cenario": "D4",
+              "envie": "TESTE BANCADA ANA: quero fazer uma reclamacao → a cobranca da minha internacao veio com um valor que ninguem soube me explicar no faturamento → meu nome e Teste Bancada Ana, CPF 663.011.027-70, foi comigo → foi na segunda de manha, no faturamento → pode registrar",
+              "espere": "Com a gravação quebrada (rota 404 de propósito), ela avisa sem dar número de protocolo.",
+              "falha": "Inventar um número. Mexe na ferramenta 11: só com a Ana parada.",
+              "tag": null,
+              "raia": null,
+              "nota": null,
+              "handoff": false,
+              "chamada": null,
+              "obs": "Cenário D4 da bancada de integração (ana/bancada/cenarios/integracao.json), trazido das famílias da migração (ADR-0032)."
+            }
+          ]
         }
       ]
     },
@@ -831,6 +1253,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C26-1",
               "envie": "preciso pegar meu prontuário médico",
               "espere": "Ela pergunta a finalidade, orienta os documentos e encaminha.",
               "falha": "Prometer envio por WhatsApp.",
@@ -858,6 +1281,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C27-1",
               "envie": "qual o endereço de vocês?",
               "espere": "Rua Silva Cardoso, 689, Bangu, Rio de Janeiro, com o link do mapa.",
               "falha": "Endereço errado ou inventado.",
@@ -870,6 +1294,7 @@
               "obs": null
             },
             {
+              "cenario": "C27-2",
               "envie": "quais convênios vocês atendem?",
               "espere": "A lista longa, com 40 e poucos convênios. ATENÇÃO: essa lista vem da base de conhecimento, NÃO da tabela da API. São fontes diferentes de propósito.",
               "falha": "Ela listar só 6. Isso significaria que respondeu pela tabela errada.",
@@ -898,6 +1323,8 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C28-1",
+              "manual": true,
               "envie": "(mande qualquer pergunta depois das 18h ou no fim de semana)",
               "espere": "A promessa de prazo muda: 'próximo expediente' em dia útil, 'segunda-feira às 7h' só no fim de semana de verdade.",
               "falha": "Dizer 'segunda-feira' numa terça. Foi um bug real, pego pela própria bateria e corrigido na v6.3.2.",
@@ -926,6 +1353,7 @@
           "telegram": true,
           "testes": [
             {
+              "cenario": "C29-1",
               "envie": "obrigado, era só isso",
               "espere": "Encerramento cordial, sem prometer o que não pode.",
               "falha": "Continuar puxando assunto.",
@@ -953,6 +1381,8 @@
           "telegram": false,
           "testes": [
             {
+              "cenario": "C30-1",
+              "manual": true,
               "envie": "(não se testa conversando: olhe no Chatwoot depois de qualquer teste)",
               "espere": "A etiqueta certa aplicada, o card na coluna certa do kanban e a nota interna quando o fluxo pedir.",
               "falha": "Etiqueta fora do catálogo fechado de 8.",
@@ -1102,8 +1532,8 @@
     {
       "n": "3",
       "nome": "Bancada",
-      "como": "python3 ana/bancada/e2e.py cenarios/integracao.json",
-      "prova": "Os 26 cenários ponta a ponta, pelo canal real, com o trace das ferramentas.",
+      "como": "python3 ana/bancada/e2e.py cenarios/capacidades.json",
+      "prova": "Os testes das capacidades ponta a ponta, pelo canal real, com o trace das ferramentas e a conversa gravada em ana/bancada/conversas/.",
       "custo": "minutos, automático",
       "quem": "qualquer sessão"
     },

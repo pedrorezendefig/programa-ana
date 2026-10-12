@@ -4,7 +4,8 @@
    fluxo.js, filtros.js, liga.js), alimentados por /api/retrato, montado ao vivo. Este
    script escuta "retrato:pronto" e acrescenta só o que o Retrato não mostra e um
    arquiteto precisa:
-     O que a Ana faz hoje    os testes manuais de cada capacidade e as famílias da bancada
+     O que a Ana faz hoje    os testes de cada capacidade, cada um com o seu cenário da
+                             bancada (as famílias saíram para os/arquivo/, ADR-0032)
      Onde ela busca          a chamada real de cada ferramenta (método e caminho, lidos
                              da plataforma) e a versão do Chatwoot
      Global Health           rodar cada elo na homologação (motor em cadeias-motor.js),
@@ -38,7 +39,6 @@
       if (al) { al.hidden = false; al.textContent = "A plataforma não respondeu agora (" + DOC.aviso + "). As ferramentas aparecem sem origem até a próxima leitura."; }
     }
     montarTestes().catch(function (x) { console.error("testes", x); });
-    montarFamilias().catch(function (x) { console.error("famílias", x); });
     montarChamadas().catch(function (x) { console.error("chamadas", x); });
     montarChatwoot().catch(function (x) { console.error("chatwoot", x); });
     montarGh();
@@ -48,25 +48,22 @@
   /* ============================================================ faz: os testes */
   async function montarTestes() {
     const comp = await lerJson("dados/comparacao.json");
-    let n = 0;
     (comp.blocos || []).forEach(function (b) {
       (b.capacidades || []).forEach(function (c) {
         const card = document.getElementById("cap-" + c.id);
         const testes = c.testes || [];
         if (!card || !testes.length) return;
-        n += testes.length;
         card.insertAdjacentHTML("beforeend",
-          '<details class="testes-cap"><summary><span class="zig">▶</span>' + testes.length + (testes.length === 1 ? " teste manual" : " testes manuais") + "</summary>" +
+          '<details class="testes-cap"><summary><span class="zig">▶</span>' + testes.length + (testes.length === 1 ? " teste" : " testes") + "</summary>" +
           testes.map(teste).join("") + "</details>");
         card.dataset.texto = (card.dataset.texto || "") + " " + testes.map(function (t) { return t.envie + " " + t.espere; }).join(" ");
       });
     });
-    const conta = document.getElementById("conta-testes");
-    if (conta) conta.textContent = n + " testes manuais nas capacidades acima";
   }
 
   function teste(t) {
     const chips = [];
+    if (t.cenario) chips.push('<span class="chip mini ' + (t.manual ? "bloqueada" : "azul") + '">' + (t.manual ? "manual " : "cenário ") + esc(t.cenario) + "</span>");
     if (t.tag) chips.push('<span class="chip mini tag">' + esc(t.tag) + "</span>");
     if (t.raia) chips.push('<span class="chip mini bloqueada">' + esc(t.raia) + "</span>");
     if (t.handoff) chips.push('<span class="chip mini contorno">passa para humano</span>');
@@ -78,76 +75,6 @@
       (chips.length ? '<div class="t-chips">' + chips.join("") + "</div>" : "") +
       (t.obs ? '<p class="caption">' + esc(t.obs) + "</p>" : "") +
       "</div>";
-  }
-
-  /* ============================================================ faz: as famílias da bancada */
-  async function montarFamilias() {
-    const alvo = document.getElementById("familias");
-    if (!alvo) return;
-    const d = await lerJson("dados/familias.json");
-    let cen = {};
-    try {
-      const c = await lerJson("/api/cenarios");
-      ((c.cenarios && c.cenarios.cenarios) || []).forEach(function (x) { cen[x.id] = x; });
-    } catch (x) { /* sem a bancada, os cenários de máquina ficam só com o resumo */ }
-    const rodadas = {};
-    (d.rodadas || []).forEach(function (r) { rodadas[r.id] = r; });
-
-    let totalCen = 0, verdes = 0, aguardando = 0;
-    d.familias.forEach(function (f) {
-      totalCen += f.total; verdes += f.verdes;
-      f.cenarios.forEach(function (c) { if (c.hoje.cor === "cinza") aguardando++; });
-    });
-    document.getElementById("fam-placar").innerHTML = [
-      ["famílias", d.familias.length, "cada uma vigia uma promessa da integração"],
-      ["cenários verdes", verdes + " de " + totalCen, "contando as variantes por tabela"],
-      ["aguardando janela", aguardando, "mexem em credencial ou ferramenta: precisam da Ana parada"],
-      ["rodadas registradas", (d.rodadas || []).length, "no roteiro da integração"]
-    ].map(function (s) {
-      return '<div class="card stat"><span class="rotulo">' + esc(s[0]) + '</span><span class="num-indicador">' + esc(s[1]) + '</span><span class="detalhe">' + esc(s[2]) + "</span></div>";
-    }).join("");
-
-    alvo.innerHTML = d.familias.map(function (f) {
-      const pct = Math.round(100 * f.verdes / f.total);
-      return '<div class="card familia" id="fam-' + esc(f.letra) + '">' +
-        '<div class="fam-cab"><div class="letra">' + esc(f.letra) + '</div><div class="miolo">' +
-        '<h3>' + esc(f.nome) + ' <span class="chip mini ' + (f.peso === "ajuste" ? "bloqueada" : "contorno") + '">' + esc(f.peso) + "</span></h3>" +
-        '<p class="promessa">' + esc(f.promessa) + "</p>" +
-        '<div class="progresso"><div class="barra-p"><div class="cheio" style="width:' + pct + '%"></div></div><span class="caption">' + f.verdes + " de " + f.total + " verdes</span></div>" +
-        "</div></div>" +
-        f.cenarios.map(function (c) { return cenario(c, rodadas, cen[c.id]); }).join("") +
-        "</div>";
-    }).join("");
-  }
-
-  function cenario(c, rodadas, bancada) {
-    const passos = (c.passos || []).map(function (p) {
-      return '<div class="t-linha"><span class="t-rot">' + esc(p.t) + '</span><span class="t-txt">' + esc(p.x) + "</span></div>";
-    }).join("");
-    const variantes = (c.variantes || []).map(function (v) {
-      return '<div class="var"><span class="bolinha ' + esc(v.cor) + '"></span><span class="vid">' + esc(v.id) + "</span><span>" + esc(v.rotulo) + (v.nota ? ' <span class="caption">' + esc(v.nota) + "</span>" : "") + "</span></div>";
-    }).join("");
-    const hist = (c.historico || []).map(function (h) {
-      const r = rodadas[h.rodada] || { rotulo: h.rodada, data: "" };
-      return '<div class="evento"><span class="chip mini bloqueada">' + esc(r.rotulo) + (r.data ? " · " + esc(r.data) : "") + '</span><span class="chip mini ' + (h.veredito === "passou" ? "feito" : h.veredito === "falhou" ? "tag" : "bloqueada") + '">' + esc(String(h.veredito).replace("_", " ")) + "</span><span class=\"caption\">" + esc(h.evidencia) + "</span></div>";
-    }).join("");
-    const maquina = bancada ? (bancada.turnos || []).map(function (t, i) {
-      return '<div class="t-linha"><span class="t-rot">turno ' + (i + 1) + '</span><span class="t-txt">' + esc(t.envie) +
-        (t.contem && t.contem.length ? ' <span class="caption">contém: ' + esc(t.contem.join(", ")) + "</span>" : "") +
-        (t.tools && t.tools.length ? ' <span class="caption">chama: ' + esc(t.tools.join(", ")) + "</span>" : "") + "</span></div>";
-    }).join("") : "";
-    return '<details class="cen" id="fam-' + esc(c.id) + '">' +
-      '<summary><span class="zig">▶</span><span class="id">' + esc(c.id) + '</span><span class="tit">' + esc(c.titulo) + "</span>" +
-      '<span class="chip mini ' + (c.como === "bancada" ? "azul" : "bloqueada") + '">' + (c.como === "bancada" ? "a máquina roda" : "manual") + "</span>" +
-      '<span class="hoje"><span class="bolinha ' + esc(c.hoje.cor) + '"></span>' + esc(c.hoje.txt) + "</span></summary>" +
-      '<div class="cen-corpo">' +
-      (c.perigo ? '<div class="perigo"><strong>cuidado:</strong> ' + esc(c.perigo) + "</div>" : "") +
-      passos +
-      (maquina ? '<div class="sub"><span class="micro">o que a bancada manda</span>' + maquina + "</div>" : "") +
-      (variantes ? '<div class="sub"><span class="micro">variantes</span>' + variantes + "</div>" : "") +
-      (hist ? '<div class="sub"><span class="micro">como foi nas rodadas</span>' + hist + "</div>" : "") +
-      (c.preparo ? '<p class="caption">preparo: ' + esc(c.preparo) + "</p>" : "") +
-      "</div></details>";
   }
 
   /* ============================================================ busca: a chamada real */

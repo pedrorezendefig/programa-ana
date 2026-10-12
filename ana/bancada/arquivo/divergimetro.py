@@ -2,6 +2,9 @@
 """
 Divergimetro: nivel 1.5 da bancada de cenarios.
 
+ARQUIVADO em 12/out/2026 (ADR-0032): o NocoDB esta desligado desde a V26 e a
+migracao acabou, entao nao ha mais o que comparar. Fica aqui como acervo.
+
 Compara, tabela por tabela, o que a API do app do Hospital devolve contra o que o
 NocoDB (a fonte velha) ainda devolve, e mostra onde as duas ja andaram separadas.
 
@@ -14,7 +17,7 @@ Ele tambem e a prova de paridade que a V26 (desligar o NocoDB) precisa: no dia d
 corte, divergimetro zerado significa que nada se perde no caminho.
 
 Uso:
-    python3 ana/bancada/divergimetro.py
+    python3 ana/bancada/arquivo/divergimetro.py
 
 Credenciais: SEMPRE do .env da raiz do repo.
     AGENTS_API_TOKEN     le as definicoes das tools na plataforma (de onde saem as
@@ -30,7 +33,7 @@ import sys
 import urllib.error
 import urllib.request
 
-RAIZ = pathlib.Path(__file__).resolve().parents[2]
+RAIZ = pathlib.Path(__file__).resolve().parents[3]
 PLATAFORMA = "https://agents.hospitalsaomatheus.cloud"
 
 # tool na plataforma -> (endpoint da API do app, chave de identidade, renomes NocoDB->API)
