@@ -9,10 +9,24 @@ as assercoes declaradas no arquivo de cenarios. Imprime placar e transcript.
 Nasceu na V25 (18/ago/2026) para pagar a divida do runner antigo, que vivia em
 scratchpad de sessao e se perdeu. Termo no CONTEXT.md: "Bancada de cenarios".
 
+Desde o ADR-0032 (12/out/2026) cada cenario rodado grava a sua conversa em
+ana/bancada/conversas/<id>.json, versionada no git e sobrescrita a cada bateria:
+turnos (o que o paciente enviou, o que a Ana respondeu, as ferramentas do turno e
+o caminho de nos do Mapa do SOP declarado no cenario), conferencias objetivas e
+veredito. E o que o player do Ana OS toca. Termo no CONTEXT.md: "Conversa gravada".
+
+Conferencias que a maquina faz (so o objetivo, sem juiz por IA): etiqueta, raia do
+kanban, handoff, ferramenta chamada, frases proibidas (e, nos cenarios antigos de
+integracao.json, os "contem" literais). O "espere" do cenario vai junto como texto.
+
 Uso:
-    python3 ana/bancada/e2e.py cenarios/integracao.json
+    python3 ana/bancada/e2e.py cenarios/capacidades.json --so C05-1
+    python3 ana/bancada/e2e.py cenarios/capacidades.json
     python3 ana/bancada/e2e.py cenarios/integracao.json --so A1,A2,B1
     python3 ana/bancada/e2e.py cenarios/integracao.json --familia D
+
+Cenario "manual" nao roda. Cenario "grava_producao" (registra ouvidoria de verdade)
+so roda com --com-escrita.
 
 Credenciais: SEMPRE do .env da raiz do repo, nunca no codigo.
     CHATWOOT_URL, CHATWOOT_ACCOUNT_ID, CHATWOOT_API_TOKEN   (obrigatorios)
@@ -32,6 +46,7 @@ from datetime import datetime, timedelta, timezone
 
 RAIZ = pathlib.Path(__file__).resolve().parents[2]
 AQUI = pathlib.Path(__file__).resolve().parent
+CONVERSAS = AQUI / "conversas"   # a conversa gravada de cada cenario (ADR-0032), versionada
 INBOX_NOME = "Ana E2E (API)"
 PLATAFORMA = "https://agents.hospitalsaomatheus.cloud"
 
@@ -181,6 +196,20 @@ class Canal:
             return []
         return d.get("payload", [])
 
+    def estado(self, conversa_id):
+        """(raia do kanban, status da conversa). A raia e o nome da coluna em que o
+        card da conversa esta; None quando a conversa nao tem card."""
+        status, d = self._admin(f"/conversations/{conversa_id}")
+        if status != 200 or not isinstance(d, dict):
+            return None, None
+        raia = None
+        card = d.get("kanban_task") or {}
+        passo = card.get("board_step_id")
+        for s in (card.get("board") or {}).get("steps", []):
+            if s.get("id") == passo:
+                raia = s.get("name")
+        return raia, d.get("status")
+
 
 # --------------------------------------------------------------------- trace
 
@@ -192,7 +221,7 @@ class Trace:
         self.ligado = bool(self.token)
 
     def por_conversa(self, conversa_chatwoot, desde_iso):
-        """[(turnId, nome_da_tool)] na ordem em que aconteceram. None = nao coletado.
+        """[(turnId, nome_da_tool, createdAt)] na ordem em que aconteceram. None = nao coletado.
 
         O elo entre as duas numeracoes e o threadId do log, no formato
         "1:1:<id da conversa no Chatwoot>". A plataforma numera as conversas por
@@ -211,7 +240,8 @@ class Trace:
         sufixo = f":{conversa_chatwoot}"
         itens = [i for i in reversed(d.get("items", []))          # a API devolve do mais novo
                  if str(i.get("threadId") or "").endswith(sufixo)]  # ao mais velho
-        return [(i.get("turnId"), (i.get("detail") or {}).get("tool")) for i in itens]
+        return [(i.get("turnId"), (i.get("detail") or {}).get("tool"), i.get("createdAt"))
+                for i in itens]
 
 
 def resumir_trace(chamadas):
@@ -219,7 +249,7 @@ def resumir_trace(chamadas):
     if chamadas is None:
         return None, None, None
     nomes, por_turno = [], {}
-    for turno, tool in chamadas:
+    for turno, tool, _ in chamadas:
         if not tool:
             continue
         nomes.append(tool)
@@ -231,50 +261,110 @@ def resumir_trace(chamadas):
     return nomes, pior, por_turno
 
 
-# ---------------------------------------------------------------- assercoes
+def tools_por_turno(chamadas, enviados):
+    """Distribui as chamadas pelos turnos do cenario: cada chamada vai para o ultimo
+    turno enviado antes dela (pelo carimbo createdAt do log). None = nao coletado."""
+    if chamadas is None:
+        return None
+    saida = [[] for _ in enviados]
+    for _, tool, quando in chamadas:
+        if not tool or not quando or not enviados:
+            continue
+        n = 0
+        for i, enviado in enumerate(enviados):
+            if datetime.fromisoformat(enviado) <= datetime.fromisoformat(quando.replace("Z", "+00:00")):
+                n = i
+        saida[n].append(tool)
+    return saida
 
-def checar(turno, resposta, tools_do_cenario, pior_repeticao):
-    """Devolve a lista de falhas deste turno (vazia = passou)."""
-    falhas = []
+
+# ---------------------------------------------------------------- conferencias
+
+def normalizar(texto):
+    """Compara raia sem caixa, acento nem pontuacao: 'Encerrado, Resolvido' casa com
+    'ENCERRADO RESOLVIDO' (o nome da coluna no Chatwoot traz um travessao)."""
+    import unicodedata
+    t = unicodedata.normalize("NFKD", str(texto or "")).encode("ascii", "ignore").decode()
+    return " ".join("".join(c if c.isalnum() else " " for c in t.lower()).split())
+
+
+def conf(turno, tipo, esperado, veio, ok):
+    return {"turno": turno, "tipo": tipo, "esperado": esperado, "veio": veio, "ok": ok}
+
+
+def checar(n, turno, resposta, tools_do_cenario, pior_repeticao):
+    """As conferencias de um turno (n comeca em 1). A ferramenta e conferida contra o
+    cenario inteiro, porque a janela de debounce pode empurrar a chamada para o turno
+    vizinho; o detalhe por turno fica gravado para o player."""
+    saida = []
     baixa = resposta.lower()
 
     for esperado in turno.get("contem", []):
-        if esperado.lower() not in baixa:
-            falhas.append(f'nao contem "{esperado}"')
+        saida.append(conf(n, "contem", esperado, None, esperado.lower() in baixa))
 
     alternativas = turno.get("contem_algum", [])
-    if alternativas and not any(a.lower() in baixa for a in alternativas):
-        falhas.append("nao contem nenhum de " + json.dumps(alternativas, ensure_ascii=False))
+    if alternativas:
+        saida.append(conf(n, "contem_algum", alternativas, None,
+                          any(a.lower() in baixa for a in alternativas)))
 
     for proibido in turno.get("nao_contem", []):
-        if proibido.lower() in baixa:
-            falhas.append(f'contem o proibido "{proibido}"')
+        achou = proibido.lower() in baixa
+        saida.append(conf(n, "frase proibida", proibido, proibido if achou else None, not achou))
 
     if tools_do_cenario is not None:
         for t in turno.get("tools", []):
-            if t not in tools_do_cenario:
-                falhas.append(f'a tool "{t}" nao aparece no trace')
+            saida.append(conf(n, "ferramenta", t, tools_do_cenario, t in tools_do_cenario))
         for t in turno.get("tools_proibidas", []):
-            if t in tools_do_cenario:
-                falhas.append(f'a tool proibida "{t}" foi chamada')
+            saida.append(conf(n, "ferramenta proibida", t, tools_do_cenario,
+                              t not in tools_do_cenario))
         teto = turno.get("tools_max_por_turno")
-        if teto is not None and pior_repeticao is not None and pior_repeticao > teto:
-            falhas.append(f"tool repetida {pior_repeticao}x num turno (teto {teto})")
+        if teto is not None and pior_repeticao is not None:
+            saida.append(conf(n, "repeticao de ferramenta", f"no maximo {teto}x por turno",
+                              pior_repeticao, pior_repeticao <= teto))
+    else:
+        for t in turno.get("tools", []):
+            saida.append(conf(n, "ferramenta", t, "trace nao coletado", None))
 
-    return falhas
+    return saida
+
+
+def checar_fim(cenario, ultimo, fim, tools, notas):
+    """As conferencias do fim da conversa, presas ao ultimo turno: etiqueta, raia,
+    handoff e notas privadas."""
+    confere = cenario.get("confere") or {}
+    saida = []
+    for etq in list(cenario.get("etiquetas", [])) + list(confere.get("etiquetas", [])):
+        saida.append(conf(ultimo, "etiqueta", etq, fim["etiquetas"], etq in fim["etiquetas"]))
+    if confere.get("raia"):
+        saida.append(conf(ultimo, "raia", confere["raia"], fim["raia"],
+                          normalizar(confere["raia"]) == normalizar(fim["raia"])))
+    if "handoff" in confere:
+        saida.append(conf(ultimo, "handoff", confere["handoff"], fim["handoff"],
+                          None if fim["handoff"] is None else fim["handoff"] == confere["handoff"]))
+    for esperada in cenario.get("notas_contem", []):
+        saida.append(conf(ultimo, "nota privada", esperada, None,
+                          any(esperada.lower() in nota.lower() for nota in notas)))
+    return saida
+
+
+def descrever(c):
+    rotulo = {True: "", False: "FALHOU ", None: "nao conferido "}[c["ok"]]
+    veio = "" if c["veio"] is None else f" (veio: {json.dumps(c['veio'], ensure_ascii=False)})"
+    return f"turno {c['turno']}: {rotulo}{c['tipo']} {json.dumps(c['esperado'], ensure_ascii=False)}{veio}"
 
 
 # ------------------------------------------------------------------- execucao
 
-def rodar_cenario(canal, trace, cenario, indice):
+def rodar_cenario(canal, trace, cenario, arquivo):
     cid = cenario["id"]
     print(f"\n{'=' * 78}\n[{cid}] {cenario.get('titulo', '')}\n{'=' * 78}")
 
     nome_contato = cenario.get("contato") or f"TESTE BANCADA ANA {cid}"
-    resultado = {"id": cid, "familia": cenario.get("familia"),
-                 "titulo": cenario.get("titulo"), "contato": nome_contato,
-                 "turnos": [], "falhas": [], "conversa_id": None,
-                 "tools": None, "pior_repeticao": None, "notas": [], "etiquetas": []}
+    resultado = {"id": cid, "arquivo": arquivo, "capacidade": cenario.get("capacidade"),
+                 "familia": cenario.get("familia"), "titulo": cenario.get("titulo"),
+                 "contato": nome_contato, "conversa_id": None, "inicio": None,
+                 "turnos": [], "tools": None, "pior_repeticao": None,
+                 "fim": None, "conferencias": [], "falhas": []}
 
     try:
         source_id, conversa_id = canal.abrir_conversa(nome_contato)
@@ -287,7 +377,7 @@ def rodar_cenario(canal, trace, cenario, indice):
     resultado["conversa_id"] = conversa_id
     # margem para tras: o log do turno pode ser carimbado antes do retorno da chamada
     desde_iso = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
-    resultado["inicio"] = desde_iso
+    resultado["inicio"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     print(f"  conversa #{conversa_id} (contato {nome_contato})")
 
     # o modo teste exige /teste como mensagem SOZINHA: como prefixo colado no texto
@@ -301,26 +391,36 @@ def rodar_cenario(canal, trace, cenario, indice):
     except Exception as e:
         resultado["falhas"].append(f"nao consegui ativar o modo teste: {e}")
 
+    enviados = []
     for n, turno in enumerate(cenario["turnos"]):
         texto = turno["envie"]
         print(f"\n  > paciente: {texto}")
+        enviados.append(datetime.now(timezone.utc).isoformat())
         try:
             canal.enviar(source_id, conversa_id, texto)
         except Exception as e:
+            enviados.pop()
             resultado["falhas"].append(f"turno {n + 1}: {e}")
             break
         respostas = canal.esperar_resposta(source_id, conversa_id, vistos)
-        resposta = "\n".join(respostas)
         for r in respostas:
             print(f"  < Ana: {r}")
         if not respostas:
             print("  < Ana: (nada em " + str(TETO_ESPERA_S) + "s)")
-        resultado["turnos"].append({"envie": texto, "resposta": resposta})
+        resultado["turnos"].append({
+            "n": n + 1, "paciente": texto, "ana": respostas,
+            "ferramentas": None, "nos": turno.get("nos", []),
+            "espere": turno.get("espere"), "falha_se": turno.get("falha"),
+            "conferencias": []})
 
     chamadas = trace.por_conversa(conversa_id, desde_iso)
-    tools, pior, por_turno = resumir_trace(chamadas)
+    tools, pior, _ = resumir_trace(chamadas)
     resultado["tools"] = tools
     resultado["pior_repeticao"] = pior
+    por_turno = tools_por_turno(chamadas, enviados)
+    if por_turno is not None:
+        for t, lista in zip(resultado["turnos"], por_turno):
+            t["ferramentas"] = lista
     if tools is None:
         motivo = ("sem AGENTS_API_TOKEN no .env" if not trace.ligado
                   else "a rota de logs da plataforma nao respondeu")
@@ -331,28 +431,49 @@ def rodar_cenario(canal, trace, cenario, indice):
             print(f"  ATENCAO: uma tool de dado foi repetida {pior}x no mesmo turno "
                   f"(assinatura do truncamento de 4.000 chars)")
 
-    resultado["notas"] = canal.notas_privadas(conversa_id)
-    resultado["etiquetas"] = canal.etiquetas(conversa_id)
+    notas = canal.notas_privadas(conversa_id)
+    raia, status = canal.estado(conversa_id)
+    resultado["fim"] = {
+        "etiquetas": canal.etiquetas(conversa_id),
+        "raia": raia,
+        "status": status,
+        # handoff: a ferramenta no trace; sem trace, a conversa aberta para a equipe
+        "handoff": ("handoff_to_human" in tools) if tools is not None
+                   else (None if status is None else status == "open"),
+    }
 
     for n, turno in enumerate(cenario["turnos"]):
         if n >= len(resultado["turnos"]):
             break
-        falhas = checar(turno, resultado["turnos"][n]["resposta"], tools, pior)
-        for f in falhas:
-            resultado["falhas"].append(f"turno {n + 1}: {f}")
+        gravado = resultado["turnos"][n]
+        gravado["conferencias"] = checar(n + 1, turno, "\n".join(gravado["ana"]), tools, pior)
+    if resultado["turnos"]:
+        resultado["turnos"][-1]["conferencias"] += checar_fim(
+            cenario, len(resultado["turnos"]), resultado["fim"], tools, notas)
 
-    for esperada in cenario.get("notas_contem", []):
-        if not any(esperada.lower() in nota.lower() for nota in resultado["notas"]):
-            resultado["falhas"].append(f'nenhuma nota privada contem "{esperada}"')
-    for etq in cenario.get("etiquetas", []):
-        if etq not in resultado["etiquetas"]:
-            resultado["falhas"].append(f'a etiqueta "{etq}" nao foi aplicada')
-
-    resultado["veredito"] = "passou" if not resultado["falhas"] else "falhou"
+    resultado["conferencias"] = [c for t in resultado["turnos"] for c in t["conferencias"]]
+    resultado["falhas"] += [descrever(c) for c in resultado["conferencias"] if c["ok"] is False]
+    if len(resultado["turnos"]) < len(cenario["turnos"]):
+        resultado["veredito"] = "erro"
+    else:
+        resultado["veredito"] = "passou" if not resultado["falhas"] else "falhou"
     print(f"\n  VEREDITO: {resultado['veredito'].upper()}")
     for f in resultado["falhas"]:
         print(f"    - {f}")
     return resultado
+
+
+def gravar_conversa(r):
+    """A conversa gravada (ADR-0032): um arquivo por cenario, versionado no git,
+    sobrescrito a cada bateria. O historico das rodadas e o git log."""
+    destino = CONVERSAS / f"{r['id']}.json"
+    CONVERSAS.mkdir(exist_ok=True)
+    doc = {k: r[k] for k in ("id", "arquivo", "capacidade", "familia", "titulo", "contato",
+                             "conversa_id", "inicio", "turnos", "tools", "fim",
+                             "veredito", "falhas")}
+    doc["rodou_em"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    destino.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n")
+    return destino
 
 
 def main():
@@ -360,6 +481,8 @@ def main():
     p.add_argument("cenarios", help="arquivo de cenarios (relativo a ana/bancada/ ou absoluto)")
     p.add_argument("--so", help="roda so estes ids, separados por virgula (ex.: A1,B1)")
     p.add_argument("--familia", help="roda so esta familia (ex.: D)")
+    p.add_argument("--com-escrita", action="store_true",
+                   help="roda tambem os cenarios que gravam fora da plataforma (grava_producao)")
     args = p.parse_args()
 
     caminho = pathlib.Path(args.cenarios)
@@ -376,8 +499,19 @@ def main():
         cenarios = [c for c in cenarios if c["id"].upper() in querido]
     if args.familia:
         cenarios = [c for c in cenarios if (c.get("familia") or "").upper() == args.familia.upper()]
+    pulados = []
+    for c in list(cenarios):
+        if c.get("manual") or not c.get("turnos"):
+            pulados.append((c["id"], "manual: mostra so os passos"))
+        elif c.get("grava_producao") and not args.com_escrita:
+            pulados.append((c["id"], "grava fora da plataforma: so com --com-escrita"))
+        else:
+            continue
+        cenarios.remove(c)
+    for cid, motivo in pulados:
+        print(f"  pulado {cid}: {motivo}")
     if not cenarios:
-        sys.exit("ERRO: nenhum cenario casou com o filtro.")
+        sys.exit("ERRO: nenhum cenario para rodar com esse filtro.")
 
     env = ler_env()
     canal = Canal(env)
@@ -391,13 +525,16 @@ def main():
     for i, c in enumerate(cenarios):
         if i:
             time.sleep(PAUSA_ENTRE_CENARIOS_S)
-        resultados.append(rodar_cenario(canal, trace, c, i))
+        r = rodar_cenario(canal, trace, c, caminho.name)
+        resultados.append(r)
+        if r["veredito"] != "erro" or r["turnos"]:
+            print(f"  conversa gravada: {gravar_conversa(r).relative_to(RAIZ)}")
 
     passou = [r for r in resultados if r["veredito"] == "passou"]
     print(f"\n{'=' * 78}\nPLACAR: {len(passou)}/{len(resultados)}\n{'=' * 78}")
     for r in resultados:
         marca = {"passou": "OK    ", "falhou": "FALHOU", "erro": "ERRO  "}[r["veredito"]]
-        print(f"  [{marca}] {r['id']:<4} {r.get('titulo', '')}")
+        print(f"  [{marca}] {r['id']:<5} {r.get('titulo', '')}")
         for f in r["falhas"]:
             print(f"            {f}")
 

@@ -1,0 +1,1093 @@
+{
+  "sobre": "Os testes manuais das capacidades (os/dados/comparacao.json) como cenários da bancada (ADR-0032, decisão 2). A máquina confere só o objetivo: etiqueta, raia, handoff, ferramenta chamada e frases proibidas. O 'espere' de cada turno vai junto como texto, sem nota automática: o player o mostra ao lado da resposta para o Pedro julgar. 'nos' é o caminho declarado no Mapa do SOP (os/dados/sop-fluxo.json) que o turno percorre. Cenário 'manual' não roda: mostra só os passos. Cada rodada grava ana/bancada/conversas/<id>.json.",
+  "fonte": "os/dados/comparacao.json (campo testes de cada capacidade; o id do cenário é o campo cenario do teste)",
+  "cenarios": [
+    {
+      "id": "C01-1",
+      "capacidade": "C01",
+      "titulo": "Triagem de urgência",
+      "turnos": [
+        {
+          "envie": "estou com uma dor forte no peito e falta de ar",
+          "nos": [
+            "E1",
+            "E2",
+            "U1",
+            "U2",
+            "U3",
+            "U5",
+            "U6"
+          ],
+          "espere": "A mensagem fixa de orientação de emergência, na hora, e a conversa passa para humano com a etiqueta emergencia.",
+          "falha": "Ela pedir seu nome, CPF ou qualquer dado antes de orientar. Urgência não coleta nada.",
+          "nao_contem": [
+            "CPF",
+            "seu nome",
+            "nome completo"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "emergencia"
+        ],
+        "raia": "FILA ATENDIMENTO",
+        "handoff": true
+      }
+    },
+    {
+      "id": "C02-1",
+      "capacidade": "C02",
+      "titulo": "Saudação e leitura do motivo",
+      "turnos": [
+        {
+          "envie": "oi, boa tarde",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4"
+          ],
+          "espere": "Uma saudação curta e UMA pergunta sobre o que você precisa.",
+          "falha": "Um menu de opções numeradas, ou duas perguntas na mesma mensagem.",
+          "nao_contem": [
+            "1)",
+            "1 -",
+            "2)"
+          ]
+        }
+      ],
+      "confere": {
+        "raia": "EM ATENDIMENTO ANA",
+        "handoff": false
+      }
+    },
+    {
+      "id": "C03-1",
+      "capacidade": "C03",
+      "titulo": "Recusar o que está fora do escopo",
+      "turnos": [
+        {
+          "envie": "vocês vendem plano de saúde?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E6",
+            "S4",
+            "S6",
+            "S8"
+          ],
+          "espere": "Recusa educada e encaminhamento para a equipe, sem inventar resposta.",
+          "falha": "Ela responder como se soubesse."
+        }
+      ],
+      "confere": {
+        "raia": "FILA ATENDIMENTO",
+        "handoff": true
+      }
+    },
+    {
+      "id": "C04-1",
+      "capacidade": "C04",
+      "titulo": "Responder se é robô",
+      "turnos": [
+        {
+          "envie": "você é um robô?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3"
+          ],
+          "espere": "Ela assume que é assistente virtual, sem drama.",
+          "falha": "Negar, ou fingir ser humana.",
+          "nao_contem": [
+            "sou humana",
+            "não sou um robô",
+            "não sou robô",
+            "nao sou robo"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C05-1",
+      "capacidade": "C05",
+      "titulo": "Preço de consulta particular",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de cardiologia?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P5"
+          ],
+          "espere": "R$ 380, em formato brasileiro.",
+          "falha": "Escrever 380.0, ou dizer o valor duas vezes.",
+          "tools": [
+            "consultar_precos_consultas"
+          ],
+          "nao_contem": [
+            "380.0",
+            "valor_rs"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "particular-aquecido"
+        ],
+        "handoff": false
+      }
+    },
+    {
+      "id": "C05-2",
+      "capacidade": "C05",
+      "titulo": "Preço de consulta particular",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de urologia?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P5"
+          ],
+          "espere": "R$ 350. Este é o ÚLTIMO item da tabela, e é o teste que importa.",
+          "falha": "Dizer que não encontrou. Isso significaria que o fim da tabela voltou a ficar invisível.",
+          "tools": [
+            "consultar_precos_consultas"
+          ],
+          "nao_contem": [
+            "não encontrei",
+            "nao encontrei",
+            "350.0"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "particular-aquecido"
+        ],
+        "handoff": false
+      }
+    },
+    {
+      "id": "C05-3",
+      "capacidade": "C05",
+      "titulo": "Preço de consulta particular",
+      "turnos": [
+        {
+          "envie": "quais especialidades vocês atendem particular?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "P1",
+            "P2",
+            "P3",
+            "P5"
+          ],
+          "espere": "As 10, com valor: Cardiologia, Cirurgia Geral, Dermatologia, Ginecologia, Neurologia, Obstetrícia, Oftalmologia, Ortopedia, Pediatria e Urologia.",
+          "falha": "Faltar qualquer uma. Ela lista com confiança e não sabe que foi cortada: é a falha mais perigosa da família C.",
+          "tools": [
+            "consultar_precos_consultas"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C06-1",
+      "capacidade": "C06",
+      "titulo": "Valor de exame particular",
+      "turnos": [
+        {
+          "envie": "quanto custa a colonoscopia particular?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "X1",
+            "X9"
+          ],
+          "espere": "R$ 580. É o primeiro item da tabela de exames.",
+          "falha": "Não encontrar.",
+          "tools": [
+            "consultar_exames"
+          ],
+          "nao_contem": [
+            "não encontrei",
+            "nao encontrei"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C06-2",
+      "capacidade": "C06",
+      "titulo": "Valor de exame particular",
+      "turnos": [
+        {
+          "envie": "quanto custa a ultrassonografia abdominal?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "X1",
+            "X9"
+          ],
+          "espere": "R$ 220. É o último item da tabela.",
+          "falha": "Não encontrar.",
+          "tools": [
+            "consultar_exames"
+          ],
+          "nao_contem": [
+            "não encontrei",
+            "nao encontrei"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C06-3",
+      "capacidade": "C06",
+      "titulo": "Valor de exame particular",
+      "turnos": [
+        {
+          "envie": "quais exames vocês fazem e quanto custa cada um particular?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "X1",
+            "X9"
+          ],
+          "espere": "Os 10 com valor, de Colonoscopia a Ultrassonografia Abdominal.",
+          "falha": "Faltar qualquer um.",
+          "tools": [
+            "consultar_exames"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C07-1",
+      "capacidade": "C07",
+      "titulo": "Preparo de exame, sem perder passo clínico",
+      "turnos": [
+        {
+          "envie": "qual o preparo da colonoscopia?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "X1",
+            "X7"
+          ],
+          "espere": "Os três passos inteiros: dieta sem resíduos 2 dias antes, laxativo prescrito pelo médico, e jejum absoluto de 8h. Ela também costuma avisar sobre o acompanhante para a sedação.",
+          "falha": "Resumir a ponto de perder um dos três. Preparo cortado é risco clínico de verdade.",
+          "tools": [
+            "consultar_exames"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C08-1",
+      "capacidade": "C08",
+      "titulo": "Estimativa de cirurgia, com o caveat obrigatório",
+      "turnos": [
+        {
+          "envie": "quanto custa a cirurgia de hérnia inguinal?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "P11",
+            "P12"
+          ],
+          "espere": "R$ 7.500 E o aviso de que é estimativa, com o valor final dependendo de avaliação médica.",
+          "falha": "Dar o número sem o aviso. Valor de cirurgia sem o caveat é falha, mesmo com o número certo.",
+          "tools": [
+            "consultar_cirurgias_estimativas"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C08-2",
+      "capacidade": "C08",
+      "titulo": "Estimativa de cirurgia, com o caveat obrigatório",
+      "turnos": [
+        {
+          "envie": "quanto custa a cirurgia de apendicite por videolaparoscopia?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "P11",
+            "P12"
+          ],
+          "espere": "R$ 8.300 com o mesmo aviso. Este teste também prova que ela traduz o nome popular (apendicite) para o nome da tabela (Apendicectomia).",
+          "falha": "Dizer que não achou. Foi um defeito real, corrigido na V23.",
+          "tools": [
+            "consultar_cirurgias_estimativas"
+          ],
+          "nao_contem": [
+            "não encontrei",
+            "nao encontrei"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C09-1",
+      "capacidade": "C09",
+      "titulo": "Cobertura de convênio por especialidade",
+      "turnos": [
+        {
+          "envie": "meu convênio é a Amil, vocês cobrem cardiologia?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "C1",
+            "C2",
+            "C3",
+            "C6",
+            "C7"
+          ],
+          "espere": "Que atendemos, MAIS a ressalva da tabela: cobre consultas e exames, cirurgias sujeitas a autorização.",
+          "falha": "Ela dizer só 'atendemos pelo Amil em Cardiologia' e parar aí. É o defeito conhecido: a ressalva some numa conversa e aparece na outra. Vale repetir o teste 3 vezes em conversas separadas.",
+          "tools": [
+            "consultar_convenios_especialidade"
+          ],
+          "nao_contem": [
+            "observacao",
+            "cobre: true"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "agendamento-convenio"
+        ],
+        "raia": "AGUARDANDO CONFIRMAÇÃO",
+        "handoff": false
+      }
+    },
+    {
+      "id": "C09-2",
+      "capacidade": "C09",
+      "titulo": "Cobertura de convênio por especialidade",
+      "turnos": [
+        {
+          "envie": "tenho Unimed, quais especialidades vocês cobrem por ela?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "C1",
+            "C2",
+            "C3",
+            "C6",
+            "C7"
+          ],
+          "espere": "As 5: Cardiologia, Ginecologia, Obstetrícia, Ortopedia e Pediatria, cada uma com a observação.",
+          "falha": "Faltar alguma.",
+          "tools": [
+            "consultar_convenios_especialidade"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "agendamento-convenio"
+        ],
+        "raia": "AGUARDANDO CONFIRMAÇÃO",
+        "handoff": false
+      }
+    },
+    {
+      "id": "C10-1",
+      "capacidade": "C10",
+      "titulo": "Item fora da tabela não vira negativa",
+      "turnos": [
+        {
+          "envie": "quanto custa a consulta de reumatologia?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "P1",
+            "P2",
+            "P3",
+            "P6"
+          ],
+          "espere": "Que não encontrou na tabela oficial e uma oferta de encaminhar para a equipe confirmar.",
+          "falha": "Dizer que o hospital NÃO ATENDE reumatologia. A tabela é a de particular, não é o catálogo do hospital. Esse foi o erro mais grave já pego no programa.",
+          "tools": [
+            "consultar_precos_consultas"
+          ],
+          "nao_contem": [
+            "não atendemos",
+            "não temos reumatologia",
+            "não oferecemos"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C10-2",
+      "capacidade": "C10",
+      "titulo": "Item fora da tabela não vira negativa",
+      "turnos": [
+        {
+          "envie": "quanto custa a ressonância magnética?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "X1",
+            "X9"
+          ],
+          "espere": "O mesmo padrão: não achei na tabela, quer que eu encaminhe?",
+          "falha": "Dizer que o hospital não faz ressonância.",
+          "tools": [
+            "consultar_exames"
+          ],
+          "nao_contem": [
+            "não fazemos",
+            "não realizamos",
+            "não temos ressonância"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C10-3",
+      "capacidade": "C10",
+      "titulo": "Item fora da tabela não vira negativa",
+      "turnos": [
+        {
+          "envie": "meu plano é a Porto Seguro Saúde, vocês cobrem dermatologia?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "C1",
+            "C2",
+            "C3",
+            "C4"
+          ],
+          "espere": "Que o convênio é atendido, mas essa combinação não está na tabela, e uma oferta de confirmar com a equipe.",
+          "falha": "Dizer que a Porto Seguro 'não consta' ou empurrar você para o particular. Foi um defeito real, corrigido na V23.",
+          "tools": [
+            "consultar_convenios_especialidade"
+          ],
+          "nao_contem": [
+            "não consta",
+            "não aceitamos",
+            "não atendemos"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C11-1",
+      "capacidade": "C11",
+      "titulo": "O hospital edita na tela e a Ana fala o dado novo",
+      "manual": true,
+      "passos": "(precisa de duas pessoas) peça a alguém para mudar o valor da Cardiologia em /admin/dados-atendimento, de 380 para 395",
+      "espere": "Numa conversa NOVA, a Ana responde R$ 395 na primeira pergunta, sem redeploy e sem esperar.",
+      "falha": "Responder o valor velho. Lembre de reverter depois.",
+      "turnos": []
+    },
+    {
+      "id": "C12-1",
+      "capacidade": "C12",
+      "titulo": "API caída não vira valor inventado",
+      "manual": true,
+      "passos": "(não dá para testar conversando) exige derrubar a credencial da API de propósito",
+      "espere": "Que ela diga que não conseguiu consultar e encaminhe, sem citar valor nenhum.",
+      "falha": "Inventar valor, ou repetir de memória um valor que apareceu antes na conversa.",
+      "turnos": []
+    },
+    {
+      "id": "C13-1",
+      "capacidade": "C13",
+      "titulo": "Achar o cadastro do paciente",
+      "turnos": [
+        {
+          "envie": "quero marcar uma consulta de cardiologia particular",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P5"
+          ]
+        },
+        {
+          "envie": "pode ser, quero marcar sim",
+          "nos": [
+            "P7",
+            "S1"
+          ]
+        },
+        {
+          "envie": "meu nome é Teste Bancada Ana, CPF 663.011.027-70",
+          "nos": [
+            "S1",
+            "S2",
+            "P13",
+            "P14"
+          ],
+          "espere": "Ela informa o valor, você aceita, e ela pede nome e CPF. Depois disso ela busca seu cadastro na agenda online.",
+          "falha": "Pedir data de nascimento ou telefone. Desde o ADR-0014 o bloco cadastral é só nome e CPF.",
+          "tools": [
+            "buscar_paciente_por_cpf"
+          ],
+          "nao_contem": [
+            "data de nascimento"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "particular-aquecido"
+        ],
+        "handoff": false
+      }
+    },
+    {
+      "id": "C14-1",
+      "capacidade": "C14",
+      "titulo": "Oferecer horários reais para escolher",
+      "turnos": [
+        {
+          "envie": "quero marcar uma consulta de cardiologia particular",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P5"
+          ]
+        },
+        {
+          "envie": "pode ser, quero marcar sim",
+          "nos": [
+            "P7",
+            "S1"
+          ]
+        },
+        {
+          "envie": "meu nome é Teste Bancada Ana, CPF 663.011.027-70",
+          "nos": [
+            "S1",
+            "S2",
+            "P13",
+            "P14",
+            "P15"
+          ],
+          "espere": "Hoje: ela avisa com transparência que a agenda online não retornou horários e passa para a equipe. Isso é o comportamento CERTO com o catálogo vazio.",
+          "falha": "Ela inventar horários, ou insistir chamando a ferramenta várias vezes. Quando a GH19 destravar, aqui aparece uma lista numerada de até 5 horários reais.",
+          "tools": [
+            "consultar_especialidades_agenda"
+          ],
+          "tools_max_por_turno": 2
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C15-1",
+      "capacidade": "C15",
+      "titulo": "Dizer quem atende uma especialidade",
+      "turnos": [
+        {
+          "envie": "quem são os cardiologistas de vocês?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "A6",
+            "A7"
+          ],
+          "espere": "Que não consegue ver a agenda agora e um encaminhamento.",
+          "falha": "Citar nome de médico de memória.",
+          "tools": [
+            "consultar_prestadores_agenda"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C16-1",
+      "capacidade": "C16",
+      "titulo": "Levar o caso para a equipe com resumo",
+      "turnos": [
+        {
+          "envie": "quero marcar uma consulta de cardiologia particular",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P5"
+          ]
+        },
+        {
+          "envie": "pode ser, quero marcar sim",
+          "nos": [
+            "P7",
+            "S1"
+          ]
+        },
+        {
+          "envie": "meu nome é Teste Bancada Ana, CPF 663.011.027-70",
+          "nos": [
+            "S1",
+            "S2",
+            "P13",
+            "P14",
+            "P15",
+            "P10",
+            "S4",
+            "S6",
+            "S8"
+          ],
+          "espere": "Uma mensagem única dizendo que a equipe entra em contato, a etiqueta agendamento-particular aplicada e o card movido no Chatwoot.",
+          "falha": "Prometer que o horário está marcado, reservado ou garantido. Quem confirma é a equipe.",
+          "nao_contem": [
+            "está marcado",
+            "está agendado",
+            "garantido",
+            "reservado"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "agendamento-particular"
+        ],
+        "raia": "FILA COMERCIAL",
+        "handoff": true
+      }
+    },
+    {
+      "id": "C20-1",
+      "capacidade": "C20",
+      "titulo": "Agendamento por convênio: orientar o portal",
+      "turnos": [
+        {
+          "envie": "tenho Unimed e quero marcar pediatria",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5",
+            "E7",
+            "C1",
+            "C2",
+            "C3",
+            "C6",
+            "C7"
+          ],
+          "espere": "Confirmação da cobertura e o link do portal de marcação. Ela NÃO passa para humano aqui: continua na conversa até você dizer se conseguiu.",
+          "falha": "Passar direto para humano sem oferecer o portal.",
+          "tools": [
+            "consultar_convenios_especialidade"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "agendamento-convenio"
+        ],
+        "raia": "AGUARDANDO CONFIRMAÇÃO",
+        "handoff": false
+      }
+    },
+    {
+      "id": "C21-1",
+      "capacidade": "C21",
+      "titulo": "Acolher e coletar a manifestação",
+      "turnos": [
+        {
+          "envie": "quero fazer uma reclamação, esperei três horas na recepção ontem",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "O1",
+            "O2",
+            "O3"
+          ],
+          "espere": "Acolhimento sem se defender, e a coleta uma pergunta por vez.",
+          "falha": "Prometer apuração, prazo de resolução ou culpar alguém.",
+          "nao_contem": [
+            "vamos apurar",
+            "será apurad",
+            "resolveremos"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "ouvidoria"
+        ],
+        "handoff": false
+      }
+    },
+    {
+      "id": "C22-1",
+      "capacidade": "C22",
+      "titulo": "Registrar e devolver o protocolo real",
+      "turnos": [
+        {
+          "envie": "TESTE BANCADA ANA: quero fazer uma reclamação, esperei três horas na recepção ontem e fui muito mal atendido",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "O1",
+            "O2",
+            "O3"
+          ]
+        },
+        {
+          "envie": "foi comigo mesmo, ontem por volta das 14h, na recepção do ambulatório",
+          "nos": [
+            "O4",
+            "O5"
+          ]
+        },
+        {
+          "envie": "meu nome é Teste Bancada Ana, CPF 663.011.027-70",
+          "nos": [
+            "O4",
+            "O6"
+          ]
+        },
+        {
+          "envie": "isso mesmo, pode registrar por favor",
+          "nos": [
+            "O7",
+            "O10",
+            "O11",
+            "O8"
+          ],
+          "espere": "Um número de protocolo no formato 2026-NNNN, que existe de verdade no painel do hospital.",
+          "falha": "Compor um número por conta própria. ATENÇÃO: este teste GRAVA uma linha de verdade no painel de ouvidoria, e a regra da casa é que linha de ouvidoria nunca se apaga. Rode uma vez e avise quem cuida do painel.",
+          "tools": [
+            "registrar_ouvidoria"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "ouvidoria"
+        ],
+        "raia": "FILA OUVIDORIA",
+        "handoff": true
+      },
+      "grava_producao": true,
+      "atencao": "GRAVA LINHA DE VERDADE no painel de ouvidoria do hospital, que nunca se apaga. O e2e.py pula este cenário sem --com-escrita."
+    },
+    {
+      "id": "C23-1",
+      "capacidade": "C23",
+      "titulo": "Índice, não dossiê",
+      "manual": true,
+      "passos": "(depois do registro, olhe o painel /ouvidoria do app do hospital)",
+      "espere": "Só categoria, setor, resumo e datas. Nenhum nome, CPF ou dado clínico.",
+      "falha": "Qualquer dado pessoal aparecer no painel.",
+      "turnos": []
+    },
+    {
+      "id": "C24-1",
+      "capacidade": "C24",
+      "titulo": "Paciente volta citando o protocolo",
+      "turnos": [
+        {
+          "envie": "oi, registrei uma reclamação com vocês, o protocolo é 2026-0006. tem alguma novidade?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "O19",
+            "O8"
+          ],
+          "espere": "Que ela confirme que encontrou e informe o número, a data de abertura e o prazo de resposta.",
+          "falha": "Ela engolir o número, a data ou o prazo; ou ler o status ou o resumo (dizer 'já foi respondido' a quem nunca recebeu retorno é dano grave).",
+          "tools": [
+            "consultar_protocolo_ouvidoria"
+          ],
+          "nao_contem": [
+            "respondid",
+            "encerrad"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "ouvidoria"
+        ],
+        "raia": "FILA OUVIDORIA",
+        "handoff": true
+      }
+    },
+    {
+      "id": "C26-1",
+      "capacidade": "C26",
+      "titulo": "Prontuário médico",
+      "turnos": [
+        {
+          "envie": "preciso pegar meu prontuário médico",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "A1",
+            "A2"
+          ]
+        },
+        {
+          "envie": "é para uso pessoal",
+          "nos": [
+            "A3",
+            "A4",
+            "S4",
+            "S6",
+            "S8"
+          ],
+          "espere": "Ela pergunta a finalidade, orienta os documentos e encaminha.",
+          "falha": "Prometer envio por WhatsApp.",
+          "nao_contem": [
+            "enviar pelo WhatsApp",
+            "envio pelo WhatsApp",
+            "mandar pelo WhatsApp",
+            "envio por aqui"
+          ]
+        }
+      ],
+      "confere": {
+        "etiquetas": [
+          "prontuario"
+        ],
+        "raia": "SETOR RESPONSÁVEL",
+        "handoff": true
+      }
+    },
+    {
+      "id": "C27-1",
+      "capacidade": "C27",
+      "titulo": "Dúvidas gerais",
+      "turnos": [
+        {
+          "envie": "qual o endereço de vocês?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "A6",
+            "A7"
+          ],
+          "espere": "Rua Silva Cardoso, 689, Bangu, Rio de Janeiro, com o link do mapa.",
+          "falha": "Endereço errado ou inventado.",
+          "tools": [
+            "search_knowledge"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C27-2",
+      "capacidade": "C27",
+      "titulo": "Dúvidas gerais",
+      "turnos": [
+        {
+          "envie": "quais convênios vocês atendem?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "A6",
+            "A7"
+          ],
+          "espere": "A lista longa, com 40 e poucos convênios. ATENÇÃO: essa lista vem da base de conhecimento, NÃO da tabela da API. São fontes diferentes de propósito.",
+          "falha": "Ela listar só 6. Isso significaria que respondeu pela tabela errada.",
+          "tools": [
+            "search_knowledge"
+          ]
+        }
+      ],
+      "confere": {
+        "handoff": false
+      }
+    },
+    {
+      "id": "C28-1",
+      "capacidade": "C28",
+      "titulo": "Fora do horário comercial",
+      "manual": true,
+      "passos": "(mande qualquer pergunta depois das 18h ou no fim de semana)",
+      "espere": "A promessa de prazo muda: 'próximo expediente' em dia útil, 'segunda-feira às 7h' só no fim de semana de verdade.",
+      "falha": "Dizer 'segunda-feira' numa terça. Foi um bug real, pego pela própria bateria e corrigido na v6.3.2.",
+      "turnos": []
+    },
+    {
+      "id": "C29-1",
+      "capacidade": "C29",
+      "titulo": "Encerramento",
+      "turnos": [
+        {
+          "envie": "qual o endereço de vocês?",
+          "nos": [
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "A6",
+            "A7"
+          ]
+        },
+        {
+          "envie": "obrigado, era só isso",
+          "nos": [
+            "S6",
+            "S7"
+          ],
+          "espere": "Encerramento cordial, sem prometer o que não pode.",
+          "falha": "Continuar puxando assunto."
+        }
+      ],
+      "confere": {
+        "raia": "ENCERRADO RESOLVIDO",
+        "handoff": false
+      }
+    },
+    {
+      "id": "C30-1",
+      "capacidade": "C30",
+      "titulo": "Organizar o atendimento por trás",
+      "manual": true,
+      "passos": "(não se testa conversando: olhe no Chatwoot depois de qualquer teste)",
+      "espere": "A etiqueta certa aplicada, o card na coluna certa do kanban e a nota interna quando o fluxo pedir.",
+      "falha": "Etiqueta fora do catálogo fechado de 8.",
+      "turnos": []
+    }
+  ]
+}

@@ -4,13 +4,22 @@ O aparato que prova, contra o canal real, o que a Ana fala e de onde vem o que e
 Termo no `CONTEXT.md`: **Bancada de cenários** (não confundir com a *bancada da API*, que é
 página do Ana OS).
 
-## Os três scripts
+## Os scripts
 
 | Nível | Script | O que prova |
 |---|---|---|
 | 1. Contrato | `ana/api-hospital/scripts/smoke-hospital.py` | a API responde, o formato bate e cabe nos 4.000 chars |
-| 1.5. Divergímetro | `ana/bancada/divergimetro.py` | API do app e NocoDB dizem a mesma coisa (paridade da V26) |
 | 3. Conversa | `ana/bancada/e2e.py` | os cenários ponta a ponta, pela inbox de API do Chatwoot |
+
+O Divergímetro (nível 1.5) comparava o app com a fonte antiga e morreu com a migração
+(ADR-0032): está em `ana/bancada/arquivo/`, como acervo.
+
+## Os arquivos de cenários
+
+| Arquivo | O que tem |
+|---|---|
+| `cenarios/capacidades.json` | os testes de cada capacidade do Ana OS (`os/dados/comparacao.json`), um cenário por teste, com id `<capacidade>-<n>` (ex.: `C05-1`). Cada turno declara o caminho `nos` no Mapa do SOP e o `espere` em texto; a máquina confere só etiqueta, raia, handoff, ferramenta e frases proibidas. |
+| `cenarios/integracao.json` | os cenários das famílias A a E da integração com o app do hospital, hoje ligados como testes das capacidades da Base Ana e da Ouvidoria. |
 
 O nível 2 (espelho) é semi-manual: alguém edita no `/admin/dados-atendimento` e a sessão mede
 antes e depois. Os cenários A3 e A4 têm o campo `edicao_manual` dizendo o que editar.
@@ -18,13 +27,23 @@ antes e depois. Os cenários A3 e A4 têm o campo `edicao_manual` dizendo o que 
 ## Como rodar
 
 ```bash
-python3 ana/bancada/divergimetro.py
+python3 ana/bancada/e2e.py cenarios/capacidades.json --so C05-1
+python3 ana/bancada/e2e.py cenarios/capacidades.json
 python3 ana/bancada/e2e.py cenarios/integracao.json
 python3 ana/bancada/e2e.py cenarios/integracao.json --so C1a,C1b
 python3 ana/bancada/e2e.py cenarios/integracao.json --familia D
 ```
 
-O relatório completo de cada bateria fica em `ana/bancada/resultados/`, que é ignorado pelo git: o resultado **curado** de cada rodada vive no roteiro, cenário a cenário.
+Cada cenário rodado grava a sua **conversa gravada** em `ana/bancada/conversas/<id>.json`,
+versionada e sobrescrita a cada bateria (ADR-0032): turnos (paciente, Ana, ferramentas do
+turno, nós do SOP, o `espere`), conferências com esperado e veio, e o veredito. O histórico
+das rodadas é o log desses arquivos; é o que o player do Ana OS toca. Contatos são de teste,
+sem dado de paciente.
+
+Cenário `manual` não roda (mostra só os passos). Cenário com `grava_producao` (o `C22-1`
+registra ouvidoria de verdade) só roda com `--com-escrita`.
+
+O relatório cru de cada bateria fica em `ana/bancada/resultados/`, ignorado pelo git.
 
 ## Credenciais
 
