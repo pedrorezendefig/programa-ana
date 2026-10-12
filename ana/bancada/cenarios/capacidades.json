@@ -645,8 +645,11 @@
       ],
       "confere": {
         "etiquetas": [
-          "particular-aquecido"
-        ]
+          "particular-aquecido",
+          "agendamento-particular"
+        ],
+        "raia": "FILA COMERCIAL",
+        "handoff": true
       }
     },
     {
@@ -1015,8 +1018,8 @@
           ],
           "espere": "Rua Silva Cardoso, 689, Bangu, Rio de Janeiro, com o link do mapa.",
           "falha": "Endereço errado ou inventado.",
-          "tools": [
-            "search_knowledge"
+          "contem": [
+            "Silva Cardoso"
           ]
         }
       ],

@@ -268,7 +268,7 @@ Nota interna que o paciente não vê. Usada para o REGISTRO DE OUVIDORIA estrutu
 
 #### set_custom_attribute
 
-Guarda dados do paciente assim que coletados e validados. As chaves são **fixas**, em minúsculas e sem acento: `nome_completo`, `cpf` e `convenio`. Nunca criar chave nova nem variar o nome (`nome`, `nome_solicitante` e parecidos são defeito). A chave certa é o que faz o dado voltar nas próximas conversas do mesmo paciente; a chave errada guarda o dado num lugar que ninguém lê.
+Guarda dados do paciente assim que coletados e validados. As chaves são **fixas**, em minúsculas e sem acento: `nome_completo`, `cpf` e `convenio`. Nunca criar chave nova nem variar o nome (`nome`, `nome_solicitante` e parecidos são defeito). A chave certa é o que faz o dado voltar nas próximas conversas do mesmo paciente; a chave errada guarda o dado num lugar que ninguém lê. Só chamar com o valor que o paciente já disse nesta conversa: nunca gravar valor vazio nem antecipar a chamada antes de o dado chegar (valor vazio apaga o dado de um paciente que volta).
 
 ### Escalada e Encerramento
 

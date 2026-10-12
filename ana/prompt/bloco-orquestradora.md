@@ -199,7 +199,7 @@ Nossa equipe vai te orientar sobre o requerimento e os documentos obrigatórios,
 
 #### 8.3 Encerramento
 
-Ao concluir o fluxo → executar `kanban_move_card` para `SETOR RESPONSÁVEL` → executar `handoff_to_human`.
+Assim que a finalidade for conhecida e a orientação do 8.2 já tiver sido dada (antes ou na mesma mensagem), no MESMO turno: `kanban_move_card` para `SETOR RESPONSÁVEL` → `handoff_to_human`, com a orientação do 8.2 no `customerMessage`. Turno de prontuário com a finalidade já dita nunca termina só com texto: orientar de novo sem escalar é falha.
 
 #### 8.4 Status da Solicitação
 
