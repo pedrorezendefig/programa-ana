@@ -18,6 +18,8 @@
 
 ## Log
 
+- **12/out/2026 (2):** **o relato da #12 está pronto** em `ana/plataforma/relato-fazer-ai-achados-plataforma.md`, conferido na instância 1.15.0. Só dois pedidos sobram para a fazer.ai (body em modo antigo nas tools 7 e 11; resolve_conversation no follow-up); o corte de 4.000 caracteres some ao subir para 1.36.0 ou mais. A #12 foi para `canal:dispare`: falta o Pedro enviar.
+
 - **12/out/2026:** **a mesa do Cockpit vira raias empilhadas.** No formato do Hospital OS: uma raia por canal, cada issue numa linha compacta que abre no lugar (ficha, prompt, linha do tempo), filtros num menu próprio claro no lugar do `<select>` nativo, funil em pílulas. O #13 (revogar o token da Cloudflare) foi fechado como não planejado por decisão do Pedro.
 
 - **09/out/2026 (2):** **grilling do player (ADR-0032).** 16 decisões, todas no recomendado: a bancada da migração (famílias A a E, Divergímetro do NocoDB) sai da tela; os testes manuais viram cenários com conversa gravada em `ana/bancada/conversas/` (no git); o OS ganha o player (tocar a conversa real, com o fluxograma acendendo na jornada); todo filtro leva até a seção. `CONTEXT.md` ganhou Conversa gravada e Player. Cards #15 (filtros), #16 (bancada e cenários), #17 (player, bloqueada pela #16) e #18 (primeira bateria, dispare, bloqueada pela #16).
