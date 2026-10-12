@@ -68,6 +68,13 @@ A chave da API do Hospital vem do mesmo lugar que o `smoke-hospital.py` já usa.
    fim da lista reprova pelo teto de caracteres, não pelo que o cenário queria medir.
 5. **A Ana só registra ouvidoria depois de nome e CPF.** Cenário sem esses dados nunca chega
    ao registro, e a reprovação é do cenário.
+6. **Conversa de API não tem card no kanban.** O `kanban_move_card` responde "nothing to move"
+   e a raia lida do Chatwoot vem sempre vazia. O runner confere a raia pelo último
+   `kanban_move_card` do trace; como o log mascara o argumento (`string(<n>)`), só o
+   comprimento do nome da etapa sobrevive, e ele é único entre as etapas, menos FILA
+   COMERCIAL e FILA OUVIDORIA (14), que contam as duas. Achado da bateria #18.
+7. **CPF sai mascarado na conversa gravada**, mesmo o de teste que o cenário envia: o
+   arquivo vai para o git.
 
 ## Escrita em produção
 

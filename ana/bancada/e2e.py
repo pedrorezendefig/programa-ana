@@ -37,6 +37,7 @@ Credenciais: SEMPRE do .env da raiz do repo, nunca no codigo.
 import argparse
 import json
 import pathlib
+import re
 import sys
 import time
 import urllib.error
@@ -240,7 +241,8 @@ class Trace:
         sufixo = f":{conversa_chatwoot}"
         itens = [i for i in reversed(d.get("items", []))          # a API devolve do mais novo
                  if str(i.get("threadId") or "").endswith(sufixo)]  # ao mais velho
-        return [(i.get("turnId"), (i.get("detail") or {}).get("tool"), i.get("createdAt"))
+        return [(i.get("turnId"), (i.get("detail") or {}).get("tool"), i.get("createdAt"),
+                 (i.get("detail") or {}).get("args") or {})
                 for i in itens]
 
 
@@ -249,7 +251,7 @@ def resumir_trace(chamadas):
     if chamadas is None:
         return None, None, None
     nomes, por_turno = [], {}
-    for turno, tool, _ in chamadas:
+    for turno, tool, *_ in chamadas:
         if not tool:
             continue
         nomes.append(tool)
@@ -261,13 +263,40 @@ def resumir_trace(chamadas):
     return nomes, pior, por_turno
 
 
+# As etapas do kanban, com o nome exato que a Ana passa ao kanban_move_card (o prompt
+# manda usar o nome exato; duas trazem um travessao, escrito aqui como —).
+ETAPAS = ["NOVO CONTATO", "EM ATENDIMENTO — ANA", "AGUARDANDO CONFIRMAÇÃO",
+          "FILA COMERCIAL", "FILA ATENDIMENTO", "FILA OUVIDORIA", "SETOR RESPONSÁVEL",
+          "AGENDADO", "ENCERRADO — RESOLVIDO", "ENCERRADO — DESISTÊNCIA"]
+
+
+def raia_pelo_trace(chamadas):
+    """A raia lida do trace, para a conversa sem card no kanban (a de API nunca tem:
+    o move responde "nothing to move"). Devolve as etapas compativeis com o ultimo
+    kanban_move_card, [] se a Ana nao moveu, None se o trace nao foi coletado.
+
+    O log da plataforma mascara os argumentos como "string(<n>)": so o comprimento
+    do nome da etapa sobrevive. Os comprimentos das etapas sao unicos, menos FILA
+    COMERCIAL e FILA OUVIDORIA (14), que voltam as duas. Achado da bateria #18."""
+    if chamadas is None:
+        return None
+    moves = [args for _, tool, _, args in chamadas if tool == "kanban_move_card"]
+    if not moves:
+        return []
+    alvo = str(moves[-1].get("targetStep") or "")
+    if alvo.startswith("string(") and alvo.endswith(")") and alvo[7:-1].isdigit():
+        n = int(alvo[7:-1])
+        return [e for e in ETAPAS if len(e) == n] or [f"etapa desconhecida de {n} caracteres"]
+    return [alvo]
+
+
 def tools_por_turno(chamadas, enviados):
     """Distribui as chamadas pelos turnos do cenario: cada chamada vai para o ultimo
     turno enviado antes dela (pelo carimbo createdAt do log). None = nao coletado."""
     if chamadas is None:
         return None
     saida = [[] for _ in enviados]
-    for _, tool, quando in chamadas:
+    for _, tool, quando, _ in chamadas:
         if not tool or not quando or not enviados:
             continue
         n = 0
@@ -335,7 +364,13 @@ def checar_fim(cenario, ultimo, fim, tools, notas):
     saida = []
     for etq in list(cenario.get("etiquetas", [])) + list(confere.get("etiquetas", [])):
         saida.append(conf(ultimo, "etiqueta", etq, fim["etiquetas"], etq in fim["etiquetas"]))
-    if confere.get("raia"):
+    if confere.get("raia") and fim["raia"] is None and fim.get("raia_pelo_trace") is not None:
+        candidatas = fim["raia_pelo_trace"]
+        veio = ("trace: kanban_move_card para " + " ou ".join(candidatas) if candidatas
+                else "trace: nenhum kanban_move_card")
+        saida.append(conf(ultimo, "raia", confere["raia"], veio,
+                          normalizar(confere["raia"]) in {normalizar(c) for c in candidatas}))
+    elif confere.get("raia"):
         saida.append(conf(ultimo, "raia", confere["raia"], fim["raia"],
                           normalizar(confere["raia"]) == normalizar(fim["raia"])))
     if "handoff" in confere:
@@ -436,6 +471,8 @@ def rodar_cenario(canal, trace, cenario, arquivo):
     resultado["fim"] = {
         "etiquetas": canal.etiquetas(conversa_id),
         "raia": raia,
+        # conversa de API nao tem card: a raia vem do ultimo kanban_move_card do trace
+        "raia_pelo_trace": raia_pelo_trace(chamadas) if raia is None else None,
         "status": status,
         # handoff: a ferramenta no trace; sem trace, a conversa aberta para a equipe
         "handoff": ("handoff_to_human" in tools) if tools is not None
@@ -472,7 +509,10 @@ def gravar_conversa(r):
                              "conversa_id", "inicio", "turnos", "tools", "fim",
                              "veredito", "falhas")}
     doc["rodou_em"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    destino.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n")
+    # o arquivo vai para o git: CPF sai mascarado, mesmo o de teste que o cenario envia
+    texto = re.sub(r"\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b", "***.***.***-**",
+                   json.dumps(doc, ensure_ascii=False, indent=2))
+    destino.write_text(texto + "\n")
     return destino
 
 
