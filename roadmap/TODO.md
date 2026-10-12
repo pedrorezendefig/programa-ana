@@ -18,6 +18,8 @@
 
 ## Log
 
+- **12/out/2026 (6):** **#18 concluída: primeira bateria das capacidades, 19 de 29.** Todas as 10 falhas são da Ana, nenhuma do runner: convênio sem `consultar_convenios_especialidade` (C09-1, C09-2, C10-3, C20-1), etiqueta faltando (C13-1, C16-1), raia sem mover (C02-1, que pode ser cenário exigente demais; C03-1; C29-1) e a Ana muda depois do CPF com handoff (C14-1). O runner passou a ler a raia do trace e a mascarar CPF. 29 conversas em `ana/bancada/conversas/`, todas tocáveis no player. As cinco issues do dia (#12, #15, #16, #17, #18) rodaram por agentes em worktrees paralelas.
+
 - **12/out/2026 (5):** **#15 concluída: todo chip de filtro leva até a seção (ADR-0032, decisão 7).** Um comportamento só em `retrato/assets/filtros.js`, valendo no OS e no Retrato; testado com navegador headless a 1360 e 390 px. Conferido junto com o player da #17 no `main`: jornadas do Mapa do SOP tocam, Cockpit e console limpos. Ressalva: no celular, na aba Global Health, o card da conversa do elo fica abaixo do desenho e fora da tela. O Retrato mudou (motores compartilhados) e ainda não foi republicado.
 
 - **12/out/2026 (4):** **#17 concluída: o OS ganhou o player (ADR-0032).** `os/assets/player.js` toca a conversa gravada por cima da página (`#tocar=<id>`), com o fluxograma acendendo por turno; ligado nos testes, nas jornadas do Mapa do SOP (no lugar do "percorrer") e nas ferramentas. Rota nova só leitura `/api/conversas` no `os/server.py`. Um token novo de cor (azul-marinho do balão da Ana) registrado no `os/DESIGN.md`.
