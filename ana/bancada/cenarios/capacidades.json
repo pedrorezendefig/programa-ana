@@ -54,11 +54,13 @@
             "1)",
             "1 -",
             "2)"
+          ],
+          "tools_proibidas": [
+            "kanban_move_card"
           ]
         }
       ],
       "confere": {
-        "raia": "EM ATENDIMENTO ANA",
         "handoff": false
       }
     },
@@ -79,13 +81,16 @@
             "S6",
             "S8"
           ],
-          "espere": "Recusa educada e encaminhamento para a equipe, sem inventar resposta.",
-          "falha": "Ela responder como se soubesse."
+          "espere": "Recusa educada: o hospital não vende planos de saúde; pode dizer quais convênios atende. Sem inventar e sem passar para a equipe.",
+          "falha": "Prometer plano, preço de plano ou passar para humano sem necessidade.",
+          "nao_contem": [
+            "vendemos",
+            "nosso plano"
+          ]
         }
       ],
       "confere": {
-        "raia": "FILA ATENDIMENTO",
-        "handoff": true
+        "handoff": false
       }
     },
     {
@@ -399,7 +404,7 @@
       "titulo": "Cobertura de convênio por especialidade",
       "turnos": [
         {
-          "envie": "meu convênio é a Amil, vocês cobrem cardiologia?",
+          "envie": "meu convênio é a Unimed, vocês cobrem cardiologia?",
           "nos": [
             "E1",
             "E2",
@@ -413,14 +418,15 @@
             "C6",
             "C7"
           ],
-          "espere": "Que atendemos, MAIS a ressalva da tabela: cobre consultas e exames, cirurgias sujeitas a autorização.",
-          "falha": "Ela dizer só 'atendemos pelo Amil em Cardiologia' e parar aí. É o defeito conhecido: a ressalva some numa conversa e aparece na outra. Vale repetir o teste 3 vezes em conversas separadas.",
+          "espere": "Com a GH respondendo: cobertura confirmada e até 5 horários numerados. Com a GH fora: portal, sem negar a cobertura.",
+          "falha": "Negar a cobertura, afirmar sem a agenda, ou trocar o portal por 'posso encaminhar'.",
           "tools": [
-            "consultar_convenios_especialidade"
+            "consultar_especialidades_agenda",
+            "consultar_convenios_agenda"
           ],
           "nao_contem": [
-            "observacao",
-            "cobre: true"
+            "não atendemos",
+            "não consegui confirmar"
           ]
         }
       ],
@@ -428,7 +434,6 @@
         "etiquetas": [
           "agendamento-convenio"
         ],
-        "raia": "AGUARDANDO CONFIRMAÇÃO",
         "handoff": false
       }
     },
@@ -452,18 +457,14 @@
             "C6",
             "C7"
           ],
-          "espere": "As 5: Cardiologia, Ginecologia, Obstetrícia, Ortopedia e Pediatria, cada uma com a observação.",
-          "falha": "Faltar alguma.",
+          "espere": "Confirma que a Unimed é aceita e pergunta a especialidade, sem listar especialidades de memória.",
+          "falha": "Inventar a lista de especialidades cobertas.",
           "tools": [
-            "consultar_convenios_especialidade"
+            "search_knowledge"
           ]
         }
       ],
       "confere": {
-        "etiquetas": [
-          "agendamento-convenio"
-        ],
-        "raia": "AGUARDANDO CONFIRMAÇÃO",
         "handoff": false
       }
     },
@@ -553,19 +554,26 @@
             "C3",
             "C4"
           ],
-          "espere": "Que o convênio é atendido, mas essa combinação não está na tabela, e uma oferta de confirmar com a equipe.",
+          "espere": "Que a Porto Seguro é atendida e o link do portal, sem negar nem afirmar a cobertura de dermatologia.",
           "falha": "Dizer que a Porto Seguro 'não consta' ou empurrar você para o particular. Foi um defeito real, corrigido na V23.",
           "tools": [
-            "consultar_convenios_especialidade"
+            "consultar_especialidades_agenda",
+            "search_knowledge"
           ],
           "nao_contem": [
             "não consta",
             "não aceitamos",
-            "não atendemos"
+            "não atendemos",
+            "publicada",
+            "agenda online"
           ]
         }
       ],
       "confere": {
+        "etiquetas": [
+          "agendamento-convenio"
+        ],
+        "raia": "AGUARDANDO CONFIRMAÇÃO",
         "handoff": false
       }
     },
@@ -638,8 +646,7 @@
       "confere": {
         "etiquetas": [
           "particular-aquecido"
-        ],
-        "handoff": false
+        ]
       }
     },
     {
@@ -688,7 +695,7 @@
         }
       ],
       "confere": {
-        "handoff": false
+        "handoff": true
       }
     },
     {
@@ -799,7 +806,12 @@
           "espere": "Confirmação da cobertura e o link do portal de marcação. Ela NÃO passa para humano aqui: continua na conversa até você dizer se conseguiu.",
           "falha": "Passar direto para humano sem oferecer o portal.",
           "tools": [
-            "consultar_convenios_especialidade"
+            "consultar_especialidades_agenda",
+            "search_knowledge"
+          ],
+          "nao_contem": [
+            "publicada",
+            "não publicou"
           ]
         }
       ],
