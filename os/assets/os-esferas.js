@@ -5,7 +5,8 @@
    script escuta "retrato:pronto" e acrescenta só o que o Retrato não mostra e um
    arquiteto precisa:
      O que a Ana faz hoje    os testes de cada capacidade, cada um com o seu cenário da
-                             bancada (as famílias saíram para os/arquivo/, ADR-0032)
+                             bancada e o botão que toca a conversa gravada no player
+                             (player.js; as famílias saíram para os/arquivo/, ADR-0032)
      Onde ela busca          a chamada real de cada ferramenta (método e caminho, lidos
                              da plataforma) e a versão do Chatwoot
      Global Health           rodar cada elo na homologação (motor em cadeias-motor.js),
@@ -59,6 +60,7 @@
         card.dataset.texto = (card.dataset.texto || "") + " " + testes.map(function (t) { return t.envie + " " + t.espere; }).join(" ");
       });
     });
+    if (window.Player) Player.decorar(document.getElementById("blocos-cap"));
   }
 
   function teste(t) {
@@ -74,6 +76,7 @@
       (t.falha ? '<div class="t-linha"><span class="t-rot">falha se</span><span class="t-txt">' + esc(t.falha) + "</span></div>" : "") +
       (chips.length ? '<div class="t-chips">' + chips.join("") + "</div>" : "") +
       (t.obs ? '<p class="caption">' + esc(t.obs) + "</p>" : "") +
+      (t.cenario && !t.manual && window.Player ? '<div class="t-tocar">' + Player.botao(t.cenario) + "</div>" : "") +
       "</div>";
   }
 

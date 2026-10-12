@@ -169,3 +169,7 @@ O OS é uma página só (`os/index.html`), desenhada pelos motores JS do Retrato
 | Fonte de medição dos SVG | HP Simplified | Inter (`window.FLUXO_FONTE`) |
 
 O Cockpit fica dentro da mesma página: mesa de ação em três colunas, grafo com os ids prefixados `grafo-` (para não colidir com o painel e o placar das esferas), radar em uma linha por item com a prioridade num círculo preto. A sidebar preta continua, agora só com o logo e as aplicações externas (ícone com tooltip). Regra de escrita: nenhuma moldura explica o desenho ao lado; uma linha curta por seção, e o resto é o próprio dado.
+
+## O player da conversa gravada (ADR-0032)
+
+Abre por cima da página (`#tocar=<id>`) num card branco com a `--sombra-flutuante`; no celular ocupa a tela inteira. Paciente em balão cinza (`--cor-fio`) à esquerda; Ana em balão azul-marinho (`--cor-ana-marinho: #1b2a4a`, a única cor fora da tabela, pedida pela decisão 4 do ADR-0032 e restrita ao player) à direita; ferramenta como chip branco com fio entre os balões; o "espere" em card tracejado ao lado da resposta; conferência falha em faixa `--cor-vermelho-tinta` com trilho vermelho e "esperado / veio". Ao lado, o fluxograma do caminho declarado: nó com halo verde quando o turno passou, vermelho quando a conferência do turno falhou.

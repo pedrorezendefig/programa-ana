@@ -13,6 +13,8 @@ O que o OS acrescenta:
     comandos `gh` na sessao do terminal. /api/issue/<n>: o detalhe de uma issue.
   - /api/retrato: as quatro esferas montadas ao vivo pelo retrato/gerar.py (ADR-0030).
   - /retrato/<x>.js|.css: os motores do Retrato da Ana, fonte unica para os dois produtos.
+  - /api/conversas: as conversas gravadas da bancada (ana/bancada/conversas/), que o
+    player toca (ADR-0032).
   - /api/docs e /docs/...: a Biblioteca, allowlist explicita de .md do repo.
     dados-locais/ e resultados/amostras/ ficam fora por construcao.
 
@@ -47,6 +49,10 @@ ABSORCAO_DIR = os.path.join(REPO_DIR, "ana", "api-mv", "absorcao-producao", "res
 # Cenarios da bancada (ADR-0020): a pagina Testes manuais le o arquivo que vive
 # fora de os/. Leitura de UM arquivo fixo, nunca de uma pasta.
 CENARIOS_JSON = os.path.join(REPO_DIR, "ana", "bancada", "cenarios", "integracao.json")
+# O player (ADR-0032): as conversas gravadas pela bancada, um .json por cenario, e os
+# cenarios das capacidades (o caminho de nos e o "espere" de cada turno). So leitura.
+CONVERSAS_DIR = os.path.join(REPO_DIR, "ana", "bancada", "conversas")
+CAPACIDADES_JSON = os.path.join(REPO_DIR, "ana", "bancada", "cenarios", "capacidades.json")
 # Parser das notas de versao do Chatwoot (ADR-0024). O server NAO tem copia da logica:
 # ele importa o mesmo script que uma sessao roda na mao, para os dois nunca divergirem.
 RELEASES_SCRIPT = os.path.join(REPO_DIR, "ana", "plataforma", "scripts", "fetch-chatwoot-releases.py")
@@ -381,6 +387,42 @@ def teste_token():
     }
 
 
+def ler_conversas():
+    """O que o player toca (ADR-0032): as conversas gravadas de ana/bancada/conversas/
+    (so a raiz, so .json) e os cenarios declarados (capacidades e integracao), para o
+    player saber o caminho de nos, o "espere" e dizer "nunca rodou" quando nao ha gravacao."""
+    conversas = {}
+    if os.path.isdir(CONVERSAS_DIR):
+        for nome in sorted(os.listdir(CONVERSAS_DIR)):
+            if nome.startswith(".") or not nome.endswith(".json"):
+                continue
+            caminho = os.path.join(CONVERSAS_DIR, nome)
+            if not os.path.isfile(caminho):
+                continue
+            try:
+                with open(caminho, encoding="utf-8") as f:
+                    doc = json.load(f)
+            except (OSError, ValueError):
+                continue
+            conversas[str(doc.get("id") or nome[:-5])] = doc
+    cenarios = []
+    for arquivo in (CAPACIDADES_JSON, CENARIOS_JSON):
+        try:
+            with open(arquivo, encoding="utf-8") as f:
+                doc = json.load(f)
+        except (OSError, ValueError):
+            continue
+        for c in doc.get("cenarios", []):
+            cenarios.append({
+                "id": c.get("id"), "capacidade": c.get("capacidade"), "familia": c.get("familia"),
+                "titulo": c.get("titulo"), "manual": bool(c.get("manual")),
+                "arquivo": os.path.basename(arquivo),
+                "turnos": [{k: t.get(k) for k in ("envie", "nos", "espere", "falha", "tools")}
+                           for t in c.get("turnos", [])],
+            })
+    return {"ok": True, "conversas": conversas, "cenarios": cenarios}
+
+
 # ---------- Biblioteca (allowlist de .md do repo) ----------
 
 def _nome_md_valido(nome):
@@ -559,6 +601,8 @@ class Handler(BaseHTTPRequestHandler):
                     self._json({"ok": True, "cenarios": json.load(f)})
             except (OSError, ValueError) as e:
                 self._json({"ok": False, "erro": str(e)}, 500)
+        elif path == "/api/conversas":
+            self._json(ler_conversas())
         elif path == "/api/roadmap":
             try:
                 self._json({"ok": True, "roadmap": ler_roadmap()})
