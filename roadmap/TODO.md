@@ -18,6 +18,8 @@
 
 ## Log
 
+- **12/out/2026 (5):** **#15 concluída: todo chip de filtro leva até a seção (ADR-0032, decisão 7).** Um comportamento só em `retrato/assets/filtros.js`, valendo no OS e no Retrato; testado com navegador headless a 1360 e 390 px. Conferido junto com o player da #17 no `main`: jornadas do Mapa do SOP tocam, Cockpit e console limpos. Ressalva: no celular, na aba Global Health, o card da conversa do elo fica abaixo do desenho e fora da tela. O Retrato mudou (motores compartilhados) e ainda não foi republicado.
+
 - **12/out/2026 (4):** **#17 concluída: o OS ganhou o player (ADR-0032).** `os/assets/player.js` toca a conversa gravada por cima da página (`#tocar=<id>`), com o fluxograma acendendo por turno; ligado nos testes, nas jornadas do Mapa do SOP (no lugar do "percorrer") e nas ferramentas. Rota nova só leitura `/api/conversas` no `os/server.py`. Um token novo de cor (azul-marinho do balão da Ana) registrado no `os/DESIGN.md`.
 
 - **12/out/2026 (3):** **#16 concluída (ADR-0032).** As famílias da bancada saíram da tela (`os/arquivo/familias.html`), o Divergímetro foi para `ana/bancada/arquivo/`, `ana/bancada/cenarios/capacidades.json` tem 35 cenários (30 automáticos, 5 manuais; o C22-1 só roda com `--com-escrita`) e o `e2e.py` grava `ana/bancada/conversas/<id>.json`. Primeira gravação, C05-1: falhou porque a Ana não aplicou a etiqueta `particular-aquecido`. Feita por agente em worktree, em paralelo com a #15 e a #12.
