@@ -1,0 +1,13 @@
+{
+  "enabledPlugins": {
+    "bancada@ana-mods": true
+  },
+  "extraKnownMarketplaces": {
+    "ana-mods": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/pedrorezende/PedroDev/Ana"
+      }
+    }
+  }
+}

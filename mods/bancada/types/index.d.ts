@@ -69,6 +69,8 @@ export type Visao = {
   soBuracos: boolean
   raia: string | null
   rolagemTestes: number
+  /** chave da linha sob o cursor na aba Testes: id de cenario ou de capacidade vazia */
+  itemTestes: string | null
 }
 
 export type Classe = 'passa' | 'intermitente' | 'constante' | 'sem dado' | 'manual'

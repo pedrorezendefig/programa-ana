@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ana-mods",
+  "description": "Mods do Programa Ana para o Claude Code: o painel da bancada (bateria ao vivo e mesa de testes).",
+  "owner": { "name": "Pedro Rezende" },
+  "plugins": [
+    {
+      "name": "bancada",
+      "source": "./mods/bancada",
+      "description": "Painel da bancada da Ana: bateria ao vivo, mesa de testes por capacidade e acoes que falam com o chat.",
+      "category": "development",
+      "tags": ["mods", "ana", "testes"]
+    }
+  ]
+}

@@ -49,10 +49,10 @@ O relatório cru de cada bateria fica em `ana/bancada/resultados/`, ignorado pel
 
 O runner emite um evento por linha em `resultados/ao-vivo.jsonl` (zerado a cada execução):
 `bateria`, `cenario`, `conversa`, `paciente`, `ana`, `trace`, `veredito`, `placar`. O painel
-do Claude Code (mod em `.claude/skills/bancada/`) lê esse arquivo a cada segundo e abre
-sozinho quando uma bateria começa; `/bancada` abre, `/bancada rodar --so C05-1` roda por dentro,
-`/bancada parar` encerra. Parado, o painel mostra as conversas gravadas. A segunda aba, Testes
-(`/bancada testes`), desenha o `relatorio.py --json` em cores com filtros por tecla.
+do Claude Code (mod em `mods/bancada/`) lê esse arquivo a cada segundo e abre
+sozinho quando uma bateria começa; `/painel` abre, `/painel rodar --so C05-1` roda por dentro,
+`/painel parar` encerra. Parado, o painel mostra as conversas gravadas. A segunda aba, Testes
+(`/painel testes`), desenha o `relatorio.py --json` em cores com filtros por tecla.
 
 ```bash
 python3 ana/bancada/e2e.py cenarios/capacidades.json --bateria v69 --rodada 1
