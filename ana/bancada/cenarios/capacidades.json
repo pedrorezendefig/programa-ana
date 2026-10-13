@@ -978,18 +978,21 @@
           "envie": "é para uso pessoal",
           "nos": [
             "A3",
-            "A4",
-            "S4",
-            "S6",
-            "S8"
+            "A4"
           ],
-          "espere": "Ela pergunta a finalidade, orienta os documentos e encaminha.",
-          "falha": "Prometer envio por WhatsApp.",
+          "espere": "Ela orienta o e-mail prontuario@hospitalsaomatheus.com.br e os documentos, e pergunta se pode ajudar com mais alguma coisa. Uso pessoal ela resolve sozinha: não passa para a equipe.",
+          "falha": "Prometer envio por WhatsApp, passar para a equipe, ou repetir a mesma orientação sem avançar.",
           "nao_contem": [
             "enviar pelo WhatsApp",
             "envio pelo WhatsApp",
             "mandar pelo WhatsApp",
             "envio por aqui"
+          ],
+          "contem": [
+            "prontuario@hospitalsaomatheus.com.br"
+          ],
+          "tools_proibidas": [
+            "handoff_to_human"
           ]
         }
       ],
@@ -997,8 +1000,7 @@
         "etiquetas": [
           "prontuario"
         ],
-        "raia": "SETOR RESPONSÁVEL",
-        "handoff": true
+        "handoff": false
       }
     },
     {
