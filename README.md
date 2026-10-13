@@ -26,7 +26,7 @@ Repositório de trabalho da VITTA TECH para os agentes de IA do Hospital São Ma
 | `docs/` | Arquitetura da integração de agendamento (era n8n; consulta) e ADRs em `docs/adr/` |
 | `pos-atendimento/` | Specs do futuro agente de pós-atendimento (a construir) |
 | `contrato/` | Contrato de Serviços Contínuos da VITTA TECH |
-| `.claude/skills/` | Skills locais das sessões Claude Code: `/check` (ritual de progresso), `/grill-me` e `/grill-with-docs` (entrevista por rodadas para fechar um desenho antes de codar; a segunda também grava ADRs e glossário) |
+| `.claude/skills/` | Skills locais das sessões Claude Code: `/check` (ritual de progresso), `/bancada` (a bateria com 3 rodadas, o painel ao vivo e o diagnóstico), `/testes` (a mesa de testes: ver, executar, montar e revisar cenários), `/grill-me` e `/grill-with-docs` (entrevista por rodadas para fechar um desenho antes de codar; a segunda também grava ADRs e glossário) |
 
 ## Como entrar no projeto (passo a passo para sócios)
 

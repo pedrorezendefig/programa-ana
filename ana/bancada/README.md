@@ -62,6 +62,15 @@ copia as conversas para `resultados/conversas-v69-rodada1/` e anota as janelas e
 `resultados/janelas-v69.txt`. A skill `bancada` roda as três rodadas e escreve o diagnóstico em
 `ana/bancada/diagnosticos/`, versionado.
 
+## A mesa de testes: relatório e práticas
+
+`python3 ana/bancada/relatorio.py` imprime, em Markdown, os cenários por capacidade na ordem do
+Ana OS, com as rodadas copiadas da bateria mais recente (`--bateria v69` escolhe outra), a classe
+de cada um (passa, intermitente, constante), a regressão contra a bateria anterior e os buracos
+(capacidades e nós do SOP sem cenário). Filtros: `--capacidade C05`, `--no E5`, `--tool <nome>`,
+`--raia particular`, `--buracos`. É a abertura da skill `/testes`; as práticas que guiam montar e
+revisar cenários estão em `PRATICAS.md`.
+
 ## Credenciais
 
 Todas no `.env` da raiz do repo, nunca no código:
