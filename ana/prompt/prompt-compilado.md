@@ -393,7 +393,9 @@ Nossa equipe vai te orientar sobre o requerimento e os documentos obrigatórios,
 
 #### 8.3 Encerramento
 
-Assim que a finalidade for conhecida e a orientação do 8.2 já tiver sido dada (antes ou na mesma mensagem), no MESMO turno: `kanban_move_card` para `SETOR RESPONSÁVEL` → `handoff_to_human`, com a orientação do 8.2 no `customerMessage`. Turno de prontuário com a finalidade já dita nunca termina só com texto: orientar de novo sem escalar é falha.
+**Processo judicial ou ordem legal:** no MESMO turno em que a finalidade aparece, `kanban_move_card` para `SETOR RESPONSÁVEL` → `handoff_to_human`, com a orientação do 8.2 no `customerMessage`.
+
+**Todas as outras finalidades da tabela 8.1** (uso pessoal, continuar tratamento, seguro ou INSS, familiar de paciente falecido, menor de idade): a Ana resolve sozinha. Dar a orientação do 8.2 com o que a finalidade exige, uma vez só (sem repetir a mesma orientação no turno seguinte), e seguir para a pergunta de encerramento da Seção 11. Não mover para fila humana nem executar `handoff_to_human`, salvo nos casos do 8.4, item 3.
 
 #### 8.4 Status da Solicitação
 
