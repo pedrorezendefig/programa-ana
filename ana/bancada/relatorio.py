@@ -17,8 +17,9 @@ Uso:
     python3 ana/bancada/relatorio.py --tool consultar_precos_consultas
     python3 ana/bancada/relatorio.py --raia particular  # cenarios cujos nos tocam a raia
     python3 ana/bancada/relatorio.py --buracos          # so a parte dos buracos
+    python3 ana/bancada/relatorio.py --json             # o mesmo dado, para a aba Testes do painel
 
-Saida em Markdown, para colar no chat. Nada e gravado.
+Saida em Markdown, para colar no chat (ou JSON com --json). Nada e gravado.
 """
 
 import argparse
@@ -86,6 +87,7 @@ def main():
     p.add_argument("--tool", help="so cenarios que esperam esta ferramenta")
     p.add_argument("--raia", help="so cenarios cujos nos tocam esta raia do SOP (ex.: particular)")
     p.add_argument("--buracos", action="store_true", help="so a secao dos buracos de cobertura")
+    p.add_argument("--json", action="store_true", help="imprime o dado estruturado em vez do Markdown")
     args = p.parse_args()
 
     dados = ler(CENARIOS)
@@ -135,6 +137,66 @@ def main():
     for c in cenarios:
         por_cap[c.get("capacidade")].append(c)
 
+    def mudanca_de(cid):
+        antes = rodadas_de(cid, anterior)
+        agora = rodadas_de(cid, atual)
+        antes_v = next((v for v in reversed(antes) if v is not None), None)
+        agora_v = next((v for v in reversed(agora) if v is not None), None)
+        if antes_v and agora_v:
+            if antes_v == "passou" and agora_v != "passou":
+                return "regrediu"
+            if antes_v != "passou" and agora_v == "passou":
+                return "melhorou"
+        return None
+
+    if args.json:
+        blocos = []
+        for bloco in comp["blocos"]:
+            caps = []
+            for cap in bloco["capacidades"]:
+                lista = [c for c in por_cap.get(cap["id"], []) if passa_filtro(c)]
+                itens = []
+                for c in lista:
+                    manual = bool(c.get("manual") or not c.get("turnos"))
+                    rod = [] if manual else rodadas_de(c["id"], atual)
+                    itens.append({
+                        "id": c["id"], "titulo": c.get("titulo", ""), "manual": manual,
+                        "escrita": bool(c.get("grava_producao")),
+                        "rodadas": rod, "classe": "manual" if manual else classe(rod),
+                        "mudanca": None if manual else mudanca_de(c["id"]),
+                        "tools": sorted(tools_de(c)), "nos": sorted(nos_de(c)),
+                        "raias": sorted({raia_do_no.get(n) for n in nos_de(c) if raia_do_no.get(n)}),
+                    })
+                caps.append({"id": cap["id"], "titulo": cap["titulo"], "estado": cap.get("estado"),
+                             "cenarios": itens})
+            blocos.append({"nome": bloco["nome"], "capacidades": caps})
+        ids_cap = [cap["id"] for b in comp["blocos"] for cap in b["capacidades"]]
+        sem_exec = [cid for cid in ids_cap
+                    if not any(c.get("turnos") and not c.get("manual") for c in por_cap.get(cid, []))]
+        cobertos = set()
+        for c in cenarios:
+            if c.get("turnos") and not c.get("manual"):
+                cobertos |= nos_de(c)
+        nos_sem = defaultdict(list)
+        for n in sop["nos"]:
+            if n["id"] not in cobertos:
+                nos_sem[n["raia"]].append({"id": n["id"], "titulo": titulo_no.get(n["id"], "")})
+        saida = {
+            "bateria": atual[0] if atual else None,
+            "rodadas": sorted(atual[1]) if atual else [],
+            "anterior": anterior[0] if anterior else None,
+            "raias": [{"id": r["id"], "rotulo": r["rotulo"]} for r in sop["raias"]],
+            "blocos": blocos,
+            "buracos": {
+                "capacidades_sem_cenario": sem_exec, "total_capacidades": len(ids_cap),
+                "nos_sem_cenario": [{"raia": r, "rotulo": rotulo_raia.get(r, r), "nos": ns}
+                                    for r, ns in nos_sem.items()],
+                "total_nos": len(sop["nos"]),
+            },
+        }
+        print(json.dumps(saida, ensure_ascii=False))
+        return
+
     linhas = []
     nome_bat = atual[0] if atual else None
     linhas.append(f"# Testes da Ana por capacidade{f' ({nome_bat}, {len(atual[1])} rodada(s))' if atual else ' (nenhuma rodada copiada)'}")
@@ -164,15 +226,7 @@ def main():
                     rod = rodadas_de(c["id"], atual)
                     cl = classe(rod)
                     totais[cl] += 1
-                    antes = rodadas_de(c["id"], anterior)
-                    antes_v = next((v for v in reversed(antes) if v is not None), None)
-                    agora_v = next((v for v in reversed(rod) if v is not None), None)
-                    mud = "-"
-                    if antes_v and agora_v:
-                        if antes_v == "passou" and agora_v != "passou":
-                            mud = "regrediu"
-                        elif antes_v != "passou" and agora_v == "passou":
-                            mud = "melhorou"
+                    mud = mudanca_de(c["id"]) or "-"
                     escrita = " (so com --com-escrita)" if c.get("grava_producao") else ""
                     linhas.append(
                         f"| {c['id']} | {c.get('titulo', '')}{escrita} | {' '.join(LETRA[v] for v in rod) or '-'} | {cl} | {mud} "

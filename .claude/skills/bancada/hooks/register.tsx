@@ -1,11 +1,13 @@
-// Bancada ao vivo (ADR-0033): o painel do Claude Code que mostra a bateria da Ana
-// rodando, cenario a cenario. Le ana/bancada/resultados/ao-vivo.jsonl (escrito pelo
-// e2e.py) a cada segundo; parado, mostra a ultima bateria. Comandos: /bancada,
-// /bancada rodar <args do e2e.py>, /bancada parar.
+// Bancada ao vivo (ADR-0033): o painel do Claude Code com duas abas. "Bateria" mostra
+// a bateria da Ana rodando, cenario a cenario (le ana/bancada/resultados/ao-vivo.jsonl,
+// escrito pelo e2e.py, a cada segundo; parada, mostra a ultima). "Testes" mostra o
+// relatorio por capacidade (relatorio.py --json): rodadas, classe, regressao e os
+// buracos de cobertura. Comandos: /bancada, /bancada testes, /bancada rodar <args>,
+// /bancada parar. A skill /testes abre a aba Testes pela ferramenta abrir_testes.
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import type { Bancada, Cenario, Visao } from '../types'
+import type { Bancada, Cenario, Classe, ItemRelatorio, Relatorio, Visao } from '../types'
 import {
   deConversas,
   duracao,
@@ -22,15 +24,23 @@ const TITULO = 'Bancada ao vivo'
 const AO_VIVO = 'ana/bancada/resultados/ao-vivo.jsonl'
 const CONVERSAS = 'ana/bancada/conversas'
 const E2E = 'ana/bancada/e2e.py'
+const RELATORIO = 'ana/bancada/relatorio.py'
+const FERRAMENTA = 'abrir_testes'
 const CENARIOS_PADRAO = 'cenarios/capacidades.json'
 
 const bancada = atom({ plugin: 'bancada', key: 'bancada' } as const, null as Bancada | null)
 const visao = atom({ plugin: 'bancada', key: 'visao' } as const, {
+  aba: 'bateria',
   selecionado: null,
   soFalhas: false,
   rolagem: 0,
+  soProblemas: false,
+  soBuracos: false,
+  raia: null,
+  rolagemTestes: 0,
 } as Visao)
 const agora = atom({ plugin: 'bancada', key: 'agora' } as const, 0)
+const relatorio = atom({ plugin: 'bancada', key: 'relatorio' } as const, null as Relatorio | null)
 
 // o que este carregamento do modulo ja viu (zera a cada reload, como todo modulo)
 let ultimoArquivo = { size: -1, mtimeMs: -1 }
@@ -53,20 +63,43 @@ const cor: Record<Cenario['estado'], 'green' | 'red' | 'yellow' | 'cyan' | undef
   erro: 'yellow',
 }
 const letraRodada = (v: string | null) => (v === 'passou' ? 'o' : v === 'falhou' ? 'x' : v === 'erro' ? '!' : '-')
+const corClasse: Record<Classe, 'green' | 'red' | 'yellow' | undefined> = {
+  passa: 'green',
+  intermitente: 'yellow',
+  constante: 'red',
+  'sem dado': undefined,
+  manual: undefined,
+}
+type Cor = 'green' | 'red' | 'yellow' | 'cyan' | 'magenta' | undefined
+type Linha = { t: string; cor?: Cor; dim?: boolean; bold?: boolean }
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'bancada',
       description: 'Bancada ao vivo: abre o painel da bateria; "rodar <args do e2e.py>" roda uma rodada; "parar" encerra',
-      argumentHint: '[rodar <args> | parar]',
+      argumentHint: '[testes | rodar <args> | parar]',
+    })
+    await $.tool.register({
+      name: FERRAMENTA,
+      description:
+        'Abre o painel da bancada na aba Testes (relatorio dos cenarios da Ana por capacidade: rodadas, classe, regressao, buracos de cobertura) e devolve os totais. Use na skill /testes em vez de colar o relatorio no chat.',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
     })
     const started = await next(e)
     void $.clock.every(1000, () => {
       void vigiar($)
     })
     void vigiar($)
+    void atualizarRelatorio($)
     return started
+  })
+
+  on('tool.call', { tool: `mcp__bancada__${FERRAMENTA}` }, async $ => {
+    const r = await atualizarRelatorio($)
+    await update($, visao, x => ({ ...x, aba: 'testes' as const, rolagemTestes: 0 }))
+    await $.ui.open({ id: PANE, title: TITULO })
+    return { result: r ? resumoRelatorio(r) : 'Nao consegui gerar o relatorio (python3 ana/bancada/relatorio.py --json falhou).' }
   })
 
   on('command.run', { command: 'bancada' }, async ($, e) => {
@@ -101,9 +134,16 @@ export const register: Register = on => {
       await $.ui.open({ id: PANE, title: TITULO })
       return { text: `Bancada: rodando "${comando}". O painel segue a rodada; /bancada parar encerra.` }
     }
-    if (verbo) return { text: 'Bancada: uso /bancada, /bancada rodar <args do e2e.py> ou /bancada parar.' }
+    if (verbo === 'testes') {
+      const r = await atualizarRelatorio($)
+      await update($, visao, x => ({ ...x, aba: 'testes' as const, rolagemTestes: 0 }))
+      await $.ui.open({ id: PANE, title: TITULO, focus: true })
+      return { text: r ? `Bancada: aba Testes aberta. ${resumoRelatorio(r)}` : 'Bancada: aba Testes aberta, mas o relatorio nao gerou.' }
+    }
+    if (verbo) return { text: 'Bancada: uso /bancada, /bancada testes, /bancada rodar <args do e2e.py> ou /bancada parar.' }
+    await update($, visao, x => ({ ...x, aba: 'bateria' as const }))
     await $.ui.open({ id: PANE, title: TITULO, focus: true })
-    return { text: 'Bancada: painel aberto. Teclas no painel: j/k navegar, f seguir, x so falhas, u/d rolar, Esc volta ao prompt.' }
+    return { text: 'Bancada: painel aberto. Teclas: b/t trocam de aba; j/k navegar, f seguir, x so falhas, u/d rolar; na aba Testes p so problemas, a raia, h buracos, r atualizar. Esc volta ao prompt.' }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
@@ -113,6 +153,57 @@ export const register: Register = on => {
     const agoraMs = (await read($, agora)) || Date.now()
     const colunas = e.viewport?.columns ?? 120
     const linhas = Math.max(8, (e.viewport?.rows ?? 30) - 1)
+    const abas = (
+      <Box flexDirection="row" gap={2}>
+        <Button plain hotkey="b" onPress={() => update($, visao, x => ({ ...x, aba: 'bateria' as const }))}>
+          <Text bold={v.aba === 'bateria'} inverse={v.aba === 'bateria'}> Bateria </Text>
+        </Button>
+        <Button plain hotkey="t" onPress={() => update($, visao, x => ({ ...x, aba: 'testes' as const }))}>
+          <Text bold={v.aba === 'testes'} inverse={v.aba === 'testes'}> Testes </Text>
+        </Button>
+      </Box>
+    )
+
+    if (v.aba === 'testes') {
+      const rel = await read($, relatorio)
+      const corpo = Math.max(3, linhas - 4)
+      const largura = Math.max(30, colunas - 4)
+      const texto = rel ? linhasRelatorio(rel, v, largura) : [{ t: 'Relatorio ainda nao gerado. Tecle r.', dim: true } as Linha]
+      const rolagem = Math.min(v.rolagemTestes, Math.max(0, texto.length - corpo))
+      const recorte = texto.slice(rolagem, rolagem + corpo)
+      const rolarT = (passo: number) => update($, visao, x => ({ ...x, rolagemTestes: Math.max(0, x.rolagemTestes + passo) }))
+      const raias = rel?.raias ?? []
+      const proximaRaia = () =>
+        update($, visao, x => {
+          const i = raias.findIndex(r => r.id === x.raia)
+          const prox = raias[i + 1]
+          return { ...x, raia: i < 0 ? (raias[0]?.id ?? null) : prox ? prox.id : null, rolagemTestes: 0 }
+        })
+      return (
+        <Box flexDirection="column" paddingX={1}>
+          <Box flexDirection="row" justifyContent="space-between">
+            <Text bold>{TITULO}  <Text dimColor>testes por capacidade</Text></Text>
+            {abas}
+          </Box>
+          <Box flexDirection="column" borderStyle="single" borderDimColor paddingX={1}>
+            {recorte.map((l, i) => (
+              <Text key={String(rolagem + i)} color={l.cor} dimColor={l.dim} bold={l.bold} wrap="truncate">{l.t || ' '}</Text>
+            ))}
+            {texto.length > corpo ? <Text dimColor>linhas {rolagem + 1} a {Math.min(texto.length, rolagem + corpo)} de {texto.length}</Text> : null}
+          </Box>
+          <Box flexDirection="row" gap={2}>
+            <Button plain hotkey="j" onPress={() => rolarT(1)}>baixo</Button>
+            <Button plain hotkey="k" onPress={() => rolarT(-1)}>cima</Button>
+            <Button plain hotkey="d" onPress={() => rolarT(Math.max(1, corpo - 2))}>pagina</Button>
+            <Button plain hotkey="u" onPress={() => rolarT(-Math.max(1, corpo - 2))}>pagina cima</Button>
+            <Button plain hotkey="p" onPress={() => update($, visao, x => ({ ...x, soProblemas: !x.soProblemas, rolagemTestes: 0 }))}>{v.soProblemas ? 'todos' : 'so problemas'}</Button>
+            <Button plain hotkey="a" onPress={proximaRaia}>raia: {raias.find(r => r.id === v.raia)?.rotulo ?? 'todas'}</Button>
+            <Button plain hotkey="h" onPress={() => update($, visao, x => ({ ...x, soBuracos: !x.soBuracos, rolagemTestes: 0 }))}>{v.soBuracos ? 'tudo' : 'so buracos'}</Button>
+            <Button plain hotkey="r" onPress={() => void atualizarRelatorio($)}>atualizar</Button>
+          </Box>
+        </Box>
+      )
+    }
 
     if (!b) {
       return (
@@ -207,6 +298,7 @@ export const register: Register = on => {
         <Box flexDirection="row" justifyContent="space-between">
           <Text bold>{TITULO}  <Text dimColor>{rotulo}</Text></Text>
           <Text>{andamento}  <Text dimColor>{placar}</Text>{rodando ? <Text color="cyan">  (rodando por aqui)</Text> : null}</Text>
+          {abas}
         </Box>
         <Box flexDirection="row" gap={1}>
           <Box flexDirection="column" width={larguraLista} borderStyle="single" borderDimColor paddingX={1}>
@@ -313,6 +405,7 @@ async function vigiar($: Engine) {
     if (!avisados.has('placar') && anterior && !anterior.terminou) {
       avisados.add('placar')
       $.ui.toast(`Bancada: placar ${b.placar?.passou}/${b.placar?.total}${b.bateria ? ` (${b.bateria} rodada ${b.rodada})` : ''}`, { timeoutMs: 10000 })
+      void atualizarRelatorio($)
     }
     $.ui.status(undefined)
   }
@@ -333,4 +426,99 @@ async function lerConversas($: Engine): Promise<Bancada | null> {
   } catch {
     return null
   }
+}
+
+/** Roda relatorio.py --json e guarda o resultado; null se o script falhou. */
+async function atualizarRelatorio($: Engine): Promise<Relatorio | null> {
+  try {
+    const { exitCode, stdout, stderr } = await $.process.run(['python3', RELATORIO, '--json'], { timeoutMs: 60000 })
+    if (exitCode !== 0) {
+      $.ui.log(`bancada: relatorio.py saiu com ${exitCode}: ${stderr.trim().slice(0, 300)}`, { to: 'debug' })
+      return null
+    }
+    const r = { ...(JSON.parse(stdout) as Omit<Relatorio, 'geradoEm'>), geradoEm: Date.now() }
+    await update($, relatorio, () => r)
+    return r
+  } catch (err) {
+    $.ui.log(`bancada: relatorio.py nao rodou: ${String(err)}`, { to: 'debug' })
+    return null
+  }
+}
+
+function itens(r: Relatorio): ItemRelatorio[] {
+  return r.blocos.flatMap(b => b.capacidades.flatMap(c => c.cenarios))
+}
+
+function contar(r: Relatorio): Record<Classe, number> {
+  const n: Record<Classe, number> = { passa: 0, intermitente: 0, constante: 0, 'sem dado': 0, manual: 0 }
+  for (const i of itens(r)) n[i.classe] += 1
+  return n
+}
+
+export function resumoRelatorio(r: Relatorio): string {
+  const n = contar(r)
+  const regrediram = itens(r).filter(i => i.mudanca === 'regrediu').map(i => i.id)
+  const problemas = itens(r).filter(i => i.classe === 'intermitente' || i.classe === 'constante').map(i => `${i.id} (${i.classe})`)
+  return (
+    `Bateria ${r.bateria ?? 'nenhuma'} (${r.rodadas.length} rodada(s))${r.anterior ? `, anterior ${r.anterior}` : ''}: ` +
+    `${n.passa} passam, ${n.intermitente} intermitentes, ${n.constante} constantes, ${n['sem dado']} sem dado, ${n.manual} manuais. ` +
+    (problemas.length ? `Problemas: ${problemas.join(', ')}. ` : '') +
+    (regrediram.length ? `Regrediram: ${regrediram.join(', ')}. ` : '') +
+    `Buracos: ${r.buracos.capacidades_sem_cenario.length} de ${r.buracos.total_capacidades} capacidades sem cenario executavel (${r.buracos.capacidades_sem_cenario.join(', ')}); ` +
+    `${r.buracos.nos_sem_cenario.reduce((a, x) => a + x.nos.length, 0)} de ${r.buracos.total_nos} nos do SOP sem cenario.`
+  )
+}
+
+const problema = (i: ItemRelatorio) => i.classe === 'intermitente' || i.classe === 'constante' || i.classe === 'sem dado' || i.mudanca === 'regrediu'
+
+/** As linhas da aba Testes, ja filtradas pela visao. */
+function linhasRelatorio(r: Relatorio, v: Visao, largura: number): Linha[] {
+  const out: Linha[] = []
+  const n = contar(r)
+  const rotuloRaia = r.raias.find(x => x.id === v.raia)?.rotulo
+  out.push({
+    t: `bateria ${r.bateria ?? 'nenhuma'} (${r.rodadas.length} rodada(s))${r.anterior ? `, regressao contra ${r.anterior}` : ''}` +
+      `${v.soProblemas ? '  [so problemas]' : ''}${rotuloRaia ? `  [raia: ${rotuloRaia}]` : ''}${v.soBuracos ? '  [so buracos]' : ''}`,
+    dim: true,
+  })
+  out.push({
+    t: `${n.passa} passam   ${n.intermitente} intermitentes   ${n.constante} constantes   ${n['sem dado']} sem dado   ${n.manual} manuais`,
+    bold: true,
+  })
+  out.push({ t: '' })
+
+  if (!v.soBuracos) {
+    const larguraTitulo = Math.max(16, Math.min(44, largura - 48))
+    for (const bloco of r.blocos) {
+      const caps = bloco.capacidades
+        .map(c => ({
+          ...c,
+          cenarios: c.cenarios.filter(i => (!v.soProblemas || problema(i)) && (!v.raia || i.raias.includes(v.raia))),
+        }))
+        .filter(c => c.cenarios.length > 0)
+      if (caps.length === 0) continue
+      out.push({ t: bloco.nome.toUpperCase(), bold: true, cor: 'cyan' })
+      for (const c of caps) {
+        out.push({ t: `${c.id}  ${c.titulo}${c.estado ? `  (${c.estado})` : ''}`, bold: true })
+        for (const i of c.cenarios) {
+          const rod = i.manual ? 'manual' : i.rodadas.map(letraRodada).join(' ') || '-'
+          const mud = i.mudanca ? `  ${i.mudanca}` : ''
+          const t = `  ${i.id.padEnd(6)} ${i.titulo.slice(0, larguraTitulo).padEnd(larguraTitulo)}  ${rod.padEnd(8)} ${i.classe.padEnd(12)}${mud}${i.escrita ? '  (--com-escrita)' : ''}${i.tools.length ? `  ${i.tools.join(', ')}` : ''}`
+          out.push({ t, cor: i.mudanca === 'regrediu' ? 'red' : i.mudanca === 'melhorou' ? 'green' : corClasse[i.classe], dim: i.classe === 'manual' || i.classe === 'sem dado' })
+        }
+      }
+      out.push({ t: '' })
+    }
+  }
+
+  out.push({ t: 'BURACOS DE COBERTURA', bold: true, cor: 'magenta' })
+  const b = r.buracos
+  for (const l of quebrar(`Capacidades sem cenario executavel (${b.capacidades_sem_cenario.length} de ${b.total_capacidades}): ${b.capacidades_sem_cenario.join(', ') || 'nenhuma'}`, largura)) out.push({ t: l })
+  const grupos = b.nos_sem_cenario.filter(g => !v.raia || g.raia === v.raia)
+  out.push({ t: `Nos do SOP sem cenario (${grupos.reduce((a, g) => a + g.nos.length, 0)}${v.raia ? ' na raia' : ` de ${b.total_nos}`}):` })
+  for (const g of grupos) {
+    out.push({ t: `  ${g.rotulo}`, bold: true })
+    for (const no of g.nos) for (const l of quebrar(`    ${no.id}  ${no.titulo}`, largura)) out.push({ t: l, cor: 'yellow' })
+  }
+  return out
 }

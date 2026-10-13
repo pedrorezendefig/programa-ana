@@ -9,7 +9,7 @@ A bancada de cenários prova, contra o canal real, o que a Ana fala. Este ritual
 
 ## O painel
 
-O mod nesta mesma pasta desenha o painel. Ele lê `ana/bancada/resultados/ao-vivo.jsonl`, que o `e2e.py` escreve a cada acontecimento, e abre sozinho quando uma bateria começa. Comandos do Pedro: `/bancada` abre o painel, `/bancada rodar <args do e2e.py>` roda uma rodada por dentro, `/bancada parar` encerra. Teclas no painel (depois de clicar nele ou abrir com `/bancada`): `j`/`k` navegam, `f` volta a seguir o cenário que roda, `x` filtra só falhas, `u`/`d` rolam a conversa, Esc devolve o teclado ao prompt. Terminal com menos de 144 colunas: o painel espera o `/bancada`.
+O mod nesta mesma pasta desenha o painel, com duas abas. **Bateria** lê `ana/bancada/resultados/ao-vivo.jsonl`, que o `e2e.py` escreve a cada acontecimento, e abre sozinha quando uma bateria começa. **Testes** mostra o relatório por capacidade (`relatorio.py --json`), em cores, com os buracos de cobertura; é a abertura da skill `/testes`, pela ferramenta `mcp__bancada__abrir_testes`. Comandos do Pedro: `/bancada` abre na aba Bateria, `/bancada testes` abre na aba Testes, `/bancada rodar <args do e2e.py>` roda uma rodada por dentro, `/bancada parar` encerra. Teclas (depois de clicar no painel ou abrir com `/bancada`): `b`/`t` trocam de aba; na Bateria `j`/`k` navegam, `f` volta a seguir o cenário que roda, `x` filtra só falhas, `u`/`d` rolam; na Testes `p` só problemas, `a` roda a raia, `h` só buracos, `r` atualiza. Esc devolve o teclado ao prompt. Terminal com menos de 144 colunas: o painel espera o `/bancada`.
 
 ## Passos
 

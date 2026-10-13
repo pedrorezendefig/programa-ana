@@ -61,9 +61,51 @@ export type Bancada = {
 }
 
 export type Visao = {
+  aba: 'bateria' | 'testes'
   selecionado: string | null
   soFalhas: boolean
   rolagem: number
+  soProblemas: boolean
+  soBuracos: boolean
+  raia: string | null
+  rolagemTestes: number
+}
+
+export type Classe = 'passa' | 'intermitente' | 'constante' | 'sem dado' | 'manual'
+
+export type ItemRelatorio = {
+  id: string
+  titulo: string
+  manual: boolean
+  escrita: boolean
+  rodadas: (Veredito | null)[]
+  classe: Classe
+  mudanca: 'regrediu' | 'melhorou' | null
+  tools: string[]
+  nos: string[]
+  raias: string[]
+}
+
+export type CapacidadeRelatorio = {
+  id: string
+  titulo: string
+  estado: string | null
+  cenarios: ItemRelatorio[]
+}
+
+export type Relatorio = {
+  bateria: string | null
+  rodadas: number[]
+  anterior: string | null
+  raias: { id: string; rotulo: string }[]
+  blocos: { nome: string; capacidades: CapacidadeRelatorio[] }[]
+  buracos: {
+    capacidades_sem_cenario: string[]
+    total_capacidades: number
+    nos_sem_cenario: { raia: string; rotulo: string; nos: { id: string; titulo: string }[] }[]
+    total_nos: number
+  }
+  geradoEm: number
 }
 
 declare module 'claude-code' {
@@ -72,6 +114,7 @@ declare module 'claude-code' {
       bancada: Bancada | null
       visao: Visao
       agora: number
+      relatorio: Relatorio | null
     }
   }
 }

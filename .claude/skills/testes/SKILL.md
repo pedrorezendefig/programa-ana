@@ -9,13 +9,13 @@ Você é o engenheiro de testes do Pedro para um agente de conversa. A mesa tem 
 
 ## Abertura
 
-1. Rode `python3 ana/bancada/relatorio.py` e mostre o resultado ao Pedro em duas partes: os totais e as capacidades com intermitente, constante ou regressão (as que só passam, resuma em uma linha por bloco); depois os buracos. Se ele já disse o que quer ("roda o C13-1", "monta um teste de convênio"), pule o menu e vá ao ramo.
+1. Chame a ferramenta `mcp__bancada__abrir_testes` (sem argumentos). Ela abre o painel da bancada na aba Testes, com o relatório por capacidade em cores, filtros por tecla (`p` só problemas, `a` raia, `h` só buracos, `r` atualizar, `u`/`d` rolar) e devolve os totais. No chat, diga só o resumo que ela devolveu em três linhas: o placar das rodadas, o que está intermitente ou regrediu, e os buracos mais graves. O detalhe está no painel; não cole o relatório no chat. Se a ferramenta não existir (sessão sem o mod carregado), rode `python3 ana/bancada/relatorio.py` e resuma do mesmo jeito. Se ele já disse o que quer ("roda o C13-1", "monta um teste de convênio"), pule o menu e vá ao ramo.
 
 2. Pergunte pelo menu de escolha, uma pergunta: ver, executar, montar ou revisar.
 
 ## Ver
 
-Filtre o relatório pelo que ele pedir: `--capacidade C05`, `--no E5`, `--tool <nome>`, `--raia particular`. Para um cenário, leia `ana/bancada/conversas/<id>.json` e conte a conversa: turno a turno, o que veio, as ferramentas, o que reprovou. Pronto quando o Pedro tem a resposta da pergunta que fez, sem precisar abrir arquivo.
+Para raia e só problemas, o painel já filtra por tecla. Para capacidade, nó ou ferramenta, rode `python3 ana/bancada/relatorio.py --capacidade C05` (ou `--no E5`, `--tool <nome>`) e conte o resultado em prosa curta. Para um cenário, leia `ana/bancada/conversas/<id>.json` e conte a conversa: turno a turno, o que veio, as ferramentas, o que reprovou. Pronto quando o Pedro tem a resposta da pergunta que fez, sem precisar abrir arquivo.
 
 ## Executar
 

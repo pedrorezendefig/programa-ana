@@ -25,3 +25,7 @@ Desde o ADR-0032 cada cenário da bancada grava a sua conversa em `ana/bancada/c
 - O motor do Claude Code escreve `.claude/skills/bancada/.claude-plugin/types/` ao carregar o mod; a pasta está no `.gitignore`.
 - O painel abre sozinho só em terminal com 144 colunas ou mais; abaixo disso, `/bancada`.
 - Termo novo no `CONTEXT.md`: **Bancada ao vivo**.
+
+## Adendo (13/out/2026, mesmo dia)
+
+O painel ganhou uma segunda aba, **Testes**, que desenha o relatório por capacidade (`relatorio.py --json`: rodadas, classe, regressão e buracos de cobertura) em cores, com filtros por tecla. O mod registra a ferramenta `abrir_testes`, que a skill `/testes` chama na abertura em vez de colar o relatório no chat. A alternativa de uma página no Ana OS ficou para depois, porque mexeria na regra de corte do ADR-0030; um artefato publicado foi descartado por ser estático e levar o texto dos cenários para fora da máquina.
