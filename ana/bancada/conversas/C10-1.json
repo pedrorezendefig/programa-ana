@@ -5,17 +5,19 @@
   "familia": null,
   "titulo": "Item fora da tabela não vira negativa",
   "contato": "TESTE BANCADA ANA C10-1",
-  "conversa_id": 192,
-  "inicio": "2026-10-12T17:02:19+00:00",
+  "conversa_id": 366,
+  "inicio": "2026-10-13T00:40:50+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quanto custa a consulta de reumatologia?",
       "ana": [
-        "Não encontrei Reumatologia na tabela oficial de valores. Posso encaminhar sua solicitação à equipe para confirmar o valor e a disponibilidade?"
+        "Não encontrei o valor de reumatologia na consulta oficial de valores. Posso encaminhar sua solicitação para a equipe confirmar o preço e a disponibilidade?"
       ],
       "ferramentas": [
-        "consultar_precos_consultas"
+        "consultar_precos_consultas",
+        "assign_label",
+        "handoff_to_human"
       ],
       "nos": [
         "E1",
@@ -58,7 +60,9 @@
           "tipo": "ferramenta",
           "esperado": "consultar_precos_consultas",
           "veio": [
-            "consultar_precos_consultas"
+            "consultar_precos_consultas",
+            "assign_label",
+            "handoff_to_human"
           ],
           "ok": true
         },
@@ -66,23 +70,29 @@
           "turno": 1,
           "tipo": "handoff",
           "esperado": false,
-          "veio": false,
-          "ok": true
+          "veio": true,
+          "ok": false
         }
       ]
     }
   ],
   "tools": [
-    "consultar_precos_consultas"
+    "consultar_precos_consultas",
+    "assign_label",
+    "handoff_to_human"
   ],
   "fim": {
-    "etiquetas": [],
+    "etiquetas": [
+      "particular-aquecido"
+    ],
     "raia": null,
     "raia_pelo_trace": [],
-    "status": "pending",
-    "handoff": false
+    "status": "open",
+    "handoff": true
   },
-  "veredito": "passou",
-  "falhas": [],
-  "rodou_em": "2026-10-12T17:02:54+00:00"
+  "veredito": "falhou",
+  "falhas": [
+    "turno 1: FALHOU handoff false (veio: true)"
+  ],
+  "rodou_em": "2026-10-13T00:41:28+00:00"
 }

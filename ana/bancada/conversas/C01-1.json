@@ -5,8 +5,8 @@
   "familia": null,
   "titulo": "Triagem de urgência",
   "contato": "TESTE BANCADA ANA C01-1",
-  "conversa_id": 177,
-  "inicio": "2026-10-12T16:52:33+00:00",
+  "conversa_id": 351,
+  "inicio": "2026-10-13T00:31:04+00:00",
   "turnos": [
     {
       "n": 1,
@@ -96,5 +96,5 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T16:53:10+00:00"
+  "rodou_em": "2026-10-13T00:31:41+00:00"
 }

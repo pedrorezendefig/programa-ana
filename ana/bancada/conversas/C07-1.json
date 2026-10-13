@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Preparo de exame, sem perder passo clínico",
   "contato": "TESTE BANCADA ANA C07-1",
-  "conversa_id": 187,
-  "inicio": "2026-10-12T16:58:54+00:00",
+  "conversa_id": 361,
+  "inicio": "2026-10-13T00:37:26+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "qual o preparo da colonoscopia?",
       "ana": [
-        "Para a colonoscopia, é necessário:\n\nDieta sem resíduos por 2 dias antes do exame.\n\nLaxante prescrito pelo médico, conforme orientação.\n\nJejum absoluto de 8 horas antes do exame.\n\nO exame é realizado com sedação, por isso é necessário estar acompanhado. Também é preciso ter pedido médico."
+        "Para a colonoscopia, é necessário:\n\nDieta sem resíduos por 2 dias antes do exame.\n\nPreparo intestinal completo com laxativo prescrito pelo médico.\n\nJejum absoluto de 8 horas antes do exame.\n\nTambém é necessário pedido médico e acompanhante, pois o procedimento é realizado com sedação."
       ],
       "ferramentas": [
         "consultar_exames"
@@ -60,5 +60,5 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T16:59:27+00:00"
+  "rodou_em": "2026-10-13T00:37:59+00:00"
 }

@@ -5,8 +5,8 @@
   "familia": null,
   "titulo": "Saudação e leitura do motivo",
   "contato": "TESTE BANCADA ANA C02-1",
-  "conversa_id": 178,
-  "inicio": "2026-10-12T16:53:14+00:00",
+  "conversa_id": 352,
+  "inicio": "2026-10-13T00:31:44+00:00",
   "turnos": [
     {
       "n": 1,
@@ -47,10 +47,10 @@
         },
         {
           "turno": 1,
-          "tipo": "raia",
-          "esperado": "EM ATENDIMENTO ANA",
-          "veio": "trace: nenhum kanban_move_card",
-          "ok": false
+          "tipo": "ferramenta proibida",
+          "esperado": "kanban_move_card",
+          "veio": [],
+          "ok": true
         },
         {
           "turno": 1,
@@ -70,9 +70,7 @@
     "status": "pending",
     "handoff": false
   },
-  "veredito": "falhou",
-  "falhas": [
-    "turno 1: FALHOU raia \"EM ATENDIMENTO ANA\" (veio: \"trace: nenhum kanban_move_card\")"
-  ],
-  "rodou_em": "2026-10-12T16:53:45+00:00"
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-13T00:32:15+00:00"
 }

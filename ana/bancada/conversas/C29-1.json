@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Encerramento",
   "contato": "TESTE BANCADA ANA C29-1",
-  "conversa_id": 205,
-  "inicio": "2026-10-12T17:16:48+00:00",
+  "conversa_id": 379,
+  "inicio": "2026-10-13T00:55:49+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "qual o endereço de vocês?",
       "ana": [
-        "Nosso endereço é Rua Silva Cardoso, 689, Bangu, Rio de Janeiro/RJ.\n\nPronto-Socorro adulto, pediátrico e ortopédico funcionam 24 horas.  \nMapa: maps.app.goo.gl/T95BxBrVPiRKLtHq8"
+        "O Hospital São Matheus fica na Rua Silva Cardoso, 689, Bangu, Rio de Janeiro/RJ.\n\nMapa: maps.app.goo.gl/T95BxBrVPiRKLtHq8"
       ],
       "ferramentas": [
         "search_knowledge"
@@ -33,9 +33,12 @@
       "n": 2,
       "paciente": "obrigado, era só isso",
       "ana": [
-        "Por nada! Foi um prazer te atender. Qualquer dúvida, é só chamar."
+        "Foi um prazer te atender! Qualquer dúvida, é só chamar."
       ],
-      "ferramentas": [],
+      "ferramentas": [
+        "kanban_move_card",
+        "resolve_conversation"
+      ],
       "nos": [
         "S6",
         "S7"
@@ -47,8 +50,8 @@
           "turno": 2,
           "tipo": "raia",
           "esperado": "ENCERRADO RESOLVIDO",
-          "veio": "trace: nenhum kanban_move_card",
-          "ok": false
+          "veio": "trace: kanban_move_card para ENCERRADO — RESOLVIDO",
+          "ok": true
         },
         {
           "turno": 2,
@@ -61,18 +64,20 @@
     }
   ],
   "tools": [
-    "search_knowledge"
+    "search_knowledge",
+    "kanban_move_card",
+    "resolve_conversation"
   ],
   "fim": {
     "etiquetas": [],
     "raia": null,
-    "raia_pelo_trace": [],
-    "status": "pending",
+    "raia_pelo_trace": [
+      "ENCERRADO — RESOLVIDO"
+    ],
+    "status": "resolved",
     "handoff": false
   },
-  "veredito": "falhou",
-  "falhas": [
-    "turno 2: FALHOU raia \"ENCERRADO RESOLVIDO\" (veio: \"trace: nenhum kanban_move_card\")"
-  ],
-  "rodou_em": "2026-10-12T17:17:55+00:00"
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-13T00:56:52+00:00"
 }

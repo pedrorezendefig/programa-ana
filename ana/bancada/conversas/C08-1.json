@@ -5,17 +5,16 @@
   "familia": null,
   "titulo": "Estimativa de cirurgia, com o caveat obrigatório",
   "contato": "TESTE BANCADA ANA C08-1",
-  "conversa_id": 188,
-  "inicio": "2026-10-12T16:59:31+00:00",
+  "conversa_id": 362,
+  "inicio": "2026-10-13T00:38:03+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quanto custa a cirurgia de hérnia inguinal?",
       "ana": [
-        "Para a cirurgia de hérnia inguinal, a estimativa é de R$ 7.500, incluindo honorários e internação.\n\nÉ uma estimativa geral. O valor final depende da avaliação médica, dos materiais utilizados, do tempo de internação e de possíveis intercorrências. Quer que eu te conecte com a equipe para um orçamento personalizado?"
+        "Para herniorrafia de hérnia inguinal, os custos costumam ficar em torno de R$ 7.500, incluindo honorários e internação. É uma estimativa geral: o valor definitivo depende de avaliação médica presencial e pode variar conforme materiais, tempo de internação e eventuais intercorrências.\n\nQuer que eu te conecte com nossa equipe para um orçamento personalizado?"
       ],
       "ferramentas": [
-        "kanban_move_card",
         "consultar_cirurgias_estimativas"
       ],
       "nos": [
@@ -34,7 +33,6 @@
           "tipo": "ferramenta",
           "esperado": "consultar_cirurgias_estimativas",
           "veio": [
-            "kanban_move_card",
             "consultar_cirurgias_estimativas"
           ],
           "ok": true
@@ -50,19 +48,16 @@
     }
   ],
   "tools": [
-    "kanban_move_card",
     "consultar_cirurgias_estimativas"
   ],
   "fim": {
     "etiquetas": [],
     "raia": null,
-    "raia_pelo_trace": [
-      "EM ATENDIMENTO — ANA"
-    ],
+    "raia_pelo_trace": [],
     "status": "pending",
     "handoff": false
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T17:00:06+00:00"
+  "rodou_em": "2026-10-13T00:38:37+00:00"
 }

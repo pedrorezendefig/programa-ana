@@ -5,18 +5,20 @@
   "familia": null,
   "titulo": "Prontuário médico",
   "contato": "TESTE BANCADA ANA C26-1",
-  "conversa_id": 202,
-  "inicio": "2026-10-12T17:14:23+00:00",
+  "conversa_id": 376,
+  "inicio": "2026-10-13T00:51:18+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "preciso pegar meu prontuário médico",
       "ana": [
-        "Para solicitar seu prontuário, reúna a documentação necessária e envie para prontuario@hospitalsaomatheus.com.br\n\nNossa equipe vai orientar sobre o requerimento e os documentos obrigatórios, iniciando o processo após receber a documentação completa."
+        "Para solicitar seu prontuário, reúna a documentação necessária e envie para prontuario@hospitalsaomatheus.com.br. Nossa equipe vai orientar você sobre os documentos obrigatórios e dar andamento ao processo quando receber tudo. Como a equipe de prontuários precisa acompanhar a solicitação, alguém vai continuar o atendimento com você."
       ],
       "ferramentas": [
+        "assign_label",
+        "search_knowledge",
         "kanban_move_card",
-        "assign_label"
+        "handoff_to_human"
       ],
       "nos": [
         "E1",
@@ -33,14 +35,8 @@
     {
       "n": 2,
       "paciente": "é para uso pessoal",
-      "ana": [
-        "Entendi, é para uso pessoal. Vou encaminhar sua solicitação à equipe responsável, que vai orientar você sobre o requerimento e os documentos necessários."
-      ],
-      "ferramentas": [
-        "assign_label",
-        "kanban_move_card",
-        "handoff_to_human"
-      ],
+      "ana": [],
+      "ferramentas": [],
       "nos": [
         "A3",
         "A4",
@@ -106,9 +102,8 @@
     }
   ],
   "tools": [
-    "kanban_move_card",
     "assign_label",
-    "assign_label",
+    "search_knowledge",
     "kanban_move_card",
     "handoff_to_human"
   ],
@@ -125,5 +120,5 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T17:15:30+00:00"
+  "rodou_em": "2026-10-13T00:54:30+00:00"
 }

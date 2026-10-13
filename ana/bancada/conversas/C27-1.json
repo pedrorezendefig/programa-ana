@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Dúvidas gerais",
   "contato": "TESTE BANCADA ANA C27-1",
-  "conversa_id": 203,
-  "inicio": "2026-10-12T17:15:33+00:00",
+  "conversa_id": 377,
+  "inicio": "2026-10-13T00:54:34+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "qual o endereço de vocês?",
       "ana": [
-        "Estamos na Rua Silva Cardoso, 689, Bangu, Rio de Janeiro/RJ.\n\nGoogle Maps: maps.app.goo.gl/T95BxBrVPiRKLtHq8"
+        "Estamos na Rua Silva Cardoso, 689, Bangu, Rio de Janeiro/RJ.\n\nVocê também pode abrir no Google Maps: maps.app.goo.gl/T95BxBrVPiRKLtHq8"
       ],
       "ferramentas": [
         "search_knowledge"
@@ -30,11 +30,9 @@
       "conferencias": [
         {
           "turno": 1,
-          "tipo": "ferramenta",
-          "esperado": "search_knowledge",
-          "veio": [
-            "search_knowledge"
-          ],
+          "tipo": "contem",
+          "esperado": "Silva Cardoso",
+          "veio": null,
           "ok": true
         },
         {
@@ -59,5 +57,5 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T17:16:08+00:00"
+  "rodou_em": "2026-10-13T00:55:06+00:00"
 }

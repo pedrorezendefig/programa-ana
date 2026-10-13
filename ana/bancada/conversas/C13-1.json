@@ -5,8 +5,8 @@
   "familia": null,
   "titulo": "Achar o cadastro do paciente",
   "contato": "TESTE BANCADA ANA C13-1",
-  "conversa_id": 195,
-  "inicio": "2026-10-12T17:04:16+00:00",
+  "conversa_id": 369,
+  "inicio": "2026-10-13T00:42:46+00:00",
   "turnos": [
     {
       "n": 1,
@@ -16,7 +16,8 @@
       ],
       "ferramentas": [
         "kanban_move_card",
-        "consultar_precos_consultas"
+        "consultar_precos_consultas",
+        "assign_label"
       ],
       "nos": [
         "E1",
@@ -39,7 +40,7 @@
       "n": 2,
       "paciente": "pode ser, quero marcar sim",
       "ana": [
-        "Para prosseguir, preciso coletar nome completo e CPF.Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento."
+        "Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento."
       ],
       "ferramentas": [],
       "nos": [
@@ -54,14 +55,17 @@
       "n": 3,
       "paciente": "meu nome é Teste Bancada Ana, CPF ***.***.***-**",
       "ana": [
-        "A agenda online não retornou os horários neste momento. Nossa equipe vai entrar em contato para confirmar o melhor horário para sua consulta de Cardiologia."
+        "Prontinho, Teste! A agenda online não me retornou horários agora, então nossa equipe vai entrar em contato para confirmar o melhor horário com você."
       ],
       "ferramentas": [
         "set_custom_attribute",
-        "set_custom_attribute",
         "buscar_paciente_por_cpf",
+        "set_custom_attribute",
         "consultar_especialidades_agenda",
-        "consultar_convenios_agenda"
+        "consultar_convenios_agenda",
+        "assign_label",
+        "kanban_move_card",
+        "handoff_to_human"
       ],
       "nos": [
         "S1",
@@ -86,11 +90,15 @@
           "veio": [
             "kanban_move_card",
             "consultar_precos_consultas",
-            "set_custom_attribute",
+            "assign_label",
             "set_custom_attribute",
             "buscar_paciente_por_cpf",
+            "set_custom_attribute",
             "consultar_especialidades_agenda",
-            "consultar_convenios_agenda"
+            "consultar_convenios_agenda",
+            "assign_label",
+            "kanban_move_card",
+            "handoff_to_human"
           ],
           "ok": true
         },
@@ -98,14 +106,34 @@
           "turno": 3,
           "tipo": "etiqueta",
           "esperado": "particular-aquecido",
-          "veio": [],
-          "ok": false
+          "veio": [
+            "particular-aquecido",
+            "agendamento-particular"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "etiqueta",
+          "esperado": "agendamento-particular",
+          "veio": [
+            "particular-aquecido",
+            "agendamento-particular"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 3,
+          "tipo": "raia",
+          "esperado": "FILA COMERCIAL",
+          "veio": "trace: kanban_move_card para FILA COMERCIAL ou FILA OUVIDORIA",
+          "ok": true
         },
         {
           "turno": 3,
           "tipo": "handoff",
-          "esperado": false,
-          "veio": false,
+          "esperado": true,
+          "veio": true,
           "ok": true
         }
       ]
@@ -114,24 +142,30 @@
   "tools": [
     "kanban_move_card",
     "consultar_precos_consultas",
-    "set_custom_attribute",
+    "assign_label",
     "set_custom_attribute",
     "buscar_paciente_por_cpf",
+    "set_custom_attribute",
     "consultar_especialidades_agenda",
-    "consultar_convenios_agenda"
+    "consultar_convenios_agenda",
+    "assign_label",
+    "kanban_move_card",
+    "handoff_to_human"
   ],
   "fim": {
-    "etiquetas": [],
+    "etiquetas": [
+      "particular-aquecido",
+      "agendamento-particular"
+    ],
     "raia": null,
     "raia_pelo_trace": [
-      "EM ATENDIMENTO — ANA"
+      "FILA COMERCIAL",
+      "FILA OUVIDORIA"
     ],
-    "status": "pending",
-    "handoff": false
+    "status": "open",
+    "handoff": true
   },
-  "veredito": "falhou",
-  "falhas": [
-    "turno 3: FALHOU etiqueta \"particular-aquecido\" (veio: [])"
-  ],
-  "rodou_em": "2026-10-12T17:06:04+00:00"
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-13T00:44:38+00:00"
 }

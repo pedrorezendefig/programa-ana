@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Dizer quem atende uma especialidade",
   "contato": "TESTE BANCADA ANA C15-1",
-  "conversa_id": 197,
-  "inicio": "2026-10-12T17:09:44+00:00",
+  "conversa_id": 371,
+  "inicio": "2026-10-13T00:46:34+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quem são os cardiologistas de vocês?",
       "ana": [
-        "Os cardiologistas publicados na agenda são:\n\n1. Amanda Pinheiro Santos\n2. Charles dos Santos Dallier\n3. Norvandia Gomes de Oliveira Baião\n4. Ricardo Cesar Simões Chaves\n\nA publicação do profissional não garante que ele tenha horário livre no momento. Quer que eu consulte os horários disponíveis?"
+        "Os cardiologistas publicados na agenda são:\n\nAmanda Pinheiro Santos\nCharles dos Santos Dallier\nNorvandia Gomes de Oliveira Baião\nRicardo Cesar Simões Chaves\n\nA publicação do profissional não significa necessariamente que haja horário disponível. Se quiser, posso consultar os horários."
       ],
       "ferramentas": [
         "kanban_move_card",
@@ -67,5 +67,5 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T17:10:22+00:00"
+  "rodou_em": "2026-10-13T00:47:12+00:00"
 }

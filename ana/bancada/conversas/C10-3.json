@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Item fora da tabela não vira negativa",
   "contato": "TESTE BANCADA ANA C10-3",
-  "conversa_id": 194,
-  "inicio": "2026-10-12T17:03:35+00:00",
+  "conversa_id": 368,
+  "inicio": "2026-10-13T00:42:09+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "meu plano é a Porto Seguro Saúde, vocês cobrem dermatologia?",
       "ana": [
-        "Atendemos Porto Seguro Saúde no hospital, mas a dermatologia não está publicada na agenda online no momento. Para confirmar a cobertura e verificar o agendamento, acesse: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dificuldade ou dúvida de cobertura, me avisa que a equipe te ajuda."
+        "Para confirmar a cobertura da Porto Seguro Saúde em dermatologia, a equipe precisa verificar diretamente com você. O convênio é atendido no hospital, mas a agenda online não retornou dermatologia agora.\n\nVocê pode tentar pelo portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dificuldade, me avisa que a equipe te ajuda.Para confirmar a cobertura da Porto Seguro Saúde em dermatologia, a equipe precisa verificar diretamente com você. O convênio é atendido no hospital, mas a agenda online não retornou dermatologia agora.\n\nVocê pode tentar pelo portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dificuldade, me avisa que a equipe te ajuda."
       ],
       "ferramentas": [
         "kanban_move_card",
@@ -31,7 +31,7 @@
         "C3",
         "C4"
       ],
-      "espere": "Que o convênio é atendido, mas essa combinação não está na tabela, e uma oferta de confirmar com a equipe.",
+      "espere": "Que a Porto Seguro é atendida e o link do portal, sem negar nem afirmar a cobertura de dermatologia.",
       "falha_se": "Dizer que a Porto Seguro 'não consta' ou empurrar você para o particular. Foi um defeito real, corrigido na V23.",
       "conferencias": [
         {
@@ -57,13 +57,52 @@
         },
         {
           "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "publicada",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "agenda online",
+          "veio": "agenda online",
+          "ok": false
+        },
+        {
+          "turno": 1,
           "tipo": "ferramenta",
-          "esperado": "consultar_convenios_especialidade",
+          "esperado": "consultar_especialidades_agenda",
           "veio": [
             "kanban_move_card",
             "consultar_especialidades_agenda",
             "search_knowledge"
           ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "search_knowledge",
+          "veio": [
+            "kanban_move_card",
+            "consultar_especialidades_agenda",
+            "search_knowledge"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "etiqueta",
+          "esperado": "agendamento-convenio",
+          "veio": [],
+          "ok": false
+        },
+        {
+          "turno": 1,
+          "tipo": "raia",
+          "esperado": "AGUARDANDO CONFIRMAÇÃO",
+          "veio": "trace: kanban_move_card para EM ATENDIMENTO — ANA",
           "ok": false
         },
         {
@@ -92,7 +131,9 @@
   },
   "veredito": "falhou",
   "falhas": [
-    "turno 1: FALHOU ferramenta \"consultar_convenios_especialidade\" (veio: [\"kanban_move_card\", \"consultar_especialidades_agenda\", \"search_knowledge\"])"
+    "turno 1: FALHOU frase proibida \"agenda online\" (veio: \"agenda online\")",
+    "turno 1: FALHOU etiqueta \"agendamento-convenio\" (veio: [])",
+    "turno 1: FALHOU raia \"AGUARDANDO CONFIRMAÇÃO\" (veio: \"trace: kanban_move_card para EM ATENDIMENTO — ANA\")"
   ],
-  "rodou_em": "2026-10-12T17:04:13+00:00"
+  "rodou_em": "2026-10-13T00:42:43+00:00"
 }

@@ -5,17 +5,18 @@
   "familia": null,
   "titulo": "Item fora da tabela não vira negativa",
   "contato": "TESTE BANCADA ANA C10-2",
-  "conversa_id": 193,
-  "inicio": "2026-10-12T17:02:57+00:00",
+  "conversa_id": 367,
+  "inicio": "2026-10-13T00:41:31+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quanto custa a ressonância magnética?",
       "ana": [
-        "Não encontrei a ressonância magnética na lista oficial de valores. Posso encaminhar sua solicitação à equipe para confirmarem o preço e a disponibilidade?"
+        "Não encontrei o valor da ressonância magnética na fonte oficial de preços. Posso encaminhar sua solicitação à equipe para confirmar o valor e a disponibilidade?"
       ],
       "ferramentas": [
-        "consultar_exames"
+        "consultar_exames",
+        "kanban_move_card"
       ],
       "nos": [
         "E1",
@@ -55,7 +56,8 @@
           "tipo": "ferramenta",
           "esperado": "consultar_exames",
           "veio": [
-            "consultar_exames"
+            "consultar_exames",
+            "kanban_move_card"
           ],
           "ok": true
         },
@@ -70,16 +72,19 @@
     }
   ],
   "tools": [
-    "consultar_exames"
+    "consultar_exames",
+    "kanban_move_card"
   ],
   "fim": {
     "etiquetas": [],
     "raia": null,
-    "raia_pelo_trace": [],
+    "raia_pelo_trace": [
+      "EM ATENDIMENTO — ANA"
+    ],
     "status": "pending",
     "handoff": false
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T17:03:32+00:00"
+  "rodou_em": "2026-10-13T00:42:06+00:00"
 }

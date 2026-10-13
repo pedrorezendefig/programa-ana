@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Acolher e coletar a manifestação",
   "contato": "TESTE BANCADA ANA C21-1",
-  "conversa_id": 200,
-  "inicio": "2026-10-12T17:13:05+00:00",
+  "conversa_id": 374,
+  "inicio": "2026-10-13T00:49:56+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quero fazer uma reclamação, esperei três horas na recepção ontem",
       "ana": [
-        "Sinto muito que você tenha passado por essa espera. Obrigada por nos contar.\n\nVou registrar seu relato com todo o cuidado para que seja apurado pelos setores responsáveis.\n\nMe passa seu nome completo e CPF? E me diz também: aconteceu com você ou com outra pessoa?"
+        "Sinto muito que você tenha passado por isso. Obrigada por nos contar.\n\nVou registrar seu relato com todo o cuidado para que seja apurado pelos setores responsáveis.\n\nPara registrar direitinho, me passa seu nome completo e CPF? E me diz também: aconteceu com você ou com outra pessoa?"
       ],
       "ferramentas": [
         "kanban_move_card",
@@ -87,5 +87,5 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T17:13:39+00:00"
+  "rodou_em": "2026-10-13T00:50:34+00:00"
 }

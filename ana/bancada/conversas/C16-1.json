@@ -5,19 +5,18 @@
   "familia": null,
   "titulo": "Levar o caso para a equipe com resumo",
   "contato": "TESTE BANCADA ANA C16-1",
-  "conversa_id": 198,
-  "inicio": "2026-10-12T17:10:26+00:00",
+  "conversa_id": 372,
+  "inicio": "2026-10-13T00:47:15+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quero marcar uma consulta de cardiologia particular",
       "ana": [
-        "A consulta particular de cardiologia é R$ 380. Quer que eu veja os horários disponíveis para você?"
+        "A consulta de Cardiologia particular é R$ 380. Quer que eu veja os horários disponíveis para você?"
       ],
       "ferramentas": [
         "kanban_move_card",
         "consultar_precos_consultas",
-        "kanban_move_card",
         "assign_label"
       ],
       "nos": [
@@ -64,6 +63,8 @@
         "buscar_paciente_por_cpf",
         "consultar_especialidades_agenda",
         "consultar_convenios_agenda",
+        "kanban_move_card",
+        "assign_label",
         "handoff_to_human"
       ],
       "nos": [
@@ -113,16 +114,17 @@
           "tipo": "etiqueta",
           "esperado": "agendamento-particular",
           "veio": [
-            "particular-aquecido"
+            "particular-aquecido",
+            "agendamento-particular"
           ],
-          "ok": false
+          "ok": true
         },
         {
           "turno": 3,
           "tipo": "raia",
           "esperado": "FILA COMERCIAL",
-          "veio": "trace: kanban_move_card para AGUARDANDO CONFIRMAÇÃO",
-          "ok": false
+          "veio": "trace: kanban_move_card para FILA COMERCIAL ou FILA OUVIDORIA",
+          "ok": true
         },
         {
           "turno": 3,
@@ -137,30 +139,30 @@
   "tools": [
     "kanban_move_card",
     "consultar_precos_consultas",
-    "kanban_move_card",
     "assign_label",
     "set_custom_attribute",
     "set_custom_attribute",
     "buscar_paciente_por_cpf",
     "consultar_especialidades_agenda",
     "consultar_convenios_agenda",
+    "kanban_move_card",
+    "assign_label",
     "handoff_to_human"
   ],
   "fim": {
     "etiquetas": [
-      "particular-aquecido"
+      "particular-aquecido",
+      "agendamento-particular"
     ],
     "raia": null,
     "raia_pelo_trace": [
-      "AGUARDANDO CONFIRMAÇÃO"
+      "FILA COMERCIAL",
+      "FILA OUVIDORIA"
     ],
     "status": "open",
     "handoff": true
   },
-  "veredito": "falhou",
-  "falhas": [
-    "turno 3: FALHOU etiqueta \"agendamento-particular\" (veio: [\"particular-aquecido\"])",
-    "turno 3: FALHOU raia \"FILA COMERCIAL\" (veio: \"trace: kanban_move_card para AGUARDANDO CONFIRMAÇÃO\")"
-  ],
-  "rodou_em": "2026-10-12T17:12:14+00:00"
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-13T00:49:09+00:00"
 }

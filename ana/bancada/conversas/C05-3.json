@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Preço de consulta particular",
   "contato": "TESTE BANCADA ANA C05-3",
-  "conversa_id": 183,
-  "inicio": "2026-10-12T16:56:23+00:00",
+  "conversa_id": 357,
+  "inicio": "2026-10-13T00:34:52+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quais especialidades vocês atendem particular?",
       "ana": [
-        "Atendemos particular nestas especialidades:\n\nCardiologia, R$ 380\nCirurgia Geral, R$ 350\nDermatologia, R$ 320\nGinecologia, R$ 340\nNeurologia, R$ 380\nObstetrícia, R$ 360\nOftalmologia, R$ 320\nOrtopedia, R$ 350\nPediatria, R$ 55,60\nUrologia, R$ 350\n\nQual especialidade você procura?"
+        "Atendemos particular nestas especialidades:\n\nCardiologia, R$ 380\nCirurgia Geral, R$ 350\nDermatologia, R$ 320\nGinecologia, R$ 340\nNeurologia, R$ 380\nObstetrícia, R$ 360\nOftalmologia, R$ 320\nOrtopedia, R$ 350\nPediatria, R$ 55,60\nUrologia, R$ 350"
       ],
       "ferramentas": [
         "consultar_precos_consultas"
@@ -63,5 +63,5 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T16:56:57+00:00"
+  "rodou_em": "2026-10-13T00:35:30+00:00"
 }

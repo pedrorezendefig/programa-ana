@@ -5,20 +5,22 @@
   "familia": null,
   "titulo": "Agendamento por convênio: orientar o portal",
   "contato": "TESTE BANCADA ANA C20-1",
-  "conversa_id": 199,
-  "inicio": "2026-10-12T17:12:17+00:00",
+  "conversa_id": 373,
+  "inicio": "2026-10-13T00:49:12+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "tenho Unimed e quero marcar pediatria",
       "ana": [
-        "A agenda online não publicou Pediatria no momento. Você pode tentar agendar pelo portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dificuldade ou dúvida sobre a cobertura da Unimed, me avisa que a equipe te ajuda, combinado?"
+        "A Unimed é aceita aqui no hospital. Você já pode tentar agendar pediatria pelo nosso portal:\n\nhospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer qualquer questão de cobertura por lá, me avisa que a equipe te ajuda, combinado?"
       ],
       "ferramentas": [
         "kanban_move_card",
         "set_custom_attribute",
         "consultar_especialidades_agenda",
-        "search_knowledge"
+        "search_knowledge",
+        "kanban_move_card",
+        "assign_label"
       ],
       "nos": [
         "E1",
@@ -38,29 +40,61 @@
       "conferencias": [
         {
           "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "publicada",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "frase proibida",
+          "esperado": "não publicou",
+          "veio": null,
+          "ok": true
+        },
+        {
+          "turno": 1,
           "tipo": "ferramenta",
-          "esperado": "consultar_convenios_especialidade",
+          "esperado": "consultar_especialidades_agenda",
           "veio": [
             "kanban_move_card",
             "set_custom_attribute",
             "consultar_especialidades_agenda",
-            "search_knowledge"
+            "search_knowledge",
+            "kanban_move_card",
+            "assign_label"
           ],
-          "ok": false
+          "ok": true
+        },
+        {
+          "turno": 1,
+          "tipo": "ferramenta",
+          "esperado": "search_knowledge",
+          "veio": [
+            "kanban_move_card",
+            "set_custom_attribute",
+            "consultar_especialidades_agenda",
+            "search_knowledge",
+            "kanban_move_card",
+            "assign_label"
+          ],
+          "ok": true
         },
         {
           "turno": 1,
           "tipo": "etiqueta",
           "esperado": "agendamento-convenio",
-          "veio": [],
-          "ok": false
+          "veio": [
+            "agendamento-convenio"
+          ],
+          "ok": true
         },
         {
           "turno": 1,
           "tipo": "raia",
           "esperado": "AGUARDANDO CONFIRMAÇÃO",
-          "veio": "trace: kanban_move_card para EM ATENDIMENTO — ANA",
-          "ok": false
+          "veio": "trace: kanban_move_card para AGUARDANDO CONFIRMAÇÃO",
+          "ok": true
         },
         {
           "turno": 1,
@@ -76,22 +110,22 @@
     "kanban_move_card",
     "set_custom_attribute",
     "consultar_especialidades_agenda",
-    "search_knowledge"
+    "search_knowledge",
+    "kanban_move_card",
+    "assign_label"
   ],
   "fim": {
-    "etiquetas": [],
+    "etiquetas": [
+      "agendamento-convenio"
+    ],
     "raia": null,
     "raia_pelo_trace": [
-      "EM ATENDIMENTO — ANA"
+      "AGUARDANDO CONFIRMAÇÃO"
     ],
     "status": "pending",
     "handoff": false
   },
-  "veredito": "falhou",
-  "falhas": [
-    "turno 1: FALHOU ferramenta \"consultar_convenios_especialidade\" (veio: [\"kanban_move_card\", \"set_custom_attribute\", \"consultar_especialidades_agenda\", \"search_knowledge\"])",
-    "turno 1: FALHOU etiqueta \"agendamento-convenio\" (veio: [])",
-    "turno 1: FALHOU raia \"AGUARDANDO CONFIRMAÇÃO\" (veio: \"trace: kanban_move_card para EM ATENDIMENTO — ANA\")"
-  ],
-  "rodou_em": "2026-10-12T17:13:02+00:00"
+  "veredito": "passou",
+  "falhas": [],
+  "rodou_em": "2026-10-13T00:49:53+00:00"
 }

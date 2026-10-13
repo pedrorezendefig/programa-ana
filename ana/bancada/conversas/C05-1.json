@@ -5,8 +5,8 @@
   "familia": null,
   "titulo": "Preço de consulta particular",
   "contato": "TESTE BANCADA ANA C05-1",
-  "conversa_id": 181,
-  "inicio": "2026-10-12T16:55:03+00:00",
+  "conversa_id": 355,
+  "inicio": "2026-10-13T00:33:31+00:00",
   "turnos": [
     {
       "n": 1,
@@ -15,8 +15,8 @@
         "A consulta de cardiologia custa R$ 380. Quer que eu veja os horários disponíveis para você?"
       ],
       "ferramentas": [
-        "consultar_precos_consultas",
         "kanban_move_card",
+        "consultar_precos_consultas",
         "assign_label"
       ],
       "nos": [
@@ -54,8 +54,8 @@
           "tipo": "ferramenta",
           "esperado": "consultar_precos_consultas",
           "veio": [
-            "consultar_precos_consultas",
             "kanban_move_card",
+            "consultar_precos_consultas",
             "assign_label"
           ],
           "ok": true
@@ -80,8 +80,8 @@
     }
   ],
   "tools": [
-    "consultar_precos_consultas",
     "kanban_move_card",
+    "consultar_precos_consultas",
     "assign_label"
   ],
   "fim": {
@@ -97,5 +97,5 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-12T16:55:39+00:00"
+  "rodou_em": "2026-10-13T00:34:08+00:00"
 }
