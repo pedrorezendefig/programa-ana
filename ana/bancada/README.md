@@ -45,6 +45,23 @@ registra ouvidoria de verdade) só roda com `--com-escrita`.
 
 O relatório cru de cada bateria fica em `ana/bancada/resultados/`, ignorado pelo git.
 
+## A bancada ao vivo e as rodadas (ADR-0033)
+
+O runner emite um evento por linha em `resultados/ao-vivo.jsonl` (zerado a cada execução):
+`bateria`, `cenario`, `conversa`, `paciente`, `ana`, `trace`, `veredito`, `placar`. O painel
+do Claude Code (mod em `.claude/skills/bancada/`) lê esse arquivo a cada segundo e abre
+sozinho quando uma bateria começa; `/bancada` abre, `/bancada rodar --so C05-1` roda por dentro,
+`/bancada parar` encerra. Parado, o painel mostra as conversas gravadas.
+
+```bash
+python3 ana/bancada/e2e.py cenarios/capacidades.json --bateria v69 --rodada 1
+```
+
+Com `--bateria` e `--rodada` (sempre juntos) o runner grava `resultados/bateria-v69-rodada1.log`,
+copia as conversas para `resultados/conversas-v69-rodada1/` e anota as janelas em
+`resultados/janelas-v69.txt`. A skill `bancada` roda as três rodadas e escreve o diagnóstico em
+`ana/bancada/diagnosticos/`, versionado.
+
 ## Credenciais
 
 Todas no `.env` da raiz do repo, nunca no código:

@@ -24,6 +24,14 @@ Uso:
     python3 ana/bancada/e2e.py cenarios/capacidades.json
     python3 ana/bancada/e2e.py cenarios/integracao.json --so A1,A2,B1
     python3 ana/bancada/e2e.py cenarios/integracao.json --familia D
+    python3 ana/bancada/e2e.py cenarios/capacidades.json --bateria v69 --rodada 1
+
+Com --bateria e --rodada (ADR-0033) o runner grava sozinho o log em
+resultados/bateria-<bateria>-rodada<n>.log, copia as conversas para
+resultados/conversas-<bateria>-rodada<n>/ e anota as janelas em
+resultados/janelas-<bateria>.txt. Sempre, com ou sem rodada, emite um evento por
+linha em resultados/ao-vivo.jsonl (zerado a cada execucao): e o que a bancada ao
+vivo (o painel do Claude Code em .claude/skills/bancada/) desenha em tempo real.
 
 Cenario "manual" nao roda. Cenario "grava_producao" (registra ouvidoria de verdade)
 so roda com --com-escrita.
@@ -38,6 +46,7 @@ import argparse
 import json
 import pathlib
 import re
+import shutil
 import sys
 import time
 import urllib.error
@@ -48,6 +57,8 @@ from datetime import datetime, timedelta, timezone
 RAIZ = pathlib.Path(__file__).resolve().parents[2]
 AQUI = pathlib.Path(__file__).resolve().parent
 CONVERSAS = AQUI / "conversas"   # a conversa gravada de cada cenario (ADR-0032), versionada
+RESULTADOS = AQUI / "resultados"  # relatorios crus, logs e copias por rodada (fora do git)
+AO_VIVO = RESULTADOS / "ao-vivo.jsonl"  # um evento por linha, para a bancada ao vivo (ADR-0033)
 INBOX_NOME = "Ana E2E (API)"
 PLATAFORMA = "https://agents.hospitalsaomatheus.cloud"
 
@@ -65,6 +76,49 @@ TOOLS_DE_ESCRITURACAO = {
     "private_note", "assign_label", "kanban_move_card", "set_custom_attribute",
     "get_current_time", "handoff_to_human", "skip_reply", "search_knowledge",
 }
+
+
+# ----------------------------------------------------------------- ao vivo (ADR-0033)
+
+_ao_vivo = None   # o arquivo de eventos aberto pelo main(); fora dele, emitir() e no-op
+
+
+def emitir(evento, **campos):
+    """Grava um evento JSON por linha em resultados/ao-vivo.jsonl, com carimbo UTC.
+    O painel da bancada ao vivo le esse arquivo; o log de texto continua igual."""
+    if _ao_vivo is None:
+        return
+    linha = {"evento": evento, "t": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    linha.update(campos)
+    _ao_vivo.write(json.dumps(linha, ensure_ascii=False) + "\n")
+    _ao_vivo.flush()
+
+
+class Tee:
+    """Escreve no terminal e no log da rodada ao mesmo tempo, linha a linha."""
+
+    def __init__(self, *saidas):
+        self.saidas = saidas
+
+    def write(self, texto):
+        for s in self.saidas:
+            s.write(texto)
+            s.flush()
+
+    def flush(self):
+        for s in self.saidas:
+            s.flush()
+
+
+def veredito_gravado(pasta, cid):
+    """O veredito da conversa gravada de um cenario numa pasta, ou None se nao ha."""
+    arquivo = pasta / f"{cid}.json"
+    if not arquivo.is_file():
+        return None
+    try:
+        return json.loads(arquivo.read_text()).get("veredito")
+    except (OSError, ValueError):
+        return None
 
 
 # --------------------------------------------------------------------------- env
@@ -118,6 +172,9 @@ class Canal:
         self.conta = env["CHATWOOT_ACCOUNT_ID"]
         self.token = env["CHATWOOT_API_TOKEN"]
         self.identifier = self._achar_inbox()
+
+    def link(self, conversa_id):
+        return f"{self.base}/app/accounts/{self.conta}/conversations/{conversa_id}"
 
     def _admin(self, caminho, metodo="GET", corpo=None):
         return pedir(f"{self.base}/api/v1/accounts/{self.conta}{caminho}",
@@ -393,6 +450,8 @@ def descrever(c):
 def rodar_cenario(canal, trace, cenario, arquivo):
     cid = cenario["id"]
     print(f"\n{'=' * 78}\n[{cid}] {cenario.get('titulo', '')}\n{'=' * 78}")
+    emitir("cenario", id=cid, titulo=cenario.get("titulo", ""),
+           turnos=len(cenario["turnos"]), anterior=veredito_gravado(CONVERSAS, cid))
 
     nome_contato = cenario.get("contato") or f"TESTE BANCADA ANA {cid}"
     resultado = {"id": cid, "arquivo": arquivo, "capacidade": cenario.get("capacidade"),
@@ -407,6 +466,8 @@ def rodar_cenario(canal, trace, cenario, arquivo):
         resultado["falhas"].append(f"nao consegui abrir a conversa: {e}")
         resultado["veredito"] = "erro"
         print(f"  ERRO: {e}")
+        emitir("veredito", id=cid, veredito="erro", falhas=resultado["falhas"],
+               turnos=[], fim=None)
         return resultado
 
     resultado["conversa_id"] = conversa_id
@@ -414,6 +475,8 @@ def rodar_cenario(canal, trace, cenario, arquivo):
     desde_iso = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
     resultado["inicio"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     print(f"  conversa #{conversa_id} (contato {nome_contato})")
+    emitir("conversa", id=cid, conversa_id=conversa_id, contato=nome_contato,
+           link=canal.link(conversa_id))
 
     # o modo teste exige /teste como mensagem SOZINHA: como prefixo colado no texto
     # a plataforma nao ativa e responde com uma nota privada (achado da V25).
@@ -430,6 +493,8 @@ def rodar_cenario(canal, trace, cenario, arquivo):
     for n, turno in enumerate(cenario["turnos"]):
         texto = turno["envie"]
         print(f"\n  > paciente: {texto}")
+        emitir("paciente", id=cid, n=n + 1, texto=texto, espere=turno.get("espere"),
+               nos=turno.get("nos", []))
         enviados.append(datetime.now(timezone.utc).isoformat())
         try:
             canal.enviar(source_id, conversa_id, texto)
@@ -442,6 +507,7 @@ def rodar_cenario(canal, trace, cenario, arquivo):
             print(f"  < Ana: {r}")
         if not respostas:
             print("  < Ana: (nada em " + str(TETO_ESPERA_S) + "s)")
+        emitir("ana", id=cid, n=n + 1, respostas=respostas)
         resultado["turnos"].append({
             "n": n + 1, "paciente": texto, "ana": respostas,
             "ferramentas": None, "nos": turno.get("nos", []),
@@ -460,7 +526,9 @@ def rodar_cenario(canal, trace, cenario, arquivo):
         motivo = ("sem AGENTS_API_TOKEN no .env" if not trace.ligado
                   else "a rota de logs da plataforma nao respondeu")
         print(f"\n  trace: nao coletado ({motivo})")
+        emitir("trace", id=cid, tools=None, motivo=motivo, por_turno=None)
     else:
+        emitir("trace", id=cid, tools=tools, pior=pior, por_turno=por_turno)
         print(f"\n  trace: {len(tools)} chamada(s) -> {', '.join(tools) if tools else 'nenhuma'}")
         if pior and pior > 1:
             print(f"  ATENCAO: uma tool de dado foi repetida {pior}x no mesmo turno "
@@ -497,6 +565,10 @@ def rodar_cenario(canal, trace, cenario, arquivo):
     print(f"\n  VEREDITO: {resultado['veredito'].upper()}")
     for f in resultado["falhas"]:
         print(f"    - {f}")
+    emitir("veredito", id=cid, veredito=resultado["veredito"], falhas=resultado["falhas"],
+           turnos=[{"n": t["n"], "ferramentas": t["ferramentas"],
+                    "conferencias": t["conferencias"]} for t in resultado["turnos"]],
+           fim=resultado["fim"])
     return resultado
 
 
@@ -523,7 +595,23 @@ def main():
     p.add_argument("--familia", help="roda so esta familia (ex.: D)")
     p.add_argument("--com-escrita", action="store_true",
                    help="roda tambem os cenarios que gravam fora da plataforma (grava_producao)")
+    p.add_argument("--bateria", help="nome da bateria (ex.: v69); grava log e copia das conversas")
+    p.add_argument("--rodada", type=int, help="numero da rodada dentro da bateria (ex.: 1)")
     args = p.parse_args()
+    if bool(args.bateria) != (args.rodada is not None):
+        sys.exit("ERRO: --bateria e --rodada andam juntos.")
+    if args.bateria and not re.fullmatch(r"[A-Za-z0-9_.-]+", args.bateria):
+        sys.exit("ERRO: --bateria so com letras, numeros, ponto, traco e sublinhado.")
+
+    global _ao_vivo
+    RESULTADOS.mkdir(exist_ok=True)
+    _ao_vivo = AO_VIVO.open("w")
+    rotulo = f"{args.bateria}-rodada{args.rodada}" if args.bateria else None
+    if rotulo:
+        sys.stdout = Tee(sys.__stdout__, (RESULTADOS / f"bateria-{rotulo}.log").open("w"))
+        with (RESULTADOS / f"janelas-{args.bateria}.txt").open("a") as j:
+            j.write(f"{args.bateria} rodada{args.rodada} inicio "
+                    f"{datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}\n")
 
     caminho = pathlib.Path(args.cenarios)
     if not caminho.is_absolute():
@@ -561,6 +649,17 @@ def main():
     print(f"Canal: inbox '{INBOX_NOME}' do Chatwoot, modo teste com o prefixo {PREFIXO_MODO_TESTE}")
     print(f"Trace: {'ligado' if trace.ligado else 'DESLIGADO (sem AGENTS_API_TOKEN no .env)'}")
 
+    rodadas_anteriores = {}
+    if args.bateria:
+        for k in range(1, args.rodada):
+            pasta = RESULTADOS / f"conversas-{args.bateria}-rodada{k}"
+            for c in cenarios:
+                rodadas_anteriores.setdefault(c["id"], []).append(veredito_gravado(pasta, c["id"]))
+    emitir("bateria", bateria=args.bateria, rodada=args.rodada, arquivo=caminho.name,
+           cenarios=[{"id": c["id"], "titulo": c.get("titulo", "")} for c in cenarios],
+           pulados=[{"id": cid, "motivo": m} for cid, m in pulados],
+           trace_ligado=trace.ligado, rodadas_anteriores=rodadas_anteriores)
+
     resultados = []
     for i, c in enumerate(cenarios):
         if i:
@@ -578,10 +677,22 @@ def main():
         for f in r["falhas"]:
             print(f"            {f}")
 
-    destino = AQUI / "resultados" / f"{caminho.stem}-ultima-rodada.json"
-    destino.parent.mkdir(exist_ok=True)
+    destino = RESULTADOS / f"{caminho.stem}-ultima-rodada.json"
     destino.write_text(json.dumps(resultados, ensure_ascii=False, indent=2))
     print(f"\nRelatorio completo: {destino.relative_to(RAIZ)}")
+
+    if rotulo:
+        copia = RESULTADOS / f"conversas-{rotulo}"
+        shutil.rmtree(copia, ignore_errors=True)
+        shutil.copytree(CONVERSAS, copia)
+        print(f"Conversas da rodada: {copia.relative_to(RAIZ)}")
+        with (RESULTADOS / f"janelas-{args.bateria}.txt").open("a") as j:
+            j.write(f"{args.bateria} rodada{args.rodada} fim "
+                    f"{datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')} "
+                    f"placar {len(passou)}/{len(resultados)}\n")
+    emitir("placar", passou=len(passou), total=len(resultados),
+           resultados=[{"id": r["id"], "veredito": r["veredito"]} for r in resultados])
+    _ao_vivo.close()
     return 0 if len(passou) == len(resultados) else 1
 
 

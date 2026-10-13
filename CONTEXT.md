@@ -72,6 +72,10 @@ _Avoid_: runner em scratchpad ou credencial escrita no código (as chaves vivem 
 A última conversa real de um cenário da [[bancada-de-cenarios]], guardada num arquivo por cenário em `ana/bancada/conversas/<id>.json`, dentro do git (ADR-0032, 09/out/2026): os turnos (o que o paciente enviou, o que a Ana respondeu), as ferramentas chamadas, as conferências objetivas e o veredito. Cada bateria sobrescreve o arquivo; o histórico das rodadas é o `git log`. É o que o [[player]] toca.
 _Avoid_: conversa de exemplo escrita à mão (o OS só mostra conversa real); guardar contato com dado de paciente.
 
+**Bancada ao vivo**:
+O painel do Claude Code (mod em `.claude/skills/bancada/`, ADR-0033, 13/out/2026) que mostra a [[bancada-de-cenarios]] rodando: lista dos cenários com o estado de cada um, a conversa do selecionado turno a turno, as ferramentas e as conferências, as rodadas da mesma bateria lado a lado e as marcas "regrediu" e "melhorou". Lê o arquivo de eventos `ana/bancada/resultados/ao-vivo.jsonl`, que o runner escreve a cada acontecimento; parado, mostra a última [[conversa-gravada]] de cada cenário. Abre sozinho quando uma bateria começa; `/bancada` abre, `/bancada rodar` dispara uma rodada, `/bancada parar` encerra. A skill `bancada` é o ritual das três rodadas com diagnóstico versionado em `ana/bancada/diagnosticos/`.
+_Avoid_: confundir com o [[player]] do Ana OS (o player toca a gravação pronta; o painel mostra o que está acontecendo); escrever no prompt ou nos cenários a partir do painel ou da skill (só leitura, como o OS).
+
 **Player**:
 A tela do [[ana-os]] que toca uma [[conversa-gravada]] (ADR-0032): paciente à esquerda, Ana à direita, ferramentas entre os balões, conferência falha em vermelho, avanço por "próximo". Aparece nos testes das capacidades, nas jornadas do Mapa do SOP (com o fluxograma acendendo ao lado) e nas ferramentas. O verbo é **tocar** ("tocar o C01"). Só no OS, não no Retrato.
 _Avoid_: "percorrer a jornada" como animação sem conversa (virou o player); tocar cenário que nunca rodou.

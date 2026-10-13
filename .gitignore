@@ -14,3 +14,6 @@ os/dados/*.tmp
 
 # Relatorios crus de cada bateria da bancada (o resultado curado vive no roteiro)
 ana/bancada/resultados/
+
+# Tipos que o motor do Claude Code escreve ao lado do mod da bancada ao vivo (ADR-0033)
+.claude/skills/bancada/.claude-plugin/types/

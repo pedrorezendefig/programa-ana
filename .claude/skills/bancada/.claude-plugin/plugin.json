@@ -1,0 +1,6 @@
+{
+  "name": "bancada",
+  "version": "0.1.0",
+  "description": "Bancada ao vivo: painel que mostra a bateria da Ana rodando, cenario a cenario, e os comandos /bancada, /bancada rodar e /bancada parar",
+  "types": "./types/index.d.ts"
+}
