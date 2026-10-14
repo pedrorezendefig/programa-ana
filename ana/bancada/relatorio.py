@@ -35,6 +35,34 @@ CENARIOS = AQUI / "cenarios" / "capacidades.json"
 COMPARACAO = RAIZ / "os" / "dados" / "comparacao.json"
 SOP = RAIZ / "os" / "dados" / "sop-fluxo.json"
 RESULTADOS = AQUI / "resultados"
+PRECOS = AQUI / "precos.json"
+CONVERSAS = AQUI / "conversas"
+
+# As ferramentas da Global Health (ADR-0009, ADR-0025): cenario que chama uma delas, ou
+# capacidade com estado "gh" no comparativo, depende da GH. Derivado, nunca escrito a mao
+# por capacidade (issue #24).
+TOOLS_GH = {"buscar_paciente_por_cpf", "buscar_paciente_por_telefone", "cadastrar_paciente",
+            "consultar_especialidades_agenda", "consultar_horarios_livres",
+            "consultar_prestadores_agenda", "consultar_convenios_agenda", "consultar_planos_convenio"}
+TETO_MENSAGENS_ANA = 8  # grilling de 13/out/2026: a Meta cobra cada resposta da Ana
+
+# De onde vem cada buraco de cobertura (pedido do Pedro, 13/out/2026): o leitor precisa
+# saber se o buraco e nosso ou de terceiro. Derivado do estado da capacidade no
+# comparativo, das ferramentas do no e dos cenarios manuais; nunca escrito a mao.
+ORIGENS = [
+    {"chave": "gh", "rotulo": "Global Health: homologacao vazia", "de_quem": "terceiros",
+     "descricao": "A API responde e o codigo esta pronto, mas a base de homologacao nao tem "
+                  "paciente, agenda nem catalogo. O cenario so prova o caminho sem a GH. "
+                  "Depende da massa da GH (#4, #5)."},
+    {"chave": "planejado", "rotulo": "ainda nao desenvolvido", "de_quem": "nos, atras da GH",
+     "descricao": "Escrito no SOP ou no desenho, fora do prompt ou sem ferramenta. A escrita "
+                  "(marcar, remarcar, cancelar) espera a GH aceitar a marcacao (#4)."},
+    {"chave": "manual", "rotulo": "so com gente ou quebrando algo de proposito", "de_quem": "nos",
+     "descricao": "Nao da para testar so conversando: precisa de duas pessoas, de derrubar uma "
+                  "credencial, de olhar um painel ou de esperar o horario."},
+    {"chave": "escrever", "rotulo": "falta escrever o cenario", "de_quem": "nos",
+     "descricao": "A Ana ja faz; ninguem escreveu o cenario ainda."},
+]
 
 LETRA = {"passou": "ok", "falhou": "X", "erro": "!", None: "-"}
 
@@ -53,7 +81,10 @@ def baterias_disponiveis():
             continue
         nome, n = m.group(1), int(m.group(2))
         por_nome[nome][n] = pasta
-        quando[nome] = max(quando.get(nome, 0), pasta.stat().st_mtime)
+        # a copia herda a data da pasta conversas/ (copytree preserva): a hora real
+        # da rodada e a do arquivo mais novo dentro dela
+        recente = max((f.stat().st_mtime for f in pasta.glob("*.json")), default=pasta.stat().st_mtime)
+        quando[nome] = max(quando.get(nome, 0), recente)
     return sorted(por_nome.items(), key=lambda kv: -quando[kv[0]])
 
 
@@ -65,6 +96,44 @@ def vereditos(pasta, cid):
         return ler(arquivo).get("veredito")
     except (OSError, ValueError):
         return None
+
+
+def custo_gravado(pasta, cid):
+    """{modelo, mensagens_ana, openai_usd, meta_brl, chamadas} da conversa gravada numa
+    rodada, ou None se a rodada nao mediu (bateria anterior ao #24)."""
+    arquivo = pasta / f"{cid}.json"
+    if not arquivo.is_file():
+        return None
+    try:
+        doc = ler(arquivo)
+    except (OSError, ValueError):
+        return None
+    c = doc.get("custo")
+    if not c:
+        return None
+    return {**c, "chamadas": (doc.get("uso") or {}).get("chamadas")}
+
+
+def precos_info():
+    """{conferido_em, dias, vencido, meta_brl_por_mensagem, cambio} para o cabecalho."""
+    try:
+        d = ler(PRECOS)
+    except (OSError, ValueError):
+        return None
+    try:
+        from datetime import date
+        dias = (date.today() - date.fromisoformat(d.get("conferido_em", ""))).days
+    except ValueError:
+        dias = None
+    return {"conferido_em": d.get("conferido_em"), "dias": dias,
+            "vencido": dias is None or dias > 60,
+            "meta_brl_por_mensagem": (d.get("meta") or {}).get("service_brl_por_mensagem"),
+            "cambio_brl_por_usd": d.get("cambio_brl_por_usd")}
+
+
+def media(valores):
+    v = [x for x in valores if x is not None]
+    return round(sum(v) / len(v), 6) if v else None
 
 
 def classe(rodadas):
@@ -149,6 +218,60 @@ def main():
                 return "melhorou"
         return None
 
+    total_nos = len(sop["nos"]) or 1
+    fatia = lambda nos: round(100 * len(nos) / total_nos, 1)
+
+    def custo_de(cid):
+        """O custo da ultima rodada que mediu, dentro da bateria atual."""
+        if not atual:
+            return None
+        for n in sorted(atual[1], reverse=True):
+            c = custo_gravado(atual[1][n], cid)
+            if c:
+                return c
+        return None
+
+    def normalizar_secao(x):
+        return str(x or "").lower().replace(".", "-").strip()
+
+    caps_comp = {cap["id"]: cap for b in comp["blocos"] for cap in b["capacidades"]}
+    cap_da_secao = {}
+    for cid, cap in caps_comp.items():
+        for sid in cap.get("secao_ids") or []:
+            cap_da_secao.setdefault(normalizar_secao(sid), cid)
+
+    def manuais_de(cid):
+        return [c for c in por_cap.get(cid, []) if c.get("manual") or not c.get("turnos")]
+
+    def tem_executavel(cid):
+        return any(c.get("turnos") and not c.get("manual") for c in por_cap.get(cid, []))
+
+    def origem_da_capacidade(cid):
+        """gh, planejado, manual ou escrever, para capacidade sem cenario executavel."""
+        estado = caps_comp.get(cid, {}).get("estado")
+        if estado == "gh":
+            return "gh"
+        if estado == "planejado":
+            return "planejado"
+        if manuais_de(cid):
+            return "manual"
+        return "escrever"
+
+    def porque_da_capacidade(cid):
+        cap = caps_comp.get(cid, {})
+        if cap.get("falta"):
+            return cap["falta"]
+        passos = [c.get("passos") for c in manuais_de(cid) if c.get("passos")]
+        return " ".join(passos) if passos else cap.get("faz", "")
+
+    def origem_do_no(n):
+        if set(n.get("tools") or []) & TOOLS_GH:
+            return "gh"
+        cid = cap_da_secao.get(normalizar_secao(n.get("secao")))
+        if cid and not tem_executavel(cid):
+            return origem_da_capacidade(cid)
+        return "escrever"
+
     if args.json:
         blocos = []
         for bloco in comp["blocos"]:
@@ -159,6 +282,7 @@ def main():
                 for c in lista:
                     manual = bool(c.get("manual") or not c.get("turnos"))
                     rod = [] if manual else rodadas_de(c["id"], atual)
+                    custo = None if manual else custo_de(c["id"])
                     itens.append({
                         "id": c["id"], "titulo": c.get("titulo", ""), "manual": manual,
                         "escrita": bool(c.get("grava_producao")),
@@ -166,10 +290,40 @@ def main():
                         "mudanca": None if manual else mudanca_de(c["id"]),
                         "tools": sorted(tools_de(c)), "nos": sorted(nos_de(c)),
                         "raias": sorted({raia_do_no.get(n) for n in nos_de(c) if raia_do_no.get(n)}),
+                        "fatia_sop": fatia(nos_de(c)),
+                        "depende_gh": bool(tools_de(c) & TOOLS_GH) or cap.get("estado") == "gh",
+                        "custo": custo,
+                        "alerta_mensagens": bool(custo and (custo.get("mensagens_ana") or 0) > TETO_MENSAGENS_ANA),
                     })
+                nos_cap = {n for c in lista for n in nos_de(c)}
+                exec_ = [i for i in itens if not i["manual"]]
                 caps.append({"id": cap["id"], "titulo": cap["titulo"], "estado": cap.get("estado"),
+                             "faz": cap.get("faz", ""), "falta": cap.get("falta", ""),
+                             "tools_texto": cap.get("tools", ""),
+                             "fatia_sop": fatia(nos_cap),
+                             "depende_gh": cap.get("estado") == "gh" or any(i["depende_gh"] for i in itens),
+                             "funciona": (None if not exec_ else all(i["classe"] == "passa" for i in exec_)),
+                             "custo_medio": {
+                                 "openai_usd": media(i["custo"]["openai_usd"] for i in exec_ if i["custo"]),
+                                 "meta_brl": media(i["custo"]["meta_brl"] for i in exec_ if i["custo"]),
+                                 "mensagens_ana": media(i["custo"]["mensagens_ana"] for i in exec_ if i["custo"]),
+                             },
                              "cenarios": itens})
-            blocos.append({"nome": bloco["nome"], "capacidades": caps})
+            nos_bloco = {n for cap in caps for c in por_cap.get(cap["id"], []) for n in nos_de(c)}
+            com_cenario = [cap for cap in caps if any(not i["manual"] for i in cap["cenarios"])]
+            blocos.append({"nome": bloco["nome"], "resumo": bloco.get("resumo", ""),
+                           "fatia_sop": fatia(nos_bloco),
+                           "capacidades_total": len(caps),
+                           "funcionam": sum(1 for cap in com_cenario if cap["funciona"]),
+                           "nao_funcionam": sum(1 for cap in com_cenario if cap["funciona"] is False),
+                           "sem_cenario": len(caps) - len(com_cenario),
+                           "dependem_gh": sum(1 for cap in caps if cap["depende_gh"]),
+                           "custo_medio": {
+                               "openai_usd": media(cap["custo_medio"]["openai_usd"] for cap in caps),
+                               "meta_brl": media(cap["custo_medio"]["meta_brl"] for cap in caps),
+                               "mensagens_ana": media(cap["custo_medio"]["mensagens_ana"] for cap in caps),
+                           },
+                           "capacidades": caps})
         ids_cap = [cap["id"] for b in comp["blocos"] for cap in b["capacidades"]]
         sem_exec = [cid for cid in ids_cap
                     if not any(c.get("turnos") and not c.get("manual") for c in por_cap.get(cid, []))]
@@ -180,15 +334,43 @@ def main():
         nos_sem = defaultdict(list)
         for n in sop["nos"]:
             if n["id"] not in cobertos:
-                nos_sem[n["raia"]].append({"id": n["id"], "titulo": titulo_no.get(n["id"], "")})
+                nos_sem[n["raia"]].append({"id": n["id"], "titulo": titulo_no.get(n["id"], ""),
+                                           "origem": origem_do_no(n)})
+        caps_buraco = [{"id": cid, "titulo": caps_comp[cid].get("titulo", ""),
+                        "estado": caps_comp[cid].get("estado"),
+                        "origem": origem_da_capacidade(cid), "porque": porque_da_capacidade(cid),
+                        "manuais": [{"id": c["id"], "titulo": c.get("titulo", ""), "passos": c.get("passos", "")}
+                                    for c in manuais_de(cid)]}
+                       for cid in sem_exec]
+        # cenario executavel numa capacidade que espera a GH: passa, mas so pelo desvio
+        # (a Ana avisa que a agenda nao respondeu e encaminha), porque a homologacao esta vazia
+        desvio_gh = [{"id": c["id"], "capacidade": c.get("capacidade"), "titulo": c.get("titulo", ""),
+                      "porque": caps_comp.get(c.get("capacidade"), {}).get("falta", "")}
+                     for c in cenarios
+                     if c.get("turnos") and not c.get("manual")
+                     and caps_comp.get(c.get("capacidade"), {}).get("estado") == "gh"]
+        por_origem = {o["chave"]: {"capacidades": sum(1 for cb in caps_buraco if cb["origem"] == o["chave"]),
+                                   "nos": sum(1 for ns in nos_sem.values() for x in ns if x["origem"] == o["chave"])}
+                      for o in ORIGENS}
+        todos = [i for b in blocos for cap in b["capacidades"] for i in cap["cenarios"] if i["custo"]]
         saida = {
             "bateria": atual[0] if atual else None,
             "rodadas": sorted(atual[1]) if atual else [],
             "anterior": anterior[0] if anterior else None,
+            "precos": precos_info(),
+            "custo_medio": {
+                "openai_usd": media(i["custo"]["openai_usd"] for i in todos),
+                "meta_brl": media(i["custo"]["meta_brl"] for i in todos),
+                "mensagens_ana": media(i["custo"]["mensagens_ana"] for i in todos),
+                "medidos": len(todos),
+            },
+            "teto_mensagens_ana": TETO_MENSAGENS_ANA,
             "raias": [{"id": r["id"], "rotulo": r["rotulo"]} for r in sop["raias"]],
             "blocos": blocos,
             "buracos": {
                 "capacidades_sem_cenario": sem_exec, "total_capacidades": len(ids_cap),
+                "origens": ORIGENS, "por_origem": por_origem,
+                "capacidades": caps_buraco, "desvio_gh": desvio_gh,
                 "nos_sem_cenario": [{"raia": r, "rotulo": rotulo_raia.get(r, r), "nos": ns}
                                     for r, ns in nos_sem.items()],
                 "total_nos": len(sop["nos"]),
@@ -240,18 +422,27 @@ def main():
     linhas.append("## Buracos de cobertura")
     ids_cap = [cap["id"] for b in comp["blocos"] for cap in b["capacidades"]]
     sem_exec = [cid for cid in ids_cap if not any(c.get("turnos") and not c.get("manual") for c in por_cap.get(cid, []))]
-    linhas.append(f"Capacidades sem cenario executavel ({len(sem_exec)} de {len(ids_cap)}): {', '.join(sem_exec) or 'nenhuma'}")
+    linhas.append(f"Capacidades sem cenario executavel ({len(sem_exec)} de {len(ids_cap)}):")
+    for cid in sem_exec:
+        o = next(x for x in ORIGENS if x["chave"] == origem_da_capacidade(cid))
+        linhas.append(f"- {cid} {caps_comp[cid].get('titulo', '')}: {o['rotulo']} ({o['de_quem']}). {porque_da_capacidade(cid)}")
+    desvio = [c["id"] for c in cenarios if c.get("turnos") and not c.get("manual")
+              and caps_comp.get(c.get("capacidade"), {}).get("estado") == "gh"]
+    if desvio:
+        linhas.append(f"Passam so pelo desvio (a GH responde vazio e a Ana encaminha): {', '.join(desvio)}")
     cobertos = set()
     for c in cenarios:
         if c.get("turnos") and not c.get("manual"):
             cobertos |= nos_de(c)
     por_raia = defaultdict(list)
+    no_por_id = {n["id"]: n for n in sop["nos"]}
     for n in sop["nos"]:
         if n["id"] not in cobertos:
             por_raia[n["raia"]].append(n["id"])
     linhas.append(f"Nos do SOP sem cenario ({sum(len(v) for v in por_raia.values())} de {len(sop['nos'])}):")
     for raia, nos in por_raia.items():
-        linhas.append(f"- {rotulo_raia.get(raia, raia)}: " + ", ".join(f"{n} ({titulo_no.get(n, '')})" for n in nos))
+        linhas.append(f"- {rotulo_raia.get(raia, raia)}: " + ", ".join(
+            f"{n} ({titulo_no.get(n, '')}; {origem_do_no(no_por_id[n])})" for n in nos))
     contagem = Counter(n for c in cenarios if c.get("turnos") and not c.get("manual") for n in nos_de(c))
     mais = ", ".join(f"{n} x{k}" for n, k in contagem.most_common(5))
     linhas.append(f"Nos mais testados: {mais}")

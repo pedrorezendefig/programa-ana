@@ -5,8 +5,8 @@
   "familia": null,
   "titulo": "Paciente volta citando o protocolo",
   "contato": "TESTE BANCADA ANA C24-1",
-  "conversa_id": 375,
-  "inicio": "2026-10-13T00:50:37+00:00",
+  "conversa_id": 588,
+  "inicio": "2026-10-13T08:17:26+00:00",
   "turnos": [
     {
       "n": 1,
@@ -15,8 +15,8 @@
         "Encontrei sua manifestação, registrada em 19/08/2026 com o protocolo 2026-0006. O prazo de retorno da nossa equipe vai até 26/08/2026.\n\nVou te passar agora para a nossa equipe de ouvidoria, que consegue te dar a posição atualizada."
       ],
       "ferramentas": [
-        "consultar_protocolo_ouvidoria",
         "assign_label",
+        "consultar_protocolo_ouvidoria",
         "kanban_move_card",
         "handoff_to_human"
       ],
@@ -50,8 +50,8 @@
           "tipo": "ferramenta",
           "esperado": "consultar_protocolo_ouvidoria",
           "veio": [
-            "consultar_protocolo_ouvidoria",
             "assign_label",
+            "consultar_protocolo_ouvidoria",
             "kanban_move_card",
             "handoff_to_human"
           ],
@@ -84,8 +84,8 @@
     }
   ],
   "tools": [
-    "consultar_protocolo_ouvidoria",
     "assign_label",
+    "consultar_protocolo_ouvidoria",
     "kanban_move_card",
     "handoff_to_human"
   ],
@@ -103,5 +103,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:51:15+00:00"
+  "uso": {
+    "entrada": 486,
+    "cache": 112140,
+    "cache_criacao": 471,
+    "saida": 225,
+    "chamadas": 5,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.001283,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:18:06+00:00"
 }

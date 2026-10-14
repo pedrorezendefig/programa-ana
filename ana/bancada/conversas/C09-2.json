@@ -5,18 +5,19 @@
   "familia": null,
   "titulo": "Cobertura de convênio por especialidade",
   "contato": "TESTE BANCADA ANA C09-2",
-  "conversa_id": 365,
-  "inicio": "2026-10-13T00:40:09+00:00",
+  "conversa_id": 577,
+  "inicio": "2026-10-13T08:03:39+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "tenho Unimed, quais especialidades vocês cobrem por ela?",
       "ana": [
-        "A Unimed do Brasil é aceita no Hospital São Matheus, mas a cobertura depende do seu plano e da especialidade. Para verificar uma especialidade específica, qual você precisa?"
+        "A Unimed do Brasil é aceita no hospital, mas a cobertura varia conforme a especialidade e o plano. Qual especialidade você precisa? Assim verifico a cobertura certinho para você."
       ],
       "ferramentas": [
         "search_knowledge",
-        "kanban_move_card"
+        "kanban_move_card",
+        "set_custom_attribute"
       ],
       "nos": [
         "E1",
@@ -40,7 +41,8 @@
           "esperado": "search_knowledge",
           "veio": [
             "search_knowledge",
-            "kanban_move_card"
+            "kanban_move_card",
+            "set_custom_attribute"
           ],
           "ok": true
         },
@@ -56,7 +58,8 @@
   ],
   "tools": [
     "search_knowledge",
-    "kanban_move_card"
+    "kanban_move_card",
+    "set_custom_attribute"
   ],
   "fim": {
     "etiquetas": [],
@@ -69,5 +72,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:40:47+00:00"
+  "uso": {
+    "entrada": 1279,
+    "cache": 91617,
+    "cache_criacao": 1267,
+    "saida": 132,
+    "chamadas": 4,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.00111,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:04:16+00:00"
 }

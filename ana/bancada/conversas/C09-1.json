@@ -5,22 +5,22 @@
   "familia": null,
   "titulo": "Cobertura de convênio por especialidade",
   "contato": "TESTE BANCADA ANA C09-1",
-  "conversa_id": 364,
-  "inicio": "2026-10-13T00:39:17+00:00",
+  "conversa_id": 576,
+  "inicio": "2026-10-13T08:02:40+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "meu convênio é a Unimed, vocês cobrem cardiologia?",
       "ana": [
-        "Atendemos a Unimed aqui no hospital. Você já pode tentar agendar cardiologia pelo nosso portal:\n\nhospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer qualquer questão de cobertura por lá, me avisa que a equipe te ajuda, combinado?"
+        "A Unimed é atendida no hospital. Você já pode tentar agendar cardiologia pelo nosso portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma questão de cobertura por lá, me avisa que a equipe te ajuda, combinado?"
       ],
       "ferramentas": [
         "kanban_move_card",
         "consultar_especialidades_agenda",
         "consultar_convenios_agenda",
-        "kanban_move_card",
+        "search_knowledge",
         "assign_label",
-        "search_knowledge"
+        "kanban_move_card"
       ],
       "nos": [
         "E1",
@@ -60,9 +60,9 @@
             "kanban_move_card",
             "consultar_especialidades_agenda",
             "consultar_convenios_agenda",
-            "kanban_move_card",
+            "search_knowledge",
             "assign_label",
-            "search_knowledge"
+            "kanban_move_card"
           ],
           "ok": true
         },
@@ -74,9 +74,9 @@
             "kanban_move_card",
             "consultar_especialidades_agenda",
             "consultar_convenios_agenda",
-            "kanban_move_card",
+            "search_knowledge",
             "assign_label",
-            "search_knowledge"
+            "kanban_move_card"
           ],
           "ok": true
         },
@@ -103,9 +103,9 @@
     "kanban_move_card",
     "consultar_especialidades_agenda",
     "consultar_convenios_agenda",
-    "kanban_move_card",
+    "search_knowledge",
     "assign_label",
-    "search_knowledge"
+    "kanban_move_card"
   ],
   "fim": {
     "etiquetas": [
@@ -120,5 +120,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:40:05+00:00"
+  "uso": {
+    "entrada": 1380,
+    "cache": 159143,
+    "cache_criacao": 1359,
+    "saida": 229,
+    "chamadas": 7,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.001844,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:03:35+00:00"
 }

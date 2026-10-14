@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Oferecer horários reais para escolher",
   "contato": "TESTE BANCADA ANA C14-1",
-  "conversa_id": 370,
-  "inicio": "2026-10-13T00:44:41+00:00",
+  "conversa_id": 582,
+  "inicio": "2026-10-13T08:08:20+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quero marcar uma consulta de cardiologia particular",
       "ana": [
-        "A consulta de Cardiologia particular é R$ 380. Quer que eu veja os horários disponíveis para você?"
+        "A consulta de cardiologia é R$ 380. Quer que eu veja os horários disponíveis para você?"
       ],
       "ferramentas": [
         "kanban_move_card",
@@ -42,7 +42,10 @@
       "ana": [
         "Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento."
       ],
-      "ferramentas": [],
+      "ferramentas": [
+        "set_custom_attribute",
+        "set_custom_attribute"
+      ],
       "nos": [
         "P7",
         "S1"
@@ -63,8 +66,8 @@
         "buscar_paciente_por_cpf",
         "consultar_especialidades_agenda",
         "consultar_convenios_agenda",
-        "kanban_move_card",
         "assign_label",
+        "kanban_move_card",
         "handoff_to_human"
       ],
       "nos": [
@@ -87,11 +90,13 @@
             "assign_label",
             "set_custom_attribute",
             "set_custom_attribute",
+            "set_custom_attribute",
+            "set_custom_attribute",
             "buscar_paciente_por_cpf",
             "consultar_especialidades_agenda",
             "consultar_convenios_agenda",
-            "kanban_move_card",
             "assign_label",
+            "kanban_move_card",
             "handoff_to_human"
           ],
           "ok": true
@@ -119,11 +124,13 @@
     "assign_label",
     "set_custom_attribute",
     "set_custom_attribute",
+    "set_custom_attribute",
+    "set_custom_attribute",
     "buscar_paciente_por_cpf",
     "consultar_especialidades_agenda",
     "consultar_convenios_agenda",
-    "kanban_move_card",
     "assign_label",
+    "kanban_move_card",
     "handoff_to_human"
   ],
   "fim": {
@@ -141,5 +148,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:46:31+00:00"
+  "uso": {
+    "entrada": 2004,
+    "cache": 364493,
+    "cache_criacao": 1700,
+    "saida": 524,
+    "chamadas": 17,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 3,
+    "openai_usd": 0.004107,
+    "meta_brl": 0.105
+  },
+  "rodou_em": "2026-10-13T08:10:17+00:00"
 }

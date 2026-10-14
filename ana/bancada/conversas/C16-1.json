@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Levar o caso para a equipe com resumo",
   "contato": "TESTE BANCADA ANA C16-1",
-  "conversa_id": 372,
-  "inicio": "2026-10-13T00:47:15+00:00",
+  "conversa_id": 585,
+  "inicio": "2026-10-13T08:14:09+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quero marcar uma consulta de cardiologia particular",
       "ana": [
-        "A consulta de Cardiologia particular é R$ 380. Quer que eu veja os horários disponíveis para você?"
+        "A consulta de cardiologia é R$ 380. Quer que eu veja os horários disponíveis para você?"
       ],
       "ferramentas": [
         "kanban_move_card",
@@ -42,7 +42,10 @@
       "ana": [
         "Ótimo! Me passa seu nome completo e CPF, por favor? Assim já deixo tudo pronto para o agendamento."
       ],
-      "ferramentas": [],
+      "ferramentas": [
+        "set_custom_attribute",
+        "set_custom_attribute"
+      ],
       "nos": [
         "P7",
         "S1"
@@ -55,7 +58,7 @@
       "n": 3,
       "paciente": "meu nome é Teste Bancada Ana, CPF ***.***.***-**",
       "ana": [
-        "Prontinho, Teste! A agenda online não me retornou horários agora, então nossa equipe vai entrar em contato para confirmar o melhor horário com você."
+        "Prontinho, Teste! A agenda online não me retornou horários agora, então nossa equipe vai entrar em contato para confirmar o melhor horário com você. Nossa equipe de atendimento funciona de segunda a sexta, das 7h às 18h. Registrei sua solicitação e nosso time vai te contatar assim que iniciar o próximo expediente."
       ],
       "ferramentas": [
         "set_custom_attribute",
@@ -63,8 +66,8 @@
         "buscar_paciente_por_cpf",
         "consultar_especialidades_agenda",
         "consultar_convenios_agenda",
-        "kanban_move_card",
         "assign_label",
+        "kanban_move_card",
         "handoff_to_human"
       ],
       "nos": [
@@ -142,11 +145,13 @@
     "assign_label",
     "set_custom_attribute",
     "set_custom_attribute",
+    "set_custom_attribute",
+    "set_custom_attribute",
     "buscar_paciente_por_cpf",
     "consultar_especialidades_agenda",
     "consultar_convenios_agenda",
-    "kanban_move_card",
     "assign_label",
+    "kanban_move_card",
     "handoff_to_human"
   ],
   "fim": {
@@ -164,5 +169,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:49:09+00:00"
+  "uso": {
+    "entrada": 1453,
+    "cache": 365068,
+    "cache_criacao": 1167,
+    "saida": 571,
+    "chamadas": 17,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 3,
+    "openai_usd": 0.004081,
+    "meta_brl": 0.105
+  },
+  "rodou_em": "2026-10-13T08:16:02+00:00"
 }

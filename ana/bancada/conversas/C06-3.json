@@ -5,17 +5,18 @@
   "familia": null,
   "titulo": "Valor de exame particular",
   "contato": "TESTE BANCADA ANA C06-3",
-  "conversa_id": 360,
-  "inicio": "2026-10-13T00:36:48+00:00",
+  "conversa_id": 572,
+  "inicio": "2026-10-13T08:00:08+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quais exames vocês fazem e quanto custa cada um particular?",
       "ana": [
-        "Estes são os exames particulares disponíveis e os valores:\n\nColonoscopia: R$ 580\nEcocardiograma: R$ 320\nEletrocardiograma (ECG): R$ 80\nEndoscopia Digestiva Alta: R$ 480\nHemograma Completo: R$ 45\nHolter 24h: R$ 280\nMAPA 24h: R$ 260\nRaio-X (RX): R$ 120\nTomografia Computadorizada (TC): R$ 580\nUltrassonografia Abdominal: R$ 220"
+        "Os exames disponíveis para atendimento particular e seus valores são:\n\nColonoscopia: R$ 580\nEcocardiograma: R$ 320\nEletrocardiograma (ECG): R$ 80\nEndoscopia Digestiva Alta: R$ 480\nHemograma Completo: R$ 45\nHolter 24h: R$ 280\nMAPA 24h: R$ 260\nRaio-X (RX): R$ 120\nTomografia Computadorizada (TC): R$ 580\nUltrassonografia Abdominal: R$ 220"
       ],
       "ferramentas": [
-        "consultar_exames"
+        "consultar_exames",
+        "assign_label"
       ],
       "nos": [
         "E1",
@@ -34,7 +35,8 @@
           "tipo": "ferramenta",
           "esperado": "consultar_exames",
           "veio": [
-            "consultar_exames"
+            "consultar_exames",
+            "assign_label"
           ],
           "ok": true
         },
@@ -49,10 +51,13 @@
     }
   ],
   "tools": [
-    "consultar_exames"
+    "consultar_exames",
+    "assign_label"
   ],
   "fim": {
-    "etiquetas": [],
+    "etiquetas": [
+      "agente-off"
+    ],
     "raia": null,
     "raia_pelo_trace": [],
     "status": "pending",
@@ -60,5 +65,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:37:22+00:00"
+  "uso": {
+    "entrada": 22642,
+    "cache": 44909,
+    "cache_criacao": 22633,
+    "saida": 165,
+    "chamadas": 3,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.002796,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:00:42+00:00"
 }

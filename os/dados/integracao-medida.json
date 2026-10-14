@@ -1,11 +1,11 @@
 {
-  "medido_em": "2026-08-20",
+  "medido_em": "2026-10-13",
   "teto_plataforma": 4000,
   "base": "https://api.hospitalsaomatheus.cloud/api/ana",
   "tabelas": {
     "consultas-particulares": {
       "itens": 10,
-      "chars": 667,
+      "chars": 666,
       "modo": "resumo",
       "cabe": true,
       "invisiveis": [],
@@ -35,18 +35,7 @@
         "parametro": "procedimento",
         "chars": 1204
       }
-    },
-    "convenios-especialidade": {
-      "itens": 20,
-      "chars": 1555,
-      "modo": "resumo",
-      "cabe": true,
-      "invisiveis": [],
-      "filtro": {
-        "parametro": "convenio",
-        "chars": 868
-      }
     }
   },
-  "veredito": "ok"
+  "veredito": "falhou"
 }

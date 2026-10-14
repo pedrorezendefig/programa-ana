@@ -5,19 +5,24 @@
   "familia": null,
   "titulo": "Item fora da tabela não vira negativa",
   "contato": "TESTE BANCADA ANA C10-3",
-  "conversa_id": 368,
-  "inicio": "2026-10-13T00:42:09+00:00",
+  "conversa_id": 580,
+  "inicio": "2026-10-13T08:05:35+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "meu plano é a Porto Seguro Saúde, vocês cobrem dermatologia?",
       "ana": [
-        "Para confirmar a cobertura da Porto Seguro Saúde em dermatologia, a equipe precisa verificar diretamente com você. O convênio é atendido no hospital, mas a agenda online não retornou dermatologia agora.\n\nVocê pode tentar pelo portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dificuldade, me avisa que a equipe te ajuda.Para confirmar a cobertura da Porto Seguro Saúde em dermatologia, a equipe precisa verificar diretamente com você. O convênio é atendido no hospital, mas a agenda online não retornou dermatologia agora.\n\nVocê pode tentar pelo portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dificuldade, me avisa que a equipe te ajuda."
+        "A Porto Seguro é atendida no hospital. Para dermatologia, você já pode tentar agendar pelo portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma dúvida sobre a cobertura por lá, me avisa que a equipe te ajuda."
       ],
       "ferramentas": [
         "kanban_move_card",
         "consultar_especialidades_agenda",
-        "search_knowledge"
+        "kanban_move_card",
+        "assign_label",
+        "search_knowledge",
+        "get_current_time",
+        "assign_label",
+        "kanban_move_card"
       ],
       "nos": [
         "E1",
@@ -66,8 +71,8 @@
           "turno": 1,
           "tipo": "frase proibida",
           "esperado": "agenda online",
-          "veio": "agenda online",
-          "ok": false
+          "veio": null,
+          "ok": true
         },
         {
           "turno": 1,
@@ -76,7 +81,12 @@
           "veio": [
             "kanban_move_card",
             "consultar_especialidades_agenda",
-            "search_knowledge"
+            "kanban_move_card",
+            "assign_label",
+            "search_knowledge",
+            "get_current_time",
+            "assign_label",
+            "kanban_move_card"
           ],
           "ok": true
         },
@@ -87,7 +97,12 @@
           "veio": [
             "kanban_move_card",
             "consultar_especialidades_agenda",
-            "search_knowledge"
+            "kanban_move_card",
+            "assign_label",
+            "search_knowledge",
+            "get_current_time",
+            "assign_label",
+            "kanban_move_card"
           ],
           "ok": true
         },
@@ -95,15 +110,18 @@
           "turno": 1,
           "tipo": "etiqueta",
           "esperado": "agendamento-convenio",
-          "veio": [],
-          "ok": false
+          "veio": [
+            "agendamento-convenio",
+            "fora-horario"
+          ],
+          "ok": true
         },
         {
           "turno": 1,
           "tipo": "raia",
           "esperado": "AGUARDANDO CONFIRMAÇÃO",
-          "veio": "trace: kanban_move_card para EM ATENDIMENTO — ANA",
-          "ok": false
+          "veio": "trace: kanban_move_card para AGUARDANDO CONFIRMAÇÃO",
+          "ok": true
         },
         {
           "turno": 1,
@@ -118,22 +136,42 @@
   "tools": [
     "kanban_move_card",
     "consultar_especialidades_agenda",
-    "search_knowledge"
+    "kanban_move_card",
+    "assign_label",
+    "search_knowledge",
+    "get_current_time",
+    "assign_label",
+    "kanban_move_card"
   ],
   "fim": {
-    "etiquetas": [],
+    "etiquetas": [
+      "agendamento-convenio",
+      "fora-horario"
+    ],
     "raia": null,
     "raia_pelo_trace": [
-      "EM ATENDIMENTO — ANA"
+      "AGUARDANDO CONFIRMAÇÃO"
     ],
     "status": "pending",
     "handoff": false
   },
-  "veredito": "falhou",
-  "falhas": [
-    "turno 1: FALHOU frase proibida \"agenda online\" (veio: \"agenda online\")",
-    "turno 1: FALHOU etiqueta \"agendamento-convenio\" (veio: [])",
-    "turno 1: FALHOU raia \"AGUARDANDO CONFIRMAÇÃO\" (veio: \"trace: kanban_move_card para EM ATENDIMENTO — ANA\")"
-  ],
-  "rodou_em": "2026-10-13T00:42:43+00:00"
+  "veredito": "passou",
+  "falhas": [],
+  "uso": {
+    "entrada": 25228,
+    "cache": 136720,
+    "cache_criacao": 25207,
+    "saida": 267,
+    "chamadas": 7,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.004024,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:06:18+00:00"
 }

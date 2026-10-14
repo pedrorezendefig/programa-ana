@@ -1,0 +1,19 @@
+{
+  "sobre": "Precos que a bancada usa para virar tokens e mensagens em dinheiro (issue #24). OpenAI por 1 milhao de tokens em USD (entrada sem cache, entrada em cache, saida); Meta por mensagem de service no Brasil em BRL, com a franquia gratis por numero por mes. Conferir a cada 60 dias: o relatorio avisa quando passar.",
+  "conferido_em": "2026-10-13",
+  "fontes": [
+    "https://developers.openai.com/api/docs/pricing",
+    "https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing/non-template-messages"
+  ],
+  "cambio_brl_por_usd": 5.6,
+  "openai": {
+    "gpt-6-luna": {"entrada": 0.10, "cache": 0.01, "saida": 0.50},
+    "gpt-5.6-luna": {"entrada": 0.20, "cache": 0.02, "saida": 1.20},
+    "gpt-5-mini": {"entrada": 0.25, "cache": 0.025, "saida": 2.00}
+  },
+  "meta": {
+    "service_brl_por_mensagem": 0.035,
+    "gratis_por_numero_por_mes": 1000,
+    "desde": "2026-10-01"
+  }
+}

@@ -5,22 +5,21 @@
   "familia": null,
   "titulo": "Agendamento por convênio: orientar o portal",
   "contato": "TESTE BANCADA ANA C20-1",
-  "conversa_id": 373,
-  "inicio": "2026-10-13T00:49:12+00:00",
+  "conversa_id": 586,
+  "inicio": "2026-10-13T08:16:06+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "tenho Unimed e quero marcar pediatria",
       "ana": [
-        "A Unimed é aceita aqui no hospital. Você já pode tentar agendar pediatria pelo nosso portal:\n\nhospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer qualquer questão de cobertura por lá, me avisa que a equipe te ajuda, combinado?"
+        "Atendemos a Unimed aqui no hospital. Você já pode tentar agendar pediatria pelo nosso portal: hospitalsaomatheus.centraldemarcacao.com.br\n\nSe aparecer alguma questão de cobertura por lá, me avisa que a equipe te ajuda, combinado?"
       ],
       "ferramentas": [
         "kanban_move_card",
-        "set_custom_attribute",
         "consultar_especialidades_agenda",
-        "search_knowledge",
         "kanban_move_card",
-        "assign_label"
+        "assign_label",
+        "search_knowledge"
       ],
       "nos": [
         "E1",
@@ -58,11 +57,10 @@
           "esperado": "consultar_especialidades_agenda",
           "veio": [
             "kanban_move_card",
-            "set_custom_attribute",
             "consultar_especialidades_agenda",
-            "search_knowledge",
             "kanban_move_card",
-            "assign_label"
+            "assign_label",
+            "search_knowledge"
           ],
           "ok": true
         },
@@ -72,11 +70,10 @@
           "esperado": "search_knowledge",
           "veio": [
             "kanban_move_card",
-            "set_custom_attribute",
             "consultar_especialidades_agenda",
-            "search_knowledge",
             "kanban_move_card",
-            "assign_label"
+            "assign_label",
+            "search_knowledge"
           ],
           "ok": true
         },
@@ -108,11 +105,10 @@
   ],
   "tools": [
     "kanban_move_card",
-    "set_custom_attribute",
     "consultar_especialidades_agenda",
-    "search_knowledge",
     "kanban_move_card",
-    "assign_label"
+    "assign_label",
+    "search_knowledge"
   ],
   "fim": {
     "etiquetas": [
@@ -127,5 +123,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:49:53+00:00"
+  "uso": {
+    "entrada": 1285,
+    "cache": 89422,
+    "cache_criacao": 1273,
+    "saida": 210,
+    "chamadas": 4,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.001128,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:16:43+00:00"
 }

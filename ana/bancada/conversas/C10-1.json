@@ -5,19 +5,18 @@
   "familia": null,
   "titulo": "Item fora da tabela não vira negativa",
   "contato": "TESTE BANCADA ANA C10-1",
-  "conversa_id": 366,
-  "inicio": "2026-10-13T00:40:50+00:00",
+  "conversa_id": 578,
+  "inicio": "2026-10-13T08:04:19+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quanto custa a consulta de reumatologia?",
       "ana": [
-        "Não encontrei o valor de reumatologia na consulta oficial de valores. Posso encaminhar sua solicitação para a equipe confirmar o preço e a disponibilidade?"
+        "Não encontrei o valor da consulta de reumatologia na tabela oficial. Posso encaminhar sua solicitação para a equipe confirmar o valor e a disponibilidade. Quer que eu encaminhe?"
       ],
       "ferramentas": [
         "consultar_precos_consultas",
-        "assign_label",
-        "handoff_to_human"
+        "assign_label"
       ],
       "nos": [
         "E1",
@@ -61,8 +60,7 @@
           "esperado": "consultar_precos_consultas",
           "veio": [
             "consultar_precos_consultas",
-            "assign_label",
-            "handoff_to_human"
+            "assign_label"
           ],
           "ok": true
         },
@@ -70,29 +68,42 @@
           "turno": 1,
           "tipo": "handoff",
           "esperado": false,
-          "veio": true,
-          "ok": false
+          "veio": false,
+          "ok": true
         }
       ]
     }
   ],
   "tools": [
     "consultar_precos_consultas",
-    "assign_label",
-    "handoff_to_human"
+    "assign_label"
   ],
   "fim": {
     "etiquetas": [
-      "particular-aquecido"
+      "em atendimento"
     ],
     "raia": null,
     "raia_pelo_trace": [],
-    "status": "open",
-    "handoff": true
+    "status": "pending",
+    "handoff": false
   },
-  "veredito": "falhou",
-  "falhas": [
-    "turno 1: FALHOU handoff false (veio: true)"
-  ],
-  "rodou_em": "2026-10-13T00:41:28+00:00"
+  "veredito": "passou",
+  "falhas": [],
+  "uso": {
+    "entrada": 199,
+    "cache": 67069,
+    "cache_criacao": 190,
+    "saida": 87,
+    "chamadas": 3,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.000734,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:04:53+00:00"
 }

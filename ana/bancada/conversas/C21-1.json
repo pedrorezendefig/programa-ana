@@ -5,18 +5,18 @@
   "familia": null,
   "titulo": "Acolher e coletar a manifestação",
   "contato": "TESTE BANCADA ANA C21-1",
-  "conversa_id": 374,
-  "inicio": "2026-10-13T00:49:56+00:00",
+  "conversa_id": 587,
+  "inicio": "2026-10-13T08:16:46+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quero fazer uma reclamação, esperei três horas na recepção ontem",
       "ana": [
-        "Sinto muito que você tenha passado por isso. Obrigada por nos contar.\n\nVou registrar seu relato com todo o cuidado para que seja apurado pelos setores responsáveis.\n\nPara registrar direitinho, me passa seu nome completo e CPF? E me diz também: aconteceu com você ou com outra pessoa?"
+        "Sinto muito que você tenha passado por essa espera. Obrigada por nos contar. Vou registrar seu relato com todo o cuidado para que seja apurado pelos setores responsáveis.\n\nMe conta o que aconteceu, estou aqui para ouvir com atenção."
       ],
       "ferramentas": [
-        "kanban_move_card",
-        "assign_label"
+        "assign_label",
+        "kanban_move_card"
       ],
       "nos": [
         "E1",
@@ -71,8 +71,8 @@
     }
   ],
   "tools": [
-    "kanban_move_card",
-    "assign_label"
+    "assign_label",
+    "kanban_move_card"
   ],
   "fim": {
     "etiquetas": [
@@ -87,5 +87,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:50:34+00:00"
+  "uso": {
+    "entrada": 127,
+    "cache": 66986,
+    "cache_criacao": 118,
+    "saida": 98,
+    "chamadas": 3,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.000732,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:17:23+00:00"
 }

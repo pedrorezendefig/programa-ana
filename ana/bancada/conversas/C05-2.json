@@ -5,17 +5,16 @@
   "familia": null,
   "titulo": "Preço de consulta particular",
   "contato": "TESTE BANCADA ANA C05-2",
-  "conversa_id": 356,
-  "inicio": "2026-10-13T00:34:11+00:00",
+  "conversa_id": 568,
+  "inicio": "2026-10-13T07:57:34+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quanto custa a consulta de urologia?",
       "ana": [
-        "A consulta de Urologia custa R$ 350. Quer que eu veja os horários disponíveis para você?"
+        "A consulta de urologia é R$ 350. Quer que eu veja os horários disponíveis para você?"
       ],
       "ferramentas": [
-        "kanban_move_card",
         "consultar_precos_consultas",
         "assign_label"
       ],
@@ -61,7 +60,6 @@
           "tipo": "ferramenta",
           "esperado": "consultar_precos_consultas",
           "veio": [
-            "kanban_move_card",
             "consultar_precos_consultas",
             "assign_label"
           ],
@@ -87,7 +85,6 @@
     }
   ],
   "tools": [
-    "kanban_move_card",
     "consultar_precos_consultas",
     "assign_label"
   ],
@@ -96,13 +93,27 @@
       "particular-aquecido"
     ],
     "raia": null,
-    "raia_pelo_trace": [
-      "EM ATENDIMENTO — ANA"
-    ],
+    "raia_pelo_trace": [],
     "status": "pending",
     "handoff": false
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:34:49+00:00"
+  "uso": {
+    "entrada": 451,
+    "cache": 67341,
+    "cache_criacao": 442,
+    "saida": 74,
+    "chamadas": 3,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.000756,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T07:58:11+00:00"
 }

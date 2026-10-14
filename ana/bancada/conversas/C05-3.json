@@ -5,17 +5,18 @@
   "familia": null,
   "titulo": "Preço de consulta particular",
   "contato": "TESTE BANCADA ANA C05-3",
-  "conversa_id": 357,
-  "inicio": "2026-10-13T00:34:52+00:00",
+  "conversa_id": 569,
+  "inicio": "2026-10-13T07:58:14+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quais especialidades vocês atendem particular?",
       "ana": [
-        "Atendemos particular nestas especialidades:\n\nCardiologia, R$ 380\nCirurgia Geral, R$ 350\nDermatologia, R$ 320\nGinecologia, R$ 340\nNeurologia, R$ 380\nObstetrícia, R$ 360\nOftalmologia, R$ 320\nOrtopedia, R$ 350\nPediatria, R$ 55,60\nUrologia, R$ 350"
+        "As especialidades com consultas particulares são:\n\nCardiologia: R$ 380\nCirurgia Geral: R$ 350\nDermatologia: R$ 320\nGinecologia: R$ 340\nNeurologia: R$ 380\nObstetrícia: R$ 360\nOftalmologia: R$ 320\nOrtopedia: R$ 350\nPediatria: R$ 55,60\nUrologia: R$ 350"
       ],
       "ferramentas": [
-        "consultar_precos_consultas"
+        "consultar_precos_consultas",
+        "assign_label"
       ],
       "nos": [
         "E1",
@@ -37,7 +38,8 @@
           "tipo": "ferramenta",
           "esperado": "consultar_precos_consultas",
           "veio": [
-            "consultar_precos_consultas"
+            "consultar_precos_consultas",
+            "assign_label"
           ],
           "ok": true
         },
@@ -52,10 +54,13 @@
     }
   ],
   "tools": [
-    "consultar_precos_consultas"
+    "consultar_precos_consultas",
+    "assign_label"
   ],
   "fim": {
-    "etiquetas": [],
+    "etiquetas": [
+      "particular-aquecido"
+    ],
     "raia": null,
     "raia_pelo_trace": [],
     "status": "pending",
@@ -63,5 +68,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:35:30+00:00"
+  "uso": {
+    "entrada": 403,
+    "cache": 67173,
+    "cache_criacao": 394,
+    "saida": 267,
+    "chamadas": 3,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.000846,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T07:58:51+00:00"
 }

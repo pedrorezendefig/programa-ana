@@ -21,7 +21,7 @@ import {
   resumir,
   type ConversaGravada,
 } from './eventos'
-import { chave, contar, linhasTestes, mover as moverCursor, selecionada } from './testes'
+import { brl, chave, contar, custoTexto, linhasTestes, mover as moverCursor, pct, selecionada, usd } from './testes'
 
 const PANE = 'bancada'
 const TITULO = 'Bancada ao vivo'
@@ -165,7 +165,7 @@ export const register: Register = on => {
     if (verbo) return { text: 'Bancada: uso /painel, /painel testes, /painel rodar <args do e2e.py> ou /painel parar.' }
     await update($, visao, x => ({ ...x, aba: 'bateria' as const }))
     await $.ui.open({ id: PANE, title: TITULO, focus: true })
-    return { text: 'Bancada: painel aberto. Clique num cenario para ver o detalhe. Teclas: b/t trocam de aba; j/k navegar, f seguir, x so falhas, u/d rolar; na mesa de testes p so problemas, a raia, h buracos, r atualizar. Esc volta ao prompt.' }
+    return { text: 'Bancada: painel aberto. Clique numa linha (categoria, capacidade ou cenario) para ver o detalhe. Teclas: b/t trocam de aba; j/k navegar, f seguir, x so falhas, u/d rolar; na mesa de testes p so problemas, a raia, h buracos, r atualizar. Esc volta ao prompt.' }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
@@ -202,7 +202,7 @@ export const register: Register = on => {
       const nBuracos = rel ? rel.buracos.capacidades_sem_cenario.length + rel.buracos.nos_sem_cenario.reduce((a, g) => a + g.nos.length, 0) : 0
 
       // a lista: janela de `corpo` linhas em volta do cursor
-      const idx = Math.max(0, todas.findIndex(l => chave(l) !== null && chave(l) === chaveSel))
+      const idx = Math.max(0, todas.findIndex(l => chave(l) === chaveSel))
       const inicio = Math.max(0, Math.min(idx - Math.floor(corpo / 2), todas.length - corpo))
       const visiveis = todas.slice(inicio, inicio + corpo)
       const larguraTitulo = Math.max(10, larguraLista - 24)
@@ -224,23 +224,80 @@ export const register: Register = on => {
       } else if (v.soBuracos) {
         corMoldura = PAL.roxo
         const b = rel.buracos
-        detalhe.push({ t: 'BURACOS DE COBERTURA', bold: true, cor: PAL.roxo })
-        for (const l of quebrar(`Capacidades sem cenario executavel (${b.capacidades_sem_cenario.length} de ${b.total_capacidades}): ${b.capacidades_sem_cenario.join(', ') || 'nenhuma'}`, larguraDetalhe)) detalhe.push({ t: l })
+        // de onde vem cada buraco: a cor e a etiqueta [de quem] vem da origem derivada pelo relatorio
+        const corOrigem: Record<string, string> = { gh: PAL.laranja, planejado: PAL.roxo, manual: PAL.amarelo, escrever: PAL.ciano }
+        const deQuem = (k: string) => b.origens.find(o => o.chave === k)?.de_quem ?? k
+        detalhe.push({ t: 'BURACOS DE COBERTURA: DE ONDE VEM CADA UM', bold: true, cor: PAL.roxo })
+        for (const o of b.origens) {
+          const n = b.por_origem[o.chave] ?? { capacidades: 0, nos: 0 }
+          detalhe.push({ t: `● ${o.rotulo}  [${o.de_quem}]  ${n.capacidades} capacidade(s), ${n.nos} no(s)`, bold: true, cor: corOrigem[o.chave] })
+          for (const l of quebrar(`  ${o.descricao}`, larguraDetalhe)) detalhe.push({ t: l, dim: true })
+        }
+        detalhe.push({ t: '' })
+        detalhe.push({ t: `Capacidades sem cenario executavel (${b.capacidades.length} de ${b.total_capacidades}):`, bold: true })
+        for (const c of b.capacidades) {
+          detalhe.push({ t: `  ${c.id}  ${c.titulo}  [${deQuem(c.origem)}]`, bold: true, cor: corOrigem[c.origem] })
+          for (const l of quebrar(`    ${c.porque || '(sem porque no comparativo)'}`, larguraDetalhe)) detalhe.push({ t: l, dim: true })
+        }
+        if (b.desvio_gh.length) {
+          detalhe.push({ t: '' })
+          detalhe.push({ t: `Passam so pelo desvio, a GH responde vazio e a Ana encaminha (${b.desvio_gh.length}):`, bold: true, cor: PAL.laranja })
+          for (const d of b.desvio_gh) {
+            detalhe.push({ t: `  ${d.id}  ${d.titulo}  [terceiros]`, bold: true, cor: PAL.laranja })
+            for (const l of quebrar(`    ${d.porque}`, larguraDetalhe)) detalhe.push({ t: l, dim: true })
+          }
+        }
         const grupos = b.nos_sem_cenario.filter(g => !v.raia || g.raia === v.raia)
         detalhe.push({ t: '' })
         detalhe.push({ t: `Nos do SOP sem cenario (${grupos.reduce((a, g) => a + g.nos.length, 0)}${v.raia ? ' na raia' : ` de ${b.total_nos}`}):`, bold: true })
         for (const g of grupos) {
           detalhe.push({ t: `  ${g.rotulo}`, bold: true, cor: PAL.ciano })
-          for (const no of g.nos) for (const l of quebrar(`    ${no.id}  ${no.titulo}`, larguraDetalhe)) detalhe.push({ t: l, cor: PAL.amarelo })
+          for (const no of g.nos) for (const l of quebrar(`    ${no.id}  ${no.titulo}  [${deQuem(no.origem)}]`, larguraDetalhe)) detalhe.push({ t: l, cor: corOrigem[no.origem] ?? PAL.amarelo })
         }
-      } else if (!sel || sel.tipo === 'bloco') {
-        detalhe.push({ t: 'Nada sob o cursor. Clique num cenario ou tecle j ou k.', dim: true })
-      } else if (sel.tipo === 'capacidade') {
-        corMoldura = PAL.roxo
-        detalhe.push({ t: `◌ ${sel.cap.id}  ${sel.cap.titulo}`, bold: true, cor: PAL.roxo })
-        if (sel.cap.estado) detalhe.push({ t: `estado no comparativo: ${sel.cap.estado}`, dim: true })
+      } else if (!sel) {
+        detalhe.push({ t: 'Nada sob o cursor. Clique numa linha ou tecle j ou k.', dim: true })
+      } else if (sel.tipo === 'bloco') {
+        // a categoria: o porque, a fatia do SOP, o que funciona, o que depende da GH, o custo
+        const bl = sel.bloco
+        corMoldura = PAL.ciano
+        detalhe.push({ t: `▣ ${bl.nome.toUpperCase()}`, bold: true, cor: PAL.ciano })
+        for (const l of quebrar(bl.resumo || 'sem resumo no comparativo', larguraDetalhe)) detalhe.push({ t: l })
         detalhe.push({ t: '' })
-        for (const l of quebrar('Esta capacidade nao tem nenhum cenario executavel: e um buraco de cobertura. Peca um cenario no prompt.', larguraDetalhe)) detalhe.push({ t: l })
+        detalhe.push({ t: `fatia da Ana: ${pct(bl.fatia_sop)} dos nos do SOP, ${bl.capacidades_total} capacidade(s)`, bold: true })
+        detalhe.push({ t: `funcionam: ${bl.funcionam}`, cor: PAL.verde })
+        detalhe.push({ t: `nao funcionam: ${bl.nao_funcionam}`, cor: bl.nao_funcionam ? PAL.vermelho : undefined })
+        detalhe.push({ t: `sem cenario: ${bl.sem_cenario}`, cor: bl.sem_cenario ? PAL.roxo : undefined })
+        detalhe.push({ t: `dependem da Global Health: ${bl.dependem_gh}`, cor: bl.dependem_gh ? PAL.laranja : undefined })
+        detalhe.push({ t: `custo medio por conversa: ${custoTexto(bl.custo_medio)}` })
+        detalhe.push({ t: '' })
+        for (const c of bl.capacidades) {
+          const marcaCap = c.funciona === null ? '○' : c.funciona ? '●' : '●'
+          const corCap = c.funciona === null ? PAL.roxo : c.funciona ? PAL.verde : PAL.vermelho
+          detalhe.push({ t: `${marcaCap} ${c.id}  ${c.titulo}${c.depende_gh ? '  [GH]' : ''}`, bold: true, cor: corCap })
+          for (const l of quebrar(`    ${c.faz || '(sem resumo)'}`, larguraDetalhe)) detalhe.push({ t: l, dim: true })
+        }
+      } else if (sel.tipo === 'capacidade') {
+        const c = sel.cap
+        corMoldura = c.funciona === null ? PAL.roxo : c.funciona ? PAL.verde : PAL.vermelho
+        detalhe.push({ t: `${c.funciona === null ? '◌' : '●'} ${c.id}  ${c.titulo}`, bold: true, cor: corMoldura })
+        if (c.estado) detalhe.push({ t: `estado no comparativo: ${c.estado}`, dim: true })
+        detalhe.push({ t: '' })
+        for (const l of quebrar(c.faz || 'sem resumo no comparativo', larguraDetalhe)) detalhe.push({ t: l })
+        if (c.falta) for (const l of quebrar(`falta: ${c.falta}`, larguraDetalhe)) detalhe.push({ t: l, cor: PAL.laranja })
+        detalhe.push({ t: '' })
+        detalhe.push({ t: `fatia da Ana: ${pct(c.fatia_sop)} dos nos do SOP`, bold: true })
+        detalhe.push({ t: `funciona: ${c.funciona === null ? 'sem cenario executavel' : c.funciona ? 'sim, todo cenario passa' : 'nao, algum cenario falha'}`, cor: corMoldura })
+        detalhe.push({ t: `depende da Global Health: ${c.depende_gh ? 'sim' : 'nao'}`, cor: c.depende_gh ? PAL.laranja : undefined })
+        for (const l of quebrar(`ferramentas: ${c.tools_texto || 'nenhuma'}`, larguraDetalhe)) detalhe.push({ t: l, dim: true })
+        detalhe.push({ t: `custo medio por conversa: ${custoTexto(c.custo_medio)}` })
+        detalhe.push({ t: '' })
+        if (sel.vazia) {
+          for (const l of quebrar('Esta capacidade nao tem nenhum cenario executavel: e um buraco de cobertura. Peca um cenario no prompt.', larguraDetalhe)) detalhe.push({ t: l, cor: PAL.roxo })
+        } else {
+          for (const i of c.cenarios) {
+            detalhe.push({ t: `${marcaDaClasse[i.classe]} ${i.id}  ${i.titulo}  ${i.classe}${i.custo ? `  ${brl(i.custo.meta_brl)} + ${usd(i.custo.openai_usd)}` : ''}`, cor: corDaClasse[i.classe] })
+          }
+        }
       } else {
         const i = sel.item
         corMoldura = i.mudanca === 'regrediu' ? PAL.vermelho : corDaClasse[i.classe]
@@ -256,6 +313,11 @@ export const register: Register = on => {
         for (const l of quebrar(`raias: ${nomesRaias.join(', ') || '-'}`, larguraDetalhe)) detalhe.push({ t: l })
         for (const l of quebrar(`nos do SOP: ${i.nos.join(', ') || '-'}`, larguraDetalhe)) detalhe.push({ t: l })
         for (const l of quebrar(`tools esperadas: ${i.tools.join(', ') || 'nenhuma'}`, larguraDetalhe)) detalhe.push({ t: l })
+        detalhe.push({ t: `fatia da Ana: ${pct(i.fatia_sop)} dos nos do SOP${i.depende_gh ? '   depende da Global Health' : ''}`, cor: i.depende_gh ? PAL.laranja : undefined })
+        detalhe.push({ t: '' })
+        detalhe.push({ t: `custo da conversa: ${custoTexto(i.custo)}`, bold: Boolean(i.custo) })
+        if (i.custo) detalhe.push({ t: `  modelo ${i.custo.modelo ?? '?'}${i.custo.chamadas ? `, ${i.custo.chamadas} chamada(s) ao modelo` : ''}`, dim: true })
+        if (i.alerta_mensagens) detalhe.push({ t: `  ATENCAO: mais de ${rel.teto_mensagens_ana} mensagens da Ana (cada uma e cobrada pela Meta)`, cor: PAL.laranja, bold: true })
         detalhe.push({ t: '' })
         detalhe.push({ t: `conversa gravada: ana/bancada/conversas/${i.id}.json`, dim: true })
       }
@@ -292,24 +354,48 @@ export const register: Register = on => {
             {rotuloRaia ? <Text color={PAL.laranja}>[raia: {rotuloRaia}]</Text> : null}
             {v.soBuracos ? <Text color={PAL.roxo}>[buracos]</Text> : null}
           </Box>
+          {rel ? (
+            <Box flexDirection="row" gap={1}>
+              <Text dimColor>custo medio por conversa:</Text>
+              <Text bold>{custoTexto(rel.custo_medio)}</Text>
+              {rel.custo_medio.medidos ? <Text dimColor>({rel.custo_medio.medidos} medida(s))</Text> : <Text color={PAL.cinza}>(rode uma bateria para medir)</Text>}
+              {rel.precos?.vencido ? <Text color={PAL.laranja}>precos de {rel.precos.conferido_em ?? '?'}: conferir ana/bancada/precos.json</Text> : null}
+            </Box>
+          ) : null}
           <Box flexDirection="row" gap={1}>
             <Box flexDirection="column" width={larguraLista} borderStyle="round" borderColor={PAL.ciano} paddingX={1}>
               {visiveis.length === 0 && <Text dimColor>{rel ? 'nada com esses filtros' : 'sem relatorio'}</Text>}
               {visiveis.map((l, k) => {
-                if (l.tipo === 'bloco') return <Text key={`b:${inicio + k}`} color={PAL.ciano} bold>{l.nome.toUpperCase()}</Text>
-                if (l.tipo === 'capacidade' && !l.vazia)
+                if (l.tipo === 'bloco') {
+                  const k2 = chave(l)
                   return (
-                    <Text key={`c:${l.cap.id}`} bold>
-                      {l.cap.id} {l.cap.titulo.slice(0, larguraTitulo + 8)}
-                      {l.cap.estado ? <Text dimColor>  {l.cap.estado}</Text> : null}
-                    </Text>
+                    <Button key={`b:${k2}`} plain onPress={() => selecionar(k2)}>
+                      <Text color={PAL.ciano} bold inverse={chaveSel === k2}>
+                        {l.bloco.nome.toUpperCase()}
+                      </Text>
+                      <Text dimColor>  {pct(l.bloco.fatia_sop)} do SOP</Text>
+                    </Button>
                   )
+                }
+                if (l.tipo === 'capacidade' && !l.vazia) {
+                  const corCap = l.cap.funciona ? PAL.verde : l.cap.funciona === false ? PAL.vermelho : undefined
+                  return (
+                    <Button key={`c:${l.cap.id}`} plain onPress={() => selecionar(l.cap.id)}>
+                      <Text bold inverse={chaveSel === l.cap.id}>
+                        <Text color={corCap}>●</Text> {l.cap.id} {l.cap.titulo.slice(0, larguraTitulo + 4)}
+                      </Text>
+                      {l.cap.depende_gh ? <Text color={PAL.laranja}>  GH</Text> : null}
+                      {l.cap.estado ? <Text dimColor>  {l.cap.estado}</Text> : null}
+                    </Button>
+                  )
+                }
                 if (l.tipo === 'capacidade')
                   return (
                     <Button key={`v:${l.cap.id}`} plain onPress={() => selecionar(l.cap.id)}>
                       <Text color={PAL.roxo} inverse={chaveSel === l.cap.id} bold={chaveSel === l.cap.id}>
                         {' ◌ '}{l.cap.id.padEnd(6)} {l.cap.titulo.slice(0, larguraTitulo).padEnd(larguraTitulo)}  sem cenario
                       </Text>
+                      {l.cap.depende_gh ? <Text color={PAL.laranja}>  GH</Text> : null}
                     </Button>
                   )
                 const i = l.item
@@ -328,6 +414,7 @@ export const register: Register = on => {
                       ))
                     )}
                     {i.mudanca ? <Text color={i.mudanca === 'regrediu' ? PAL.vermelho : PAL.verde} bold> {i.mudanca}</Text> : null}
+                    {i.alerta_mensagens ? <Text color={PAL.laranja} bold> {'>'}{rel?.teto_mensagens_ana ?? 8} msg</Text> : null}
                   </Button>
                 )
               })}
@@ -429,6 +516,7 @@ export const register: Register = on => {
       if (c.tools) texto.push({ t: `trace: ${c.tools.length} chamada(s) -> ${c.tools.join(', ') || 'nenhuma'}`, dim: true })
       else if (c.traceMotivo) texto.push({ t: `trace: nao coletado (${c.traceMotivo})`, cor: 'yellow' })
       if (c.pior && c.pior > 1) texto.push({ t: `ATENCAO: tool de dado repetida ${c.pior}x no mesmo turno`, cor: 'yellow' })
+      if (c.custo) texto.push({ t: `custo: ${custoTexto(c.custo)}${c.custo.modelo ? ` (${c.custo.modelo})` : ''}`, dim: true })
       if (c.fimConversa) {
         const f = c.fimConversa
         const raia = f.raia ?? f.raia_pelo_trace?.join(', ') ?? '-'
@@ -620,6 +708,10 @@ export function resumoRelatorio(r: Relatorio): string {
     (problemas.length ? `Problemas: ${problemas.join(', ')}. ` : '') +
     (regrediram.length ? `Regrediram: ${regrediram.join(', ')}. ` : '') +
     `Buracos: ${r.buracos.capacidades_sem_cenario.length} de ${r.buracos.total_capacidades} capacidades sem cenario executavel (${r.buracos.capacidades_sem_cenario.join(', ')}); ` +
-    `${r.buracos.nos_sem_cenario.reduce((a, x) => a + x.nos.length, 0)} de ${r.buracos.total_nos} nos do SOP sem cenario.`
+    `${r.buracos.nos_sem_cenario.reduce((a, x) => a + x.nos.length, 0)} de ${r.buracos.total_nos} nos do SOP sem cenario. ` +
+    `De onde vem: ${r.buracos.origens.map(o => `${o.rotulo} [${o.de_quem}] ${r.buracos.por_origem[o.chave]?.capacidades ?? 0} cap + ${r.buracos.por_origem[o.chave]?.nos ?? 0} nos`).join('; ')}. ` +
+    (r.buracos.desvio_gh.length ? `Passam so pelo desvio da GH: ${r.buracos.desvio_gh.map(d => d.id).join(', ')}. ` : '') +
+    `Custo medio por conversa: ${custoTexto(r.custo_medio)}${r.custo_medio.medidos ? ` (${r.custo_medio.medidos} medida(s))` : ''}.` +
+    (r.precos?.vencido ? ` Precos de ${r.precos.conferido_em ?? '?'}: conferir ana/bancada/precos.json.` : '')
   )
 }

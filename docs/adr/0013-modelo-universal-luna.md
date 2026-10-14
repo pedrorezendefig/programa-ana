@@ -56,10 +56,12 @@ Três rodadas da bateria de capacidades (29 cenários, 37 turnos) por candidato,
 
 A plataforma 1.15.0 aceita `gpt-6-luna` com `reasoningEffort: none` sem ajuste (fumaça com tool sem 400). Das duas falhas do gpt-6-luna, uma foi do modelo (C29-1: `skip_reply` na despedida em vez de encerrar) e a outra foi infra (C13-1: API do Hospital 503 e GH sem resposta em 10 s). Detalhe e logs na issue #20.
 
-**Decisão: pendente.** O agente 1 voltou para `gpt-5.6-luna` none (rollback conferido). O Pedro quer testar o gpt-5-mini low antes de decidir.
+**Decisão (13/out/2026, grilling): `gpt-6-luna` com `reasoningEffort: none` é o modelo da Ana.** O teste do gpt-5-mini low foi cancelado pelo Pedro: custa 2,5x o 6-luna na entrada e 4x na saída, tem conhecimento de 2024 e já havia perdido para o 5.6-luna em agosto. Pesquisa de 13/out/2026: o gpt-6-luna (lançado 22/set/2026) é o tier econômico da geração 6 (não existe mini/nano nela), e a OpenAI o aponta como o mais rápido e barato para alto volume, com +5,4 pontos sobre o 5.6-luna em function calling (AutomationBench, dado da própria OpenAI; nenhum benchmark independente cobre a geração 6 ainda). Troca aplicada por `agent_update` (diff conferido), fumaça C05-1 com tool passou (conversa #530). Rollback: o mesmo `agent_update` com `gpt-5.6-luna`.
+
+Contexto de custo que pesou na decisão: desde 01/out/2026 a Meta cobra R$ 0,035 por resposta da Ana no WhatsApp (service message, 1.000 grátis por número por mês). Numa conversa de 10 turnos a Meta custa R$ 0,35 e o modelo R$ 0,008; o modelo é 2% do custo variável. A régua de custo por conversa (Meta + OpenAI) entra no painel da bancada (#24) e o prompt v7 (#25) mira menos mensagens por conversa.
 
 ## Consequências
 
-- "Modelo universal" vira regra do tenant: agente novo nasce com `gpt-5.6-luna` salvo decisão contrária registrada.
+- "Modelo universal" vira regra do tenant: agente novo nasce com o modelo deste ADR (`gpt-6-luna` desde 13/out/2026) salvo decisão contrária registrada.
 - A comparação de custo real (Langfuse, antes vs depois) fica como evidência da troca; se o effort default corroer a economia da tabela, a decisão volta à mesa com números.
 - Referências de modelo espalhadas pelo repo (Circuito da Ana, CONTEXT.md, memória de sessão) passam a citar o gpt-5-mini como histórico, não como estado.

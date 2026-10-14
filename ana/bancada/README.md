@@ -63,6 +63,18 @@ copia as conversas para `resultados/conversas-v69-rodada1/` e anota as janelas e
 `resultados/janelas-v69.txt`. A skill `bancada` roda as três rodadas e escreve o diagnóstico em
 `ana/bancada/diagnosticos/`, versionado.
 
+## O custo de cada conversa (#24)
+
+Ao fim de cada cenário o runner lê `GET /api/v1/metrics?since=<início da conversa>` da
+plataforma (ela não guarda tokens por conversa; soma por janela, e a bancada roda um
+cenário por vez) e grava na conversa `uso` (tokens de entrada, cache, saída, chamadas) e
+`custo`: `openai_usd` pelos preços de `precos.json`, `meta_brl` = respostas da Ana vezes o
+preço da mensagem de service da Meta, e `mensagens_ana`. O `relatorio.py --json` soma por
+cenário, capacidade, categoria e bateria, marca `depende_gh` (ferramenta da Global Health
+no cenário) e `fatia_sop` (parte dos nós do SOP coberta), e avisa quando `precos.json`
+passa de 60 dias. Travessão em resposta da Ana é falha global (`travessao` nas
+conferências). Mais de 8 respostas da Ana numa conversa acende `alerta_mensagens`.
+
 ## A mesa de testes: relatório e práticas
 
 `python3 ana/bancada/relatorio.py` imprime, em Markdown, os cenários por capacidade na ordem do

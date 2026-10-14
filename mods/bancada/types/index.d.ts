@@ -27,6 +27,21 @@ export type FimConversa = {
   handoff: boolean | null
 }
 
+/** O custo de uma conversa (issue #24): a Meta cobra cada resposta da Ana, a OpenAI os tokens. */
+export type Custo = {
+  modelo: string | null
+  mensagens_ana: number
+  openai_usd: number | null
+  meta_brl: number | null
+  chamadas?: number | null
+}
+
+export type CustoMedio = {
+  openai_usd: number | null
+  meta_brl: number | null
+  mensagens_ana: number | null
+}
+
 export type Cenario = {
   id: string
   titulo: string
@@ -45,6 +60,7 @@ export type Cenario = {
   pior: number | null
   falhas: string[]
   fimConversa: FimConversa | null
+  custo: Custo | null
 }
 
 export type Bancada = {
@@ -69,7 +85,7 @@ export type Visao = {
   soBuracos: boolean
   raia: string | null
   rolagemTestes: number
-  /** chave da linha sob o cursor na aba Testes: id de cenario ou de capacidade vazia */
+  /** chave da linha sob o cursor na aba Testes: id de cenario, id de capacidade ou "bloco:<nome>" */
   itemTestes: string | null
 }
 
@@ -86,25 +102,73 @@ export type ItemRelatorio = {
   tools: string[]
   nos: string[]
   raias: string[]
+  /** % dos nos do Mapa do SOP que o cenario percorre */
+  fatia_sop: number
+  /** chama ferramenta da Global Health (derivado das tools, nunca escrito) */
+  depende_gh: boolean
+  custo: Custo | null
+  /** mais respostas da Ana que o teto (cada uma e cobrada pela Meta) */
+  alerta_mensagens: boolean
 }
 
 export type CapacidadeRelatorio = {
   id: string
   titulo: string
   estado: string | null
+  /** o porque da capacidade, do comparativo do OS */
+  faz: string
+  falta: string
+  tools_texto: string
+  fatia_sop: number
+  depende_gh: boolean
+  /** true: todo cenario executavel passa; false: algum falha; null: sem cenario */
+  funciona: boolean | null
+  custo_medio: CustoMedio
   cenarios: ItemRelatorio[]
 }
+
+export type BlocoRelatorio = {
+  nome: string
+  resumo: string
+  fatia_sop: number
+  capacidades_total: number
+  funcionam: number
+  nao_funcionam: number
+  sem_cenario: number
+  dependem_gh: number
+  custo_medio: CustoMedio
+  capacidades: CapacidadeRelatorio[]
+}
+
+export type Precos = {
+  conferido_em: string | null
+  dias: number | null
+  vencido: boolean
+  meta_brl_por_mensagem: number | null
+  cambio_brl_por_usd: number | null
+}
+
+export type OrigemBuraco = 'gh' | 'planejado' | 'manual' | 'escrever'
 
 export type Relatorio = {
   bateria: string | null
   rodadas: number[]
   anterior: string | null
+  precos: Precos | null
+  custo_medio: CustoMedio & { medidos: number }
+  teto_mensagens_ana: number
   raias: { id: string; rotulo: string }[]
-  blocos: { nome: string; capacidades: CapacidadeRelatorio[] }[]
+  blocos: BlocoRelatorio[]
   buracos: {
     capacidades_sem_cenario: string[]
     total_capacidades: number
-    nos_sem_cenario: { raia: string; rotulo: string; nos: { id: string; titulo: string }[] }[]
+    /** a legenda: de onde vem cada buraco e de quem depende (derivado pelo relatorio.py) */
+    origens: { chave: OrigemBuraco; rotulo: string; de_quem: string; descricao: string }[]
+    por_origem: Record<OrigemBuraco, { capacidades: number; nos: number }>
+    capacidades: { id: string; titulo: string; estado: string | null; origem: OrigemBuraco; porque: string; manuais: { id: string; titulo: string; passos: string }[] }[]
+    /** cenarios que passam, mas so pelo desvio: a GH responde vazio e a Ana encaminha */
+    desvio_gh: { id: string; capacidade: string; titulo: string; porque: string }[]
+    nos_sem_cenario: { raia: string; rotulo: string; nos: { id: string; titulo: string; origem: OrigemBuraco }[] }[]
     total_nos: number
   }
   geradoEm: number

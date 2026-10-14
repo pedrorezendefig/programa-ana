@@ -5,18 +5,18 @@
   "familia": null,
   "titulo": "Recusar o que está fora do escopo",
   "contato": "TESTE BANCADA ANA C03-1",
-  "conversa_id": 353,
-  "inicio": "2026-10-13T00:32:19+00:00",
+  "conversa_id": 565,
+  "inicio": "2026-10-13T07:55:35+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "vocês vendem plano de saúde?",
       "ana": [
-        "O Hospital São Matheus não vende planos de saúde. Nós atendemos alguns convênios e também pacientes particulares. Se quiser, posso verificar se o seu convênio é aceito."
+        "Não tenho essa informação confirmada sobre a venda de planos de saúde. Posso encaminhar sua dúvida para a equipe do hospital."
       ],
       "ferramentas": [
-        "kanban_move_card",
-        "search_knowledge"
+        "search_knowledge",
+        "kanban_move_card"
       ],
       "nos": [
         "E1",
@@ -56,8 +56,8 @@
     }
   ],
   "tools": [
-    "kanban_move_card",
-    "search_knowledge"
+    "search_knowledge",
+    "kanban_move_card"
   ],
   "fim": {
     "etiquetas": [],
@@ -70,5 +70,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:32:53+00:00"
+  "uso": {
+    "entrada": 1101,
+    "cache": 67977,
+    "cache_criacao": 1092,
+    "saida": 99,
+    "chamadas": 3,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.000839,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T07:56:18+00:00"
 }

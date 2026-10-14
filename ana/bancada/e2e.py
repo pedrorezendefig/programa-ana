@@ -58,6 +58,7 @@ RAIZ = pathlib.Path(__file__).resolve().parents[2]
 AQUI = pathlib.Path(__file__).resolve().parent
 CONVERSAS = AQUI / "conversas"   # a conversa gravada de cada cenario (ADR-0032), versionada
 RESULTADOS = AQUI / "resultados"  # relatorios crus, logs e copias por rodada (fora do git)
+PRECOS = AQUI / "precos.json"       # precos da OpenAI e da Meta (issue #24)
 AO_VIVO = RESULTADOS / "ao-vivo.jsonl"  # um evento por linha, para a bancada ao vivo (ADR-0033)
 INBOX_NOME = "Ana E2E (API)"
 PLATAFORMA = "https://agents.hospitalsaomatheus.cloud"
@@ -303,6 +304,54 @@ class Trace:
                 for i in itens]
 
 
+    def uso(self, desde_iso):
+        """Os tokens gastos desde `desde_iso`, somados pela plataforma (GET /api/v1/metrics).
+
+        A plataforma nao guarda tokens por conversa (os logs da etapa generate trazem so
+        o prompt e a duracao), mas soma por janela de tempo. A bancada roda um cenario
+        por vez, entao "desde o inicio da conversa ate agora" e a conversa. Ruido
+        possivel: uma mensagem no Telegram de teste no mesmo minuto. `until` e
+        ignorado pela rota (conferido na 1.15.0). None = nao coletado."""
+        if not self.ligado:
+            return None
+        url = f"{PLATAFORMA}/api/v1/metrics?source=inbox&since={urllib.parse.quote(desde_iso)}"
+        status, d = pedir(url, headers={"Authorization": f"Bearer {self.token}"})
+        llm = ((d or {}).get("metrics") or {}).get("llm") if status == 200 and isinstance(d, dict) else None
+        if not llm:
+            return None
+        prompt = int(llm.get("promptTokens") or 0)
+        cache = int(llm.get("cachedReadTokens") or 0)
+        return {"entrada": max(0, prompt - cache), "cache": cache,
+                "cache_criacao": int(llm.get("cacheCreationTokens") or 0),
+                "saida": int(llm.get("completionTokens") or 0),
+                "chamadas": int(llm.get("calls") or 0),
+                "modelos": sorted(m.get("model") for m in llm.get("byModel") or [] if m.get("model"))}
+
+
+def ler_precos():
+    try:
+        return json.loads(PRECOS.read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def custo_da_conversa(uso, modelo, mensagens_ana, precos):
+    """{openai_usd, meta_brl, mensagens_ana, modelo}. A Meta cobra cada resposta da Ana
+    (service message, R$ por mensagem, depois da franquia); a OpenAI cobra os tokens.
+    openai_usd fica None sem uso ou sem preco do modelo."""
+    saida = {"modelo": modelo, "mensagens_ana": mensagens_ana, "openai_usd": None, "meta_brl": None}
+    if not precos:
+        return saida
+    tabela = (precos.get("openai") or {}).get(modelo) if modelo else None
+    if uso and tabela:
+        saida["openai_usd"] = round((uso["entrada"] * tabela["entrada"] + uso["cache"] * tabela["cache"]
+                                     + uso["saida"] * tabela["saida"]) / 1e6, 6)
+    meta = precos.get("meta") or {}
+    if meta.get("service_brl_por_mensagem") is not None:
+        saida["meta_brl"] = round(mensagens_ana * meta["service_brl_por_mensagem"], 4)
+    return saida
+
+
 def resumir_trace(chamadas):
     """Devolve (lista_de_nomes, pior_repeticao_num_turno, detalhe_por_turno)."""
     if chamadas is None:
@@ -397,6 +446,12 @@ def checar(n, turno, resposta, tools_do_cenario, pior_repeticao):
         achou = proibido.lower() in baixa
         saida.append(conf(n, "frase proibida", proibido, proibido if achou else None, not achou))
 
+    # regra global (grilling de 13/out/2026): a Ana nunca escreve travessao
+    for tr in ("\u2014", "\u2013"):
+        if tr in resposta:
+            saida.append(conf(n, "travessao", "nenhum travessao na resposta", tr, False))
+            break
+
     if tools_do_cenario is not None:
         for t in turno.get("tools", []):
             saida.append(conf(n, "ferramenta", t, tools_do_cenario, t in tools_do_cenario))
@@ -458,7 +513,7 @@ def rodar_cenario(canal, trace, cenario, arquivo):
                  "familia": cenario.get("familia"), "titulo": cenario.get("titulo"),
                  "contato": nome_contato, "conversa_id": None, "inicio": None,
                  "turnos": [], "tools": None, "pior_repeticao": None,
-                 "fim": None, "conferencias": [], "falhas": []}
+                 "fim": None, "conferencias": [], "falhas": [], "uso": None, "custo": None}
 
     try:
         source_id, conversa_id = canal.abrir_conversa(nome_contato)
@@ -534,6 +589,20 @@ def rodar_cenario(canal, trace, cenario, arquivo):
             print(f"  ATENCAO: uma tool de dado foi repetida {pior}x no mesmo turno "
                   f"(assinatura do truncamento de 4.000 chars)")
 
+    # tokens e custo (issue #24): a janela vai do inicio da conversa ate agora
+    uso = trace.uso(resultado["inicio"])
+    modelo = (uso or {}).get("modelos") or []
+    resultado["uso"] = uso
+    resultado["custo"] = custo_da_conversa(
+        uso, modelo[0] if len(modelo) == 1 else (modelo[-1] if modelo else None),
+        sum(len(t["ana"] or []) for t in resultado["turnos"]), ler_precos())
+    if uso:
+        c = resultado["custo"]
+        print(f"  custo: {c['mensagens_ana']} msg da Ana = R$ {c['meta_brl']:.3f} Meta"
+              + (f"; OpenAI US$ {c['openai_usd']:.4f} ({c['modelo']}, {uso['chamadas']} chamadas)"
+                 if c["openai_usd"] is not None else f"; OpenAI sem preco para {c['modelo']}"))
+    emitir("custo", id=cid, uso=uso, custo=resultado["custo"])
+
     notas = canal.notas_privadas(conversa_id)
     raia, status = canal.estado(conversa_id)
     resultado["fim"] = {
@@ -579,7 +648,7 @@ def gravar_conversa(r):
     CONVERSAS.mkdir(exist_ok=True)
     doc = {k: r[k] for k in ("id", "arquivo", "capacidade", "familia", "titulo", "contato",
                              "conversa_id", "inicio", "turnos", "tools", "fim",
-                             "veredito", "falhas")}
+                             "veredito", "falhas", "uso", "custo")}
     doc["rodou_em"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     # o arquivo vai para o git: CPF sai mascarado, mesmo o de teste que o cenario envia
     texto = re.sub(r"\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b", "***.***.***-**",

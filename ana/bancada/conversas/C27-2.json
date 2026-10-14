@@ -5,14 +5,14 @@
   "familia": null,
   "titulo": "Dúvidas gerais",
   "contato": "TESTE BANCADA ANA C27-2",
-  "conversa_id": 378,
-  "inicio": "2026-10-13T00:55:10+00:00",
+  "conversa_id": 591,
+  "inicio": "2026-10-13T08:21:59+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quais convênios vocês atendem?",
       "ana": [
-        "Atendemos estes convênios:\n\nPorto Seguro, Postal Saúde, SAMOC, Sul América, Unimed do Brasil, Veritas, Assim Saúde, Allianz, Amacor, Amil, Blue Saúde, Bradesco Saúde, Caberj, CAURJ, CNEN, PASA, Castelo Branco, Eletros-Saúde, Furnas, Gama Saúde, HSMED Saúde, Health Med, NotreDame Intermédica, Klini Saúde, Leve Saúde, Mediservice, AMEP, SV Saúde, Mondial, Nova Saúde, Oplan, Saúde Petrobras, Integral, CEMERU, Onix, Select e LLAK Medicina Neonatal.\n\nA cobertura pode variar conforme o plano e a especialidade ou exame. Se você me disser qual convênio e qual atendimento precisa, verifico para você."
+        "Atendemos Porto Seguro, Postal Saúde (Correios), SAMOC, Sul América, Unimed do Brasil, Veritas, Assim Saúde, Allianz, Amacor (MH Vida), Amil, Blue Saúde, Bradesco Saúde, Bradesco Operadora, Brasil Assistência (Mapfre), Caberj, Cape Saúde, CAURJ, CNEN, CVRD/PASA, Castelo Branco, Eletros-Saúde, Telos-Amap, Furnas (Real Grandeza), Gama Saúde, HSMED Saúde, Health Med, Intermédica/NotreDame, Klini Saúde, Leve Saúde, Mediservice, AMEP, SV Saúde, AWP Brasil (Mondial), Nova Saúde, Oplan, Saúde Petrobras, Integral, CEMERU, Onix, Select e LLAK Medicina Neonatal.\n\nA cobertura pode variar conforme o plano e a especialidade ou exame."
       ],
       "ferramentas": [
         "search_knowledge"
@@ -59,5 +59,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:55:45+00:00"
+  "uso": {
+    "entrada": 1171,
+    "cache": 44617,
+    "cache_criacao": 1165,
+    "saida": 234,
+    "chamadas": 2,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.00068,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:22:36+00:00"
 }

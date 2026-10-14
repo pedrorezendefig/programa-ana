@@ -5,18 +5,18 @@
   "familia": null,
   "titulo": "Item fora da tabela não vira negativa",
   "contato": "TESTE BANCADA ANA C10-2",
-  "conversa_id": 367,
-  "inicio": "2026-10-13T00:41:31+00:00",
+  "conversa_id": 579,
+  "inicio": "2026-10-13T08:04:56+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "quanto custa a ressonância magnética?",
       "ana": [
-        "Não encontrei o valor da ressonância magnética na fonte oficial de preços. Posso encaminhar sua solicitação à equipe para confirmar o valor e a disponibilidade?"
+        "Não encontrei o valor da ressonância magnética na tabela oficial. Posso encaminhar seu pedido para a equipe confirmar o preço."
       ],
       "ferramentas": [
         "consultar_exames",
-        "kanban_move_card"
+        "assign_label"
       ],
       "nos": [
         "E1",
@@ -57,7 +57,7 @@
           "esperado": "consultar_exames",
           "veio": [
             "consultar_exames",
-            "kanban_move_card"
+            "assign_label"
           ],
           "ok": true
         },
@@ -73,18 +73,34 @@
   ],
   "tools": [
     "consultar_exames",
-    "kanban_move_card"
+    "assign_label"
   ],
   "fim": {
-    "etiquetas": [],
-    "raia": null,
-    "raia_pelo_trace": [
-      "EM ATENDIMENTO — ANA"
+    "etiquetas": [
+      "fora-horario"
     ],
+    "raia": null,
+    "raia_pelo_trace": [],
     "status": "pending",
     "handoff": false
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:42:06+00:00"
+  "uso": {
+    "entrada": 339,
+    "cache": 67205,
+    "cache_criacao": 330,
+    "saida": 69,
+    "chamadas": 3,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.00074,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:05:31+00:00"
 }

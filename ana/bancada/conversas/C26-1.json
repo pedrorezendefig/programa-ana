@@ -5,20 +5,19 @@
   "familia": null,
   "titulo": "Prontuário médico",
   "contato": "TESTE BANCADA ANA C26-1",
-  "conversa_id": 376,
-  "inicio": "2026-10-13T00:51:18+00:00",
+  "conversa_id": 589,
+  "inicio": "2026-10-13T08:18:09+00:00",
   "turnos": [
     {
       "n": 1,
       "paciente": "preciso pegar meu prontuário médico",
       "ana": [
-        "Para solicitar seu prontuário, reúna a documentação necessária e envie para prontuario@hospitalsaomatheus.com.br. Nossa equipe vai orientar você sobre os documentos obrigatórios e dar andamento ao processo quando receber tudo. Como a equipe de prontuários precisa acompanhar a solicitação, alguém vai continuar o atendimento com você."
+        "Para solicitar seu prontuário, reúna a documentação necessária e envie para prontuario@hospitalsaomatheus.com.br. A equipe vai orientar sobre os documentos obrigatórios e iniciar o processo quando receber tudo completo."
       ],
       "ferramentas": [
-        "assign_label",
-        "search_knowledge",
         "kanban_move_card",
-        "handoff_to_human"
+        "assign_label",
+        "search_knowledge"
       ],
       "nos": [
         "E1",
@@ -36,17 +35,23 @@
       "n": 2,
       "paciente": "é para uso pessoal",
       "ana": [],
-      "ferramentas": [],
+      "ferramentas": [
+        "skip_reply"
+      ],
       "nos": [
         "A3",
-        "A4",
-        "S4",
-        "S6",
-        "S8"
+        "A4"
       ],
-      "espere": "Ela pergunta a finalidade, orienta os documentos e encaminha.",
-      "falha_se": "Prometer envio por WhatsApp.",
+      "espere": "Ela orienta o e-mail prontuario@hospitalsaomatheus.com.br e os documentos, e pergunta se pode ajudar com mais alguma coisa. Uso pessoal ela resolve sozinha: não passa para a equipe.",
+      "falha_se": "Prometer envio por WhatsApp, passar para a equipe, ou repetir a mesma orientação sem avançar.",
       "conferencias": [
+        {
+          "turno": 2,
+          "tipo": "contem",
+          "esperado": "prontuario@hospitalsaomatheus.com.br",
+          "veio": null,
+          "ok": false
+        },
         {
           "turno": 2,
           "tipo": "frase proibida",
@@ -77,6 +82,18 @@
         },
         {
           "turno": 2,
+          "tipo": "ferramenta proibida",
+          "esperado": "handoff_to_human",
+          "veio": [
+            "kanban_move_card",
+            "assign_label",
+            "search_knowledge",
+            "skip_reply"
+          ],
+          "ok": true
+        },
+        {
+          "turno": 2,
           "tipo": "etiqueta",
           "esperado": "prontuario",
           "veio": [
@@ -86,26 +103,19 @@
         },
         {
           "turno": 2,
-          "tipo": "raia",
-          "esperado": "SETOR RESPONSÁVEL",
-          "veio": "trace: kanban_move_card para SETOR RESPONSÁVEL",
-          "ok": true
-        },
-        {
-          "turno": 2,
           "tipo": "handoff",
-          "esperado": true,
-          "veio": true,
+          "esperado": false,
+          "veio": false,
           "ok": true
         }
       ]
     }
   ],
   "tools": [
+    "kanban_move_card",
     "assign_label",
     "search_knowledge",
-    "kanban_move_card",
-    "handoff_to_human"
+    "skip_reply"
   ],
   "fim": {
     "etiquetas": [
@@ -113,12 +123,30 @@
     ],
     "raia": null,
     "raia_pelo_trace": [
-      "SETOR RESPONSÁVEL"
+      "EM ATENDIMENTO — ANA"
     ],
-    "status": "open",
-    "handoff": true
+    "status": "pending",
+    "handoff": false
   },
-  "veredito": "passou",
-  "falhas": [],
-  "rodou_em": "2026-10-13T00:54:30+00:00"
+  "veredito": "falhou",
+  "falhas": [
+    "turno 2: FALHOU contem \"prontuario@hospitalsaomatheus.com.br\""
+  ],
+  "uso": {
+    "entrada": 1250,
+    "cache": 112878,
+    "cache_criacao": 1235,
+    "saida": 172,
+    "chamadas": 5,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.00134,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T08:21:18+00:00"
 }

@@ -5,8 +5,8 @@
   "familia": null,
   "titulo": "Saudação e leitura do motivo",
   "contato": "TESTE BANCADA ANA C02-1",
-  "conversa_id": 352,
-  "inicio": "2026-10-13T00:31:44+00:00",
+  "conversa_id": 564,
+  "inicio": "2026-10-13T07:55:00+00:00",
   "turnos": [
     {
       "n": 1,
@@ -72,5 +72,21 @@
   },
   "veredito": "passou",
   "falhas": [],
-  "rodou_em": "2026-10-13T00:32:15+00:00"
+  "uso": {
+    "entrada": 3,
+    "cache": 22310,
+    "cache_criacao": 0,
+    "saida": 29,
+    "chamadas": 1,
+    "modelos": [
+      "gpt-6-luna"
+    ]
+  },
+  "custo": {
+    "modelo": "gpt-6-luna",
+    "mensagens_ana": 1,
+    "openai_usd": 0.000238,
+    "meta_brl": 0.035
+  },
+  "rodou_em": "2026-10-13T07:55:31+00:00"
 }

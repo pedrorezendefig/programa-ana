@@ -1,10 +1,11 @@
 // Mesa de testes: o modelo puro da aba Testes do painel. Sem $, sem desenho:
 // as linhas da lista (bloco, capacidade, cenario) ja filtradas pela visao, a
-// selecao e o passeio por ela e as contagens por classe.
-import type { CapacidadeRelatorio, Classe, ItemRelatorio, Relatorio, Visao } from '../types'
+// selecao e o passeio por ela (o cursor para nos tres niveis), as contagens por
+// classe e os textos de custo (issue #24).
+import type { BlocoRelatorio, CapacidadeRelatorio, Classe, Custo, CustoMedio, ItemRelatorio, Relatorio, Visao } from '../types'
 
 export type LinhaTestes =
-  | { tipo: 'bloco'; nome: string }
+  | { tipo: 'bloco'; bloco: BlocoRelatorio }
   | { tipo: 'capacidade'; cap: CapacidadeRelatorio; vazia: boolean }
   | { tipo: 'cenario'; item: ItemRelatorio; cap: CapacidadeRelatorio }
 
@@ -34,31 +35,44 @@ export function linhasTestes(r: Relatorio, v: Pick<Visao, 'soProblemas' | 'raia'
       doBloco.push({ tipo: 'capacidade', cap, vazia: false })
       for (const item of cenarios) doBloco.push({ tipo: 'cenario', item, cap })
     }
-    if (doBloco.length) out.push({ tipo: 'bloco', nome: bloco.nome }, ...doBloco)
+    if (doBloco.length) out.push({ tipo: 'bloco', bloco }, ...doBloco)
   }
   return out
 }
 
-/** A chave de uma linha que o cursor pode parar: cenario, ou capacidade vazia. */
-export const chave = (l: LinhaTestes): string | null =>
-  l.tipo === 'cenario' ? l.item.id : l.tipo === 'capacidade' && l.vazia ? l.cap.id : null
+/** A chave de uma linha: o cursor para em bloco, capacidade e cenario. */
+export const chave = (l: LinhaTestes): string =>
+  l.tipo === 'cenario' ? l.item.id : l.tipo === 'capacidade' ? l.cap.id : `bloco:${l.bloco.nome}`
 
-/** A linha selecionada: a da chave, senao o primeiro problema, senao a primeira que da para parar. */
+/** A linha selecionada: a da chave, senao o primeiro problema (cenario ou capacidade vazia), senao a primeira. */
 export function selecionada(linhas: LinhaTestes[], atual: string | null): LinhaTestes | null {
-  const paraveis = linhas.filter(l => chave(l) !== null)
   if (atual) {
-    const l = paraveis.find(x => chave(x) === atual)
+    const l = linhas.find(x => chave(x) === atual)
     if (l) return l
   }
-  return paraveis.find(l => l.tipo === 'capacidade' || (l.tipo === 'cenario' && problema(l.item))) ?? paraveis[0] ?? null
+  return linhas.find(l => (l.tipo === 'capacidade' && l.vazia) || (l.tipo === 'cenario' && problema(l.item))) ?? linhas[0] ?? null
 }
 
-/** Anda `passo` linhas paraveis a partir da selecao; devolve a chave nova. */
+/** Anda `passo` linhas a partir da selecao; devolve a chave nova. */
 export function mover(linhas: LinhaTestes[], atual: string | null, passo: number): string | null {
-  const chaves = linhas.map(chave).filter((k): k is string => k !== null)
-  if (chaves.length === 0) return null
+  if (linhas.length === 0) return null
   const sel = selecionada(linhas, atual)
-  const base = sel ? chaves.indexOf(chave(sel) as string) : -1
-  const i = Math.min(chaves.length - 1, Math.max(0, (base < 0 ? 0 : base) + passo))
-  return chaves[i] ?? null
+  const base = sel ? linhas.indexOf(sel) : -1
+  const i = Math.min(linhas.length - 1, Math.max(0, (base < 0 ? 0 : base) + passo))
+  const l = linhas[i]
+  return l ? chave(l) : null
+}
+
+// ---------------------------------------------------------------- custo
+
+const virgula = (n: number, casas: number) => n.toFixed(casas).replace('.', ',')
+export const brl = (v: number | null | undefined) => (v === null || v === undefined ? '-' : `R$ ${virgula(v, v < 0.1 ? 3 : 2)}`)
+export const usd = (v: number | null | undefined) => (v === null || v === undefined ? '-' : `US$ ${virgula(v, 4)}`)
+export const pct = (v: number) => `${virgula(v, v >= 10 ? 0 : 1)}%`
+
+/** "R$ 0,35 Meta + US$ 0,0014 OpenAI, 7 msg da Ana", ou "sem medida" quando a rodada nao mediu. */
+export function custoTexto(c: Custo | CustoMedio | null | undefined): string {
+  if (!c || (c.meta_brl === null && c.openai_usd === null)) return 'sem medida'
+  const msg = c.mensagens_ana === null || c.mensagens_ana === undefined ? '' : `, ${virgula(c.mensagens_ana, Number.isInteger(c.mensagens_ana) ? 0 : 1)} msg da Ana`
+  return `${brl(c.meta_brl)} Meta + ${usd(c.openai_usd)} OpenAI${msg}`
 }
