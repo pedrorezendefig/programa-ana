@@ -1,0 +1,52 @@
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  ferramenta:
+    name: Testes e lint de texto
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Dependências
+        run: pip install pyyaml pytest
+      - name: Testes de tools/
+        run: python -m pytest tools/ -q --ignore=tools/workflow-dashboard
+      - name: Lint travessão
+        # Travessão (U+2014) e meia-risca (U+2013) no texto que o Pedro, o diretor do
+        # hospital e o paciente leem: docs, skills e a moldura do retrato/ (o site do
+        # diretor). retrato/dados/ fica de fora: traz o prompt literal, com os nomes
+        # das colunas do kanban do Chatwoot como estão na plataforma.
+        # Os caracteres entram pelos bytes UTF-8 em octal para não existir literal
+        # no lint, e a busca é por bytes (LC_ALL=C) para rodar igual no grep do
+        # Linux e do macOS. Erro do grep (saída 2) derruba o passo em vez de
+        # passar por limpo. tools/test_fluxo_github.py roda este passo.
+        run: |
+          T=$(printf '\342\200\224')
+          M=$(printf '\342\200\223')
+          alvos=""
+          for p in CONTEXT.md CLAUDE.md README.md docs .claude/skills retrato/index.html retrato/README.md retrato/curadoria.json retrato/assets; do
+            if [ -e "$p" ]; then alvos="$alvos $p"; fi
+          done
+          set +e
+          # docs/0*-*.md e docs/painel/ são o acervo da era n8n (com o prompt antigo literal):
+          # congelados, ficam fora do lint em vez de terem o texto histórico reescrito
+          LC_ALL=C grep -rl --exclude='0[0-9]-*.md' --exclude-dir=painel -e "$T" -e "$M" $alvos
+          st=$?
+          set -e
+          if [ "$st" -eq 0 ]; then
+            echo "::error::Travessão ou meia-risca nos arquivos acima. Use vírgula, dois-pontos, parênteses ou ponto."
+            exit 1
+          fi
+          if [ "$st" -ne 1 ]; then
+            echo "::error::O grep do lint de travessão falhou (saída $st)."
+            exit "$st"
+          fi

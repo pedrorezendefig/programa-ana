@@ -1,12 +1,25 @@
 ---
 name: research
-description: Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.
+description: Investiga uma dúvida factual em fontes primárias (docs oficiais, código, specs) com agente em background e responde citado na Issue/PRD. Use em "pesquisa isso", "confirma na fonte".
 ---
 
-Spin up a **background agent** to do the research, so you keep working while it reads.
+# Research
 
-Its job:
+Dispare um **background agent** (Agent tool) para fazer a leitura, e continue trabalhando enquanto ele lê. Research é legwork que se delega, não pensamento que se terceiriza.
 
-1. Investigate the question against **primary sources** (official docs, source code, specs, first-party APIs), not a secondary write-up of them. Follow every claim back to the source that owns it.
-2. Write the findings to a single Markdown file, citing each claim's source.
-3. Save it where the repo already keeps such notes; match the existing convention, and if there is none, put it somewhere sensible and say where.
+O trabalho do agente:
+
+1. Investigar a pergunta contra **primary sources**: docs oficiais, código fonte, specs, APIs first-party. Nunca resenha de terceiros. Siga cada afirmação até a fonte que a possui.
+2. Fetchers preferidos, nesta ordem: `context7` (query-docs) para docs de bibliotecas; `WebFetch` ou `firecrawl-scrape` para docs oficiais fora do context7.
+3. Escrever as descobertas num único Markdown, citando a fonte primária de cada claim (URL ou path de código). Rascunho no scratchpad da sessão.
+4. **Destino**: comentário na GitHub Issue ou PRD relacionado, via `gh issue comment <N> --body-file <rascunho>`. O trabalho vive nas Issues (regra do `CLAUDE.md`): **nunca** crie pasta nova de notas no repo. Sem issue relacionada, entregue o resultado no chat e deixe o rascunho no scratchpad.
+
+## Divisão de trabalho
+
+- `/research`: fatos de docs oficiais e código fonte durante o desenvolvimento (comportamento de API, o que a spec diz).
+- `deep-research`: investigação web ampla, multi-fonte, com verificação adversarial e relatório citado.
+- `firecrawl-scrape`: captura bruta de páginas (URL para markdown), sem loop de investigação.
+
+## Limites
+
+Não use para decisões de domínio: decisões continuam no grilling com o humano e nas ADRs. Facts são pesquisáveis; decisions são do usuário.

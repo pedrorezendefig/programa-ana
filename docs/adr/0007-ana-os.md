@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-07-30
+amended_by: 0017, 0028
 ---
 
 # Ana OS: o portal absorve o roadmap e vira o cockpit único do programa

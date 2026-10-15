@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-08-20
 amends: 0018, 0019
+amended_by: 0021, 0027
 ---
 
 # Testes manuais como decima pagina, e o selo de origem no cockpit inteiro

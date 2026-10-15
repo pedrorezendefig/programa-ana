@@ -1,6 +1,6 @@
 ---
 status: superseded
-superseded-by: 0002-consolidacao-contrato-unico
+superseded_by: 0002
 date: 2026-06-15
 ---
 

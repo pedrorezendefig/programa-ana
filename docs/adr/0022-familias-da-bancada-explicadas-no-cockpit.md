@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-08-24
 amends: 0019
+amended_by: 0032
 ---
 
 # As famílias da bancada ganham página própria no cockpit

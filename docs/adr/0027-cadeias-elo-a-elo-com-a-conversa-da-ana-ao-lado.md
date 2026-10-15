@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-09-08
 amends: 0020
+amended_by: 0030
 ---
 
 # As Cadeias rodam elo a elo, e cada elo mostra a conversa da Ana ao lado

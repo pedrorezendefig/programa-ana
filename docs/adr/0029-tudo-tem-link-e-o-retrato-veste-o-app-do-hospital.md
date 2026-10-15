@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-09-09
 amends: 0028, 0018
+amended_by: 0030, 0032
 ---
 
 # Tudo tem link, e o Retrato da Ana veste o design system do app do hospital

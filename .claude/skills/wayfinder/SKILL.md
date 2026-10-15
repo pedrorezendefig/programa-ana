@@ -1,128 +1,136 @@
 ---
 name: wayfinder
-description: Plan a huge chunk of work (more than one agent session can hold) as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.
+description: Planeja esforço grande demais para uma sessão como mapa de tickets de decisão no GitHub, resolvidos um por vez até a rota ficar clara. Sintaxe `/wayfinder [mapa]`. Instalada sob demanda (ADRs 0027 e 0049).
 disable-model-invocation: true
 ---
 
-A loose idea has arrived, too big for one agent session, and wrapped in fog: the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **shared map** on the repo's issue tracker, then works its **decision tickets** (questions whose resolution is a decision, not slices of a build to execute) one at a time until the route is clear.
+# Wayfinder: mapa de decisões para esforço com névoa
 
-The destination varies per effort, and naming it is the first act of charting: it shapes every ticket. It might be a spec to hand off and iterate on, a decision to lock before planning starts, or a change made in place like a data-structure migration. The map is domain-agnostic: engineering work, course content, whatever fits the shape.
+Uma ideia grande chegou, não cabe numa sessão de planejamento e ainda está no escuro: o caminho daqui até o **destino** não é visível. Esta skill não corre atrás do destino; ela desenha a rota como um **mapa** de tickets de decisão no GitHub e resolve um ticket por vez, até não sobrar nada a decidir.
 
-## Plan, don't do
+> **Quando usar:** só quando o esforço não couber num `/grill-with-docs` de uma sessão. A porta da frente do planejamento continua sendo o grilling (ADR 0027). Se o grilling der conta, use o grilling.
 
-Wayfinder is **planning** by default: each ticket resolves a decision, and the map is done when the way is clear, with nothing left to decide before someone goes and does the thing. The pull to just do the work is usually the signal you've reached the edge of the map and it's time to hand off. An effort can override this in its **Notes**, carrying execution into the map itself, but absent that, produce decisions, not deliverables.
+> **Idioma:** corpo das issues, comentários e narração em **pt-BR**. Os labels técnicos (`wayfinder:map`, `wayfinder:<tipo>`) ficam em inglês, como commit e merge.
 
-## Refer by name
+O protocolo operacional deste repositório (mapa, tickets, frontier, claim, resolução) está na seção **"Wayfinding operations"** de `docs/agents/issue-tracker.md`. Leia essa seção antes de criar qualquer issue. Nunca caia no fallback de tracker em markdown local: `CLAUDE.md` proíbe doc de estado paralelo.
 
-Every map and ticket is an issue, so it has a **name**: its title. In everything the human reads (narration, the map's Decisions-so-far), refer to it by that name, never by a bare id, number, or slug. A wall of `#42, #43, #44` is illegible; names read at a glance. The id and URL don't vanish; a name wraps its link, but they ride _inside_ the name, never stand in for it.
+## Planejar, não executar
 
-## The Map
+O wayfinder produz **decisões**, não entregas. Cada ticket resolve uma pergunta. O mapa acaba quando a rota está clara e alguém pode ir construir. A vontade de "já ir fazendo" é o sinal de que você chegou na borda do mapa e é hora do handoff.
 
-The map is a single issue on this repo's issue tracker, labelled `wayfinder:map`, the canonical artifact. Its tickets are child issues of the map.
+**Handoff final:** mapa limpo vira `/to-prd` e depois `/to-issues`. Não use `to-spec` nem `to-tickets` (nomes do upstream; aqui o PRD é issue do GitHub).
 
-The map is an **index**, not a store. It lists the decisions made and points at the tickets that hold their detail; a decision lives in exactly one place, its ticket, so the map never restates it, only gists it and links.
+## Chame pelo nome
 
-**Where the map, its child tickets, blocking, and frontier queries physically live is tracker-specific.** The issue tracker should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`. Consult the tracker doc's "Wayfinding operations" section for how _this_ repo expresses them. If no tracker has been provided, default to the local-markdown tracker.
+Mapa e ticket são issues, então cada um tem um **nome**: o título. Na narração e no índice do mapa, cite pelo nome, nunca por número solto. Uma parede de `#42, #43, #44` não se lê. O link vive dentro do nome.
 
-### The map body
+## O mapa
 
-The whole map at low resolution, loaded once per session. Open tickets are **not** listed: they are open child issues, found by query.
+Uma issue com o label `wayfinder:map`. Os tickets são sub-issues dela (mesmo `gh api .../sub_issues` do vínculo PRD para fatias).
 
-```markdown
-## Destination
+O mapa é **índice, não depósito**. A decisão mora no ticket; o mapa guarda uma linha e o link. Tickets abertos não são listados: eles são achados por consulta.
 
-<what reaching the end of this map looks like: the spec, decision, or change this effort is finding its way to. One or two lines; every session orients to it before choosing a ticket.>
-
-## Notes
-
-<domain; skills every session should consult; standing preferences for this effort>
-
-## Decisions so far
-
-<!-- the index: one line per closed ticket, enough to judge relevance, then zoom the link for the detail the ticket holds -->
-
-- [<closed ticket title>](link): <one-line gist of the answer>
-
-## Not yet specified
-
-<!-- see "Fog of war": in-scope fog you can't ticket yet; graduates as the frontier advances -->
-
-## Out of scope
-
-<!-- see "Out of scope": work ruled beyond the destination; closed, never graduates -->
-```
-
-### Tickets
-
-Each ticket is a **child issue** of the map; the tracker's issue id is its identity. Its body is the question, sized to one 100K token agent session:
+Corpo do mapa:
 
 ```markdown
-## Question
+## Destino
 
-<the decision or investigation this ticket resolves>
+<o que encerra este mapa: um PRD para escrever, uma decisão para cravar, uma mudança para fazer. Uma ou duas linhas.>
+
+## Notas
+
+<domínio, skills que toda sessão deve chamar, preferências fixas deste esforço>
+
+## Decisões até agora
+
+- [<título do ticket fechado>](link): <resumo de uma linha da resposta>
+
+## Ainda sem forma
+
+<a névoa: pergunta que você sente vir mas ainda não sabe formular>
+
+## Fora de escopo
+
+<o que foi conscientemente descartado deste esforço, com o porquê>
 ```
 
-Each ticket carries a `wayfinder:<type>` label, one of `research`, `prototype`, `grilling`, `task` (see [Ticket Types](#ticket-types)). `wayfinder:` labels are the only labels a map and its tickets carry, never a triage label like `ready-for-agent`: they are decisions, not implementation work.
+## Tickets
 
-A session **claims** a ticket by assigning it to the dev driving the map, **first**, before any work, so concurrent sessions skip it. That assignee _is_ the claim: an open, unassigned ticket is unclaimed.
+Sub-issue do mapa. O corpo é a pergunta, do tamanho de uma sessão:
 
-Blocking uses the tracker's **native** dependency relationship: essential because it renders the frontier _visually_ in the tracker's own UI, so the human sees what's takeable without opening the map. Only a tracker that lacks native blocking falls back to a body convention. A ticket is **unblocked** when every ticket blocking it is closed; the **frontier** is the open, unblocked, unclaimed children, the edge of the known.
+```markdown
+## Pergunta
 
-The answer isn't part of the body; it's recorded on resolution (see [Work through the map](#work-through-the-map)). Assets created while resolving a ticket are linked from the issue, not pasted in.
+<a decisão ou investigação que este ticket resolve>
+```
 
-## Ticket Types
+Cada ticket leva um label `wayfinder:<tipo>`. Bloqueio entre tickets usa a dependência nativa do GitHub ("blocked by"), que desenha o frontier na própria interface.
 
-Every ticket is either **HITL** (human in the loop, worked _with_ a human who speaks for themselves) or **AFK**, driven by the agent alone. A HITL ticket only resolves through that live exchange; the agent never stands in for the human's side of it (a grilling agent that answers its own questions has broken this).
+**Claim:** assinar a issue para si **antes** de qualquer trabalho. O assignee é o lock. Ticket aberto e sem assignee está livre.
 
-- **Research** (AFK): Reading documentation, third-party APIs, or local resources like knowledge bases to surface a fact a decision waits on. Resolved by a subagent that calls the Skill tool with "research". Use when knowledge outside the current working directory is required.
-- **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap, rough, concrete artifact to react to (an outline, a rough take, a stub, or UI/logic code) by calling the Skill tool with "prototype". Links the prototype as an asset. Use when "how should it look" or "how should it behave" is the key question.
-- **Grilling** (HITL): Conversation. The default case. Always call the Skill tool with "grill-with-docs".
-- **Task** (HITL or AFK): Manual work that must happen before a _decision_ can be made: nothing to decide, prototype, or research, but the discussion is blocked until it's done. Signing up for a service so its API can be judged, provisioning access, moving data so its shape can be seen. This is the one type that _does_ rather than decides, and it earns its place by unblocking a decision, not by delivering the destination. The agent drives it alone where it can (AFK); otherwise it hands the human a precise checklist (HITL). Resolved when the work is done; the answer records what was done and any resulting facts (credentials location, new URLs, row counts) later tickets depend on.
+**Frontier** = filhas abertas, desbloqueadas e sem assignee.
 
-## Fog of war
+> **Invariante das duas filas:** ticket wayfinder **nunca** recebe `ready-for-agent` e nunca entra na máquina de estados do `/triage`. A fila de execução (`/pegar-issue`, `/onda-enxuta`) enxerga só issues de build. As filas não colidem.
 
-The map is _deliberately_ incomplete: don't chart what you can't yet see. Beyond the live tickets lies the **fog of war**: the dim view of decisions and investigations you can tell are coming but can't yet pin down, because they hang on questions still open. Resolving a ticket clears the fog ahead of it, graduating whatever's now specifiable into fresh tickets, one at a time, until the way to the destination is clear and no tickets remain.
+## Tipos de ticket
 
-The map's **Not yet specified** section is where that dim view is written down: the suspected question, the area to revisit later. It's the undiscovered frontier _toward_ the destination: everything here is in scope, just not sharp enough to ticket. Write as loosely or as fully as the view allows; it doubles as a signpost for collaborators reading where the effort is headed.
+Todo ticket é **HITL** (o humano participa e fala por si) ou **AFK** (o agente resolve sozinho). Num ticket HITL, o agente nunca responde no lugar do humano.
 
-**Fog or ticket?** The test is whether you can state the question precisely now, _not_ whether you can answer it now.
+| Tipo | Modo | Para quê | Skill que resolve |
+|---|---|---|---|
+| `research` | AFK | Fato externo que trava a decisão (doc oficial, API de terceiro) | `/research` |
+| `prototype` | HITL | "Como isso deveria parecer ou se comportar?" Faz um artefato barato para reagir | `/prototype` |
+| `grilling` | HITL | Conversa. O caso padrão | `/grill-with-docs` (que já puxa `domain-modeling`) |
+| `task` | HITL ou AFK | Trabalho manual que precisa acontecer antes de decidir (criar conta, liberar acesso, mover dado) | nenhuma; é execução |
 
-- **Ticket when** the question is already sharp, even if it's blocked and you can't act on it yet.
-- **Not yet specified when** you can't yet phrase it that sharply. Don't pre-slice the fog into ticket-sized pieces: it's coarser than a ticket, and one patch may graduate into several tickets, or none, once the frontier reaches it.
+O `task` é o único tipo que **faz** em vez de decidir, e só entra no mapa quando destrava uma decisão. Resolvido, o comentário registra o que foi feito e os fatos que os tickets seguintes usam (onde ficou a credencial, qual URL nova, quantas linhas).
 
-**Not yet specified** excludes what's already decided (Decisions so far), what's already a live ticket, and what's out of scope (the next section).
+## Névoa
 
-## Out of scope
+O mapa é incompleto **de propósito**. Não desenhe o que você ainda não enxerga. Além dos tickets vivos fica a névoa: decisões que você sente vir mas não consegue formular, porque dependem de perguntas ainda abertas. Ela mora em **"Ainda sem forma"**.
 
-Fog only ever gathers _toward_ the destination. The destination fixes the scope, so work beyond it is **out of scope**: it isn't fog, and it doesn't belong in **Not yet specified**. It gets its own **Out of scope** section on the map: work you've consciously ruled out of _this_ effort. Scope, not sharpness, lands it here.
+Resolver um ticket dissipa a névoa à frente dele. O que virou formulável vira ticket novo, e sai de "Ainda sem forma".
 
-Out-of-scope work never graduates (the frontier stops at the destination), so it returns only if the destination is redrawn, and then as a fresh effort, not a resumption.
+**Teste de névoa ou ticket:** vale se você consegue **enunciar** a pergunta agora, não se consegue respondê-la agora.
 
-Ruling something out of scope is a scoping act, not a step on the route. When a ticket that already exists turns out to sit past the destination (mis-scoped in while charting, or exposed by a resolution), **close it** (a closed ticket is unambiguously off the frontier) and leave one line in the **Out of scope** section: the gist plus why it's out of scope, linking the closed ticket. It stays out of **Decisions so far**, which records the route actually walked; a scope boundary isn't a step on it.
+- **Ticket** quando a pergunta já está afiada, mesmo bloqueada.
+- **Ainda sem forma** quando você não consegue enunciar direito. Não pique a névoa em pedaços de tamanho de ticket: um pedaço pode virar três tickets ou nenhum.
 
-## Invocation
+## Fora de escopo
 
-Two modes. Either way, **never resolve more than one ticket per session**, with the exception of research tickets.
+A névoa só se junta **na direção do destino**. O que passa do destino não é névoa: é **fora de escopo**, e tem seção própria.
 
-### Chart the map
+Fora de escopo nunca se gradua. Volta só se o destino for redesenhado, e aí como esforço novo.
 
-User invokes with a loose idea.
+Se um ticket que já existe se revelar além do destino, **feche** o ticket e deixe uma linha em "Fora de escopo" com o motivo e o link. Não entra em "Decisões até agora", que registra a rota realmente andada.
 
-1. **Name the destination.** Call the Skill tool with "grill-with-docs" to pin down what this map is finding its way to: the spec, decision, or change. The destination fixes the scope, so it's settled first.
-2. **Map the frontier.** Grill again, **breadth-first** this time: fan out across the whole space rather than deep on any one thread, surfacing the open decisions and the first steps takeable now. **If this surfaces no fog** (the way to the destination is already clear, the whole journey small enough for one session), you don't need a map. Stop and ask the user how they'd like to proceed.
-3. **Create the map** (label `wayfinder:map`): Destination and Notes filled in, Decisions-so-far empty, the fog sketched into **Not yet specified**.
-4. **Create the tickets you can specify now** as child issues of the map, then wire blocking edges in a **second pass** (issues need ids before they can reference each other). Write cross-references in that pass too, with real ids: a placeholder `#<n>` auto-links to an unrelated issue. Wiring sorts them into the frontier and the blocked; everything you can't yet specify stays in the fog: the **Not yet specified** section.
-5. **Fire the research subagents.** For each `research` ticket you just created, spin up a subagent that calls the Skill tool with "research" to resolve it in parallel, capturing its findings on a throwaway `research/<name>` branch with a context pointer from the ticket. Push the branch but open no PR: it is never merged.
-6. Stop: charting is one session's work; it hand-resolves nothing.
+## Invocação
 
-### Work through the map
+Dois modos. Nos dois, **nunca resolva mais de um ticket por sessão**, com exceção dos `research`.
 
-User invokes with a map (URL or number). A ticket is **optional**: without one, you pick the next decision, not the user.
+### Modo 1: cartografar (`/wayfinder`, com a ideia solta)
 
-1. Load the **map**: the low-res view, not every ticket body.
-2. Choose the ticket. If the user named one, use it. Otherwise take the first frontier ticket in order. **Claim it**: assign it to yourself before any work.
-3. Resolve it as the type its `wayfinder:<type>` label names (see [Ticket Types](#ticket-types)). Read the label, not just the body: the body never states the type. **Zoom as needed**: fetch the full body of any related or closed ticket on demand; call the Skill tool for whichever skills the `## Notes` block names. If in doubt, call the Skill tool with "grill-with-docs".
-4. Record the resolution: post the answer as a **resolution comment**, **close** the issue, and **append a context pointer** to the map's Decisions-so-far.
-5. Add newly-surfaced tickets (create-then-wire); graduate any fog the answer has made specifiable, clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If the answer reveals that a ticket (this one or another) sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
+1. **Nomeie o destino.** Chame `/grill-with-docs` para cravar o que este mapa está procurando: o PRD, a decisão, a mudança. O destino fixa o escopo, então vem primeiro.
+2. **Mapeie o frontier.** Grille de novo, agora **em largura**: varra o espaço inteiro em vez de fundo numa linha só. Se **não aparecer névoa** (a rota já está clara e cabe numa sessão), você não precisa de mapa. Pare e diga isso ao usuário: o caminho é `/grill-with-docs` direto.
+3. **Crie o mapa** (label `wayfinder:map`): destino e notas preenchidos, decisões vazio, névoa esboçada em "Ainda sem forma".
+4. **Crie os tickets que já dá para enunciar** como sub-issues, e ligue os bloqueios num **segundo passo** (issue precisa existir para ser referenciada).
+5. **Dispare os `research` em paralelo**, um sub-agente por ticket, chamando `/research`. O achado vira comentário no ticket.
+6. **Pare.** Cartografar é o trabalho de uma sessão. Não resolva ticket agora.
 
-The user may run unblocked tickets in parallel, so expect other sessions to be editing the tracker concurrently.
+### Modo 2: andar o mapa (`/wayfinder <issue do mapa>`)
+
+Ticket é opcional: sem ele, quem escolhe o próximo é você, não o usuário.
+
+1. Carregue o **mapa** (a visão de baixa resolução), não o corpo de todo ticket.
+2. Escolha o ticket: o que o usuário nomeou, ou o primeiro do frontier. **Faça o claim** antes de trabalhar.
+3. Resolva. Puxe o corpo de tickets relacionados ou fechados sob demanda; chame as skills que a seção "Notas" indicar. Na dúvida, `/grill-with-docs`.
+4. Registre: resposta como comentário, **feche** a issue, e acrescente uma linha em "Decisões até agora" no mapa.
+5. Gradue a névoa que a resposta liberou (crie e depois ligue), e limpe o pedaço graduado de "Ainda sem forma". Se a resposta mostrar que um ticket está além do destino, mande para "Fora de escopo" em vez de resolver. Se a decisão invalidar partes do mapa, atualize ou apague esses tickets.
+
+Outras sessões podem estar andando tickets desbloqueados em paralelo. Espere o tracker mudar debaixo de você.
+
+## Quando o mapa limpa
+
+Sem ticket aberto e sem névoa, a rota está clara. Handoff: `/to-prd` para escrever o PRD e `/to-issues` para quebrar em fatias. O mapa fecha com um comentário apontando o PRD.
+
+O wayfinder planeja e não mergeia. O invariante "subir para produção é decisão humana" não é tocado aqui.

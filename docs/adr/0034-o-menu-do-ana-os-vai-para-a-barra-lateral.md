@@ -1,3 +1,10 @@
+---
+status: accepted
+date: 2026-10-15
+amends: 0030, 0008
+amended_by: 0035
+---
+
 # ADR-0034: o menu do Ana OS vai para a barra lateral
 
 Data: 15/out/2026. Estado: aceito. Emenda o ADR-0030 (as cinco abas saem do topo) e o ADR-0008 (raios e cinzas do Ledger).

@@ -1,3 +1,8 @@
+---
+status: accepted
+date: 2026-10-13
+---
+
 # ADR-0033: a bancada ganha um painel ao vivo no Claude Code
 
 Data: 13/out/2026. Estado: aceito.
@@ -36,7 +41,7 @@ A Meta cobra cada resposta da Ana no WhatsApp desde 01/out/2026 (R$ 0,035 por me
 
 - **A plataforma não guarda tokens por conversa.** Os logs da etapa `generate` trazem só o prompt e a duração; `GET /api/v1/metrics` soma tokens por janela de tempo (`since`), e `until` e `conversationId` são ignorados na 1.15.0. Como a bancada roda um cenário por vez, o runner lê a soma "desde o início da conversa até agora" ao fim de cada cenário e grava `uso` (entrada, cache, criação de cache, saída, chamadas, modelos) e `custo` (`openai_usd`, `meta_brl`, `mensagens_ana`, `modelo`) na conversa gravada. Ruído possível: uma mensagem no Telegram de teste no mesmo minuto.
 - **Os preços moram em `ana/bancada/precos.json`** (OpenAI por 1M tokens; Meta por mensagem e franquia; câmbio; `conferido_em`). O relatório avisa quando passam de 60 dias.
-- **Travessão é falha global.** `checar()` reprova qualquer resposta da Ana com `—` ou `–`, sem precisar listar por cenário. Os nomes das etapas do kanban continuam com travessão: a regra é da fala, não das ferramentas.
+- **Travessão é falha global.** `checar()` reprova qualquer resposta da Ana com travessão (U+2014) ou meia-risca (U+2013), sem precisar listar por cenário. Os nomes das etapas do kanban continuam com travessão: a regra é da fala, não das ferramentas.
 - **O relatório deriva, não escreve:** `depende_gh` vem das ferramentas do cenário (as da Global Health, ADR-0009/0025) ou do estado `gh` da capacidade; `fatia_sop` é a parte dos nós do Mapa do SOP que o cenário, a capacidade ou o bloco cobre; `funciona` é "todo cenário executável passa"; `alerta_mensagens` marca conversa com mais de 8 respostas da Ana (`TETO_MENSAGENS_ANA`).
 - **Todo buraco diz de onde vem.** O relatório classifica cada capacidade sem cenário executável e cada nó do SOP sem cenário numa de quatro origens, derivadas (estado da capacidade no comparativo, ferramentas do nó, cenários manuais): Global Health com homologação vazia (terceiros), ainda não desenvolvido (nós, atrás da GH), só com gente ou quebrando algo de propósito (nós), falta escrever o cenário (nós). Também lista os cenários que passam só pelo desvio da GH (a agenda responde vazio e a Ana encaminha). O painel mostra a legenda, a etiqueta de quem depende e o porquê de cada um.
 - **O cursor da aba Testes para nos três níveis** (categoria, capacidade, cenário) e o detalhe muda com ele: na categoria, o resumo do comparativo, a fatia do SOP, quantas funcionam, quantas não, quantas dependem da GH e o custo médio; na capacidade, o `faz`, o que falta, as ferramentas e os cenários com custo; no cenário, o que já havia mais custo, modelo e chamadas. A faixa do topo mostra o custo médio por conversa da bateria (Meta + OpenAI) e quantas conversas foram medidas. A aba Bateria mostra o custo da conversa assim que o runner o emite (evento `custo`).

@@ -1,7 +1,7 @@
 ---
 status: accepted
 date: 2026-06-29
-supersedes: 0001-arquitetura-dois-contratos
+supersedes: 0001
 ---
 
 # Consolidação em um contrato único de Serviços Contínuos

@@ -1,0 +1,15 @@
+{
+  "schema_version": "2.0",
+  "project": {
+    "name": "Ana",
+    "slug": "ana",
+    "description": "Programa Ana do Hospital São Matheus: agente de atendimento por WhatsApp na plataforma fazer.ai agents. Sem deploy pelo repositório."
+  },
+  "git": {
+    "repo": "pedrorezendefig/programa-ana",
+    "branch": "main",
+    "root_relative": "ana"
+  },
+  "coolify": null,
+  "services": []
+}

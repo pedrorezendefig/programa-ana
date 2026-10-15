@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-09-09
 amends: 0028, 0029, 0017, 0027
+amended_by: 0031, 0032, 0034, 0035
 ---
 
 # O Ana OS é uma página só: o esqueleto do Retrato vestido de Ledger, com a camada de operação por cima

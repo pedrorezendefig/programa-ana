@@ -45,6 +45,13 @@ SQL_MAX_LINHAS = 200
 
 OS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(OS_DIR)
+
+# O painel do fluxo (ADR-0035): Issues, PRs, Produção e Documentação, o mesmo do IAE OS e do
+# Hospital OS. Ele mora em tools/workflow-dashboard/ e este servidor o serve na raiz; as
+# esferas do Retrato seguem em os/esferas.html e entram no painel como sub-abas de Documentação.
+PAINEL_DIR = os.path.join(REPO_DIR, "tools", "workflow-dashboard")
+sys.path.insert(0, PAINEL_DIR)
+import serve as painel  # noqa: E402  (traz o collect.py e o cache de 5 min do /api/data)
 ABSORCAO_DIR = os.path.join(REPO_DIR, "ana", "api-mv", "absorcao-producao", "resultados")
 # Cenarios da bancada (ADR-0020): a pagina Testes manuais le o arquivo que vive
 # fora de os/. Leitura de UM arquivo fixo, nunca de uma pasta.
@@ -582,8 +589,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self._host_local():
             return
-        path = urllib.parse.urlparse(self.path).path
-        if path == "/api/status":
+        url = urllib.parse.urlparse(self.path)
+        path = url.path
+        if path == "/api/data":
+            self._json(painel.get_data("fresh" in urllib.parse.parse_qs(url.query)))
+        elif re.match(r"^/api/issue/\d+$", path):
+            self._json(painel.collector.issue_detail(painel.ROOT, int(path.rsplit("/", 1)[1])))
+        elif re.match(r"^/api/issue/\d+/timeline$", path):
+            self._json(painel.collector.issue_timeline(painel.ROOT, int(path.split("/")[3])))
+        elif path == "/api/status":
             st = teste_token()
             st.update(teste_oracle())
             self._json(st)
@@ -608,11 +622,6 @@ class Handler(BaseHTTPRequestHandler):
                 self._json({"ok": True, "roadmap": ler_roadmap()})
             except (OSError, ValueError, RuntimeError) as e:
                 self._json({"ok": False, "erro": str(e)}, 500)
-        elif re.match(r"^/api/issue/\d+$", path):
-            try:
-                self._json(roadmap_github.detalhe(int(path.rsplit("/", 1)[1])))
-            except (OSError, ValueError, RuntimeError) as e:
-                self._json({"ok": False, "erro": str(e)}, 500)
         elif path == "/api/retrato":
             doc = ler_retrato()
             self._json(doc, 500 if "erro" in doc else 200)
@@ -620,8 +629,25 @@ class Handler(BaseHTTPRequestHandler):
             self._servir_absorcao(path[len("/absorcao/"):])
         elif path.startswith("/docs/"):
             self._servir_doc(path[len("/docs/"):])
+        elif self._servir_painel(path):
+            pass
         else:
             self._servir_estatico(path)
+
+    def _servir_painel(self, path):
+        """A raiz e os arquivos de tools/workflow-dashboard/static/ (o painel do fluxo).
+        Só o que existe dentro de static/; o resto cai nas regras de os/."""
+        if path == "/":
+            path = "/index.html"
+        elif path == "/index.html":
+            return False
+        raiz = os.path.realpath(os.path.join(PAINEL_DIR, "static"))
+        alvo = os.path.realpath(os.path.join(raiz, path.lstrip("/")))
+        if not alvo.startswith(raiz + os.sep) or not os.path.isfile(alvo):
+            return False
+        tipo = painel.MIME.get(os.path.splitext(alvo)[1].lower(), "application/octet-stream")
+        self._arquivo(alvo, tipo)
+        return True
 
     def do_POST(self):
         if not self._host_local():
@@ -653,8 +679,14 @@ class Handler(BaseHTTPRequestHandler):
         sys.stderr.write("%s %s\n" % (self.log_date_time_string(), fmt % args))
 
 
+def porta_dos_args():
+    """--porta N sobe numa porta de teste; sem ele, a 8777 de sempre."""
+    args = sys.argv[1:]
+    return int(args[args.index("--porta") + 1]) if "--porta" in args else PORTA
+
+
 def main():
-    print("Ana OS em http://localhost:%d" % PORTA, flush=True)
+    print("Ana OS em http://localhost:%d" % porta_dos_args(), flush=True)
     print("Testando o token na homologacao da GH...", flush=True)
     st = teste_token()
     if not st["gh_alcancavel"]:
@@ -669,7 +701,7 @@ def main():
         print("  Oracle TST: conectado (%dms). Prova no banco ativa." % ora["oracle_latencia_ms"], flush=True)
     else:
         print("  Oracle TST: SEM conexao (%s). As queries do painel 'No banco' ficam so para copiar." % ora["oracle_msg"], flush=True)
-    servidor = ThreadingHTTPServer(("127.0.0.1", PORTA), Handler)
+    servidor = ThreadingHTTPServer(("127.0.0.1", porta_dos_args()), Handler)
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

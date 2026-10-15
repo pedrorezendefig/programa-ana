@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-08-14
 amends: 0006, 0010
+amended_by: 0016
 ---
 
 # Base Ana migra do NocoDB para o Hospital Reuniões

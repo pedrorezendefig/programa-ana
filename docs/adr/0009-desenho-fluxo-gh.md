@@ -50,5 +50,5 @@ Os 22 endpoints do Mapa das APIs estão cobertos; nenhum fica órfão e nenhuma 
 
 - As propostas P4 → P5 → P6 do grafo são exatamente as fases deste desenho; nenhuma tarefa nova nasce da GH1. P3 (GH-18) deixa de bloquear o desenho e passa a ser gate só da P6, onde sempre foi decisiva.
 - O prompt do agente em produção hoje (v4, estágio de viabilidade) não muda agora: o SOP de `docs/04` é o alvo para quando as tools de agenda entrarem (P4 em diante), adaptando os nomes às tools reais da plataforma.
-- As etapas/tags novas do SOP (`FALHA AGENDAMENTO — FILA`, `agendado-bot`, `AGENDADO` automático) esbarram no Congelamento do Chatwoot (06/jul): configurar junto com a entrada do canal principal, não antes.
+- As etapas/tags novas do SOP (`FALHA AGENDAMENTO` e `FILA` separados por travessão (U+2014) no nome da etapa, `agendado-bot`, `AGENDADO` automático) esbarram no Congelamento do Chatwoot (06/jul): configurar junto com a entrada do canal principal, não antes.
 - A GH-19 continua sendo o desbloqueio prático da P5: sem massa publicada, `Buscar_disponibilidade` devolve lista vazia. O desenho não espera por ela; a implementação da P4 já pode começar.

@@ -5,6 +5,15 @@ Monta, a partir do `gh`, o MESMO objeto que /api/roadmap devolvia do roadmap.jso
   {estagio, atualizado, lido_em, repo, tarefas: [...], radar: [...]}
 Cada tarefa: {id, numero, url, titulo, status (fazer|feito), deps, tema, areas, canal,
   canal_desde, mesa {destrava, gesto}, pronto_quando, prompt, nota, ficha, antes, em_curso}.
+
+As labels de estado sao os papeis de triage do fluxo de trabalho (docs/agents/triage-labels.md),
+que substituiram as antigas `canal:*` e `radar`: `ready-for-human` (antes `canal:dispare` e
+`canal:aguardando`: so o Pedro, ou ja pedido a terceiro), `ready-for-agent` (antes
+`canal:comigo`: uma sessao resolve) e `needs-triage` (antes `radar`: fora do grafo). O campo
+`canal` guarda as chaves que o Cockpit ja le: `ready-for-human` vira `dispare` e
+`ready-for-agent` vira `comigo`; `aguardando` fica vazio, porque a migracao juntou os dois
+canais humanos. Issue `in-progress` sem papel (o claim tira o `ready-for-agent`) conta como
+`comigo`.
 Fonte unica: o GitHub. Nenhuma escrita aqui; card novo, canal movido e card feito
 sao comandos `gh` na sessao do terminal.
 
@@ -27,6 +36,9 @@ _CACHE = {"em": 0.0, "resposta": None}
 
 AREAS = ["global-health", "ana", "fazer-ai", "chatwoot", "app-hospital", "os"]
 CANAIS = ["dispare", "comigo", "aguardando"]
+# label de triage -> chave de canal que o Cockpit le (ver a docstring)
+FILAS = {"ready-for-human": "dispare", "ready-for-agent": "comigo"}
+RADAR = "needs-triage"
 SECOES = {"destrava": "destrava", "gesto": "gesto", "pronto quando": "pronto_quando",
           "prompt": "prompt", "bloqueada por": "deps", "nota": "nota"}
 
@@ -107,20 +119,29 @@ def _comentarios(numero):
         return []
 
 
-def _canal_desde(eventos, canal):
-    """Data do ultimo evento 'labeled' da label canal:<canal>."""
+def _canal_desde(eventos, label):
+    """Data do ultimo evento 'labeled' da label de triage que deu o canal."""
     data = None
     for e in eventos:
-        if e.get("event") == "labeled" and (e.get("label") or {}).get("name") == "canal:" + canal:
+        if e.get("event") == "labeled" and (e.get("label") or {}).get("name") == label:
             data = _data(e.get("created_at"))
     return data
+
+
+def _canal(labels):
+    """(chave de canal, label que a deu) pelas labels de triage; (None, None) sem papel."""
+    for label, canal in FILAS.items():
+        if label in labels:
+            return canal, label
+    if "in-progress" in labels:
+        return "comigo", "in-progress"
+    return None, None
 
 
 def _issue_para_item(it, eventos, comentarios):
     labels = [l["name"] for l in it.get("labels", [])]
     areas = [l[5:] for l in labels if l.startswith("area:")]
-    canais = [l[6:] for l in labels if l.startswith("canal:")]
-    canal = canais[0] if canais else None
+    canal, label_do_canal = _canal(labels)
     p = parse_corpo(it.get("body"))
     s = p["secoes"]
     feito = it.get("state", "").upper() == "CLOSED"
@@ -135,7 +156,7 @@ def _issue_para_item(it, eventos, comentarios):
         "areas": areas,
         "antes": p["antes"],
         "em_curso": "in-progress" in labels,
-        "radar": "radar" in labels,
+        "radar": RADAR in labels,
         "prioridade": p["prioridade"],
         "assignees": [a["login"] for a in it.get("assignees", [])],
         "criada_em": _data(it.get("createdAt")),
@@ -149,7 +170,7 @@ def _issue_para_item(it, eventos, comentarios):
         item["ficha"] = parse_ficha(comentarios)
     else:
         item["canal"] = canal
-        item["canal_desde"] = _canal_desde(eventos, canal) if canal else None
+        item["canal_desde"] = _canal_desde(eventos, label_do_canal) if canal else None
         if s.get("destrava") or s.get("gesto"):
             item["mesa"] = {"destrava": s.get("destrava", ""), "gesto": s.get("gesto", "")}
         item["prompt"] = s.get("prompt") or None

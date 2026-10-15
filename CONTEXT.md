@@ -315,7 +315,7 @@ VITTA TECH Desenvolvimento de Software Customizável LTDA, a CONTRATADA. Assina 
 
 ## Example dialogue
 
-— *"O cliente aceitou a Ana no WhatsApp. E agora?"*
-— *"Assinamos o Termo de Entregável da Ana. Ele vira um Anexo de Entregável do contrato e os R$ 2.000/mês passam a incidir no mês seguinte: a mensalidade sobe de R$ 6.000 para R$ 8.000."*
-— *"E quando começarmos o agente de voz?"*
-— *"O Retell entra como novo Anexo de Entregável do mesmo contrato, sem contrato novo: só o termo com escopo e valor."*
+- *"O cliente aceitou a Ana no WhatsApp. E agora?"*
+- *"Assinamos o Termo de Entregável da Ana. Ele vira um Anexo de Entregável do contrato e os R$ 2.000/mês passam a incidir no mês seguinte: a mensalidade sobe de R$ 6.000 para R$ 8.000."*
+- *"E quando começarmos o agente de voz?"*
+- *"O Retell entra como novo Anexo de Entregável do mesmo contrato, sem contrato novo: só o termo com escopo e valor."*

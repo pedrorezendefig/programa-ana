@@ -1,6 +1,6 @@
 ---
 name: testes
-description: Mesa de testes da Ana: abre o relatorio dos cenarios por capacidade (ultimas 3 rodadas, intermitentes, buracos de cobertura) e oferece ver, executar, montar ou revisar cenarios da bancada. Use quando o Pedro disser "/testes", "vou ver os testes", "testes", "como estao os testes", "monta um cenario", "cria um teste para", "revisa os cenarios", "o que falta testar", "roda os testes de <capacidade>".
+description: 'Mesa de testes da Ana: abre o relatorio dos cenarios por capacidade (ultimas 3 rodadas, intermitentes, buracos de cobertura) e oferece ver, executar, montar ou revisar cenarios da bancada. Use quando o Pedro disser "/testes", "vou ver os testes", "testes", "como estao os testes", "monta um cenario", "cria um teste para", "revisa os cenarios", "o que falta testar", "roda os testes de <capacidade>".'
 ---
 
 # Testes: a mesa de testes da Ana

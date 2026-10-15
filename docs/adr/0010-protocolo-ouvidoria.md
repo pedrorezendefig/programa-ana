@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-08-06
+amended_by: 0015, 0016
 ---
 
 # O protocolo da ouvidoria é um sequencial ANO-NNNN numa tabela própria do NocoDB, fora de qualquer shared view

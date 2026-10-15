@@ -10,24 +10,6 @@ Repositório de trabalho da VITTA TECH para os agentes de IA do Hospital São Ma
 - A integração com o sistema MV do hospital (API Global Health) é o próximo horizonte, ainda em desenho (pendência GH1 no roadmap).
 - O estado vivo do programa mora nas Issues do GitHub (`pedrorezendefig/programa-ana`, ADR-0031); `roadmap/TODO.md` guarda a narrativa (estado e log).
 
-## Mapa do repositório
-
-| Pasta | Conteúdo |
-|---|---|
-| `CONTEXT.md` | Glossário do domínio (linguagem canônica do projeto) |
-| `CLAUDE.md` | Regras de trabalho para sessões Claude Code neste repositório |
-| `roadmap/` | O estado do programa: `TODO.md` (verdade narrativa), `roteiro-cenarios.md` (critério de pronto do estágio, com resultados), e `arquivo/` (roadmap anterior, acervo de consulta) |
-| `os/` | **Ana OS**, o cockpit local do programa: home com roadmap e grafo de execução, Mapa das APIs, arquitetura, bancada da API GH, Atlas da produção, Biblioteca de docs |
-| `ana/prompt/` | Histórico do system prompt (o prompt vigente é editado direto na plataforma fazer.ai) |
-| `ana/base-conhecimento/` | Snapshot das tabelas de negócio importadas no NocoDB |
-| `ana/api-mv/` | Estudo do banco Oracle do MV (dicionário de colunas, scripts de consulta TST) e da API Global Health |
-| `ana/workflows/` | Exports dos workflows da era n8n (desativados; acervo) |
-| `ana/briefings/` | Briefings da direção do hospital |
-| `docs/` | Arquitetura da integração de agendamento (era n8n; consulta) e ADRs em `docs/adr/` |
-| `pos-atendimento/` | Specs do futuro agente de pós-atendimento (a construir) |
-| `contrato/` | Contrato de Serviços Contínuos da VITTA TECH |
-| `.claude/skills/` | Skills locais das sessões Claude Code: `/check` (ritual de progresso), `/bancada` (a bateria com 3 rodadas, o painel ao vivo e o diagnóstico), `/testes` (a mesa de testes: ver, executar, montar e revisar cenários), `/grill-me` e `/grill-with-docs` (entrevista por rodadas para fechar um desenho antes de codar; a segunda também grava ADRs e glossário) |
-
 ## Como entrar no projeto (passo a passo para sócios)
 
 **1. Clonar e ler.** Só com o clone você já tem tudo que explica o programa, sem precisar de nenhuma chave:
@@ -144,3 +126,101 @@ O `.gitignore` já bloqueia, mas a regra vale para qualquer arquivo novo:
 - Credenciais de **produção** do hospital: jamais nesta máquina ou neste repo; produção é acessada só pelo Pedro, manualmente.
 
 Na dúvida: se o arquivo tem senha, token ou nome/CPF de paciente, ele não entra no git.
+
+## Mapa do repositório
+
+Esta seção é o mapa completo das pastas, no formato do fluxo de trabalho que veio do Hospital pelo IAE: o que é cada pasta, por que existe, o que tem dentro e para que serve. A árvore de verdade é o disco: antes de responder sobre uma pasta, rode `ls` nela e confira. Pasta que o git conhece e não está na lista de cobertura no fim desta seção é sinal de que o mapa envelheceu: o teste `tools/test_docs_fluxo.py` reprova, e a correção é editar aqui no mesmo PR.
+
+O "app" do fluxo é a pasta `ana/`: PR que toca `ana/` passa pelo `ana-revisor`; o resto é ferramenta e só passa pelo CI. Para saber qual skill usar em cada momento, rode `/ask-ana`. O passo a passo do clone ao painel aberto está em `docs/onboarding/dev.md`.
+
+### Raiz
+
+| Pasta ou arquivo | O que é | Por que existe | O que você acha dentro | Para que serve no dia a dia |
+|---|---|---|---|---|
+| `README.md` | Este arquivo | Quem clona precisa saber o que é o programa e cada pasta sem perguntar | O estado do programa, o setup da estação e este mapa | Primeiro dia; o `/setup-maquina --mapa` lê daqui |
+| `CLAUDE.md` | Regras do repo para o agente | Mínimo que toda sessão precisa saber | O Ana OS, a gramática das issues, o Oracle TST e a Global Health homolog | Leia uma vez. O roteamento fino está no `/ask-ana` |
+| `CONTEXT.md` | Glossário do programa | O Pedro, o hospital e o agente falam a mesma língua | Termos com definição e "evitar" | Consultar antes de nomear qualquer coisa nova |
+| `.claude/` | Skills e agentes, versionados | Quem clona recebe o fluxo inteiro | `skills/` (uma pasta por skill: o pipeline do fluxo e as próprias da Ana, como `/check`, `/bancada` e `/testes`) e `agents/` (`ana-implementador`, `ana-revisor`, `ana-corretor`, que a `/onda-enxuta` e o `/ship` disparam) | `/ask-ana` diz qual usar |
+| `.claude-plugin/` | Marketplace de mods do Claude Code | Instalar o mod da bancada com um comando | `marketplace.json` (`ana-mods`, que aponta para `mods/bancada`) | Ao instalar o painel da bancada ao vivo (ADR-0033) |
+| `.githooks/` | Hooks de git do repo | O plano grátis do GitHub não protege a `main` de repo privado | `pre-push`, que recusa push direto na `main` | Ligar uma vez com `git config core.hooksPath .githooks` |
+| `.github/` | CI e templates | Gates automáticos do `/ship` e formato único de issue e PR | `workflows/` (`ci.yml`, `lint-adr.yml`, `lint-skills.yml`, `higiene-issues.yml`), `ISSUE_TEMPLATE/` e o `PULL_REQUEST_TEMPLATE.md` | Não se edita no dia a dia |
+| `ana/` | O "app" do fluxo: a Ana | Tudo que define e prova o comportamento da Ana mora junto | `prompt/` (fonte do prompt e o `compilar.py`), `bancada/` (cenários, conversas e diagnósticos das baterias), `api-mv/` (dicionário do Oracle e scripts só de leitura da base TST e da Global Health homolog), `api-hospital/` (a API do app do hospital), `plataforma/` (achados e scripts da fazer.ai e do Chatwoot), `base-conhecimento/` (tabelas de negócio), `briefings/` e `workflows/` (era n8n, acervo) | Toda mudança aqui passa pelo `ana-revisor` |
+| `contrato/` | Contrato de Serviços Contínuos da VITTA TECH | O contrato sai de fonte versionada, não de documento solto | `fonte/` (o texto e os metadados), `gerado/` (PDF e HTML), `hospital/` (a versão revisada pelo jurídico), `legado/` (a versão anterior) e o `LEIA-ME.md` com o comando de publicar | Ao mexer no contrato |
+| `docs/` | Documentação viva | Ver a tabela abaixo | | |
+| `mods/` | Mods do Claude Code | O painel da bancada roda dentro do Claude Code | `bancada/` (hooks e testes do mod da bateria ao vivo) | Ao evoluir o painel da bancada |
+| `os/` | O cockpit do programa (`python3 os/server.py`, porta 8777) | Ver o programa inteiro numa página, só leitura (ADR-0007, ADR-0030) | `index.html`, `server.py`, `roadmap_github.py` (lê as issues pelo `gh`), `assets/`, `dados/` (os JSON das esferas) e `arquivo/` (páginas antigas, por URL direta) | O `/check` liga e mede por ele |
+| `pos-atendimento/` | Specs do agente de pós-atendimento | O próximo agente do hospital começa desenhado | Arquitetura analítica, templates da Meta e viabilidade do webchat | Quando o pós-atendimento entrar no roadmap |
+| `retrato/` | O Retrato da Ana, site estático para o diretor do hospital | O diretor vê o que a Ana faz sem abrir o repositório (ADR-0028) | `gerar.py` (grava `dados/retrato.json`), `index.html`, `assets/` e `curadoria.json` | `python3 retrato/gerar.py`; publicar é ato do Pedro |
+| `roadmap/` | A narrativa do programa | O estado vive nas Issues; a história, aqui (ADR-0031) | `TODO.md` (estado e log), os roteiros de cenários e de integração, `arquivo/` (o roadmap anterior) | O `/check` lê e atualiza o `TODO.md` |
+| `tools/` | Ferramentas do repo | Lints e testes do CI e o painel do fluxo | `lint_adr.py`, `lint_skills.py`, `checar_migration_repetida.py`, os testes `test_*.py` ao lado e `workflow-dashboard/` (o painel só de leitura das issues e dos PRs, em `http://localhost:8800`) | `uv run --no-project --python '>=3.12' --with pytest --with pyyaml python -m pytest tools/ -q --ignore=tools/workflow-dashboard` |
+
+Na raiz também ficam `Documento-Mestre_Programa-Ana-CRM.md` e `resumo.md` (visão do programa para quem chega), `vercel.json` (publicação do Retrato) e o `.gitignore`.
+
+### `docs/`
+
+| Pasta | O que é | Por que existe | O que tem | Quando abrir |
+|---|---|---|---|---|
+| `adr/` | Decisões de arquitetura e de processo | Decisão sem registro é rediscutida | `README.md` (índice) e um `.md` por decisão, com `status` no frontmatter | Antes de propor mudança de regra. Só `accepted` vale |
+| `agents/` | Protocolo do agente | Sessões paralelas precisam do mesmo contrato | `issue-tracker.md` (claim, worktrees, bloqueio, revisor), `triage-labels.md` (as labels do fluxo e a migração das antigas), `domain.md` (como ler glossário, ADRs e snapshots) | Ao pegar issue ou triar |
+| `onboarding/` | Setup humano | Máquina nova | `dev.md` (do clone ao painel aberto, e o dia a dia), `claude-setup.md` (Claude Code, plugins e permissões) | Primeiro dia. O `/setup-maquina` confere o mesmo conteúdo |
+| `painel/` | Páginas HTML antigas de visão do programa | Acervo da era n8n | `index.html`, `fluxos.html`, `prompt.html` | Só para consulta histórica |
+| `spec/` | Contrato de deploy e mapa factual da `ana/` | O agente lê daqui, nunca de memória | `deploy/` (`project.json`, `state.json`, `history.json`; sem deploy pelo repositório), `VERSIONING.md` (por que não há versão de app) e `snapshots/` (gerados pelo `/snapshot`) | `/deploy status` e `/snapshot --check` |
+
+Na raiz de `docs/` ficam os documentos numerados da arquitetura da integração de agendamento (`00-visao-geral.md` a `07-guia-edicao-base-ana.md`), da era n8n: consulta.
+
+### O fluxo, em uma linha por etapa
+
+1. Ideia: `/grill-with-docs` afia contra `CONTEXT.md` e as ADRs. 2. `/to-prd` e `/to-issues` viram issues. 3. `/pegar-issue N` faz o claim e abre a branch. 4. `/tdd` escreve o teste primeiro. 5. `/ship` abre o PR, roda os gates e, com o PR verde, roda a subida (`fechar_onda.py`). 6. A subida mergeia pela API e para: a Ana não tem deploy pelo repositório.
+
+### Cobertura (o teste `tools/test_docs_fluxo.py` confere esta lista)
+
+Toda pasta de nível 1 e 2 que o git conhece precisa estar aqui. Pasta nova no repo: acrescente a linha e explique acima, no mesmo commit. O conteúdo de `.claude/skills/` e de `docs/adr/` fica fora da conferência, porque é descrito por padrão e não um a um.
+
+<!-- cobertura:start -->
+```
+.claude
+.claude/agents
+.claude/skills
+.claude-plugin
+.githooks
+.github
+.github/ISSUE_TEMPLATE
+.github/workflows
+ana
+ana/api-hospital
+ana/api-mv
+ana/bancada
+ana/base-conhecimento
+ana/briefings
+ana/plataforma
+ana/prompt
+ana/workflows
+contrato
+contrato/fonte
+contrato/gerado
+contrato/hospital
+contrato/legado
+docs
+docs/adr
+docs/agents
+docs/onboarding
+docs/painel
+docs/spec
+mods
+mods/bancada
+os
+os/arquivo
+os/assets
+os/dados
+pos-atendimento
+retrato
+retrato/assets
+retrato/dados
+roadmap
+roadmap/arquivo
+tools
+tools/workflow-dashboard
+```
+<!-- cobertura:end -->
+
+Não aparecem aqui, por não estarem no git: `.claude/worktrees/` (worktrees dos agentes), `.claude/settings.local.json`, o `.env` da raiz, `dados-locais/`, as `amostras/` e os caches de ferramenta.

@@ -17,3 +17,7 @@ ana/bancada/resultados/
 
 # Tipos que o motor do Claude Code escreve ao lado do mod da bancada ao vivo (ADR-0033)
 .claude/skills/bancada/.claude-plugin/types/
+
+# Fluxo de trabalho (vindo do IAE): worktrees dos agentes e caches de Python
+.claude/worktrees/
+__pycache__/

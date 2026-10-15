@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-10-09
 amends: 0008, 0011, 0028, 0030
+amended_by: 0035
 ---
 
 # O roadmap sai dos arquivos e vai para as Issues do GitHub; o Cockpit lê o `gh`

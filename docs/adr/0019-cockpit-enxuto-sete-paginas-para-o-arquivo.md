@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-08-20
+amended_by: 0020, 0022, 0028
 ---
 
 # Cockpit enxuto: sete páginas saem de cena para o arquivo

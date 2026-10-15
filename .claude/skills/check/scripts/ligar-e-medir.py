@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Passo 0 do /check: liga o Ana OS (8777) e o Retrato (8778) se estiverem fora do ar,
 e mede o estagio pelas Issues do GitHub (ADR-0031): issues fechadas sobre o total,
-sem contar as de label `radar`. Le o GitHub pelo mesmo modulo que o Ana OS usa
+sem contar as de label `needs-triage` (o antigo radar). Le o GitHub pelo mesmo modulo que o Ana OS usa
 (os/roadmap_github.py), para o /check e o cockpit nunca divergirem.
 
 Uso: python3 .claude/skills/check/scripts/ligar-e-medir.py [--so-medir]
@@ -19,7 +19,10 @@ SERVICOS = [
     ("Ana OS", 8777, ["python3", "os/server.py"]),
     ("Retrato", 8778, ["python3", "-m", "http.server", "-d", "retrato", "8778", "--bind", "127.0.0.1"]),
 ]
-CANAIS = [("dispare", "Dispare hoje"), ("comigo", "Sente comigo"), ("aguardando", "Aguardando terceiros")]
+# Chaves que o roadmap_github devolve: ready-for-human vira "dispare", ready-for-agent
+# (e in-progress) vira "comigo". O antigo "aguardando" mora junto do ready-for-human.
+CANAIS = [("dispare", "So o Pedro (ready-for-human): dispare hoje ou cobre de terceiros"),
+          ("comigo", "Uma sessao resolve (ready-for-agent)")]
 
 sys.path.insert(0, os.path.join(RAIZ, "os"))
 import roadmap_github  # noqa: E402
@@ -82,7 +85,7 @@ def medir():
             trava = [dep for dep in t.get("deps", []) if dep not in feitos_ids]
             sufixo = f"  [bloqueada: espera #{', #'.join(trava)}]" if trava else ""
             idade = dias(t.get("canal_desde"))
-            idade_txt = f"  (neste canal ha {idade} dia{'s' if idade != 1 else ''})" if idade is not None and chave == "aguardando" else ""
+            idade_txt = f"  (neste canal ha {idade} dia{'s' if idade != 1 else ''})" if idade is not None and chave == "dispare" else ""
             areas = ", ".join(t.get("areas") or []) or "sem area"
             print(f"    - [#{t['id']}{' ' + t['antes'] if t.get('antes') else ''}] {t['titulo']}{sufixo}{idade_txt}  [{areas}]")
             gesto = (t.get("mesa") or {}).get("gesto", "")
@@ -93,10 +96,11 @@ def medir():
                 print(f"        DEFEITO: sem {' e sem '.join(faltas)} no corpo da issue")
     sem_canal = [t for t in abertas if t.get("canal") not in dict(CANAIS)]
     if sem_canal:
-        print("  SEM LABEL canal: (defeito): " + ", ".join("#" + t["id"] for t in sem_canal))
+        print("  SEM PAPEL DE TRIAGE (defeito: falta ready-for-human, ready-for-agent ou needs-triage): "
+              + ", ".join("#" + t["id"] for t in sem_canal))
     radar = [r for r in d.get("radar", []) if r["status"] != "feito"]
     print()
-    print(f"Fora do termometro: {len(radar)} item(ns) no radar"
+    print(f"Fora do termometro: {len(radar)} item(ns) no radar (needs-triage)"
           + (": " + ", ".join(f"#{r['id']} (prio {r.get('prioridade')}/10)" for r in radar) if radar else "") + ".")
     print(f"Cockpit: http://localhost:8777/index.html#cockpit  |  Issues: https://github.com/{d['repo']}/issues")
 
