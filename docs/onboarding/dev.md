@@ -78,7 +78,7 @@ Agora há fatias na fila para qualquer sessão pegar.
 ### Cenário B: vou pegar trabalho da fila
 
 ```
-/pegar-issue          # lista as issues ready-for-agent sem dono
+/pegar-issue          # lista as issues ready-for-agent desbloqueadas
 /pegar-issue 42       # claim (a issue vira sua), branch e spec carregada
 /tdd                  # red, green, refactor: os critérios de aceite viram testes
 /ship                 # abre o PR, roda os gates e, com o PR verde, roda a subida

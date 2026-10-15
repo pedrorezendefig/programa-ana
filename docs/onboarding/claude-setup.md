@@ -98,7 +98,7 @@ Abra uma sessão nova dentro do repo (`cd ~/PedroDev/Ana && claude`) e rode:
 /pegar-issue
 ```
 
-Esperado: a tabela das issues `ready-for-agent` sem dono (pode estar vazia). Se o comando não existe, você não está na pasta do repo.
+Esperado: a tabela das issues `ready-for-agent` desbloqueadas, com quem está designado em cada uma (pode estar vazia). Se o comando não existe, você não está na pasta do repo.
 
 ```
 /deploy status
