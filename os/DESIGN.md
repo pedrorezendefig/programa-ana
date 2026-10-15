@@ -17,9 +17,10 @@ O sistema lê como um cockpit de gestão: um canvas cinza-pérola quase branco, 
 | Card interno | `#f6f5f3` | `--cor-card-interno` | Listas e blocos aninhados dentro de um card |
 | Tinta | `#111111` | `--cor-tinta` | Texto principal, números grandes, chips pretos, botões primários |
 | Sidebar | `#0d0d0d` | `--cor-sidebar` | O pill vertical preto da navegação |
-| Cinza-rótulo | `#8c8c8c` | `--cor-rotulo` | Rótulos, legendas, texto secundário |
+| Cinza-rótulo | `#6b6b6b` | `--cor-rotulo` | Rótulos, legendas, texto secundário (5,3:1 sobre o branco, ADR-0034) |
 | Cinza-mudo | `#b9b7b2` | `--cor-mudo` | Bordas de seleção, ícones inativos, placeholders |
 | Fio | `#e8e7e4` | `--cor-fio` | Divisores e bordas sutis |
+| Linha | `#8a8782` | `--cor-linha` | Seta, aresta e contorno de nó: 3,6:1, sem opacidade por cima (ADR-0034) |
 | Verde | `#2e9e44` | `--cor-verde` | Positivo: feito, ok, linha de atividade |
 | Verde-tinta | `#e3f4e4` | `--cor-verde-tinta` | Fundo de chip/selo positivo |
 | Vermelho | `#e04434` | `--cor-vermelho` | Negativo: erro, bloqueio duro, DELETE |
@@ -50,20 +51,21 @@ O micro-rótulo em caps cinza (`PROFIT`, `REVENUE` na referência) é assinatura
 
 ## Espaço e forma
 
-- **Página:** conteúdo com max-width 1240px; canvas com padding 24px; sidebar fixa à esquerda ocupando 76px de largura + 16px de respiro (o `main` compensa).
-- **Sidebar:** 64px de largura, raio 32px, altura `calc(100vh - 32px)`, fixa com margem 16px. Ícones 20px, stroke 1.7, em `--cor-mudo`; item ativo ganha quadrado arredondado (12px) `#262626` com ícone branco. Tooltip preto ao lado no hover.
-- **Raios:** cards 24px; cards internos e inputs 14px; chips e botões pill (999px); quadrado de ícone 12px.
+- **Página:** conteúdo com max-width 1240px; canvas com padding 24px; no index, a barra lateral fixa ocupa 264px + 16px de respiro (o `body.com-lateral` compensa). Nas páginas do arquivo, o pill estreito de 64px.
+- **Barra lateral (index, ADR-0034):** 264px de largura, raio 14px, fixa com margem 16px. De cima para baixo: logo do Hospital São Matheus e "Ana OS", o estágio, as cinco abas (ícone 20px e nome; ativa em branco com texto preto), as aplicações com nome e, no pé, as conexões e o selo do ambiente. Abaixo de 820px vira faixa no topo, com as abas em linha.
+- **Sidebar estreita (arquivo):** 64px, ícones 20px com tooltip preto ao lado no hover.
+- **Raios (ADR-0034):** cards 8px; cards internos e inputs 6px; chips e botões pill (999px); quadrado de ícone 6px; barra lateral 14px.
 - **Bordas:** cards não têm borda por padrão (branco sobre canvas basta). Card selecionado/destacado: borda 1.5px `--cor-mudo`. Fios internos com `--cor-fio`.
 - **Sombra:** uma só no sistema, na sidebar: `0 12px 28px -12px rgba(0,0,0,.35)`. Cards não têm sombra.
 - **Gaps:** 14px entre cards da mesma fileira; 28px entre seções; padding de card 22px a 26px.
 
 ## Componentes
 
-### Sidebar de ícones
-Pill preto vertical flutuante: logo no topo (quadrado 34px, raio 11px, branco sobre preto, glifo "A" em Poppins 700), botão "+" logo abaixo, depois a pilha de páginas, e o rodapé com utilitários. Só ícones; o nome da página vive no tooltip (fundo `--cor-tinta`, texto branco, raio 8px, 12px Inter 500).
+### Barra lateral (index) e sidebar de ícones (arquivo)
+No index, o pill preto é largo e leva a navegação inteira (ADR-0034): a logo do Hospital São Matheus com "Ana OS", o estágio, as cinco abas com ícone e nome, o grupo Aplicações (os/dados/apps.json) com nome e, no pé, as conexões e o selo do ambiente. A barra entra em sequência e o ícone da aba ativa dá um pulo curto; `prefers-reduced-motion` desliga. Nas páginas de `os/arquivo/`, o pill estreito de antes: logo "A" no topo e as aplicações só com ícone e tooltip.
 
 ### Card de indicador (stat)
-Card branco 24px com: rótulo 14px `--cor-rotulo` na primeira linha, número 30px Poppins 700 na segunda, e uma terceira linha opcional de detalhe (13px, pares rótulo+valor ou pontos coloridos de legenda). É a fileira do topo da referência (Revenue, Expenses...).
+Card branco (raio 8px) com: rótulo 14px `--cor-rotulo` na primeira linha, número 30px Poppins 700 na segunda, e uma terceira linha opcional de detalhe (13px, pares rótulo+valor ou pontos coloridos de legenda). É a fileira do topo da referência (Revenue, Expenses...).
 
 ### Card grande de destaque
 O "card de mês" da referência: título 17px + badge circular preto (número branco, 26px de diâmetro) no canto direito; micro-rótulo caps; número display 40px (verde/vermelho apenas se o dado for semântico); sparkline; linha de legenda com pontos coloridos; e um card interno (`--cor-card-interno`, raio 14px) com linhas rótulo/valor separadas por fio. Estado selecionado: borda 1.5px `--cor-mudo`.
@@ -119,12 +121,12 @@ Nós são cards brancos compactos (raio 16px) em colunas da esquerda para a dire
 :root {
   --cor-canvas: #f3f2f0;  --cor-card: #ffffff;  --cor-card-interno: #f6f5f3;
   --cor-tinta: #111111;   --cor-sidebar: #0d0d0d;
-  --cor-rotulo: #8c8c8c;  --cor-mudo: #b9b7b2;  --cor-fio: #e8e7e4;
+  --cor-rotulo: #6b6b6b;  --cor-mudo: #b9b7b2;  --cor-fio: #e8e7e4;
   --cor-verde: #2e9e44;   --cor-verde-tinta: #e3f4e4;
   --cor-vermelho: #e04434; --cor-vermelho-tinta: #fde9e6;
   --cor-azul: #2b52c9;    --cor-azul-tinta: #e8effc;
   --cor-areia: #efece7;
-  --raio-card: 24px; --raio-interno: 14px; --raio-pill: 999px;
+  --raio-card: 8px; --raio-interno: 6px; --raio-pill: 999px;
   --sombra-sidebar: 0 12px 28px -12px rgba(0,0,0,.35);
 }
 ```

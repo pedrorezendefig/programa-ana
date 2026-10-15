@@ -1,7 +1,7 @@
-/* Ana OS: a sidebar preta (design Ledger, ADR-0008). Desde o ADR-0030 o menu de
-   abas vive no topo do index.html, no esqueleto do Retrato; a sidebar guarda só o
-   logo (volta ao Cockpit) e as aplicações externas de os/dados/apps.json, ícone com
-   tooltip, abrindo em aba nova. As páginas arquivadas em os/arquivo/ carregam este
+/* Ana OS: a sidebar preta (design Ledger, ADR-0008). No index.html a barra lateral
+   larga já vem no HTML (marca, abas, aplicações e status); aqui só se preenche o
+   grupo Aplicações (os/dados/apps.json), ícone e nome, abrindo em aba nova. Nas
+   páginas arquivadas a sidebar estreita nasce aqui: logo e aplicações com tooltip. As páginas arquivadas em os/arquivo/ carregam este
    mesmo script e ganham também a faixa do topo (trilha + selo de ambiente):
      <script src="../assets/nav.js" data-ambiente="local|homolog|producao" defer></script> */
 
@@ -45,6 +45,9 @@
   const noArquivo = location.pathname.indexOf("/arquivo/") !== -1;
   const prefixo = noArquivo ? "../" : "";
 
+  /* no index, a barra lateral larga já existe: só falta o grupo Aplicações */
+  const lateral = !noArquivo && document.querySelector(".lateral #side-apps");
+
   const side = document.createElement("nav");
   side.className = "os-sidebar";
   side.setAttribute("aria-label", "Ana OS: aplicações");
@@ -57,11 +60,12 @@
     if (!alvo) return;
     alvo.innerHTML = (d.apps || []).map(function (a) {
       return '<a class="item" href="' + esc(a.url) + '" target="_blank" rel="noopener" aria-label="' + esc(a.nome) + '">' +
-        iconeDe(a) + '<span class="dica">' + esc(a.nome) + "</span></a>";
+        iconeDe(a) + '<span class="' + (lateral ? "nome" : "dica") + '">' + esc(a.nome) + "</span></a>";
     }).join("");
   }).catch(function () { /* sem a lista, a sidebar fica só com o logo */ });
 
   function inserir() {
+    if (lateral) return;
     document.body.prepend(side);
     if (!noArquivo) return;
     const topo = document.createElement("header");

@@ -60,7 +60,7 @@ html.player-aberto { overflow: hidden; }
 .pl-linha { display: flex; gap: 14px; align-items: flex-start; }
 .pl-linha.paciente { justify-content: flex-start; }
 .pl-linha.ana { justify-content: flex-end; }
-.pl-balao { max-width: 520px; padding: 11px 15px; border-radius: 16px; font-size: 14px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+.pl-balao { max-width: 520px; padding: 11px 15px; border-radius: var(--raio-interno); font-size: 14px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
 .pl-balao .quem { font: var(--peso-semibold) 10px/1.4 var(--font-inter); letter-spacing: .07em; text-transform: uppercase; margin-bottom: 4px; }
 .pl-balao.paciente { background: var(--cor-fio); color: var(--cor-tinta); border-bottom-left-radius: 4px; }
 .pl-balao.paciente .quem { color: var(--cor-rotulo); }

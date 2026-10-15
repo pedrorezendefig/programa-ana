@@ -10,9 +10,10 @@
   --cor-card-interno: #f6f5f3;
   --cor-tinta: #111111;
   --cor-sidebar: #0d0d0d;
-  --cor-rotulo: #8c8c8c;
+  --cor-rotulo: #6b6b6b;   /* 5,3:1 sobre o card branco (era #8c8c8c, 3,4:1, abaixo do AA de texto) */
   --cor-mudo: #b9b7b2;
   --cor-fio: #e8e7e4;
+  --cor-linha: #8a8782;    /* seta, aresta e contorno de nó: 3,6:1 sobre o branco e 3,2:1 sobre o canvas (WCAG 1.4.11) */
   --cor-verde: #2e9e44;
   --cor-verde-tinta: #e3f4e4;
   --cor-vermelho: #e04434;
@@ -46,15 +47,17 @@
   --largura-conteudo: 1240px;
   --sidebar-largura: 64px;
   --sidebar-margem: 16px;
+  --lateral-largura: 264px; /* a barra lateral do index: marca, abas, aplicações e status */
   --gap-cards: 14px;
   --gap-secoes: 28px;
   --pad-card: 24px;
 
   /* Raios */
-  --raio-sidebar: 32px;
-  --raio-card: 24px;
-  --raio-interno: 14px;
-  --raio-icone: 12px;
+  /* cantos só levemente arredondados (eram 32, 24, 14 e 12) */
+  --raio-sidebar: 14px;
+  --raio-card: 8px;
+  --raio-interno: 6px;
+  --raio-icone: 6px;
   --raio-pill: 999px;
 
   /* Sombra (única do sistema, só na sidebar) */
