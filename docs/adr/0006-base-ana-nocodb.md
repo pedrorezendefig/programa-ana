@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-07-30
+amended_by: 0015
 ---
 
 # A fonte de dados editável da Ana sai do Google Sheets e vira NocoDB self-hosted (Base Ana)

@@ -1,3 +1,8 @@
+---
+status: accepted
+date: 2026-08-26
+---
+
 # ADR-0025: a cobertura de convênio vem da agenda online, não de tabela curada
 
 - **Data:** 26/ago/2026

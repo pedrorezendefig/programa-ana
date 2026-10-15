@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-08-19
 amends: 0007
+amended_by: 0018, 0030
 ---
 
 # As páginas do Ana OS não guardam o que a plataforma já sabe

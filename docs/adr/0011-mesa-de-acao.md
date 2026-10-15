@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-08-11
+amended_by: 0028, 0031
 ---
 
 # A home do Ana OS ganha a Mesa de ação: cards abertos agrupados por canal (dispare / comigo / aguardando), com ficha de hover e prompt por canal

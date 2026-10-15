@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-09-09
 amends: 0007, 0011, 0019
+amended_by: 0029, 0030, 0031
 ---
 
 # O Retrato da Ana nasce para o diretor, e o Ana OS vira cinco abas só de leitura

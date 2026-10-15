@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-08-19
 amends: 0017
+amended_by: 0020, 0029
 ---
 
 # Uma língua só para a origem da ferramenta, nas três páginas do cockpit

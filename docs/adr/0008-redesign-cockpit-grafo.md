@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-07-31
+amended_by: 0031, 0034
 ---
 
 # Redesign do Ana OS (referência refero) e grafo de execução com prompts copiáveis
