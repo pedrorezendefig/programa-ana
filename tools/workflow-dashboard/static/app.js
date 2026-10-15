@@ -1797,7 +1797,8 @@ function iconeApp(a) {
 }
 function carregarApps() {
   fetch('/dados/apps.json').then(r => (r.ok ? r.json() : null)).then(d => {
-    const apps = (d && d.apps) || [];
+    // só http(s): um javascript: no apps.json viraria código rodando no painel
+    const apps = ((d && d.apps) || []).filter(a => /^https?:\/\//i.test(String(a.url || '')));
     if (!apps.length) return;
     $('#side-apps').innerHTML = apps.map(a =>
       `<a href="${esc(a.url)}" target="_blank" rel="noopener">${iconeApp(a)}<span>${esc(a.nome)}</span></a>`).join('');
