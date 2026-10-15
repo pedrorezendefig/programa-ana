@@ -646,82 +646,11 @@ footer.rodape { max-width: var(--largura-conteudo); margin: 56px auto 0; border-
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
 }
 
-/* ---------- barra lateral: a navegação inteira (marca, abas, aplicações, status) ----------
-   O meio da tela fica só com o conteúdo da aba. A barra é o pill preto do Ledger, agora
-   largo e com nome ao lado de cada ícone. */
-body.com-lateral { padding-left: calc(var(--lateral-largura) + var(--sidebar-margem) * 2 + 8px); }
-.lateral {
-  position: fixed; z-index: 90;
-  left: var(--sidebar-margem); top: var(--sidebar-margem); bottom: var(--sidebar-margem);
-  width: var(--lateral-largura);
-  background: var(--cor-sidebar); color: #ffffff;
-  border-radius: var(--raio-sidebar); box-shadow: var(--sombra-sidebar);
-  display: flex; flex-direction: column; gap: 14px;
-  padding: 22px 12px 16px; overflow-y: auto; scrollbar-width: none;
-}
-.lateral::-webkit-scrollbar { display: none; }
-/* as duas cores da logo entram por variável: o <use> não deixa o seletor entrar */
-.hsm-a { fill: var(--logo-a); }
-.hsm-b { fill: var(--logo-b); }
-.lat-marca { display: flex; align-items: center; gap: 12px; padding: 0 8px; color: #ffffff; text-decoration: none;
-  --logo-a: var(--cor-mudo); --logo-b: #ffffff; }
-.lat-marca .logo { width: 84px; height: 44px; flex-shrink: 0; }
-.lat-titulo { font: var(--peso-bold) 24px/1 var(--font-poppins); letter-spacing: -0.6px; color: #ffffff; margin: 0;
-  padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, .22); white-space: nowrap; }
-.lat-titulo span { font-weight: var(--peso-medio); }
-.lat-estagio { font-size: 12px; line-height: 1.45; color: var(--cor-mudo); padding: 0 8px; margin: 0 0 6px; max-width: none; }
-
-.lateral .abas { display: flex; flex-direction: column; gap: 2px; padding: 0; overflow: visible; }
-.lateral .abas button {
-  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
-  white-space: normal; padding: 11px 12px; border-radius: var(--raio-interno);
-  font: var(--peso-medio) 14px/1.3 var(--font-inter); color: var(--cor-mudo); background: transparent;
-}
-.lateral .abas button svg { width: 20px; height: 20px; flex-shrink: 0; transition: transform .25s cubic-bezier(.25, 1, .5, 1); }
-.lateral .abas button:hover { background: #262626; color: #ffffff; }
-.lateral .abas button.ativa { background: #ffffff; color: var(--cor-tinta); }
-
-.lat-grupo { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
-.lat-rot { font: var(--peso-semibold) var(--texto-micro)/1.4 var(--font-inter); letter-spacing: var(--tracking-micro);
-  text-transform: uppercase; color: var(--cor-mudo); padding: 0 12px 6px; }
-.lat-apps a.item { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: var(--raio-interno);
-  color: var(--cor-mudo); text-decoration: none; font: var(--peso-medio) 13.5px/1.3 var(--font-inter);
-  transition: background-color .15s ease, color .15s ease; }
-.lat-apps a.item svg { width: 18px; height: 18px; flex-shrink: 0; }
-.lat-apps a.item:hover { background: #262626; color: #ffffff; }
-
-.lat-pe { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 8px 0;
-  border-top: 1px solid rgba(255, 255, 255, .12); }
-.lateral .status-strip { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.lat-pe .ambiente { margin-left: 0; }
-
-/* ---------- vida: a barra entra em sequência, o ícone responde ao mouse e à aba ativa ---------- */
-@keyframes lat-entra { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
-@keyframes ico-pop { 40% { transform: scale(1.18); } }
-.lat-marca, .lat-estagio { animation: fade-in-up .5s ease-out both; }
-.lateral .abas button, .lat-grupo, .lat-pe { animation: lat-entra .5s cubic-bezier(.16, 1, .3, 1) backwards; }
-.lateral .abas button:nth-child(1) { animation-delay: .06s; }
-.lateral .abas button:nth-child(2) { animation-delay: .1s; }
-.lateral .abas button:nth-child(3) { animation-delay: .14s; }
-.lateral .abas button:nth-child(4) { animation-delay: .18s; }
-.lateral .abas button:nth-child(5) { animation-delay: .22s; }
-.lat-grupo { animation-delay: .28s; }
-.lat-pe { animation-delay: .34s; }
-.lateral .abas button.ativa svg { animation: ico-pop .45s cubic-bezier(.16, 1, .3, 1); }
-@media (hover: hover) {
-  .lateral .abas button:hover svg { transform: translateX(2px) scale(1.08); }
-}
-
-/* telas estreitas: a barra lateral vira faixa no topo, com as abas em linha */
-@media (max-width: 820px) {
-  body.com-lateral { padding-left: 16px; padding-right: 16px; }
-  .lateral { position: relative; left: auto; top: auto; bottom: auto; width: auto; margin: 0 0 16px; gap: 10px; }
-  .lateral .abas { flex-direction: row; overflow-x: auto; }
-  .lateral .abas button { width: auto; white-space: nowrap; }
-  .lat-grupo { display: none; }
-  .lat-pe { flex-direction: row; flex-wrap: wrap; align-items: center; margin-top: 0; }
-  .lateral .status-strip { flex-direction: row; flex-wrap: wrap; }
-}
+/* ---------- dentro do painel: as esferas são uma sub-aba de Documentação (ADR-0035) ----------
+   Sem sidebar nem topo: a página ocupa o quadro inteiro e rola por dentro dele. */
+body.esferas-embutidas { padding: 8px 4px 48px; background: var(--cor-canvas); }
+body.esferas-embutidas main { max-width: none; }
+body.esferas-embutidas .barra-fixa { top: 0; }
 
 /* cantos discretos também no mapa das regras: o motor do Retrato (sop.js) desenha com
    rx de 14 a 20 e é compartilhado com o site do diretor, então o OS sobrescreve aqui */
