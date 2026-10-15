@@ -1,0 +1,10 @@
+# Arquivos que pedem revisão sensível no PR do app (globs, um por linha).
+# Na Ana, sensível é o que fala com o Oracle do MV, com a Global Health ou com a
+# plataforma fazer.ai, o SQL que vai ao hospital e o prompt que a Ana segue.
+# Produção nunca é chamada: o revisor confere TST, homologação e só leitura.
+ana/api-mv/scripts/**
+ana/api-mv/absorcao-producao/**
+ana/api-hospital/**
+ana/plataforma/scripts/**
+ana/prompt/**
+ana/bancada/e2e.py
