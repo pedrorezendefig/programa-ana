@@ -32,7 +32,7 @@ JANELA_DIAS = 45
 SUBIDA = "python3 .claude/skills/onda-enxuta/scripts/fechar_onda.py"
 TRIAGEM = ("ready-for-agent", "ready-for-human", "needs-triage", "needs-info")
 
-# O PRD do leitor (`prd_do_leitor` no .claude/fluxo.json; no Hospital, o PRD do diretor):
+# O PRD do leitor (`prd_do_leitor` no .claude/fluxo.json):
 # uma needs-triage criada fora do repo com a metade de negócio do PRD, sem label própria.
 # O que a distingue é o marcador do Projeto mais a seção "Ficou em aberto"; com
 # "Decisões de implementação" no corpo, o /to-prd já passou. Sem a chave, nada muda.
