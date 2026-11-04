@@ -1,0 +1,19 @@
+{
+  "contrato": 1,
+  "nome": "Ana",
+  "slug": "ana",
+  "app": "ana/",
+  "leitor": "quem decide (o Pedro e o diretor do hospital)",
+  "bloco": "Para quem decide",
+  "humano": "Pedro",
+  "ask": "ask-ana",
+  "designado_tira_da_fila": false,
+  "dado_sensivel": "dado de paciente (nome, CPF, telefone, carteirinha, prontuário)",
+  "migrations": null,
+  "testes": "ferramenta: `uv run --no-project --python \">=3.12\" --with pytest --with pyyaml python -m pytest tools/ -q --ignore=tools/workflow-dashboard` e, se tocou uma skill, `python3 tools/lint_skills.py --dir .claude/skills`; app (algo em `ana/`): `python3 ana/prompt/compilar.py` se mexeu no prompt, e a bancada (Skill tool com `bancada`) quando a issue pede prova de comportamento da Ana. Script que fala com o Oracle ou com a Global Health roda só contra a base TST e a homologação",
+  "varredura": null,
+  "decisoes": {
+    "fluxo": "https://github.com/pedrorezendefig/hospital-reunioes/blob/main/docs/adr/0068-o-fluxo-em-uma-pagina.md"
+  },
+  "aviso_celular": true
+}
