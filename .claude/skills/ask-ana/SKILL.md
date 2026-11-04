@@ -62,7 +62,7 @@ Ficam fora do pipeline de PR, mas são o dia a dia do programa:
 - `/bancada`: roda a bateria de cenários da Ana (3 rodadas) com o painel ao vivo e grava o diagnóstico em `ana/bancada/diagnosticos/`.
 - `/testes`: a mesa de testes. Relatório dos cenários por capacidade, e ver, executar, montar ou revisar cenários da bancada.
 
-Apoio, quando o assunto pede: `/teach` (ensinar um conceito), `/to-questionnaire` (decisão que outra pessoa responde), `/wizard` (roteiro interativo para passo que só um humano faz), `/wait-what` (re-explicar a última resposta), `/retro` (retrospectiva da sessão), `writing-for-agents` (ao escrever skill ou `CLAUDE.md`), `git-guardrails-claude-code`, `setup-pre-commit`, `migrate-to-shoehorn` e `scaffold-exercises`.
+Apoio, quando o assunto pede: `writing-for-agents` (ao escrever skill ou `CLAUDE.md`).
 
 ## Máquina nova
 
