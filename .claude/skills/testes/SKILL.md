@@ -46,7 +46,7 @@ Para raia e só problemas, o painel já filtra por tecla. Para capacidade, nó o
 
 ## Armadilhas
 
-- `capacidades.json` é versionado e é o que o player do Ana OS lê: id duplicado ou JSON quebrado derruba a página. Valide com `python3 -c "import json; json.load(open('ana/bancada/cenarios/capacidades.json'))"` antes do commit.
+- `capacidades.json` é versionado e é o que a bancada (`e2e.py`) e o painel da bancada leem: id duplicado ou JSON quebrado derruba os dois. Valide com `python3 -c "import json; json.load(open('ana/bancada/cenarios/capacidades.json'))"` antes do commit.
 - CPF e nome em cenário são sempre de teste; o contato é `TESTE BANCADA ANA <id>`.
 - O relatório lê as rodadas copiadas em `resultados/` (fora do git). Máquina nova sem elas: o relatório mostra "sem dado"; rode a bateria antes de revisar.
 - O resto das armadilhas (o `/teste`, o `conversationId`, a raia pelo trace) está no `ana/bancada/README.md`.

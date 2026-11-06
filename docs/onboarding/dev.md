@@ -1,6 +1,6 @@
 # Onboarding: quem entra no Programa Ana
 
-Esta página leva você do clone até o Ana OS aberto no navegador, e depois explica o dia a dia. O setup do Claude Code (plugins, permissões) está em [`claude-setup.md`](./claude-setup.md).
+Esta página leva você do clone até a primeira skill rodando, e depois explica o dia a dia. O setup do Claude Code (plugins, permissões) está em [`claude-setup.md`](./claude-setup.md).
 
 ## A regra de ouro
 
@@ -13,7 +13,7 @@ O resto do caminho (`/tdd`, `/ship` e a subida `fechar_onda.py`) as skills encad
 
 Para retomar o programa (o que mudou, o que falta, a fronteira do dia), o comando continua sendo o `/check`.
 
-## Primeiro dia: do clone ao painel aberto
+## Primeiro dia: do clone à primeira skill
 
 Antes de começar, tenha `git`, `gh`, `jq`, `python3` e o Claude Code instalados (a lista com os comandos está na seção 1 do [`claude-setup.md`](./claude-setup.md)) e peça ao Pedro acesso de colaborador ao repo.
 
@@ -42,21 +42,7 @@ Antes de começar, tenha `git`, `gh`, `jq`, `python3` e o Claude Code instalados
 
 4. **Confira a máquina.** Abra o Claude Code dentro da pasta (`claude`) e rode `/setup-maquina`. Ele mostra uma tabela com `OK` e `FALTA` e o conserto de cada item.
 
-5. **Suba o Ana OS como serviço do Mac** (uma vez; ele volta sozinho quando o Mac liga):
-
-   ```bash
-   bash tools/workflow-dashboard/install-launchd.sh
-   ```
-
-   Rode a partir do clone, nunca de um worktree de issue: o serviço aponta para a pasta onde o script mora. Para tirar o serviço: `bash tools/workflow-dashboard/install-launchd.sh uninstall`.
-
-6. **Abra o painel:** [http://localhost:8800](http://localhost:8800). Ele mostra as abas Issues, PRs, Produção e Documentação. A porta 8800 não briga com a do cockpit do programa (`python3 os/server.py`, em `http://localhost:8777`), então os dois rodam juntos.
-
-   Sem o serviço (ou fora do macOS), suba na mão: `python3 tools/workflow-dashboard/serve.py --port 8800`.
-
-7. **Pergunte o próximo passo:** `/ask-ana` diz qual skill usar em cada momento.
-
-O painel só lê o GitHub. Nada que você faz nele muda o repo.
+5. **Pergunte o próximo passo:** `/ask-ana` diz qual skill usar em cada momento, e `/minhas-issues` mostra o que está com você.
 
 ## Como trabalhar
 
@@ -130,7 +116,7 @@ fechar_onda.py     merge pela API (squash). Sem deploy: sem versão, build nem h
 
 | Pergunta | Olhar em |
 |---|---|
-| O que tem para fazer, o que estou fazendo? | GitHub Issues, ou a aba Issues do Ana OS |
+| O que tem para fazer, o que estou fazendo? | GitHub Issues, ou `/minhas-issues` |
 | Qual o contexto deste trabalho? | A própria Issue (`gh issue view <N>`) |
 | O que significa cada termo do projeto? | `CONTEXT.md` |
 | Por que decidimos X? | `docs/adr/` (só vale `status: accepted`) |

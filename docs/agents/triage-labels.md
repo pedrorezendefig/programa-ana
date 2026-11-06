@@ -44,7 +44,7 @@ Família descritiva, não de estado. O `/to-issues` aplica uma por fatia na queb
 | `fatia:M` | Média: meio período, fatia vertical completa |
 | `fatia:G` | Grande: dia cheio ou mais, mais risco (muitas camadas, tela nova, integração externa) |
 
-O painel do fluxo agrupa essas labels no filtro `fatia:` da aba Issues, e a `/onda-enxuta` escolhe por elas o esforço do implementador.
+A `/onda-enxuta` escolhe por elas o esforço do implementador.
 
 ## Natureza da mudança
 
@@ -62,7 +62,7 @@ Dizem **o que** é a mudança, não o estado dela. Alimentam o tipo do PR e do c
 
 ## Área
 
-Onde a mudança incide. Pode ter mais de uma; a primeira é a faixa do grafo no Cockpit do Ana OS. O "app" do fluxo é a pasta `ana/`: PR que toca `ana/` passa pelo `ana-revisor`.
+Onde a mudança incide. Pode ter mais de uma. O "app" do fluxo é a pasta `ana/`: PR que toca `ana/` passa pelo `ana-revisor`.
 
 | Label | Significado |
 | --- | --- |
@@ -71,7 +71,7 @@ Onde a mudança incide. Pode ter mais de uma; a primeira é a faixa do grafo no 
 | `area:fazer-ai` | A plataforma fazer.ai agents (`ana/plataforma/`) |
 | `area:chatwoot` | Chatwoot: inbox, automação, versão, WhatsApp |
 | `area:app-hospital` | O app do hospital (repo Hospital) e a API que a Ana lê (`ana/api-hospital/`) |
-| `area:os` | Ana OS (`os/`, `tools/workflow-dashboard/`) e Retrato (`retrato/`) |
+| `area:os` | Os JSON curados (`os/dados/`), o termômetro do `/check` (`os/roadmap_github.py`) e o Retrato (`retrato/`) |
 
 ## Wayfinding
 

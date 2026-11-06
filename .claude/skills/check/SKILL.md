@@ -1,17 +1,17 @@
 ---
 name: check
-description: 'Checagem de progresso do Programa Ana (Hospital São Matheus) neste repositório. Use SEMPRE que o usuário disser "/check", "check", "faz um check", "checa aí", "como estamos", "status do projeto", "o que falta", "próximos passos", "onde paramos", "retomar", "liga meus OS", "liga o Ana OS", "liga o Retrato", "sobe o OS", ou quando ele voltar relatando um avanço externo (ex.: "chegou o token da Global Health", "rodei as queries", "o ultracode terminou", "falei com o analista", "o Felipe respondeu"). A skill liga o Ana OS (8777) e o Retrato (8778) se estiverem fora do ar, mede o estágio em porcentagem real (issues fechadas sobre o total no GitHub, ADR-0031), lê o TODO, o git, o diretório e a instância fazer.ai agents, cura as issues (papel de triage ready-for-human/ready-for-agent/needs-triage, labels area:, gesto e prompt) via gh, atualiza a narrativa do roadmap/TODO.md, e devolve orientação de co-worker organizada por canal de ação: o que disparar hoje, o que sentar comigo, o que cobrar de terceiros.'
+description: 'Checagem de progresso do Programa Ana (Hospital São Matheus) neste repositório. Use SEMPRE que o usuário disser "/check", "check", "faz um check", "checa aí", "como estamos", "status do projeto", "o que falta", "próximos passos", "onde paramos", "retomar", "liga o Retrato", ou quando ele voltar relatando um avanço externo (ex.: "chegou o token da Global Health", "rodei as queries", "o ultracode terminou", "falei com o analista", "o Felipe respondeu"). A skill liga o Retrato (8778) se estiver fora do ar, mede o estágio em porcentagem real (issues fechadas sobre o total no GitHub, ADR-0031), lê o TODO, o git, o diretório e a instância fazer.ai agents, cura as issues (papel de triage ready-for-human/ready-for-agent/needs-triage, labels area:, gesto e prompt) via gh, atualiza a narrativa do roadmap/TODO.md, e devolve orientação de co-worker organizada por canal de ação: o que disparar hoje, o que sentar comigo, o que cobrar de terceiros.'
 ---
 
 # Check: o ritual de progresso do Programa Ana
 
 Você é o co-worker do Pedro. O objetivo do check não é listar tarefas: é dizer com franqueza onde o projeto está, o que anda sozinho, o que apodrece bloqueado, e qual é a jogada de maior alavancagem agora. E, acima de tudo, deixar o Pedro sabendo **exatamente o que tocar hoje** e **empurrar o máximo de frentes em paralelo**, sem perder o foco nem esquecer nada. Este é um programa grande e evolutivo (muitos meses, muitas reuniões): o valor do check é converter esse mapa gigante numa lista curta e acionável a cada sessão.
 
-A fonte dos cards são as **Issues do GitHub** do repo `pedrorezendefig/programa-ana` (ADR-0031): labels `area:` (categoria) e um papel de triage por issue aberta (`ready-for-human`, `ready-for-agent` ou `needs-triage`, de `docs/agents/triage-labels.md`; substituíram as antigas `canal:dispare`, `canal:aguardando`, `canal:comigo` e `radar`); corpo com `## Destrava`, `## Gesto`, `## Pronto quando`, `## Prompt`, `## Bloqueada por` (`#N`), `## Nota`; a ficha de conclusão é um comentário `## Ficha` (Fez/Mudou/Valor); o milestone é o estágio. O `roadmap/TODO.md` guarda só a narrativa (o parágrafo "Estado" e o log). O **Ana OS** (`localhost:8777`, `python3 os/server.py`) lê as mesmas issues pelo `gh` e as mostra no Cockpit (ADR-0007, ADR-0031). As issues migradas trazem `Antes: V37` na primeira linha do corpo: o ID antigo é só referência histórica; o ID de hoje é `#N`. O roadmap anterior está arquivado em `roadmap/arquivo/` (inclui o mapa.html aposentado): acervo de consulta, nunca fonte do estado atual. Nunca invente status: o que não conseguir verificar, pergunte.
+A fonte dos cards são as **Issues do GitHub** do repo `pedrorezendefig/programa-ana` (ADR-0031): labels `area:` (categoria) e um papel de triage por issue aberta (`ready-for-human`, `ready-for-agent` ou `needs-triage`, de `docs/agents/triage-labels.md`; substituíram as antigas `canal:dispare`, `canal:aguardando`, `canal:comigo` e `radar`); corpo com `## Destrava`, `## Gesto`, `## Pronto quando`, `## Prompt`, `## Bloqueada por` (`#N`), `## Nota`; a ficha de conclusão é um comentário `## Ficha` (Fez/Mudou/Valor); o milestone é o estágio. O `roadmap/TODO.md` guarda só a narrativa (o parágrafo "Estado" e o log). O painel dessas issues é o **PedroOS** (o antigo Ana OS saiu do repo). As issues migradas trazem `Antes: V37` na primeira linha do corpo: o ID antigo é só referência histórica; o ID de hoje é `#N`. O roadmap anterior está arquivado em `roadmap/arquivo/` (inclui o mapa.html aposentado): acervo de consulta, nunca fonte do estado atual. Nunca invente status: o que não conseguir verificar, pergunte.
 
 ## Falar a língua do Pedro, não a dos IDs
 
-Os IDs (V6, OS1, GH1...) são referência estável para você e para o Ana OS; eles nunca mudam de significado. Mas o Pedro **não deve precisar decodificar um ID para saber o que fazer**. No relatório e no mapa, sempre traduza para linguagem de ação e organize por **canal**, não por trilha. O canal sai do papel de triage da issue:
+Os IDs (V6, OS1, GH1...) são referência estável para você; eles nunca mudam de significado. Mas o Pedro **não deve precisar decodificar um ID para saber o que fazer**. No relatório e no mapa, sempre traduza para linguagem de ação e organize por **canal**, não por trilha. O canal sai do papel de triage da issue:
 
 - **Dispare hoje** (`ready-for-human`, ainda não pedido): depende só do Pedro, 5 a 15 min. Mandar uma mensagem ao analista, pedir algo à GH, criar uma etapa no Kanban. São as vitórias de paralelismo: pode tocar todas de uma vez.
 - **Sente comigo** (`ready-for-agent`, ou `in-progress` já em curso): resolve numa sessão Claude Code (validar hotfix, revisar pesquisa, construir subfluxo, trocar o token do Chatwoot).
@@ -29,7 +29,7 @@ Todo check deve:
 
 ## Rotina (nesta ordem)
 
-0. **Ligar os OS e medir.** Rode `python3 .claude/skills/check/scripts/ligar-e-medir.py`. Ele sobe o Ana OS (`python3 os/server.py`, porta 8777) e o Retrato (`http.server` em `retrato/`, porta 8778) só se a porta estiver fechada (logs em `/tmp/ana-os-logs/`), e imprime o **termômetro** lido do GitHub: issues fechadas sobre o total (sem as `needs-triage`, o antigo radar), as abertas por canal com o gesto (`ready-for-human` numa raia, `ready-for-agent` e `in-progress` na outra), as bloqueadas por `## Bloqueada por`, as sem papel de triage e as sem Gesto ou Prompt (defeitos). O número do termômetro é esse, não uma estimativa sua: "3 de 11 = 27%" vai para o relatório como saiu do script. Se um dos dois não subir, diga no relatório e siga. (`--so-medir` só mede, sem ligar.)
+0. **Ligar o Retrato e medir.** Rode `python3 .claude/skills/check/scripts/ligar-e-medir.py`. Ele sobe o Retrato (`http.server` em `retrato/`, porta 8778) só se a porta estiver fechada (logs em `/tmp/ana-os-logs/`), e imprime o **termômetro** lido do GitHub: issues fechadas sobre o total (sem as `needs-triage`, o antigo radar), as abertas por canal com o gesto (`ready-for-human` numa raia, `ready-for-agent` e `in-progress` na outra), as bloqueadas por `## Bloqueada por`, as sem papel de triage e as sem Gesto ou Prompt (defeitos). O número do termômetro é esse, não uma estimativa sua: "3 de 11 = 27%" vai para o relatório como saiu do script. Se o Retrato não subir, diga no relatório e siga. (`--so-medir` só mede, sem ligar.)
 1. **Ler o estado declarado.** `roadmap/TODO.md` inteiro (narrativa e log) e, se precisar do detalhe de uma issue, `gh issue view N -R pedrorezendefig/programa-ana --comments`. Primeira vez na sessão: leia também `README.md` e `CONTEXT.md` para falar a língua do projeto.
 2. **Ver o que mudou de fato.** `git log --oneline -15` e `git status --short`. Compare com a data da "Fronteira de agora". Commits novos = progresso real; arquivos não commitados = trabalho no meio do caminho (pergunte antes de mexer).
 3. **Varrer o diretório por cacos.** Arquivos novos soltos na raiz são insumos que o Pedro largou para digerir (padrão dele). Proponha o destino: briefings em `ana/briefings/`, banco/API em `ana/api-mv/`, pós-atendimento em `pos-atendimento/`. Digira o conteúdo antes de arquivar: um caco pode mudar a árvore de tarefas.
@@ -53,7 +53,7 @@ Todo check deve:
 
 **Próximos passos, em ordem:** 1. ... 2. ... 3. ... (os três de maior alavancagem, em linguagem de ação, com o ID como etiqueta)
 
-**OS no ar:** Ana OS `http://localhost:8777` · Retrato `http://localhost:8778` (ou "não subiu: motivo")
+**Retrato no ar:** `http://localhost:8778` (ou "não subiu: motivo")
 
 **O que mudou desde o último check:** (commits, cacos novos, respostas externas)
 
@@ -71,11 +71,11 @@ Todo check deve:
 **Risco que mais me preocupa hoje:** ... (um só, com o porquê)
 ```
 
-Adapte com bom senso: se uma coluna está vazia, diga em uma linha e siga. O Ana OS é o complemento visual do relatório: aponte que as issues foram atualizadas e que o Pedro pode abrir `localhost:8777` (o passo 0 já subiu) para ver o cockpit (uma página só desde o ADR-0030, com cinco abas no topo: Cockpit, O que a Ana faz hoje, As regras da Ana, Onde ela busca a resposta, Global Health).
+Adapte com bom senso: se uma coluna está vazia, diga em uma linha e siga. O complemento visual do relatório é o PedroOS: aponte que as issues foram atualizadas e que o Pedro pode vê-las lá.
 
-## Modo leve ("liga meus OS")
+## Modo leve ("liga o Retrato")
 
-Quando o gatilho for só ligar os OS ("liga meus OS", "liga o Ana OS", "liga o Retrato", "sobe o OS"), o Pedro quer o cockpit no ar e um resumo curto, não o ritual inteiro. Faça o passo 0, leia o TODO e o `git log -5`, e devolva **só o cabeçalho** do relatório: estado em uma frase, termômetro, próximos três passos e os dois links. Nada de curar issues, editar ou commitar nesse modo, a menos que o git, o GitHub ou o Pedro mostrem que algo mudou desde a data do "Estado" no TODO.md; aí o check inteiro roda.
+Quando o gatilho for só ligar o Retrato ("liga o Retrato"), o Pedro quer o Retrato no ar e um resumo curto, não o ritual inteiro. Faça o passo 0, leia o TODO e o `git log -5`, e devolva **só o cabeçalho** do relatório: estado em uma frase, termômetro, próximos três passos e o link do Retrato. Nada de curar issues, editar ou commitar nesse modo, a menos que o git, o GitHub ou o Pedro mostrem que algo mudou desde a data do "Estado" no TODO.md; aí o check inteiro roda.
 
 ## Como gerar sugestões que prestam
 

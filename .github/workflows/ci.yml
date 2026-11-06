@@ -19,7 +19,7 @@ jobs:
       - name: Dependências
         run: pip install pyyaml pytest
       - name: Testes de tools/
-        run: python -m pytest tools/ -q --ignore=tools/workflow-dashboard
+        run: python -m pytest tools/ -q
       - name: Lint travessão
         # Travessão (U+2014) e meia-risca (U+2013) no texto que o Pedro, o diretor do
         # hospital e o paciente leem: docs, skills e a moldura do retrato/ (o site do

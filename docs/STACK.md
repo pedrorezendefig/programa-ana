@@ -18,7 +18,6 @@ O que o programa usa hoje, peça por peça. Peça nova entra aqui no mesmo PR qu
 
 | Peça | Para que serve |
 |---|---|
-| Ana OS (`os/server.py` e `tools/workflow-dashboard/`) | O painel local: Issues, PRs, Produção e Documentação, com as esferas do Retrato. Python sem dependências. |
 | Retrato da Ana (`retrato/`) | O site estático para o diretor do hospital, publicado na Vercel pelo Pedro. |
 | Bancada (`ana/bancada/`) | Os cenários de conversa que testam a Ana de ponta a ponta, com o painel ao vivo no Claude Code. |
 | GitHub (Issues, PRs e Actions) | O estado do programa e o fluxo de trabalho: cada mudança entra por issue e PR, com CI. |

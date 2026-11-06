@@ -37,13 +37,13 @@ def test_triage_labels_lista_as_labels_do_fluxo_com_as_areas_da_ana() -> None:
     assert _labels_nas_tabelas(texto) == LABELS_DO_REPO
 
 
-def test_onboarding_dev_leva_do_clone_ao_painel_aberto_passando_pelo_hook() -> None:
+def test_onboarding_dev_leva_do_clone_ao_ask_ana_passando_pelo_hook() -> None:
     texto = (RAIZ / "docs/onboarding/dev.md").read_text(encoding="utf-8")
     passos = [
         "gh repo clone pedrorezendefig/programa-ana",
         "git config core.hooksPath .githooks",
-        "tools/workflow-dashboard/install-launchd.sh",
-        "http://localhost:8800",
+        "/setup-maquina",
+        "/ask-ana",
     ]
     posicoes = [texto.find(p) for p in passos]
     assert -1 not in posicoes, dict(zip(passos, posicoes))

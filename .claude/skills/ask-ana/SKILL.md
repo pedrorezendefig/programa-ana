@@ -52,7 +52,7 @@ Teste rápido entre B e C: **alguém precisa conferir que fez o que foi pedido?*
 ## Pós-entrega
 
 - `/snapshot`: mapa factual da `ana/` em `docs/spec/snapshots/`.
-- **Pendência humana pós-ciclo** (credencial, ato na plataforma fazer.ai, resposta da Global Health): vira issue `ready-for-human` ligada ao PRD (`/ship` Passo 10); o Pedro acompanha no Cockpit do **Ana OS** e fecha a issue ao concluir.
+- **Pendência humana pós-ciclo** (credencial, ato na plataforma fazer.ai, resposta da Global Health): vira issue `ready-for-human` ligada ao PRD (`/ship` Passo 10); o Pedro acompanha no **PedroOS** e fecha a issue ao concluir.
 
 ## Skills próprias da Ana
 
