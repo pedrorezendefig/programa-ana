@@ -46,11 +46,9 @@ skills/
 ├── diagnose/
 ├── domain-modeling/
 ├── express/
-├── git-guardrails-claude-code/
 ├── grill-me/
 ├── grill-with-docs/
 ├── improve-codebase-architecture/
-├── migrate-to-shoehorn/
 ├── minhas-issues/
 ├── montar-ondas-enxutas/
 ├── onda-enxuta/
@@ -59,23 +57,16 @@ skills/
 ├── prototype/
 ├── research/
 ├── resolver-conflitos/
-├── retro/
 ├── retro-onda/
-├── scaffold-exercises/
 ├── setup-maquina/
-├── setup-pre-commit/
 ├── ship/
 ├── snapshot/
 ├── tdd/
-├── teach/
 ├── testes/
 ├── to-issues/
 ├── to-prd/
-├── to-questionnaire/
 ├── triage/
-├── wait-what/
 ├── wayfinder/
-├── wizard/
 └── writing-for-agents/
 ```
 
@@ -154,9 +145,6 @@ bancada/
 Localização: `os/`
 
 ```
-arquivo/
-assets/
-└── fonts/
 dados/
 ```
 
@@ -176,14 +164,4 @@ Localização: `roadmap/`
 
 ```
 arquivo/
-```
-
-## tools/
-
-Localização: `tools/`
-
-```
-workflow-dashboard/
-├── static/
-└── tests/
 ```

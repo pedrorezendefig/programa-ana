@@ -49,8 +49,7 @@ def test_nenhum_script_aponta_para_a_pasta_do_app_do_hospital_nem_do_iae() -> No
     # `ana/plataforma/` (os scripts da fazer.ai) é da Ana e não conta.
     velha = re.compile("hospital" + "-reunioes/" + "|(?<![\\w/])" + "plata" + "forma/")
     citam = [str(p.relative_to(RAIZ)) for p in _textos((".claude", "tools", ".github"), (".py", ".sh", ".yml"))
-             if "workflow-dashboard" not in p.parts
-             and velha.search(p.read_text(encoding="utf-8", errors="replace"))]
+             if velha.search(p.read_text(encoding="utf-8", errors="replace"))]
     assert citam == []
 
 

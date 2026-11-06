@@ -14,15 +14,15 @@ Programa Ana (Hospital São Matheus): agente de IA de atendimento/agendamento vi
 O mesmo fluxo do IAE e do Hospital, centrado em GitHub Issues. O mapa de qual skill usar em cada momento vive no router **`/ask-ana`**. Espinha dorsal:
 - **Planejar:** `/grill-with-docs` (desafia o plano contra o domínio, uma pergunta por vez, com a recomendação destacada; atualiza `CONTEXT.md` e ADR) → `/to-prd` → `/to-issues`.
 - **Desenvolver:** `/pegar-issue <N>` → `/tdd` → `/ship`. PR de ferramenta passa só pelo CI; PR que toca `ana/` passa pelo `ana-revisor` uma vez e pelo CI; must-fix ou CI vermelho chamam o `ana-corretor`. A **subida** (`fechar_onda.py --prs <N>`, que o `/ship` roda sozinho) mergeia pela API depois do CI verde e para aí: a Ana ainda não tem deploy. O que muda na plataforma fazer.ai segue sendo aplicado à mão. **Modo AFK:** `/onda-enxuta`.
-- Criou, renomeou ou apagou skill do fluxo? Atualize o `/ask-ana` e o `tools/workflow-dashboard/static/fluxo.json` no mesmo commit.
+- Criou, renomeou ou apagou skill do fluxo? Atualize o `/ask-ana` no mesmo commit, e o desenho do fluxo no PedroOS (`projetos/ana/fluxo.json`).
 
 O estado do programa mora nas **Issues do GitHub** do repo privado `pedrorezendefig/programa-ana`. Etiquetas de estado: `needs-triage`, `needs-info`, `ready-for-agent` (uma sessão resolve), `ready-for-human` (só o Pedro, ou já pedido a terceiro), `wontfix` e `in-progress`; `area:*` diz a frente (`ana`, `global-health`, `fazer-ai`, `chatwoot`, `app-hospital`, `os`). Bloqueio entre issues é a dependência nativa do GitHub. O `roadmap/TODO.md` guarda só a narrativa (o parágrafo "Estado" e o log); `/check` retoma. Detalhes em `docs/agents/issue-tracker.md` e `docs/agents/triage-labels.md`.
 
 Ao falar com o Pedro sobre tarefas, traduza os números para linguagem de ação e agrupe por quem destrava (só ele / uma sessão resolve / aguardando terceiro). Incentive-o a empurrar frentes em paralelo: várias sessões rodam issues `ready-for-agent` diferentes ao mesmo tempo, um git worktree por issue.
 
-## Ana OS e Retrato
+## Painel e Retrato
 
-O **Ana OS** é o painel do fluxo (ADR-0035): `python3 os/server.py` e abrir `http://localhost:8777`. Quatro abas: **Issues**, **PRs**, **Produção** (sem deploy ainda) e **Documentação**, com as sub-abas Fluxo (o fluxograma, com o balão de cada passo), O que a Ana faz, As regras, Onde busca, Global Health, Mapa, Decisões, Glossário e Stack. O painel mora em `tools/workflow-dashboard/`; as quatro esferas são desenhadas pelos motores do Retrato (`retrato/assets/`, servidos por `/retrato/`) em `os/esferas.html`, sobre o `/api/retrato` ao vivo. O OS é **só leitura**. Visual: `os/DESIGN.md`. Regras do server: GH só homologação, Oracle TST só SELECT, `dados-locais/` e `amostras/` jamais servidos, produção jamais chamada. As páginas antigas vivem em `os/arquivo/`, fora do menu, por URL direta.
+O painel do fluxo (issues, PRs, Fases, Esferas, Áreas e Documentação) é o **PedroOS**, no repo `pedrorezendefig/os`. O antigo Ana OS (`os/server.py`) e o `tools/workflow-dashboard/` saíram deste repo. Da pasta `os/` ficaram só `os/dados/` (os JSON curados que o `retrato/gerar.py`, a bancada e o `smoke-hospital.py` leem ou gravam) e `os/roadmap_github.py` (o termômetro do `/check`).
 
 O **Retrato da Ana** (`retrato/`, ADR-0028) é o site estático para o diretor do hospital, publicado na Vercel. `python3 retrato/gerar.py` grava `retrato/dados/retrato.json` e recusa gerar se achar CPF, paciente-sonda, URL de ambiente, token, credencial ou ID de tarefa. Publicar é ato do Pedro (`vercel` na raiz).
 

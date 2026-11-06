@@ -10,7 +10,7 @@ Desde o ADR-0029 o Retrato veste o design system do aplicativo do hospital (font
 python3 retrato/gerar.py
 ```
 
-O script lê os JSON do Ana OS (`os/dados/`), a curadoria (`retrato/curadoria.json`) e a lista de ferramentas na plataforma (token do `.env` da raiz, que nunca vai para o JSON), grava as ligações inversas (quem menciona quem: ferramenta, seção, passo do mapa, capacidade, cadeia e elo) e escreve `retrato/dados/retrato.json` carimbado com a data. Se a plataforma não responder, ele para com erro e não gera com dado velho.
+O script lê os JSON curados de `os/dados/`, a curadoria (`retrato/curadoria.json`) e a lista de ferramentas na plataforma (token do `.env` da raiz, que nunca vai para o JSON), grava as ligações inversas (quem menciona quem: ferramenta, seção, passo do mapa, capacidade, cadeia e elo) e escreve `retrato/dados/retrato.json` carimbado com a data. Se a plataforma não responder, ele para com erro e não gera com dado velho.
 
 Antes de gravar, ele varre o JSON contra a lista de proibidos (CPF, paciente-sonda, endereço de ambiente, token, credencial, código de tarefa) e recusa gerar se achar algo. Travessão na moldura também derruba a geração (os títulos vindos do mapa são convertidos; o miolo literal das regras não se toca). Para conferir que a varredura pega:
 

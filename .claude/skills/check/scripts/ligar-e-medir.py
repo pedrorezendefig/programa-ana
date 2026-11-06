@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Passo 0 do /check: liga o Ana OS (8777) e o Retrato (8778) se estiverem fora do ar,
+"""Passo 0 do /check: liga o Retrato (8778) se estiver fora do ar,
 e mede o estagio pelas Issues do GitHub (ADR-0031): issues fechadas sobre o total,
-sem contar as de label `needs-triage` (o antigo radar). Le o GitHub pelo mesmo modulo que o Ana OS usa
-(os/roadmap_github.py), para o /check e o cockpit nunca divergirem.
+sem contar as de label `needs-triage` (o antigo radar). Le o GitHub pelo os/roadmap_github.py.
+O antigo Ana OS (8777) saiu do repo: o painel das issues agora e o PedroOS.
 
 Uso: python3 .claude/skills/check/scripts/ligar-e-medir.py [--so-medir]
 So le; nunca escreve nada.
@@ -16,7 +16,6 @@ import time
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 LOGS = "/tmp/ana-os-logs"
 SERVICOS = [
-    ("Ana OS", 8777, ["python3", "os/server.py"]),
     ("Retrato", 8778, ["python3", "-m", "http.server", "-d", "retrato", "8778", "--bind", "127.0.0.1"]),
 ]
 # Chaves que o roadmap_github devolve: ready-for-human vira "dispare", ready-for-agent
@@ -102,7 +101,7 @@ def medir():
     print()
     print(f"Fora do termometro: {len(radar)} item(ns) no radar (needs-triage)"
           + (": " + ", ".join(f"#{r['id']} (prio {r.get('prioridade')}/10)" for r in radar) if radar else "") + ".")
-    print(f"Cockpit: http://localhost:8777/index.html#cockpit  |  Issues: https://github.com/{d['repo']}/issues")
+    print(f"Issues: https://github.com/{d['repo']}/issues")
 
 
 if __name__ == "__main__":

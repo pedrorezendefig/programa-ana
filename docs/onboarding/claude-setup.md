@@ -1,6 +1,6 @@
 # Setup do Claude Code para trabalhar na Ana
 
-Guia de setup da máquina, feito uma vez. Depois dele, siga o [`dev.md`](./dev.md), que leva do clone ao Ana OS aberto e explica o dia a dia. Tempo estimado: 15 minutos.
+Guia de setup da máquina, feito uma vez. Depois dele, siga o [`dev.md`](./dev.md), que leva do clone à primeira skill e explica o dia a dia. Tempo estimado: 15 minutos.
 
 A Ana não tem deploy pelo repositório, então o fluxo de PR não pede CLI de plataforma nem token de produção. Os acessos do programa (o `.env` da raiz com o Oracle TST e a Global Health homolog, o MCP da fazer.ai, os convites do Chatwoot e do Langfuse) são outra conversa: estão nos passos 4 a 7 do "Setup completo da estação de trabalho" do `README.md` da raiz, e o Pedro os entrega pessoalmente. Credencial de produção nunca entra nesta máquina.
 
@@ -23,7 +23,7 @@ Todas as skills do time já vêm no clone, em `.claude/skills/` (lista e roteame
 | **Claude Code** | `curl -fsSL https://claude.ai/install.sh \| bash` | O agente |
 | **GitHub CLI** (`gh`) | `brew install gh` | Issues, PRs e merge. As skills falam com o GitHub por ele |
 | **`jq`** | `brew install jq` | Leitura de JSON nos scripts das skills |
-| **Python 3** | já vem no macOS, ou `brew install python@3.12` | O Ana OS, o cockpit (`os/server.py`) e os scripts das skills |
+| **Python 3** | já vem no macOS, ou `brew install python@3.12` | O Retrato (`retrato/gerar.py`) e os scripts das skills |
 | **`uv`** | `curl -LsSf https://astral.sh/uv/install.sh \| sh` | Roda os testes de `tools/` com o Python 3.12, como no CI |
 
 Conferir:

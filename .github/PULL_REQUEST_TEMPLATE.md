@@ -53,7 +53,7 @@ Porta de uma via (reverter o commit não desfaz): envio externo (WhatsApp, Chatw
 escrita em dado de produção, mudança no prompt da Ana que vai para a plataforma fazer.ai, mudança em
 .github/ ou nas skills da subida (ship, onda-enxuta, agentes ana-*). O resto é porta de duas vias:
 um revert desfaz. Produção do Oracle e da Global Health nunca é chamada.
-Raio: quem sente se der errado (o paciente no WhatsApp, a bancada, o Ana OS, o próprio fluxo).
+Raio: quem sente se der errado (o paciente no WhatsApp, a bancada, o Retrato, o próprio fluxo).
 -->
 
 **Porta:** <uma via | duas vias>, porque <motivo em uma linha>

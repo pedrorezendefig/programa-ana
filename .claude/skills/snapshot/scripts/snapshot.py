@@ -10,14 +10,13 @@ do repositório, e de onde cada arquivo sai:
   - INTEGRACOES.md: o NOME das chaves de ambiente que o código lê
     (`ENV.get`, `env.get`, `env[...]`, `os.environ`, `os.getenv`,
     `ler_env`), agrupadas por serviço externo; nunca o valor;
-  - ROTAS.md: as rotas HTTP do `os/server.py` (o servidor local do Ana OS),
-    lidas por AST dos `do_GET`/`do_POST`;
+  - ROTAS.md: uma linha, o programa não tem servidor HTTP próprio;
   - ENTIDADES.md e SCHEMA.md: as tabelas do MV já estudadas, lidas de
     `ana/api-mv/dicionario-colunas.md` (seções `###` e o flowchart do fluxo
     do agendamento, que dá as ligações);
   - MIGRATIONS.md: uma linha, o programa não tem migrations próprias;
   - FLUXOGRAMAS.md: o diagrama de contexto, curado aqui no script, no subset
-    `flowchart TD` que o `tools/workflow-dashboard/diagramas.py` aceita.
+    `flowchart TD` que o `coletor/diagramas.py` do PedroOS aceita.
 
 Uso:
     python3 .claude/skills/snapshot/scripts/snapshot.py [--check] [--root <repo>]
@@ -29,7 +28,6 @@ em dia. Sem data nos arquivos, para o `--check` não acusar só o relógio.
 from __future__ import annotations
 
 import argparse
-import ast
 import re
 import subprocess
 import sys
@@ -37,7 +35,6 @@ from pathlib import Path
 
 SAIDA = "docs/spec/snapshots"
 NOMES = ("ESTRUTURA.md", "ROTAS.md", "ENTIDADES.md", "SCHEMA.md", "MIGRATIONS.md", "INTEGRACOES.md", "FLUXOGRAMAS.md")
-SERVIDOR = "os/server.py"
 DICIONARIO = "ana/api-mv/dicionario-colunas.md"
 FORA_DA_ARVORE = {"dados-locais", "amostras", "__pycache__", "node_modules", ".venv", ".venv-mv"}
 CODIGO_FORA = ("tools/", ".claude/")  # ferramenta do fluxo, não código do programa
@@ -105,10 +102,10 @@ def estrutura(raiz: Path, arquivos: list[str]) -> str:
 
 # serviço externo -> (pra que serve, prefixos das chaves)
 SERVICOS = [
-    ("Global Health", "API de agendamento WhatsApp da MV. O Ana OS chama ao vivo só a homologação; produção é proibida neste app.", ("GH_",)),
-    ("Oracle MV (base TST)", "Banco do hospital, base de teste. Só leitura (SELECT/WITH), pelo Ana OS e pelo query-mv.py.", ("ORACLE_",)),
-    ("fazer.ai agents", "A plataforma onde a Ana roda: lista de ferramentas para o Ana OS e para o Retrato.", ("AGENTS_API_", "PLATAFORMA_")),
-    ("Chatwoot", "Inbox do atendimento: a bancada e2e conversa por ele e o Ana OS confere a versão.", ("CHATWOOT_",)),
+    ("Global Health", "API de agendamento WhatsApp da MV. Os scripts locais chamam só a homologação; produção é proibida neste app.", ("GH_",)),
+    ("Oracle MV (base TST)", "Banco do hospital, base de teste. Só leitura (SELECT/WITH), pelo query-mv.py.", ("ORACLE_",)),
+    ("fazer.ai agents", "A plataforma onde a Ana roda: lista de ferramentas para o Retrato.", ("AGENTS_API_", "PLATAFORMA_")),
+    ("Chatwoot", "Inbox do atendimento: a bancada e2e conversa por ele.", ("CHATWOOT_",)),
 ]
 _ACESSO_ENV = re.compile(r"(?:\bENV|\benv|os\.environ)\s*(?:\.get\(|\[)|os\.getenv\(|ler_env\(|process\.env")
 _CHAVE = re.compile(r"[\"']([A-Z][A-Z0-9_]{2,})[\"']|process\.env\.([A-Z][A-Z0-9_]{2,})")
@@ -157,125 +154,6 @@ def integracoes(raiz: Path, arquivos: list[str]) -> str:
     linhas += ["", "---", f"**Resumo:** {blocos} serviços com chave no código. Langfuse e a API do Hospital são",
                "configurados na plataforma, sem chave lida por este repositório."]
     return _doc("INTEGRACOES.md", linhas)
-
-
-# ---------- ROTAS ----------
-
-_SEM_DESCRICAO = {"_json", "_host_local", "_arquivo"}
-
-
-def _primeira_frase(doc: str | None) -> str:
-    if not doc:
-        return ""
-    paragrafo = " ".join(doc.strip().split("\n\n")[0].split())
-    m = re.match(r"(.+?\.)(?:\s|$)", paragrafo)
-    frase = (m.group(1) if m else paragrafo).replace("|", "/")
-    if len(frase) > 140:
-        frase = frase[:140].rsplit(" ", 1)[0].rstrip(",;:") + "..."
-    return frase
-
-
-def _descricao(corpo: list[ast.stmt], funcs: dict, metodos: dict, pasta: Path) -> str:
-    for stmt in corpo:
-        for no in ast.walk(stmt):
-            if not isinstance(no, ast.Call):
-                continue
-            f = no.func
-            if isinstance(f, ast.Name) and f.id in funcs:
-                return _primeira_frase(ast.get_docstring(funcs[f.id])) or f"`{f.id}()` (sem docstring)"
-            if isinstance(f, ast.Attribute) and isinstance(f.value, ast.Name):
-                if f.value.id == "self" and f.attr in metodos and f.attr not in _SEM_DESCRICAO:
-                    return _primeira_frase(ast.get_docstring(metodos[f.attr])) or f"`{f.attr}()`"
-                modulo = pasta / f"{f.value.id}.py"
-                if modulo.is_file():
-                    alvo = next((n for n in ast.parse(modulo.read_text(encoding="utf-8")).body
-                                 if isinstance(n, ast.FunctionDef) and n.name == f.attr), None)
-                    if alvo is not None:
-                        return _primeira_frase(ast.get_docstring(alvo)) or f"`{f.value.id}.{f.attr}()`"
-    for stmt in corpo:
-        for no in ast.walk(stmt):
-            if isinstance(no, ast.Name) and re.fullmatch(r"[A-Z][A-Z0-9_]+", no.id):
-                return f"Lê `{no.id}`."
-    for stmt in corpo:
-        for no in ast.walk(stmt):
-            if isinstance(no, ast.Call) and isinstance(no.func, ast.Attribute) and no.func.attr not in _SEM_DESCRICAO:
-                return f"Chama `{ast.unparse(no.func)}()`."
-    return ""
-
-
-def _e_path(no: ast.AST) -> bool:
-    return (isinstance(no, ast.Name) and no.id == "path") or (isinstance(no, ast.Attribute) and no.attr == "path")
-
-
-def _rotas_do_teste(teste: ast.AST) -> list[str]:
-    if isinstance(teste, ast.Compare) and _e_path(teste.left) and len(teste.ops) == 1:
-        alvo = teste.comparators[0]
-        if isinstance(teste.ops[0], ast.Eq) and isinstance(alvo, ast.Constant):
-            return [alvo.value]
-        if isinstance(teste.ops[0], ast.NotIn) and isinstance(alvo, (ast.Tuple, ast.List)):
-            return [e.value for e in alvo.elts if isinstance(e, ast.Constant)]
-    if isinstance(teste, ast.Call) and isinstance(teste.func, ast.Attribute):
-        if teste.func.attr == "startswith" and _e_path(teste.func.value) and isinstance(teste.args[0], ast.Constant):
-            return [teste.args[0].value + "*"]
-        if teste.func.attr == "match" and len(teste.args) == 2 and _e_path(teste.args[1]) and isinstance(teste.args[0], ast.Constant):
-            return [re.sub(r"\\d\+", "{n}", teste.args[0].value.strip("^$"))]
-    return []
-
-
-def rotas(raiz: Path) -> str:
-    fonte = raiz / SERVIDOR
-    if not fonte.is_file():
-        return _doc("ROTAS.md", [f"`{SERVIDOR}` não existe."])
-    arvore = ast.parse(fonte.read_text(encoding="utf-8"))
-    funcs = {n.name: n for n in arvore.body if isinstance(n, ast.FunctionDef)}
-    classe = next(n for n in arvore.body if isinstance(n, ast.ClassDef)
-                  and any(isinstance(m, ast.FunctionDef) and m.name == "do_GET" for m in n.body))
-    metodos = {m.name: m for m in classe.body if isinstance(m, ast.FunctionDef)}
-    linhas_rota: list[tuple[str, str, str]] = []
-    for metodo_http in ("GET", "POST"):
-        handler = metodos.get(f"do_{metodo_http}")
-        if handler is None:
-            continue
-        declaradas: list[str] = []
-        casadas: dict[str, str] = {}
-        corpo_resto: list[ast.stmt] = []
-        for stmt in handler.body:
-            if not isinstance(stmt, ast.If) or not _rotas_do_teste(stmt.test):
-                corpo_resto.append(stmt)
-                continue
-            no: ast.stmt | None = stmt
-            while isinstance(no, ast.If) and _rotas_do_teste(no.test):
-                rs = _rotas_do_teste(no.test)
-                if isinstance(no.test, ast.Compare) and isinstance(no.test.ops[0], ast.NotIn):
-                    declaradas += rs  # lista de rotas aceitas; a descrição vem do resto do corpo
-                    corpo_resto += no.orelse
-                    break
-                for r in rs:  # a primeira que casa vence, como no servidor
-                    if r not in casadas:
-                        casadas[r] = _descricao(no.body, funcs, metodos, fonte.parent)
-                if len(no.orelse) == 1 and isinstance(no.orelse[0], ast.If):
-                    no = no.orelse[0]
-                    continue
-                if no.orelse:
-                    casadas["/*"] = _descricao(no.orelse, funcs, metodos, fonte.parent)
-                break
-        for r in declaradas:
-            if r not in casadas:
-                casadas[r] = _descricao(corpo_resto, funcs, metodos, fonte.parent)
-        linhas_rota += [(metodo_http, r, d) for r, d in casadas.items()]
-    linhas = [
-        "Rotas HTTP do Ana OS, o servidor local do cockpit (`python3 os/server.py`, porta 8777).",
-        "Método de extração: AST do `os/server.py`, lendo as comparações de `path` nos",
-        "`do_GET`/`do_POST`; a descrição é a primeira frase da docstring da função que a rota chama.",
-        "Nenhuma rota exige login: o servidor só escuta em 127.0.0.1 e recusa Host que não seja local.",
-        "",
-        f"## os (`{SERVIDOR}`)",
-        "",
-        "| Método | Rota | O que faz | Auth |",
-        "|--------|------|-----------|------|",
-        *(f"| {m} | `{r}` | {d or '-'} | não (só localhost) |" for m, r, d in linhas_rota),
-    ]
-    return _doc("ROTAS.md", linhas)
 
 
 # ---------- ENTIDADES e SCHEMA (Oracle do MV, base TST) ----------
@@ -420,17 +298,17 @@ CONTEXTO = """flowchart TD
     ANA -- preços e ouvidoria --> APIH[API do Hospital]
     ANA -- agenda --> GH[Global Health<br/>API de agendamento]
     GH -- finalização grava --> MV[Oracle MV TST<br/>só leitura daqui]
-    OS[Ana OS<br/>localhost 8777] -- homologação --> GH
-    OS -- SELECT --> MV
-    OS -- lista ferramentas --> ANA
-    OS -- gera via gerar.py --> RET[Retrato<br/>na Vercel]
+    SCR[Scripts locais<br/>query-mv, smoke-gh, gerar.py] -- homologação --> GH
+    SCR -- SELECT --> MV
+    SCR -- lista ferramentas --> ANA
+    SCR -- gera --> RET[Retrato<br/>na Vercel]
     RET -- lê ferramentas --> ANA"""
 
 
 def fluxogramas() -> str:
     linhas = [
         "Diagramas curados no `snapshot.py` (não saem do código). Subset `flowchart TD` aceito",
-        "pelo `tools/workflow-dashboard/diagramas.py`.",
+        "pelo `coletor/diagramas.py` do PedroOS.",
         "",
         "## Contexto: quem conversa com quem",
         "",
@@ -441,8 +319,8 @@ def fluxogramas() -> str:
         "O paciente fala só com o WhatsApp do hospital; o Chatwoot entrega a conversa à Ana",
         "na fazer.ai agents, que registra cada execução no Langfuse. A Ana lê preços e grava a",
         "ouvidoria na API do Hospital e marca pela Global Health, que só grava no Oracle do MV",
-        "na finalização. O Ana OS é o cockpit local: chama a homologação da Global Health,",
-        "consulta a base TST em leitura e monta o Retrato publicado na Vercel.",
+        "na finalização. Os scripts locais chamam a homologação da Global Health,",
+        "consultam a base TST em leitura e montam o Retrato publicado na Vercel.",
     ]
     return _doc("FLUXOGRAMAS.md", linhas)
 
@@ -454,7 +332,9 @@ def gerar(raiz: Path) -> dict[str, str]:
     arquivos = _arquivos_do_git(raiz)
     return {
         "ESTRUTURA.md": estrutura(raiz, arquivos),
-        "ROTAS.md": rotas(raiz),
+        "ROTAS.md": _doc("ROTAS.md", [
+            "O Programa Ana não tem servidor HTTP próprio: o painel das issues é o PedroOS e o Retrato é um site estático."
+        ]),
         "ENTIDADES.md": entidades(raiz),
         "SCHEMA.md": schema(raiz),
         "MIGRATIONS.md": _doc("MIGRATIONS.md", [
