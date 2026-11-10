@@ -17,3 +17,6 @@ ana/bancada/resultados/
 # Fluxo de trabalho (vindo do IAE): worktrees dos agentes e caches de Python
 .claude/worktrees/
 __pycache__/
+
+# Backups soltos (settings.local.json.bak e afins)
+*.bak
