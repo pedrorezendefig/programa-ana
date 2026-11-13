@@ -4,7 +4,8 @@ O fluxo veio do Hospital pelo IAE. Estes testes travam a adaptação: o router �
 o `/ask-ana`, e nenhuma skill do pipeline carrega sobra do Hospital Reuniões
 (o router antigo, as skills de entrega ao diretor, o Manual) nem do IAE (os
 sócios, a Plataforma de cursos, o aluno). O hospital aqui é o cliente da Ana:
-citar o hospital é permitido; a pasta e o painel do Hospital Reuniões, não.
+citar o hospital é permitido; a pasta e o painel do Hospital Reuniões, não, fora
+dos trechos de exemplo de EXEMPLO_DO_HOSPITAL.
 
 O critério do lint do cabeçalho mora no último teste de `test_lint_skills.py`,
 que roda contra o `.claude/skills/` real.
@@ -58,6 +59,14 @@ PROIBIDO = re.compile(
     r"|[Ss]ócios?\b|Plataforma de cursos|\balunos?\b|\bcursos?\b"
 )
 
+# O Pacote do fluxo do PedroOS cita o Hospital Reuniões de propósito, como exemplo.
+# Só estes trechos saem da busca: o parêntese "(no Hospital, ...)", o parêntese com o
+# caminho do roteiro do manual de lá e o nome da seção "Manual: páginas que mudam" do PRD.
+EXEMPLO_DO_HOSPITAL = re.compile(
+    r"\(no Hospital, [^()]*\)|\(`hospital-" r"reunioes/frontend/scripts/manual/[^`]*`[^()]*\)"
+    r"|Manual: páginas que mudam"
+)
+
 
 def _arquivos(skill: str) -> list[Path]:
     return sorted(p for p in (SKILLS / skill).rglob("*") if p.is_file() and p.suffix in {".md", ".py", ".sh"})
@@ -87,7 +96,7 @@ def test_skill_sem_sobra_do_hospital_reunioes_nem_do_iae(skill: str) -> None:
     achados = []
     for arquivo in arquivos:
         for n, linha in enumerate(arquivo.read_text(encoding="utf-8").splitlines(), 1):
-            if PROIBIDO.search(linha):
+            if PROIBIDO.search(EXEMPLO_DO_HOSPITAL.sub("", linha)):
                 achados.append(f"{arquivo.relative_to(SKILLS)}:{n}: {linha.strip()[:120]}")
     assert not achados, "\n".join(achados)
 
