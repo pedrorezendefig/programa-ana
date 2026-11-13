@@ -20,3 +20,8 @@ __pycache__/
 
 # Backups soltos (settings.local.json.bak e afins)
 *.bak
+
+# Fora do git antes de o repositório ficar público: metadados do banco MV, planilha da MV e o contrato com o hospital
+ana/api-mv/resultados/**/*.csv
+ana/api-mv/*.xlsx
+contrato/
