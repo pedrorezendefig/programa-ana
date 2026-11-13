@@ -49,7 +49,7 @@ Ana: Encontrei estes horários:
      Qual número fica melhor?
 Paciente: 1
 Ana: Para confirmar o agendamento, pode me passar seu nome completo e CPF?
-Paciente: Rafael Fritzen, 552.064.840-91
+Paciente: Paciente Teste, 000.000.000-00
 Ana: Confirmando: consulta de cardiologia, 03/06 às 11h, com a Dra. Fernanda, no valor de R$ 120. Posso confirmar?
 Paciente: sim
 Ana: Prontinho, sua consulta está agendada!
